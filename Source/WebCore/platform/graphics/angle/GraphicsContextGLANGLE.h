@@ -345,6 +345,7 @@ public:
     void paintRenderingResultsToCanvas(ImageBuffer&) final;
     std::optional<PixelBuffer> paintRenderingResultsToPixelBuffer() final;
     void paintCompositedResultsToCanvas(ImageBuffer&) final;
+    void setContextVisibility(bool) final;
     void prepareForDisplay() override;
 
     void forceContextLost();
@@ -383,18 +384,20 @@ protected:
     std::optional<PixelBuffer> readCompositedResults();
     std::optional<PixelBuffer> readPixelsForPaintResults();
 
+    // Returns true on success.
     bool reshapeFBOs(const IntSize&);
     void prepareTextureImpl();
     void resolveMultisamplingIfNecessary(const IntRect& = IntRect());
-    void attachDepthAndStencilBufferIfNeeded(GCGLuint internalDepthStencilFormat, int width, int height);
-
+    // Returns true on success.
+    bool attachDepthAndStencilBufferIfNeeded(GCGLuint internalDepthStencilFormat, int width, int height);
+    // Returns true on success.
     bool reshapeDisplayBufferBacking();
 #if PLATFORM(COCOA)
-    bool allocateAndBindDisplayBufferBacking();
+    virtual bool allocateAndBindDisplayBufferBacking();
     bool bindDisplayBufferBacking(std::unique_ptr<IOSurface> backing, void* pbuffer);
     static bool makeCurrent(PlatformGraphicsContextGLDisplay, PlatformGraphicsContextGL);
 #endif
-    // Returns false if context should be lost due to timeout.
+    // Returns true on success. Returns false if context should be lost due to timeout.
     bool waitAndUpdateOldestFrame() WARN_UNUSED_RETURN;
 
     // Platform specific behavior for releaseResources();
