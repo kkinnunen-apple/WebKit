@@ -225,20 +225,16 @@ bool GraphicsContextGLANGLE::reshapeFBOs(const IntSize& size)
             }
         }
         GL_BindRenderbuffer(GL_RENDERBUFFER, 0);
-        if (GL_CheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-            // FIXME: cleanup.
-            notImplemented();
-        }
+        if (GL_CheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            return false;
     }
 
     // resize regular FBO
     GL_BindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 
-    if (!reshapeDisplayBufferBacking()) {
-        RELEASE_LOG(WebGL, "Fatal: Unable to allocate backing store of size %d x %d", width, height);
-        forceContextLost();
-        return true;
-    }
+    if (!reshapeDisplayBufferBacking())
+        return false;
+
     if (m_preserveDrawingBufferTexture) {
         // The context requires the use of an intermediate texture in order to implement
         // preserveDrawingBuffer:true without antialiasing.
@@ -258,21 +254,10 @@ bool GraphicsContextGLANGLE::reshapeFBOs(const IntSize& size)
         GL_FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, drawingBufferTextureTarget(), m_texture, 0);
 
     attachDepthAndStencilBufferIfNeeded(m_internalDepthStencilFormat, width, height);
-
-    bool mustRestoreFBO = true;
-    if (attrs.antialias) {
-        GL_BindFramebuffer(GL_FRAMEBUFFER, m_multisampleFBO);
-        if (m_state.boundDrawFBO == m_multisampleFBO && m_state.boundReadFBO == m_multisampleFBO)
-            mustRestoreFBO = false;
-    } else {
-        if (m_state.boundDrawFBO == m_fbo && m_state.boundReadFBO == m_fbo)
-            mustRestoreFBO = false;
-    }
-
-    return mustRestoreFBO;
+    return true;
 }
 
-void GraphicsContextGLANGLE::attachDepthAndStencilBufferIfNeeded(GLuint internalDepthStencilFormat, int width, int height)
+bool GraphicsContextGLANGLE::attachDepthAndStencilBufferIfNeeded(GLuint internalDepthStencilFormat, int width, int height)
 {
     auto attrs = contextAttributes();
 
@@ -292,10 +277,9 @@ void GraphicsContextGLANGLE::attachDepthAndStencilBufferIfNeeded(GLuint internal
         GL_BindRenderbuffer(GL_RENDERBUFFER, 0);
     }
 
-    if (GL_CheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        // FIXME: cleanup
-        notImplemented();
-    }
+    if (GL_CheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        return false;
+    return true;
 }
 
 void GraphicsContextGLANGLE::resolveMultisamplingIfNecessary(const IntRect& rect)
@@ -610,7 +594,11 @@ void GraphicsContextGLANGLE::reshape(int width, int height)
     TemporaryANGLESetting scopedDither(GL_DITHER, GL_FALSE);
     ScopedBufferBinding scopedPixelUnpackBufferReset(GL_PIXEL_UNPACK_BUFFER, 0, m_isForWebGL2);
 
-    bool mustRestoreFBO = reshapeFBOs(IntSize(width, height));
+    if (!reshapeFBOs(IntSize(width, height))) {
+        forceContextLost();
+        return;
+    }
+
     auto attrs = contextAttributes();
 
     // Initialize renderbuffers to 0.
@@ -655,11 +643,9 @@ void GraphicsContextGLANGLE::reshape(int width, int height)
         GL_StencilMaskSeparate(GL_BACK, stencilMaskBack);
     }
 
-    if (mustRestoreFBO) {
-        GL_BindFramebuffer(GraphicsContextGL::FRAMEBUFFER, m_state.boundDrawFBO);
-        if (m_isForWebGL2 && m_state.boundDrawFBO != m_state.boundReadFBO)
-            GL_BindFramebuffer(GraphicsContextGL::READ_FRAMEBUFFER, m_state.boundReadFBO);
-    }
+    GL_BindFramebuffer(GraphicsContextGL::FRAMEBUFFER, m_state.boundDrawFBO);
+    if (m_isForWebGL2 && m_state.boundDrawFBO != m_state.boundReadFBO)
+        GL_BindFramebuffer(GraphicsContextGL::READ_FRAMEBUFFER, m_state.boundReadFBO);
 
     auto error = GL_GetError();
     if (error != GL_NO_ERROR) {

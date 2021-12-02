@@ -41,6 +41,18 @@ namespace TestWebKitAPI {
 
 namespace {
 
+class MockGraphicsContextGLClient : public WebCore::GraphicsContextGL::Client {
+public:
+    void didComposite() override { didCompositeCalled++; };
+    void forceContextLost() override { forceContextLostCalled++; };
+    void recycleContext() override { recycleContextCalled++; };
+    void dispatchContextChangedNotification() override { dispatchContextChangedNotificationCalled++; }
+    int didCompositeCalled { 0 };
+    int forceContextLostCalled { 0 };
+    int recycleContextCalled { 0 };
+    int dispatchContextChangedNotificationCalled { 0 };
+};
+
 class TestedGraphicsContextGLCocoa : public WebCore::GraphicsContextGLCocoa {
 public:
     static RefPtr<TestedGraphicsContextGLCocoa> create(WebCore::GraphicsContextGLAttributes&& attributes)
@@ -240,6 +252,18 @@ TEST_F(GraphicsContextGLCocoaTest, UnrecycledDisplayBuffersNoLeaks)
     }
 
     EXPECT_TRUE(memoryFootprintChangedBy(lastFootprint, footprintChange, footprintError));
+}
+
+TEST_F(GraphicsContextGLCocoaTest, AllocationFailureOnReshapeLosesContext)
+{
+    auto context = createDefaultTestContext({ 20, 20 });
+    ASSERT_NE(context, nullptr);
+    MockGraphicsContextGLClient client;
+    context->addClient(client);
+    EXPECT_EQ(0, client.forceContextLostCalled);
+    context->setFailNextDisplayBufferAllocationForTesting();
+    context->reshape(15, 15);
+    EXPECT_EQ(1, client.forceContextLostCalled);
 }
 
 }
