@@ -1126,10 +1126,10 @@ angle::Result DisplayMtl::initializeShaderLibrary()
     // Compile the default shaders asynchronously
     ANGLE_MTL_OBJC_SCOPE
     {
-        auto nsSource = [[NSString alloc] initWithBytesNoCopy:gDefaultMetallibSrc
+        auto nsSource = [[[NSString alloc] initWithBytesNoCopy:gDefaultMetallibSrc
                                                        length:sizeof(gDefaultMetallibSrc)
                                                      encoding:NSUTF8StringEncoding
-                                                 freeWhenDone:NO];
+                                                 freeWhenDone:NO] ANGLE_MTL_AUTORELEASE];
         auto options  = [[[MTLCompileOptions alloc] init] ANGLE_MTL_AUTORELEASE];
         [getMetalDevice() newLibraryWithSource:nsSource
                                        options:options
@@ -1142,8 +1142,6 @@ angle::Result DisplayMtl::initializeShaderLibrary()
                                asyncRef->compiled = true;
                                asyncRef->cv.notify_one();
                              }];
-
-        [nsSource ANGLE_MTL_AUTORELEASE];
     }
 #endif
     return angle::Result::Continue;

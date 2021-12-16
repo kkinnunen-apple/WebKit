@@ -807,10 +807,10 @@ AutoObjCPtr<id<MTLLibrary>> CreateShaderLibrary(
     ANGLE_MTL_OBJC_SCOPE
     {
         NSError *nsError = nil;
-        auto nsSource    = [[NSString alloc] initWithBytesNoCopy:const_cast<char *>(source)
-                                                       length:sourceLen
-                                                     encoding:NSUTF8StringEncoding
-                                                 freeWhenDone:NO];
+        auto nsSource    = [[[NSString alloc] initWithBytesNoCopy:const_cast<char *>(source)
+                                                        length:sourceLen
+                                                      encoding:NSUTF8StringEncoding
+                                                  freeWhenDone:NO] ANGLE_MTL_AUTORELEASE];
         auto options     = [[[MTLCompileOptions alloc] init] ANGLE_MTL_AUTORELEASE];
         // Mark all positions in VS with attribute invariant as non-optimizable
 #if (defined(__MAC_11_0) && __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_11_0) ||        \
@@ -829,10 +829,9 @@ AutoObjCPtr<id<MTLLibrary>> CreateShaderLibrary(
         {
             NSLog(@"%@\n", nsSource);
         }
-        [nsSource ANGLE_MTL_AUTORELEASE];
         *errorOut = std::move(nsError);
 
-        return [library ANGLE_MTL_AUTORELEASE];
+        return library;
     }
 }
 

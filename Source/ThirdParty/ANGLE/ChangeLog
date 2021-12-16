@@ -1,3 +1,46 @@
+2021-12-16  Kimmo Kinnunen  <kkinnunen@apple.com>
+
+        Fix ANGLE Metal inconsistencies after ownership identity change
+        https://bugs.webkit.org/show_bug.cgi?id=234391
+
+        Reviewed by NOBODY (OOPS!).
+
+        Metal new* methods create objects with +1 retain count.
+        AutoObjCPtr is intended to adopt this reference.
+        Otherwise, like before this patch, the AutoObjCPtr holds
+        object with +2 count. Before this patch, some but not all
+        call sites donated the extra retain count to autoreleasepool
+        "out of band", and as such the code did not leak that much.
+
+        Use the identity-aware api for the allocation done in
+        Texture::resize.
+
+        * src/libANGLE/renderer/metal/IOSurfaceSurfaceMtl.mm:
+        (rx::IOSurfaceSurfaceMtl::ensureColorTextureCreated):
+        * src/libANGLE/renderer/metal/SyncMtl.mm:
+        (rx::mtl::Sync::initialize):
+        * src/libANGLE/renderer/metal/mtl_context_device.mm:
+        (rx::mtl::ContextDevice::newSamplerStateWithDescriptor const):
+        (rx::mtl::ContextDevice::newTextureWithDescriptor const):
+        (rx::mtl::ContextDevice::newBufferWithLength const):
+        (rx::mtl::ContextDevice::newBufferWithBytes const):
+        (rx::mtl::ContextDevice::newComputePipelineStateWithFunction const):
+        (rx::mtl::ContextDevice::newRenderPipelineStateWithDescriptor const):
+        (rx::mtl::ContextDevice::newLibraryWithSource const):
+        (rx::mtl::ContextDevice::newDepthStencilStateWithDescriptor const):
+        (rx::mtl::ContextDevice::newSharedEvent const):
+        * src/libANGLE/renderer/metal/mtl_render_utils.mm:
+        * src/libANGLE/renderer/metal/mtl_resources.mm:
+        (rx::mtl::Texture::Texture):
+        (rx::mtl::Texture::resize):
+        (rx::mtl::Texture::getReadableCopy):
+        (rx::mtl::Buffer::resetWithResOpt):
+        * src/libANGLE/renderer/metal/mtl_state_cache.mm:
+        (rx::mtl::StateCache::getDepthStencilState):
+        (rx::mtl::StateCache::getSamplerState):
+        * src/libANGLE/renderer/metal/mtl_utils.mm:
+        (rx::mtl::CreateShaderLibrary):
+
 2021-12-17  Kimmo Kinnunen  <kkinnunen@apple.com>
 
         REGRESSION (r287068): [macOS arm64] TestWebKitAPI.GraphicsContextGLCocoaTest.UnrecycledDisplayBuffersNoLeaks is failing

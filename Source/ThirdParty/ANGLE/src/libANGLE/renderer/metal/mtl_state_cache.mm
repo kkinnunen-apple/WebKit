@@ -1267,54 +1267,43 @@ AutoObjCPtr<id<MTLDepthStencilState>> StateCache::getDepthStencilState(
     const mtl::ContextDevice &device,
     const DepthStencilDesc &desc)
 {
-    ANGLE_MTL_OBJC_SCOPE
+    auto ite = mDepthStencilStates.find(desc);
+    if (ite == mDepthStencilStates.end())
     {
-        auto ite = mDepthStencilStates.find(desc);
-        if (ite == mDepthStencilStates.end())
+        auto objCDesc = ToObjC(desc);
+        auto re       = mDepthStencilStates.insert(
+                  std::make_pair(desc, device.newDepthStencilStateWithDescriptor(objCDesc)));
+        if (!re.second)
         {
-            AutoObjCObj<MTLDepthStencilDescriptor> objCDesc = ToObjC(desc);
-            AutoObjCPtr<id<MTLDepthStencilState>> newState =
-                [device.newDepthStencilStateWithDescriptor(objCDesc) ANGLE_MTL_AUTORELEASE];
-
-            auto re = mDepthStencilStates.insert(std::make_pair(desc, newState));
-            if (!re.second)
-            {
-                return nil;
-            }
-
-            ite = re.first;
+            return nil;
         }
 
-        return ite->second;
+        ite = re.first;
     }
+
+    return ite->second;
 }
 
 AutoObjCPtr<id<MTLSamplerState>> StateCache::getSamplerState(const mtl::ContextDevice &device,
                                                              const SamplerDesc &desc)
 {
-    ANGLE_MTL_OBJC_SCOPE
+    auto ite = mSamplerStates.find(desc);
+    if (ite == mSamplerStates.end())
     {
-        auto ite = mSamplerStates.find(desc);
-        if (ite == mSamplerStates.end())
+        AutoObjCObj<MTLSamplerDescriptor> objCDesc = ToObjC(desc);
+        if (!mFeatures.allowRuntimeSamplerCompareMode.enabled)
         {
-            AutoObjCObj<MTLSamplerDescriptor> objCDesc = ToObjC(desc);
-            if (!mFeatures.allowRuntimeSamplerCompareMode.enabled)
-            {
-                // Runtime sampler compare mode is not supported, fallback to never.
-                objCDesc.get().compareFunction = MTLCompareFunctionNever;
-            }
-            AutoObjCPtr<id<MTLSamplerState>> newState =
-                [device.newSamplerStateWithDescriptor(objCDesc) ANGLE_MTL_AUTORELEASE];
-
-            auto re = mSamplerStates.insert(std::make_pair(desc, newState));
-            if (!re.second)
-                return nil;
-
-            ite = re.first;
+            // Runtime sampler compare mode is not supported, fallback to never.
+            objCDesc.get().compareFunction = MTLCompareFunctionNever;
         }
+        auto re = mSamplerStates.insert(
+            std::make_pair(desc, device.newSamplerStateWithDescriptor(objCDesc)));
+        if (!re.second)
+            return nil;
 
-        return ite->second;
+        ite = re.first;
     }
+    return ite->second;
 }
 
 AutoObjCPtr<id<MTLSamplerState>> StateCache::getNullSamplerState(ContextMtl *context)
