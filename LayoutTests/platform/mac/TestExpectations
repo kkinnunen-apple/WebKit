@@ -398,13 +398,13 @@ editing/pasteboard/paste-global-selection.html
 
 # Unexpected WebGL Conformance tests that need to be fixed
 # These tests pass when run through webgl-conformance-tests.html but not when just opened via a browser (or via run-webkit-tests)
-webgl/1.0.3/conformance/context/context-creation-and-destruction.html [ Pass Timeout ]
-webgl/1.0.3/conformance/rendering/multisample-corruption.html [ Pass Timeout ]
+webgl/1.0.x/conformance/context/context-creation-and-destruction.html [ Pass Timeout ]
+webgl/1.0.x/conformance/rendering/multisample-corruption.html [ Pass Timeout ]
 
-# Skip 1.0.3 tests that pass in conformance suite but timeout in TestRunner
-webgl/1.0.3/conformance/more/glsl [ Skip ]
-webgl/1.0.3/conformance/more/conformance [ Skip ]
-webgl/1.0.3/conformance/more/functions [ Skip ]
+# Skip 1.0.x tests that pass in conformance suite but timeout in TestRunner
+webgl/1.0.x/conformance/more/glsl [ Skip ]
+webgl/1.0.x/conformance/more/conformance [ Skip ]
+webgl/1.0.x/conformance/more/functions [ Skip ]
 
 # Sending the mouse down event to the scrollbar starts a nested run loop which causes a hang.
 fast/events/mousedown-in-subframe-scrollbar.html [ Skip ]
@@ -645,7 +645,6 @@ webkit.org/b/131715 transitions/cancel-transition.html [ Pass Failure ]
 webkit.org/b/89153 http/tests/websocket/tests/hybi/workers/close.html [ Pass Failure ]
 
 # <rdar://problem/16696298>
-webkit.org/b/131886 webgl/1.0.3/conformance/textures/texture-size-limit.html [ Pass Failure ]
 webkit.org/b/131886 fast/canvas/webgl/webgl-compressed-texture-size-limit.html [ Pass Failure Timeout ]
 
 webkit.org/b/132385 compositing/repaint/repaint-on-layer-grouping-change.html [ Pass Failure ]
@@ -1001,7 +1000,7 @@ webkit.org/b/151469 imported/w3c/web-platform-tests/html/syntax/parsing/template
 webkit.org/b/153809 transitions/clip-path-transitions.html [ Pass Failure ]
 webkit.org/b/153809 transitions/clip-path-path-transitions.html [ Pass Failure ]
 
-webkit.org/b/153883 webgl/1.0.3/conformance/extensions/oes-texture-half-float-linear.html [ Pass Failure ]
+webkit.org/b/153883 webgl/1.0.x/conformance/extensions/oes-texture-half-float-linear.html [ Pass Failure ]
 
 webkit.org/b/153871 imported/w3c/web-platform-tests/html/semantics/document-metadata/styling/LinkStyle.html [ Pass Failure ]
 
@@ -1011,7 +1010,7 @@ webkit.org/b/207146 media/media-source/media-source-seek-redundant-append.html [
 webkit.org/b/153879 js/basic-set.html [ Skip ]
 webkit.org/b/154753 js/basic-map.html [ Skip ]
 
-webkit.org/b/152506 webgl/1.0.3/conformance/extensions/get-extension.html [ Pass Timeout ]
+webkit.org/b/152506 webgl/1.0.x/conformance/extensions/get-extension.html [ Pass Timeout ]
 
 webkit.org/b/154709 fast/text/crash-complex-text-surrogate.html [ Pass Failure ]
 
@@ -1394,9 +1393,9 @@ inspector/css/force-page-appearance.html [ Pass ]
 editing/pasteboard/paste-dark-mode-color-filtered.html [ Pass ]
 fast/forms/number/number-dark-appearance.html [ Pass ]
 
-webkit.org/b/189686 webgl/2.0.0/conformance/textures/misc/tex-image-and-sub-image-2d-with-array-buffer-view.html [ Slow ]
+webkit.org/b/189686 webgl/2.0.y/conformance/textures/misc/tex-image-and-sub-image-2d-with-array-buffer-view.html [ Slow ]
 
-webkit.org/b/170877 [ Debug ] webgl/1.0.3/conformance/glsl/misc/shader-with-reserved-words.html [ Pass Timeout ]
+webkit.org/b/170877 [ Debug ] webgl/1.0.x/conformance/glsl/misc/shader-with-reserved-words.html [ Pass Timeout ]
 
 webkit.org/b/190724 [ Debug ] http/tests/misc/large-js-program.py [ Pass Timeout ]
 
@@ -1415,7 +1414,7 @@ webkit.org/b/195466 imported/w3c/web-platform-tests/html/semantics/embedded-cont
 webkit.org/b/195466 imported/w3c/web-platform-tests/html/semantics/embedded-content/the-img-element/sizes/parse-a-sizes-attribute-width-1000px.html [ Pass Failure ]
 
 # <rdar://problem/45595702>
-webgl/2.0.0/conformance/glsl/bugs/conditional-discard-in-loop.html [ Skip ]
+webgl/2.0.y/conformance/glsl/bugs/conditional-discard-in-loop.html [ Skip ]
 
 webkit.org/b/153588 imported/w3c/web-platform-tests/media-source/mediasource-correct-frames.html [ Skip ]
 webkit.org/b/153588 imported/w3c/web-platform-tests/media-source/mediasource-correct-frames-after-reappend.html [ Skip ]
@@ -1546,7 +1545,7 @@ accessibility/mac/isolated-tree-mode-on-off.html [ Skip ]
 
 webkit.org/b/202064 webaudio/silent-audio-interrupted-in-background.html [ Pass Crash ]
 
-webkit.org/b/205756 webgl/2.0.0/conformance2/glsl3/no-attribute-vertex-shader.html [ Pass Failure ]
+webkit.org/b/205756 webgl/2.0.y/conformance2/glsl3/no-attribute-vertex-shader.html [ Pass Failure ]
 
 webkit.org/b/204312 imported/w3c/web-platform-tests/svg/import/struct-dom-06-b-manual.svg [ Failure Pass ]
 
@@ -1609,13 +1608,12 @@ webkit.org/b/207726 imported/w3c/web-platform-tests/html/semantics/embedded-cont
 
 webkit.org/b/207978 imported/w3c/web-platform-tests/service-workers/service-worker/resource-timing.sub.https.html [ Pass Failure ]
 
-webkit.org/b/207858 [ Mojave ] webgl/1.0.3/conformance/textures/tex-image-and-sub-image-2d-with-webgl-canvas-rgba5551.html [ Pass Failure ]
 
 webkit.org/b/208219 compositing/video/video-clip-change-src.html [ Pass ImageOnlyFailure ]
 
 webkit.org/b/208220 [ Debug ] imported/w3c/web-platform-tests/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-pointer-control.html [ Pass Failure ]
 
-webkit.org/b/208078 [ Debug ] webgl/2.0.0/conformance2/textures/misc/copy-texture-image-luma-format.html [ Pass Timeout ]
+webkit.org/b/208078 [ Debug ] webgl/2.0.y/conformance2/textures/misc/copy-texture-image-luma-format.html [ Pass Timeout ]
 
 webkit.org/b/208450 webanimations/accelerated-animation-renderer-change.html [ Pass ImageOnlyFailure ]
 
@@ -1831,8 +1829,8 @@ imported/w3c/web-platform-tests/content-security-policy/connect-src/connect-src-
 webkit.org/b/209692 [ BigSur+ ] platform/mac/fast/text/text-security-disc-bullet-pua-mac.html [ Pass ]
 webkit.org/b/209692 [ BigSur+ ] fast/text/text-security-disc-bullet-pua.html [ ImageOnlyFailure ]
 
-# rdar://63094384 (REGRESSION: (r261413): [ Guard-Malloc ] webgl/2.0.0/conformance2/textures/misc/tex-unpack-params.html is crashing consistently with - libGLImage.dylib: void glgConvertTo_32<GLGConverter_RGB8_ARGB8, (GLGMemory)1>)
-[ BigSur+ ] webgl/2.0.0/conformance2/textures/misc/tex-unpack-params.html [ Skip ]
+# rdar://63094384 (REGRESSION: (r261413): [ Guard-Malloc ] webgl/2.0.y/conformance2/textures/misc/tex-unpack-params.html is crashing consistently with - libGLImage.dylib: void glgConvertTo_32<GLGConverter_RGB8_ARGB8, (GLGMemory)1>)
+[ BigSur+ ] webgl/2.0.y/conformance2/textures/misc/tex-unpack-params.html [ Skip ]
 
 # <rdar://problem/63399079> [ Debug ] imported/w3c/web-platform-tests/xhr/access-control-basic-post-success-no-content-type.htm is a flaky failure
 [ BigSur+ ] imported/w3c/web-platform-tests/xhr/access-control-basic-post-success-no-content-type.htm [ Pass Failure ]
@@ -1902,15 +1900,6 @@ webkit.org/b/227891 http/tests/appcache/fail-on-update.html [ Pass Timeout DumpJ
 # Remove this once <rdar://problem/66734187> hits the bots
 [ BigSur+ ] fast/text/locale-shaping.html [ Pass ImageOnlyFailure ]
 
-# rdar://65641563 ([WebGL2] vector-dynamic-indexing is failing a subtest on iOS (214393))
-[ arm64 ] webgl/2.0.0/conformance2/glsl3/vector-dynamic-indexing.html [ Failure ]
-
-# rdar://64535650 (BlitFramebuffer sRGB webgl tests crashing/failing)
-[ arm64 ] webgl/2.0.0/conformance2/rendering/blitframebuffer-filter-srgb.html [ Failure ]
-
-# rdar://65641438 ([WebGL2] tex-srgb-mipmap test fails on macOS Intel + iOS (but passes on macOS Apple Silicon) (214392))
-[ arm64 ] webgl/2.0.0/conformance2/textures/misc/tex-srgb-mipmap.html [ Failure ]
-
 # rdar://66660924 ([ASi Layout Tests] 6 WPT css-backgrounds tests consistently failing)
 [ arm64 ] imported/w3c/web-platform-tests/css/css-backgrounds/background-size/background-size-contain.xht [ ImageOnlyFailure ]
 [ arm64 ] imported/w3c/web-platform-tests/css/css-backgrounds/background-size/background-size-cover.xht [ ImageOnlyFailure ]
@@ -1942,8 +1931,7 @@ imported/w3c/web-platform-tests/css/filter-effects/css-filters-animation-saturat
 # rdar://66861801 ([AS Layout Tests] REGRESSION (r265487): svg/W3C-I18N/tspan-direction-rtl.svg is a constant failure)
 [ arm64 ] svg/W3C-I18N/tspan-direction-rtl.svg [ Failure ]
 
-webkit.org/b/223002 [ BigSur+ arm64 ] webgl/1.0.3/conformance/textures/texture-copying-feedback-loops.html [ Skip ]
-webkit.org/b/223002 [ BigSur+ arm64 ] webgl/2.0.0/conformance/textures/misc/texture-copying-feedback-loops.html [ Skip ]
+webkit.org/b/223002 [ BigSur+ arm64 ] webgl/2.0.y/conformance/textures/misc/texture-copying-feedback-loops.html [ Skip ]
 
 webkit.org/b/215506 imported/w3c/web-platform-tests/html/webappapis/scripting/processing-model-2/unhandled-promise-rejections/promise-rejection-events-onerror.html [ Pass Failure ]
 
@@ -1954,15 +1942,15 @@ webkit.org/b/215515 imported/w3c/web-platform-tests/user-timing/measure_navigati
 
 webkit.org/b/215723 fast/repaint/list-item-equal-style-change-no-repaint.html [ Pass Failure ]
 
-webkit.org/b/189672 [ Release ] webgl/2.0.0/conformance2/textures/canvas/tex-2d-rg32f-rg-float.html [ Pass Failure ]
+webkit.org/b/189672 [ Release ] webgl/2.0.y/conformance2/textures/canvas/tex-2d-rg32f-rg-float.html [ Pass Failure ]
 
 webkit.org/b/191627 imported/w3c/web-platform-tests/css/css-grid/alignment/grid-self-baseline-not-applied-if-sizing-cyclic-dependency-001.html [ Pass ]
 
 webkit.org/b/215814 [ Debug ] inspector/console/queryInstances.html [ Pass Failure ]
 
-webkit.org/b/215817 [ Release ] webgl/2.0.0/conformance2/textures/canvas_sub_rectangle/tex-2d-rgb32f-rgb-float.html [ Pass Failure ]
+webkit.org/b/215817 [ Release ] webgl/2.0.y/conformance2/textures/canvas_sub_rectangle/tex-2d-rgb32f-rgb-float.html [ Pass Failure ]
 
-webkit.org/b/219448 [ Debug ] webgl/2.0.0/conformance/rendering/multisample-corruption.html [ Skip ]
+webkit.org/b/219448 [ Debug ] webgl/2.0.y/conformance/rendering/multisample-corruption.html [ Skip ]
 
 # <rdar://problem/60780398> REGRESSION: (258729?) imported/w3c/web-platform-tests/websockets/opening-handshake/003.html is failing.
 [ BigSur+ ] imported/w3c/web-platform-tests/websockets/opening-handshake/003.html [ Failure ]
@@ -2101,8 +2089,6 @@ webrtc/video-stats.html [ Pass Failure ]
 
 webkit.org/b/223043 [ BigSur ] webrtc/multi-audio.html [ Pass Failure ]
 
-webkit.org/b/223259 [ arm64 ] webgl/2.0.0/conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
-
 webkit.org/b/223271 [ Debug ] imported/w3c/web-platform-tests/xhr/event-upload-progress.any.worker.html [ Pass Failure ]
 
 webkit.org/b/221833 fast/text/image-alt-text-bidi-2.html [ ImageOnlyFailure ]
@@ -2118,21 +2104,20 @@ webkit.org/b/223761 media/modern-media-controls/macos-fullscreen-media-controls/
 webkit.org/b/223759 [ BigSur Debug ] http/tests/security/webaudio-render-remote-audio-blocked-no-crossorigin-redirect.html [ Pass Timeout ]
 
 webkit.org/b/222239 fast/canvas/webgl/webgl2-texture-upload-enums.html [ Pass Failure ]
-webkit.org/b/222239 webgl/2.0.0/conformance2/extensions/promoted-extensions-in-shaders.html [ Pass Failure ]
-webkit.org/b/222239 webgl/2.0.0/conformance2/rendering/fs-color-type-mismatch-color-buffer-type.html [ Pass Failure ]
-webkit.org/b/222239 webgl/2.0.0/conformance/extensions/webgl-draw-buffers.html [ Skip ]
-webkit.org/b/222239 webgl/2.0.0/conformance2/textures/misc/texel-fetch-undefined.html [ Skip ]
+webkit.org/b/222239 webgl/2.0.y/conformance2/extensions/promoted-extensions-in-shaders.html [ Pass Failure ]
+webkit.org/b/222239 webgl/2.0.y/conformance2/rendering/fs-color-type-mismatch-color-buffer-type.html [ Pass Failure ]
+webkit.org/b/222239 webgl/2.0.y/conformance2/textures/misc/texel-fetch-undefined.html [ Skip ]
 webkit.org/b/222239 webgl/conformance/extensions/khr-parallel-shader-compile.html [ Skip ]
 
-webkit.org/b/222239 webgl/2.0.0/conformance/glsl/bugs/compound-assignment-type-combination.html [ Pass Failure Slow ]
-webkit.org/b/222239 webgl/2.0.0/conformance2/glsl3/compound-assignment-type-combination.html [ Pass Failure Slow ]
+webkit.org/b/222239 webgl/2.0.y/conformance/glsl/bugs/compound-assignment-type-combination.html [ Pass Failure Slow ]
+webkit.org/b/222239 webgl/2.0.y/conformance2/glsl3/compound-assignment-type-combination.html [ Pass Failure Slow ]
 
 # Note: Even when fixed, this bug needs to be marked as Slow in debug builds.
-webkit.org/b/222239 webgl/2.0.0/conformance2/state/gl-object-get-calls.html [ Pass Failure Slow ]
+webkit.org/b/222239 webgl/2.0.y/conformance2/state/gl-object-get-calls.html [ Pass Failure Slow ]
 
 # These ones only seem to fail on the bots. Could be older OSes?
-webkit.org/b/222239 webgl/1.0.3/conformance/uniforms/uniform-default-values.html [ Pass Failure ]
-webkit.org/b/222239 webgl/2.0.0/conformance/uniforms/uniform-default-values.html [ Pass Failure ]
+webkit.org/b/222239 webgl/1.0.x/conformance/uniforms/uniform-default-values.html [ Pass Failure ]
+webkit.org/b/222239 webgl/2.0.y/conformance/uniforms/uniform-default-values.html [ Pass Failure ]
 
 webkit.org/b/222844 fast/canvas/webgl/match-page-color-space.html [ Pass ImageOnlyFailure ]
 webkit.org/b/222844 imported/blink/compositing/draws-content/webgl-simple-background.html [ Pass ImageOnlyFailure ]
@@ -2143,12 +2128,12 @@ fast/canvas/webgl/webgl-compressed-texture-astc.html [ Skip ]
 # This fails on Catalina, but not Big Sur.
 [ Catalina Mojave ] inspector/canvas/updateShader-webgl.html [ Skip ]
 
-webkit.org/b/224016 [ Catalina ] webgl/2.0.0/conformance2/buffers/one-large-uniform-buffer.html [ Failure ]
-webkit.org/b/224016 [ Catalina ] webgl/2.0.0/conformance2/buffers/uniform-buffers.html [ Failure ]
-webkit.org/b/224016 [ Catalina ] webgl/1.0.3/conformance/ogles/GL/all/all_001_to_004.html [ Skip ]
-webkit.org/b/224016 [ Catalina ] webgl/1.0.3/conformance/ogles/GL/any/any_001_to_004.html [ Skip ]
-webkit.org/b/224016 [ Catalina ] webgl/2.0.0/conformance/ogles/GL/all/all_001_to_004.html [ Skip ]
-webkit.org/b/224016 [ Catalina ] webgl/2.0.0/conformance/ogles/GL/any/any_001_to_004.html [ Skip ]
+webkit.org/b/224016 [ Catalina ] webgl/2.0.y/conformance2/buffers/one-large-uniform-buffer.html [ Failure ]
+webkit.org/b/224016 [ Catalina ] webgl/2.0.y/conformance2/buffers/uniform-buffers.html [ Failure ]
+webkit.org/b/224016 [ Catalina ] webgl/1.0.x/conformance/ogles/GL/all/all_001_to_004.html [ Skip ]
+webkit.org/b/224016 [ Catalina ] webgl/1.0.x/conformance/ogles/GL/any/any_001_to_004.html [ Skip ]
+webkit.org/b/224016 [ Catalina ] webgl/2.0.y/conformance/ogles/GL/all/all_001_to_004.html [ Skip ]
+webkit.org/b/224016 [ Catalina ] webgl/2.0.y/conformance/ogles/GL/any/any_001_to_004.html [ Skip ]
 
 webkit.org/b/223820 inspector/debugger/csp-exceptions.html [ Pass Failure Timeout ]
 
@@ -2166,9 +2151,9 @@ webkit.org/b/224212 [ arm64 ] compositing/background-color/no-composited-backgro
 
 webkit.org/b/215397 media/modern-media-controls/media-controller/media-controller-fullscreen-ltr.html [ Pass Failure ]
 
-webkit.org/b/224396 webgl/1.0.3/conformance/glsl/constructors/glsl-construct-ivec2.html [ Slow ]
+webkit.org/b/224396 webgl/1.0.x/conformance/glsl/constructors/glsl-construct-ivec2.html [ Slow ]
 
-webkit.org/b/229472 [ BigSur Debug ] webgl/1.0.3/conformance/glsl/constructors/glsl-construct-bvec2.html [ Slow ]
+webkit.org/b/229472 [ BigSur Debug ] webgl/1.0.x/conformance/glsl/constructors/glsl-construct-bvec2.html [ Slow ]
 
 webkit.org/b/224631 [ BigSur ] imported/w3c/web-platform-tests/css/css-fonts/font-feature-settings-tibetan.html [ Pass ImageOnlyFailure ]
 
@@ -2181,7 +2166,7 @@ webkit.org/b/225421 imported/w3c/web-platform-tests/webaudio/the-audio-api/the-c
 
 webkit.org/b/225484 imported/w3c/web-platform-tests/css/css-animations/translation-animation-subpixel-offset.html [ Pass ImageOnlyFailure ]
 
-webkit.org/b/225425 [ Debug ] webgl/1.0.3/conformance/glsl/misc/expression-list-in-declarator-initializer.html [ Pass Timeout ]
+webkit.org/b/225425 [ Debug ] webgl/1.0.x/conformance/glsl/misc/expression-list-in-declarator-initializer.html [ Pass Timeout ]
 
 # This test is a flaky timeout on Apple Silicon and a flaky failure on other platforms.
 # See https://webkit.org/b/120081 for why this is one expectation.
@@ -2337,7 +2322,7 @@ webkit.org/b/231463 fast/css/accent-color/range.html [ ImageOnlyFailure ]
 
 webkit.org/b/229521 pointer-lock/lock-already-locked.html [ Pass Failure ]
 
-webkit.org/b/189672 [ Catalina ] webgl/2.0.0/conformance2/rendering/uniform-block-buffer-size.html  [ Pass Failure ]
+webkit.org/b/189672 [ Catalina ] webgl/2.0.y/conformance2/rendering/uniform-block-buffer-size.html  [ Pass Failure ]
 
 webkit.org/b/229588 http/tests/media/user-gesture-preserved-across-xmlhttprequest.html [ Pass Crash Failure Timeout ]
 

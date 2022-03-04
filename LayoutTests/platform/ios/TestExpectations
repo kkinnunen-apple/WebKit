@@ -2521,11 +2521,11 @@ fast/canvas/webgl/webgl-draw-buffers.html [ Failure ]
 fast/canvas/webgl/webgl2-texture-upload-enums.html [ Failure ]
 fast/canvas/webgl/read-pixels-test.html [ Skip ]
 fast/canvas/webgl/webglcontextchangedevent.html [ Skip ]
-webgl/1.0.3/conformance/context/context-creation-and-destruction.html [ Skip ]
-webgl/1.0.3/conformance/ogles/GL/sin/sin_001_to_006.html [ Skip ]
-webgl/1.0.3/conformance/reading/read-pixels-test.html [ Skip ]
-webgl/1.0.3/conformance/rendering/multisample-corruption.html [ Skip ]
-webgl/1.0.3/conformance/uniforms/out-of-bounds-uniform-array-access.html [ Skip ]
+webgl/1.0.x/conformance/context/context-creation-and-destruction.html [ Skip ]
+webgl/1.0.x/conformance/ogles/GL/sin/sin_001_to_006.html [ Skip ]
+webgl/1.0.x/conformance/reading/read-pixels-test.html [ Skip ]
+webgl/1.0.x/conformance/rendering/multisample-corruption.html [ Skip ]
+webgl/1.0.x/conformance/uniforms/out-of-bounds-uniform-array-access.html [ Skip ]
 
 fast/canvas/webgl/texImage2D-mse-flipY-false.html [ Skip ]
 fast/canvas/webgl/texImage2D-mse-flipY-true.html [ Skip ]
@@ -2612,8 +2612,8 @@ imported/w3c/web-platform-tests/fetch/api/basic/request-headers.any.html [ Failu
 imported/w3c/web-platform-tests/fetch/api/basic/request-headers.any.worker.html [ Failure ]
 
 # <rdar://problem/34209038>
-webgl/1.0.3/conformance/ogles/GL/log/log_001_to_008.html [ Skip ]
-webgl/1.0.3/conformance/ogles/GL/log2/log2_001_to_008.html [ Skip ]
+webgl/1.0.x/conformance/ogles/GL/log/log_001_to_008.html [ Skip ]
+webgl/1.0.x/conformance/ogles/GL/log2/log2_001_to_008.html [ Skip ]
 
 # <rdar://problem/30517283>
 security/block-test.html
@@ -2626,10 +2626,10 @@ svg/W3C-SVG-1.1/text-intro-03-b.svg [ Failure ]
 svg/W3C-SVG-1.1/text-intro-04-t.svg [ Failure ]
 svg/custom/acid3-test-77.html [ Failure ]
 
-# <rdar://problem/33381269> REGRESSION: Multiple Layout test from webgl/1.0.3/conformance are timing out.
-webgl/1.0.3/conformance/attribs/gl-vertex-attrib-zero-issues.html [ Skip  ]
-webgl/1.0.3/conformance/ogles/GL/acos/acos_001_to_006.html [ Skip  ]
-webgl/1.0.3/conformance/ogles/GL/asin/asin_001_to_006.html [ Skip  ]
+# <rdar://problem/33381269> REGRESSION: Multiple Layout test from webgl/1.0.x/conformance are timing out.
+webgl/1.0.x/conformance/attribs/gl-vertex-attrib-zero-issues.html [ Skip  ]
+webgl/1.0.x/conformance/ogles/GL/acos/acos_001_to_006.html [ Skip  ]
+webgl/1.0.x/conformance/ogles/GL/asin/asin_001_to_006.html [ Skip  ]
 
 fast/text/font-variations-feature-detection.html [ ImageOnlyFailure ]
 fast/text/text-indent-inside-float.html [ ImageOnlyFailure ]
@@ -2820,7 +2820,7 @@ webkit.org/b/186714 fast/forms/datalist/datalist-textinput-keydown.html [ Skip ]
 webkit.org/b/190613 fast/forms/datalist/update-range-with-datalist.html [ Skip ]
 
 # We are only accepting GLSL3 for macOS. 
-webkit.org/b/187982 webgl/2.0.0/conformance2/glsl3 [ Skip ]
+webkit.org/b/187982 webgl/2.0.y/conformance2/glsl3 [ Skip ]
 
 # Audio session does not have a "none" category on iOS [ Skip ]
 webkit.org/b/188285 platform/mac/media/audio-session-category-video-paused.html [ Skip ]
@@ -2914,7 +2914,7 @@ webkit.org/b/197473 imported/w3c/web-platform-tests/resource-timing/resource-tim
 # These tests depend on the implementation of "modern compatibility mode" in WebKitAdditions.
 platform/ipad/fast/css/webkit-overflow-scrolling-parsing-modern-compatibility-mode.html [ Skip ]
 
-webkit.org/b/197778 [ Debug ] webgl/2.0.0/conformance2/attribs/gl-vertexattribipointer.html [ Slow ]
+webkit.org/b/197778 [ Debug ] webgl/2.0.y/conformance2/attribs/gl-vertexattribipointer.html [ Slow ]
 
 # FIXME: Unskip the following test once we have the fix for <rdar://problem/48322899>.
 editing/selection/ios/select-non-editable-text-using-keyboard.html [ Skip ]
@@ -3060,13 +3060,13 @@ webkit.org/b/207858 webgl/webgl-box-shadow.html [ Pass Failure ImageOnlyFailure 
 webkit.org/b/207858 fast/canvas/webgl/uninitialized-test.html [ Pass Failure ]
 webkit.org/b/207858 fast/canvas/webgl/oes-texture-float-linear.html [ Pass Failure ]
 webkit.org/b/207858 fast/canvas/webgl/tex-image-and-sub-image-2d-with-video.html [ Pass Failure ]
-webkit.org/b/207858 webgl/1.0.3/conformance/context/context-lost-restored.html [ Pass Failure ]
-webkit.org/b/207858 webgl/1.0.3/conformance/glsl/misc/shader-struct-scope.html [ Pass Failure ]
-webkit.org/b/207858 webgl/1.0.3/conformance/misc/uninitialized-test.html [ Pass Failure ]
+webkit.org/b/207858 webgl/1.0.x/conformance/context/context-lost-restored.html [ Pass Failure ]
+webkit.org/b/207858 webgl/1.0.x/conformance/glsl/misc/shader-struct-scope.html [ Pass Failure ]
+webkit.org/b/207858 webgl/1.0.x/conformance/misc/uninitialized-test.html [ Pass Failure ]
 
 # rdar://63506750 Now that float/half-float is supported, the video tests don't instantly fail.
-webgl/1.0.3/conformance/extensions/oes-texture-float-with-video.html [ Skip ]
-webgl/1.0.3/conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
+webgl/1.0.x/conformance/extensions/oes-texture-float-with-video.html [ Skip ]
+webgl/1.0.x/conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
 
 # <rdar://problem/59635486> REGRESSION: http/wpt/webauthn/public-key-credential-get-success-local.https.html is crashing
 http/wpt/webauthn/public-key-credential-get-success-local.https.html [ Skip ]
@@ -3166,9 +3166,9 @@ imported/w3c/web-platform-tests/dom/ranges/Range-surroundContents.html [ Slow ]
 # <rdar://problem/64546452> [ iOS ] mathml/opentype/munderover-stretch-width.html is flaky failing.
 mathml/opentype/munderover-stretch-width.html [ Pass Failure ]
 
-# # <rdar://problem/64701357> REGRESSION: [ iOS wk2 ] webgl/1.0.3/conformance/glsl/functions/glsl-function-sign.html and webgl/1.0.3/conformance/glsl/misc/glsl-function-nodes.html are failing consistently.
-# webgl/1.0.3/conformance/glsl/functions/glsl-function-sign.html [ Failure ]
-# webgl/1.0.3/conformance/glsl/misc/glsl-function-nodes.html [ Failure ]
+# # <rdar://problem/64701357> REGRESSION: [ iOS wk2 ] webgl/1.0.x/conformance/glsl/functions/glsl-function-sign.html and webgl/1.0.x/conformance/glsl/misc/glsl-function-nodes.html are failing consistently.
+# webgl/1.0.x/conformance/glsl/functions/glsl-function-sign.html [ Failure ]
+# webgl/1.0.x/conformance/glsl/misc/glsl-function-nodes.html [ Failure ]
 
 # <rdar://problem/64816264> [ iOS wk2 ] streams/pipe-to.html is flaky failing.
 streams/pipe-to.html [ Pass Failure ]

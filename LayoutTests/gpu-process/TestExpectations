@@ -354,8 +354,8 @@ webkit.org/b/236930 imported/w3c/web-platform-tests/webstorage/storage_session_w
 # arm64 only
 webkit.org/b/236928 fast/canvas/webgl/gl-teximage.html [ Failure Pass ]
 webkit.org/b/236928 fast/canvas/webgl/premultiplyalpha-test.html [ Failure Pass ]
-webkit.org/b/236928 webgl/1.0.3/conformance/context/premultiplyalpha-test.html [ Failure Pass ]
-webkit.org/b/236928 webgl/1.0.3/conformance/textures/gl-teximage.html [ Failure Pass ]
+webkit.org/b/236928 webgl/1.0.x/conformance/context/premultiplyalpha-test.html [ Failure Pass ]
+webkit.org/b/236928 webgl/1.0.x/conformance/textures/gl-teximage.html [ Failure Pass ]
 webkit.org/b/236928 fast/images/exif-orientation-svg-feimage.html [ ImageOnlyFailure Pass ]
 webkit.org/b/236928 http/tests/performance/paint-timing/performance-paint-timing-fcp-after-visually-non-empty-for-num-chars.html [ Pass Failure ]
 webkit.org/b/236928 imported/w3c/web-platform-tests/xhr/event-timeout-order.any.worker.html [ Failure Pass ]
@@ -364,7 +364,7 @@ webkit.org/b/236928 imported/w3c/web-platform-tests/xhr/event-timeout-order.any.
 # Progressions with GPU Process (when turned on, need to find other citations of these tests and update expectations)
 webkit.org/b/190032 animations/stop-animation-on-suspend.html [ Pass ]
 imported/w3c/web-platform-tests/html/rendering/replaced-elements/embedded-content/change-src-while-not-displayed.html [ Pass ]
-webgl/1.0.3/conformance/state/gl-object-get-calls.html [ Pass ]
+webgl/1.0.x/conformance/state/gl-object-get-calls.html [ Pass ]
 svg/clip-path/clip-path-line-use-before-defined.svg [ Pass ]
 webkit.org/b/217263 imported/w3c/web-platform-tests/mediacapture-record/MediaRecorder-no-sink.https.html [ Pass ]
 webkit.org/b/217263 imported/w3c/web-platform-tests/mediacapture-record/MediaRecorder-peerconnection.https.html [ Pass ]

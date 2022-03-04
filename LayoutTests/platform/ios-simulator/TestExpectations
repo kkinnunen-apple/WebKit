@@ -93,9 +93,9 @@ webkit.org/b/170293 fast/css-grid-layout/grid-align-baseline-vertical.html [ Fai
 webkit.org/b/170293 fast/css-grid-layout/grid-self-baseline-two-dimensional.html [ Failure ]
 
 # A sub-test in this test is extremely flaky and fails most of the time, messing up partial-failure expectations
-webkit.org/b/189686 webgl/2.0.0/conformance2/renderbuffers/multisampled-renderbuffer-initialization.html [ Skip ]
+webkit.org/b/189686 webgl/2.0.y/conformance2/renderbuffers/multisampled-renderbuffer-initialization.html [ Skip ]
 # Crashes
-webkit.org/b/189686 webgl/2.0.0/conformance2/buffers/one-large-uniform-buffer.html [ Skip ]
+webkit.org/b/189686 webgl/2.0.y/conformance2/buffers/one-large-uniform-buffer.html [ Skip ]
 
 # This test takes a long time to execute in the simulator, since it creates a huge (empty) buffer
 # to draw lots of nothing.
@@ -116,8 +116,6 @@ imported/w3c/web-platform-tests/wasm [ Skip ]
 webkit.org/b/201509 imported/w3c/web-platform-tests/html/semantics/embedded-content/the-video-element/video_timeupdate_on_seek.html [ Failure ]
 
 # ANGLE Metal backend failing tests with shared texture memory on the simulator
-webkit.org/b/222685 webgl/1.0.3/conformance/textures/tex-image-and-sub-image-2d-with-array-buffer-view.html [ Pass Failure ]
-webkit.org/b/222685 webgl/1.0.3/conformance/textures/texture-mips.html [ Pass Failure ]
 
 # webkit.org/b/223724 These two tests are flakey timeouts on iOS Debug:
 http/tests/security/webaudio-render-remote-audio-allowed-crossorigin.html [ Pass Timeout ]
@@ -127,3 +125,7 @@ webkit.org/b/223949 crypto/crypto-random-values-oom.html [ Pass Timeout ]
 
 # This test relies on ARQL APIs which are not available in the Simulator
 model-element/model-element-ready.html [ Skip ]
+
+webkit.org/b/237429	webgl/2.0.y/deqp/functional/gles3/shaderpackingfunction.html [ Failure ]
+webkit.org/b/237428 webgl/2.0.y/deqp/functional/gles3/integerstatequery.html [ Failure ]
+webkit.org/b/237427 webgl/2.0.y/deqp/functional/gles3/negativetextureapi.html [ Failure ]

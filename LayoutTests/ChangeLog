@@ -1,3 +1,58 @@
+2022-03-03  Kimmo Kinnunen  <kkinnunen@apple.com>
+
+        Switch WebGL test suites from 1.0.3, 2.0.0 to 1.0.x, 2.0.y
+        https://bugs.webkit.org/show_bug.cgi?id=223934
+        <rdar://problem/76269126>
+
+        Reviewed by Kenneth Russell.
+
+        Switch using LayoutTests/webgl/{1.0.x,2.0.y} instead
+        of {1.0.3,2.0.0}.
+
+        Some tests were removed already from 1.0.3 and 2.0.0, but
+        the way the old directories were updated, they were left as
+        stale files before.
+        Some tests moved during conformance test suite 1.0.4 development,
+        for example some of the texture tests moved to misc/.
+
+        Noteworthy removes in TestExpectations:
+        # http://webkit.org/b/214393
+        # rdar://65641563 ([WebGL2] vector-dynamic-indexing is failing a subtest on iOS (214393))
+        [ arm64 ] webgl/2.0.y/conformance2/glsl3/vector-dynamic-indexing.html [ Failure ]
+        - Incorrectly marked arm64 as opposed to platform/ios
+        - Bug was in GL, but currently iOS is using Metal
+        - Bug is fixed in GL
+
+        # rdar://64535650 (BlitFramebuffer sRGB webgl tests crashing/failing)
+        [ arm64 ] webgl/2.0.y/conformance2/rendering/blitframebuffer-filter-srgb.html [ Failure ]
+        - Bug was in GL, currently iOS / macOS AS uses Metal
+        - Bug is fixed in GL
+
+        # rdar://65641438 ([WebGL2] tex-srgb-mipmap test fails on macOS Intel + iOS (but passes on macOS Apple Silicon) (214392))
+        [ arm64 ] webgl/2.0.y/conformance2/textures/misc/tex-srgb-mipmap.html [ Failure ]
+        - Test was buggy in 2.0.0 but is now fixed in 2.0.y
+
+        webkit.org/b/223259 [ arm64 ] webgl/2.0.y/conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
+        - Bug is in GL on AS/iOS, but currently Metal is being used on these platforms.
+
+        * TestExpectations:
+        * gpu-process/TestExpectations:
+        * platform/glib/TestExpectations:
+        * platform/gtk-wayland/TestExpectations:
+        * platform/gtk/TestExpectations:
+        * platform/ios-simulator/TestExpectations:
+        * platform/ios-wk2/TestExpectations:
+        * platform/ios/TestExpectations:
+        * platform/mac-bigsur-wk2/TestExpectations:
+        * platform/mac-catalina/TestExpectations:
+        * platform/mac-wk1/TestExpectations:
+        * platform/mac-wk2/TestExpectations:
+        * platform/mac/TestExpectations:
+        * platform/wincairo/TestExpectations:
+        * platform/wk2/TestExpectations:
+        * platform/wpe/TestExpectations:
+        * webgl/TestExpectations:
+
 2022-03-03  Martin Robinson  <mrobinson@webkit.org>
 
         Update WPT css-scroll-snap tests
