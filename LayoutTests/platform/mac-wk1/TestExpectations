@@ -945,11 +945,11 @@ http/tests/websocket/tests/hybi/network-process-crash-error.html [ Skip ]
 # auto-sizing produces inconsistent image results
 css3/viewport-percentage-lengths/vh-auto-size.html [ Skip ]
 
-webkit.org/b/170877 [ Debug ] webgl/1.0.3/conformance/glsl/misc/shader-with-reserved-words.html [ Pass Timeout ]
+webkit.org/b/170877 [ Debug ] webgl/1.0.x/conformance/glsl/misc/shader-with-reserved-words.html [ Pass Timeout ]
 
-webkit.org/b/231514 [ BigSur+ ] webgl/1.0.3/conformance/uniforms/uniform-default-values.html [ Pass Timeout ]
+webkit.org/b/231514 [ BigSur+ ] webgl/1.0.x/conformance/uniforms/uniform-default-values.html [ Pass Timeout ]
 
-webkit.org/b/231541 [ BigSur+ Debug ] webgl/1.0.3/conformance/glsl/bugs/long-expressions-should-not-crash.html [ Pass Timeout ]
+webkit.org/b/231541 [ BigSur+ Debug ] webgl/1.0.x/conformance/glsl/bugs/long-expressions-should-not-crash.html [ Pass Timeout ]
 
 # This was a WK2-only fix.
 http/tests/css/filters-on-iframes.html [ Skip ]
@@ -1134,7 +1134,7 @@ imported/w3c/web-platform-tests/pointerevents/compat/pointerevent_compat-mouse-e
 
 webkit.org/b/198459 [ Debug ] inspector/canvas/recording-webgl-full.html [ Slow ]
 
-webkit.org/b/219449 [ Debug ] webgl/2.0.0/conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Skip ]
+webkit.org/b/219449 [ Debug ] webgl/2.0.y/conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Skip ]
 
 webkit.org/b/196508 compositing/repaint/scroller-with-foreground-layer-repaints.html [ Pass Failure ]
 
@@ -1230,12 +1230,12 @@ webkit.org/b/208384 imported/w3c/web-platform-tests/requestidlecallback/callback
 
 webkit.org/b/208449 [ Debug ] mathml/presentation/attributes-accent-accentunder-dynamic.html [ Pass ImageOnlyFailure ]
 
-webkit.org/b/209479 [ Debug ] webgl/2.0.0/conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Pass Timeout ]
+webkit.org/b/209479 [ Debug ] webgl/2.0.y/conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Pass Timeout ]
 
-webkit.org/b/209480 [ Debug ] webgl/2.0.0/conformance/attribs/gl-vertexattribpointer.html [ Pass Timeout ]
+webkit.org/b/209480 [ Debug ] webgl/2.0.y/conformance/attribs/gl-vertexattribpointer.html [ Pass Timeout ]
 
-webkit.org/b/229580 [ Debug ] webgl/2.0.0/conformance/textures/misc/texture-upload-size.html [ Pass Crash ]
-webkit.org/b/229580 [ Debug ] webgl/2.0.0/conformance2/textures/misc/tex-srgb-mipmap.html [ Pass Crash ]
+webkit.org/b/229580 [ Debug ] webgl/2.0.y/conformance/textures/misc/texture-upload-size.html [ Pass Crash ]
+webkit.org/b/229580 [ Debug ] webgl/2.0.y/conformance2/textures/misc/tex-srgb-mipmap.html [ Pass Crash ]
 
 webkit.org/b/208825 [ Debug ] inspector/script-profiler/event-type-Microtask.html [ Pass Failure ]
 
@@ -1253,7 +1253,7 @@ webkit.org/b/210079 [ Debug ] inspector/debugger/evaluateOnCallFrame-errors.html
 
 webkit.org/b/230072 [ Release ] inspector/dom/shadow-and-non-shadow-children.html [ Pass Failure ]
 
-webkit.org/b/210198 webgl/2.0.0/conformance2/attribs/gl-vertexattribipointer.html [ Slow ]
+webkit.org/b/210198 webgl/2.0.y/conformance2/attribs/gl-vertexattribipointer.html [ Slow ]
 
 webkit.org/b/208477 accessibility/mac/text-marker-for-index.html [ Skip ]
 accessibility/mac/textmarker-range-for-range.html [ Skip ]
@@ -1365,7 +1365,7 @@ webkit.org/b/206178 [ Mojave ] editing/spelling/spellcheck-attribute.html [ Pass
 webkit.org/b/190350 [ Mojave ] storage/indexeddb/database-odd-names.html [ Failure ]
 [ Mojave ] editing/mac/input/firstrectforcharacterrange-styled.html [ Failure ]
 
-webkit.org/b/205412 [ Mojave Debug ] webgl/1.0.3/conformance/rendering/many-draw-calls.html [ Timeout ]
+webkit.org/b/205412 [ Mojave Debug ] webgl/1.0.x/conformance/rendering/many-draw-calls.html [ Timeout ]
 
 webkit.org/b/212851 [ Mojave Release ] js/dom/unhandled-promise-rejection-console-no-report.html [ Pass Failure ]
 
@@ -1480,7 +1480,6 @@ fast/layoutformattingcontext/wbr-simple.html [ ImageOnlyFailure ]
 webkit.org/b/219498 imported/w3c/web-platform-tests/css/css-scroll-snap/scroll-target-padding-003.html [ Pass ImageOnlyFailure ]
 
 webkit.org/b/217761 [ Debug ] webgl/conformance/extensions/s3tc-and-rgtc.html [ Skip ]
-webkit.org/b/217761 [ Debug ] webgl/2.0.0/conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Skip ]
 
 webkit.org/b/221009 fast/harness/render-tree-as-text-options.html [ Pass Failure ]
 
@@ -1695,32 +1694,31 @@ http/tests/webshare/ [ Skip ]
 webkit.org/b/230729 [ Catalina Release ] imported/w3c/web-platform-tests/html/browsers/origin/cross-origin-objects/cross-origin-objects.html [ Pass Failure ]
 
 #WebGL Tests Timing Out on Catalina Debug WK1 EWS webkit.org/b/230774
-[ Catalina Debug ] webgl/1.0.3/conformance/canvas/drawingbuffer-static-canvas-test.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/2.0.0/conformance/ogles/GL/inversesqrt/inversesqrt_001_to_006.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/1.0.3/conformance/ogles/GL/notEqual/notEqual_009_to_012.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/2.0.0/conformance/ogles/GL/step/step_001_to_006.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/1.0.3/conformance/ogles/GL/exp/exp_001_to_008.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/1.0.3/conformance/ogles/GL/struct/struct_049_to_056.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/2.0.0/conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/1.0.3/conformance/canvas/viewport-unchanged-upon-resize.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/2.0.0/conformance2/textures/image_bitmap_from_blob/tex-2d-rgba4-rgba-unsigned_short_4_4_4_4.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/2.0.0/conformance2/textures/canvas/tex-2d-rg8-rg-unsigned_byte.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/1.0.3/conformance/textures/tex-image-and-sub-image-2d-with-canvas-rgba5551.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/2.0.0/conformance2/textures/image_bitmap_from_image_data/tex-2d-rgb5_a1-rgba-unsigned_byte.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/1.0.3/conformance/uniforms/out-of-bounds-uniform-array-access.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/1.0.x/conformance/canvas/drawingbuffer-static-canvas-test.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/2.0.y/conformance/ogles/GL/inversesqrt/inversesqrt_001_to_006.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/1.0.x/conformance/ogles/GL/notEqual/notEqual_009_to_012.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/2.0.y/conformance/ogles/GL/step/step_001_to_006.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/1.0.x/conformance/ogles/GL/exp/exp_001_to_008.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/1.0.x/conformance/ogles/GL/struct/struct_049_to_056.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/2.0.y/conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/1.0.x/conformance/canvas/viewport-unchanged-upon-resize.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/2.0.y/conformance2/textures/image_bitmap_from_blob/tex-2d-rgba4-rgba-unsigned_short_4_4_4_4.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/2.0.y/conformance2/textures/canvas/tex-2d-rg8-rg-unsigned_byte.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/2.0.y/conformance2/textures/image_bitmap_from_image_data/tex-2d-rgb5_a1-rgba-unsigned_byte.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/1.0.x/conformance/uniforms/out-of-bounds-uniform-array-access.html [ Pass Timeout ]
 [ Catalina Debug ] webgl/max-active-contexts-gc.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/1.0.3/conformance/extensions/ext-sRGB.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/2.0.0/conformance/glsl/misc/shader-with-undefined-preprocessor-symbol.frag.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/2.0.0/conformance2/misc/expando-loss-2.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/2.0.0/conformance/ogles/GL/gl_FragCoord/gl_FragCoord_001_to_003.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/2.0.0/conformance2/textures/image_data/tex-2d-r11f_g11f_b10f-rgb-half_float.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/2.0.0/conformance/extensions/get-extension.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/2.0.0/conformance2/textures/canvas/tex-2d-r11f_g11f_b10f-rgb-half_float.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/1.0.3/conformance/attribs/gl-vertex-attrib-zero-issues.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/1.0.x/conformance/extensions/ext-sRGB.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/2.0.y/conformance/glsl/misc/shader-with-undefined-preprocessor-symbol.frag.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/2.0.y/conformance2/misc/expando-loss-2.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/2.0.y/conformance/ogles/GL/gl_FragCoord/gl_FragCoord_001_to_003.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/2.0.y/conformance2/textures/image_data/tex-2d-r11f_g11f_b10f-rgb-half_float.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/2.0.y/conformance/extensions/get-extension.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/2.0.y/conformance2/textures/canvas/tex-2d-r11f_g11f_b10f-rgb-half_float.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/1.0.x/conformance/attribs/gl-vertex-attrib-zero-issues.html [ Pass Timeout ]
 [ Catalina Debug ] webgl/webgl2-primitive-restart.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/1.0.3/conformance/programs/program-test.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/1.0.x/conformance/programs/program-test.html [ Pass Timeout ]
 [ Catalina Debug ] webgl/pending/conformance/glsl/misc/swizzle-as-lvalue.html [ Pass Timeout ]
-[ Catalina Debug ] webgl/2.0.0/conformance/rendering/draw-elements-out-of-bounds.html [ Pass Timeout ]
+[ Catalina Debug ] webgl/2.0.y/conformance/rendering/draw-elements-out-of-bounds.html [ Pass Timeout ]
 
 webkit.org/b/230777 [ Catalina Debug ] transitions/transition-end-event-destroy-renderer.html [ Pass Crash ]
 
@@ -1731,8 +1729,7 @@ webkit.org/b/230831 [ Catalina Debug ] storage/websql/multiple-transactions-on-d
 webkit.org/b/230833 [ Catalina Debug ] performance-api/performance-observer-order.html [ Pass Crash ]
 
 webkit.org/b/230835 [ Catalina BigSur Debug ] webgl/2.0.y/conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Pass Crash ]
-webkit.org/b/230835 [ Catalina BigSur Debug ] webgl/1.0.3/conformance/extensions/oes-texture-float.html [ Pass Crash ]
-webkit.org/b/230835 [ Catalina BigSur Debug ] webgl/2.0.0/conformance/extensions/ext-blend-minmax.html [ Pass Crash ]
+webkit.org/b/230835 [ Catalina BigSur Debug ] webgl/1.0.x/conformance/extensions/oes-texture-float.html [ Pass Crash ]
 
 webkit.org/b/230842 [ Catalina BigSur Debug ] media/track/audio-track.html [ Pass Crash ]
 

@@ -7,3 +7,7 @@ accessibility/mac/media-query-values-change.html [ Skip ]
 # Skip some canvas tests due to some framework debugging output that interferes.
 imported/w3c/web-platform-tests/html/canvas/element/manual/wide-gamut-canvas/canvas-createImageBitmap-e_srgb.html [ Skip ]
 imported/w3c/web-platform-tests/html/canvas/element/manual/wide-gamut-canvas/canvas-drawImage-e_srgb.html [ Skip ]
+
+webkit.org/b/229957 webgl/1.0.x/conformance/rendering/clipping-wide-points.html [ Failure ]
+webkit.org/b/229955 webgl/2.0.y/conformance2/textures/misc/tex-srgb-mipmap.html [ Failure ]
+webkit.org/b/229956 webgl/1.0.x/conformance/glsl/bugs/compound-assignment-type-combination.html [ Failure ]

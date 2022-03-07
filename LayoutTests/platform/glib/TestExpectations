@@ -1372,13 +1372,9 @@ webkit.org/b/232726 webaudio/AudioBuffer/huge-buffer.html [ Pass Slow ]
 # WebGL-related bugs
 #////////////////////////////////////////////////////////////////////////////////////////
 
-webkit.org/b/211942 webgl/1.0.3/conformance/more/functions/copyTexImage2DBadArgs.html [ Crash ]
-
 webkit.org/b/169917 webgl/many-contexts.html [ Timeout Pass ]
 
 webkit.org/b/211887 [ Debug ] fast/canvas/webgl/tex-sub-image-2d-bad-args.html [ Crash ]
-webkit.org/b/211887 [ Debug ] webgl/1.0.3/conformance/textures/tex-sub-image-2d-bad-args.html [ Crash ]
-webkit.org/b/211887 [ Debug ] webgl/1.0.3/conformance/more/functions/texSubImage2DHTMLBadArgs.html [ Crash ]
 
 webkit.org/b/216071 fast/canvas/webgl/move-canvas-in-document-while-clean.html [ ImageOnlyFailure ]
 
@@ -1398,7 +1394,7 @@ webkit.org/b/223624 webgl/conformance/extensions/khr-parallel-shader-compile.htm
 
 webkit.org/b/210239 fast/canvas/webgl/out-of-bounds-simulated-vertexAttrib0-drawArrays.html [ Slow ]
 
-webkit.org/b/219340 webgl/1.0.3/conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
+webkit.org/b/219340 webgl/1.0.x/conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 
 # Tests related with the WebGL/Metal backend, maybe should be skipped
 webkit.org/b/229050 fast/canvas/webgl/shader-with-comma-op.html [ Failure ]
@@ -1409,14 +1405,12 @@ webkit.org/b/229051 webgl/1.0.x/conformance/misc/invalid-passed-params.html [ Fa
 
 webkit.org/b/229052 webgl/1.0.x/conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
 
-webkit.org/b/169917 webgl/1.0.3/conformance/context/context-lost-restored.html [ Failure ]
-webkit.org/b/169917 webgl/1.0.3/conformance/extensions/oes-texture-half-float.html [ Failure ]
-webkit.org/b/169917 webgl/1.0.3/conformance/extensions/webgl-compressed-texture-s3tc.html [ Failure ]
-webkit.org/b/169917 webgl/1.0.3/conformance/extensions/webgl-compressed-texture-size-limit.html [ Failure ]
-webkit.org/b/169917 webgl/1.0.3/conformance/misc/webgl-specific.html [ Failure ]
-webkit.org/b/169917 webgl/1.0.3/conformance/renderbuffers/framebuffer-object-attachment.html [ Failure ]
-webkit.org/b/169917 webgl/1.0.3/conformance/rendering/point-no-attributes.html [ Failure ]
-webkit.org/b/169917 webgl/1.0.3/conformance/textures/texture-copying-feedback-loops.html [ Failure ]
+webkit.org/b/169917 webgl/1.0.x/conformance/context/context-lost-restored.html [ Failure ]
+webkit.org/b/169917 webgl/1.0.x/conformance/extensions/oes-texture-half-float.html [ Failure ]
+webkit.org/b/169917 webgl/1.0.x/conformance/extensions/webgl-compressed-texture-size-limit.html [ Failure ]
+webkit.org/b/169917 webgl/1.0.x/conformance/misc/webgl-specific.html [ Failure ]
+webkit.org/b/169917 webgl/1.0.x/conformance/renderbuffers/framebuffer-object-attachment.html [ Failure ]
+webkit.org/b/169917 webgl/1.0.x/conformance/rendering/point-no-attributes.html [ Failure ]
 
 # Not applicable.
 webgl/webgl-via-metal-flag-on.html [ Skip ]
@@ -2182,10 +2176,10 @@ webkit.org/b/169909 fast/css-generated-content/initial-letter-pagination-sunken.
 webkit.org/b/169909 fast/css-generated-content/initial-letter-pagination-sunken-rl.html [ ImageOnlyFailure ]
 webkit.org/b/169910 fast/multicol/simple-line-layout-line-index-after-strut.html [ ImageOnlyFailure ]
 
-webkit.org/b/169917 webgl/1.0.3/conformance/glsl/bugs/temp-expressions-should-not-crash.html [ Slow ]
-webkit.org/b/169917 webgl/1.0.3/conformance/rendering/many-draw-calls.html [ Slow ]
-webkit.org/b/169917 webgl/1.0.3/conformance/uniforms/gl-uniform-arrays.html [ Slow ]
-webkit.org/b/169917 webgl/1.0.3/conformance/uniforms/out-of-bounds-uniform-array-access.html [ Slow ]
+webkit.org/b/169917 webgl/1.0.x/conformance/glsl/bugs/temp-expressions-should-not-crash.html [ Slow ]
+webkit.org/b/169917 webgl/1.0.x/conformance/rendering/many-draw-calls.html [ Slow ]
+webkit.org/b/169917 webgl/1.0.x/conformance/uniforms/gl-uniform-arrays.html [ Slow ]
+webkit.org/b/169917 webgl/1.0.x/conformance/uniforms/out-of-bounds-uniform-array-access.html [ Slow ]
 webkit.org/b/171726 media/media-source/media-source-init-segment-duration.html [ Failure ]
 webkit.org/b/172270 fast/text/web-font-load-invisible-during-loading.html [ Failure ]
 webkit.org/b/172271 fast/text/emoji-overlap.html [ ImageOnlyFailure ]
