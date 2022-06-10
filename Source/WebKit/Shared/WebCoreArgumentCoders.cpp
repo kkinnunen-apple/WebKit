@@ -433,7 +433,7 @@ std::optional<DOMCacheEngine::Record> ArgumentCoder<DOMCacheEngine::Record>::dec
             auto formData = FormData::decode(decoder);
             if (!formData)
                 return std::nullopt;
-            responseBody = formData.releaseNonNull();
+            responseBody = WTFMove(*formData);
         }
     }
 

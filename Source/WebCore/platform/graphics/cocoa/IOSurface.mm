@@ -348,6 +348,10 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 #else
     UNUSED_PARAM(hostWindow);
 #endif
+#if HAVE(CGCONTEXT_SET_OWNER_IDENTITY) && HAVE(TASK_IDENTITY_TOKEN)
+    if (m_resourceOwner)
+        CGContextSetOwnerIdentity(m_cgContext.get(), m_resourceOwner.taskIdToken());
+#endif
 
     return m_cgContext.get();
 }
@@ -499,7 +503,13 @@ void IOSurface::convertToFormat(IOSurfacePool* pool, std::unique_ptr<IOSurface>&
 
 void IOSurface::setOwnershipIdentity(const ProcessIdentity& resourceOwner)
 {
+    ASSERT(resourceOwner);
+    m_resourceOwner = resourceOwner;
     setOwnershipIdentity(m_surface.get(), resourceOwner);
+#if HAVE(CGCONTEXT_SET_OWNER_IDENTITY) && HAVE(TASK_IDENTITY_TOKEN)
+    if (m_cgContext)
+        CGContextSetOwnerIdentity(m_cgContext.get(), m_resourceOwner.taskIdToken());
+#endif
 }
 
 void IOSurface::setOwnershipIdentity(IOSurfaceRef surface, const ProcessIdentity& resourceOwner)

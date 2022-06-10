@@ -66,10 +66,10 @@ std::optional<URLSchemeTaskParameters> URLSchemeTaskParameters::decode(IPC::Deco
     if (!hasHTTPBody)
         return std::nullopt;
     if (*hasHTTPBody) {
-        RefPtr<WebCore::FormData> formData = WebCore::FormData::decode(decoder);
+        auto formData = WebCore::FormData::decode(decoder);
         if (!formData)
             return std::nullopt;
-        request.setHTTPBody(WTFMove(formData));
+        request.setHTTPBody(WTFMove(*formData));
     }
     
     std::optional<FrameInfoData> frameInfo;

@@ -173,10 +173,10 @@ std::optional<NetworkResourceLoadParameters> NetworkResourceLoadParameters::deco
         return std::nullopt;
 
     if (hasHTTPBody) {
-        RefPtr<FormData> formData = FormData::decode(decoder);
+        auto formData = FormData::decode(decoder);
         if (!formData)
             return std::nullopt;
-        result.request.setHTTPBody(WTFMove(formData));
+        result.request.setHTTPBody(WTFMove(*formData));
 
         std::optional<Vector<SandboxExtension::Handle>> requestBodySandboxExtensionHandles;
         decoder >> requestBodySandboxExtensionHandles;

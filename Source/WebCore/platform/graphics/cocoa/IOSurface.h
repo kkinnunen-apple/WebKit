@@ -29,6 +29,7 @@
 
 #include "DestinationColorSpace.h"
 #include "IntSize.h"
+#include "ProcessIdentity.h"
 #include <objc/objc.h>
 #include <pal/spi/cocoa/IOSurfaceSPI.h>
 
@@ -172,6 +173,7 @@ private:
     IntSize m_size;
     size_t m_totalBytes;
 
+    ProcessIdentity m_resourceOwner;
     std::unique_ptr<GraphicsContext> m_graphicsContext;
     RetainPtr<CGContextRef> m_cgContext;
 

@@ -210,8 +210,7 @@ public:
 
     template<typename Encoder>
     void encode(Encoder&) const;
-    template<typename Decoder>
-    static RefPtr<FormData> decode(Decoder&);
+    template<typename Decoder> static std::optional<Ref<FormData>> decode(Decoder&);
 
     WEBCORE_EXPORT void appendData(const void* data, size_t);
     void appendFile(const String& filePath);
@@ -294,21 +293,21 @@ void FormData::encode(Encoder& encoder) const
 }
 
 template<typename Decoder>
-RefPtr<FormData> FormData::decode(Decoder& decoder)
+std::optional<Ref<FormData>> FormData::decode(Decoder& decoder)
 {
     auto data = FormData::create();
 
     if (!decoder.decode(data->m_alwaysStream))
-        return nullptr;
+        return std::nullopt;
 
     if (!decoder.decode(data->m_boundary))
-        return nullptr;
+        return std::nullopt;
 
     if (!decoder.decode(data->m_elements))
-        return nullptr;
+        return std::nullopt;
 
     if (!decoder.decode(data->m_identifier))
-        return nullptr;
+        return std::nullopt;
 
     return data;
 }

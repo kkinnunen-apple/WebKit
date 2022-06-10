@@ -44,11 +44,7 @@ public:
 
     void encode(Encoder& encoder) const
     {
-        encoder << !!m_data;
-        if (!m_data)
-            return;
-
-        encoder << *m_data;
+        encoder << m_data;
 
         Vector<WebKit::SandboxExtension::Handle> sandboxExtensionHandles;
         for (auto& element : m_data->elements()) {
@@ -63,25 +59,13 @@ public:
 
     static std::optional<FormDataReference> decode(Decoder& decoder)
     {
-        std::optional<bool> hasFormData;
-        decoder >> hasFormData;
-        if (!hasFormData)
-            return std::nullopt;
-        if (!hasFormData.value())
-            return FormDataReference { };
-
-        auto formData = WebCore::FormData::decode(decoder);
-        if (!formData)
-            return std::nullopt;
-
+        auto formData = decoder.decode<RefPtr<WebCore::FormData>>();
         std::optional<Vector<WebKit::SandboxExtension::Handle>> sandboxExtensionHandles;
         decoder >> sandboxExtensionHandles;
-        if (!sandboxExtensionHandles)
+        if (UNLIKELY(!decoder.isValid()))
             return std::nullopt;
-
         WebKit::SandboxExtension::consumePermanently(*sandboxExtensionHandles);
-
-        return FormDataReference { formData.releaseNonNull() };
+        return FormDataReference { WTFMove(*formData) };
     }
 
 private:
