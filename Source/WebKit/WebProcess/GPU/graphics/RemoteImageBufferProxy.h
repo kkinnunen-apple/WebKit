@@ -66,6 +66,7 @@ public:
     WebCore::ImageBufferBackend* ensureBackendCreated() const final;
 
     void clearBackend();
+    void contextWillChangeBackingStore();
     void backingStoreWillChange();
     void didCreateImageBufferBackend(ImageBufferBackendHandle&&);
 

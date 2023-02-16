@@ -97,12 +97,18 @@ bool RemoteImageBufferProxy::hasPendingFlush() const
     return m_sentFlushIdentifier != m_flushState->identifierForCompletedFlush();
 }
 
-void RemoteImageBufferProxy::backingStoreWillChange()
+void RemoteImageBufferProxy::contextWillChangeBackingStore()
 {
     if (m_needsFlush)
         return;
     m_needsFlush = true;
+    backingStoreWillChange();
+}
 
+void RemoteImageBufferProxy::backingStoreWillChange()
+{
+    if (!canMapBackingStore())
+        return;
     // Prepare for the backing store change the first time this notification comes after flush has
     // completed.
 
