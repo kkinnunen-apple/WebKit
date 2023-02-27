@@ -59,7 +59,7 @@ protected:
     IntSize backendSize() const override;
     
     RefPtr<NativeImage> copyNativeImage(BackingStoreCopy = CopyBackingStore) const override;
-    RefPtr<NativeImage> copyNativeImageForDrawing(BackingStoreCopy = CopyBackingStore) const override;
+    RefPtr<NativeImage> copyNativeImageForDrawing(GraphicsContext&) const override;
     RefPtr<NativeImage> sinkIntoNativeImage() override;
 
     RefPtr<PixelBuffer> getPixelBuffer(const PixelBufferFormat& outputFormat, const IntRect&, const ImageBufferAllocator&) const override;
@@ -82,12 +82,17 @@ protected:
     void finalizeDrawIntoContext(GraphicsContext& destinationContext) override;
     void invalidateCachedNativeImage() const;
     void invalidateCachedNativeImageIfNeeded() const;
+    void* updateBitmapCacheForRead() const;
+    CGImageRef updateBitmapCacheImage() const;
+    void* updateBitmapCacheForWrite() const;
+    void releaseBitmapCache() const;
 
     std::unique_ptr<IOSurface> m_surface;
     mutable bool m_mayHaveOutstandingBackingStoreReferences { false };
     VolatilityState m_volatilityState { VolatilityState::NonVolatile };
-
     RefPtr<IOSurfacePool> m_ioSurfacePool;
+    mutable std::optional<IOSurface::Locker> m_bitmapCacheLock;
+    mutable RetainPtr<CGImage> m_bitmapCacheImage;
 };
 
 } // namespace WebCore
