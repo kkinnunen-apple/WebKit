@@ -234,6 +234,11 @@ RefPtr<PixelBuffer> RemoteImageBufferProxy::getPixelBuffer(const PixelBufferForm
     if (UNLIKELY(!m_remoteRenderingBackendProxy))
         return nullptr;
     auto& mutableThis = const_cast<RemoteImageBufferProxy&>(*this);
+    if (canMapBackingStore()) {
+        // Flush pending draws to this image to complete.
+        mutableThis.flushDrawingContext();
+        return ImageBuffer::getPixelBuffer(destinationFormat, srcRect, allocator);
+    }
     mutableThis.flushDrawingContextAsync();
     IntRect sourceRectScaled = srcRect;
     sourceRectScaled.scale(resolutionScale());
@@ -263,10 +268,22 @@ void RemoteImageBufferProxy::putPixelBuffer(const PixelBuffer& pixelBuffer, cons
 {
     if (UNLIKELY(!m_remoteRenderingBackendProxy))
         return;
+    auto& mutableThis = const_cast<RemoteImageBufferProxy&>(*this);
+    if (canMapBackingStore()) {
+        // 1. Force currently pending draws using this image to complete.
+        // 2. Invalidate the possible image caches.
+        // FIXME: this will be done in more explicit terms and only for IOSurfaceBackend 
+        // after further refactoring.
+        context().fillRect({ });
+        // 3. Flush pending draws to this image to complete and ensure above trigger
+        // went through.
+        mutableThis.flushDrawingContext(); 
+        ImageBuffer::putPixelBuffer(pixelBuffer, srcRect, destPoint, destFormat);
+        return;
+    }
     // The math inside PixelBuffer::create() doesn't agree with the math inside ImageBufferBackend::putPixelBuffer() about how m_resolutionScale interacts with the data in the ImageBuffer.
     // This means that putPixelBuffer() is only called when resolutionScale() == 1.
     ASSERT(resolutionScale() == 1);
-    auto& mutableThis = const_cast<RemoteImageBufferProxy&>(*this);
     mutableThis.flushDrawingContextAsync();
     backingStoreWillChange();
     m_remoteRenderingBackendProxy->putPixelBufferForImageBuffer(m_renderingResourceIdentifier, pixelBuffer, srcRect, destPoint, destFormat);
