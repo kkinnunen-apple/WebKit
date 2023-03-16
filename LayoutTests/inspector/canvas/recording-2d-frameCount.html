@@ -17,6 +17,14 @@ function test() {
         timeout: -1,
     });
 
+    suite.addTestCase({
+        name: "Canvas.recording2D.singleFrame offscreen",
+        description: "Check that the recording is stopped after a single frame.",
+        test(resolve, reject) {
+            startRecording(WI.Canvas.ContextType.OffscreenCanvas2D, resolve, reject, {frameCount: 1});
+        },
+        timeout: -1,
+    });
     suite.runTestCasesAndFinish();
 }
 </script>

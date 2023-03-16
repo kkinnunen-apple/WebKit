@@ -155,6 +155,7 @@ public:
     using RefCounted::ref;
     using RefCounted::deref;
 
+    ExceptionOr<UncachedString> toDataURLForInspector(const String& mimeType);
 private:
     OffscreenCanvas(ScriptExecutionContext&, unsigned width, unsigned height);
 

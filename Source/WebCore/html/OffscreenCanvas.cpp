@@ -251,7 +251,7 @@ ExceptionOr<std::optional<OffscreenRenderingContext>> OffscreenCanvas::getContex
         auto settings = convert<IDLDictionary<CanvasRenderingContext2DSettings>>(state, arguments.isEmpty() ? JSC::jsUndefined() : (arguments[0].isObject() ? arguments[0].get() : JSC::jsNull()));
         RETURN_IF_EXCEPTION(scope, Exception { ExistingExceptionError });
 
-        m_context = makeUnique<OffscreenCanvasRenderingContext2D>(*this, WTFMove(settings));
+        m_context = OffscreenCanvasRenderingContext2D::create(*this, WTFMove(settings));
         if (!m_context)
             return { { std::nullopt } };
 
@@ -581,6 +581,19 @@ void OffscreenCanvas::queueTaskKeepingObjectAlive(TaskSource source, Function<vo
 void OffscreenCanvas::dispatchEvent(Event& event)
 {
     EventDispatcher::dispatchEvent({ this }, event);
+}
+
+ExceptionOr<UncachedString> OffscreenCanvas::toDataURLForInspector(const String& mimeType)
+{
+    if (!originClean())
+        return Exception { SecurityError };
+
+    if (size().isEmpty() || !buffer() || m_detached)
+        return UncachedString { "data:,"_s };
+
+    makeRenderingResultsAvailable();
+
+    return UncachedString { buffer()->toDataURL(toEncodingMimeType(mimeType), std::nullopt) };
 }
 
 }

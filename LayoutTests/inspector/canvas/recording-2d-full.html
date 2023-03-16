@@ -16,7 +16,14 @@ function test() {
         },
         timeout: -1,
     });
-
+    suite.addTestCase({
+        name: "Canvas.recording2D.multipleFrames offscreen",
+        description: "Check that recording data is serialized correctly for multiple frames.",
+        test(resolve, reject) {
+            startRecording(WI.Canvas.ContextType.OffscreenCanvas2D, resolve, reject);
+        },
+        timeout: -1,
+    });
     suite.runTestCasesAndFinish();
 }
 </script>

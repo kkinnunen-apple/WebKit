@@ -64,6 +64,9 @@ WI.Canvas = class Canvas extends WI.Object
         case InspectorBackend.Enum.Canvas.ContextType.Canvas2D:
             contextType = WI.Canvas.ContextType.Canvas2D;
             break;
+        case InspectorBackend.Enum.Canvas.ContextType.OffscreenCanvas2D:
+            contextType = WI.Canvas.ContextType.OffscreenCanvas2D;
+            break;
         case InspectorBackend.Enum.Canvas.ContextType.BitmapRenderer:
             contextType = WI.Canvas.ContextType.BitmapRenderer;
             break;
@@ -101,6 +104,8 @@ WI.Canvas = class Canvas extends WI.Object
         switch (contextType) {
         case WI.Canvas.ContextType.Canvas2D:
             return WI.UIString("2D");
+        case WI.Canvas.ContextType.OffscreenCanvas2D:
+            return WI.UIString("Offscreen2D");
         case WI.Canvas.ContextType.BitmapRenderer:
             return WI.UIString("Bitmap Renderer", "Canvas Context Type Bitmap Renderer", "Bitmap Renderer is a type of rendering context associated with a <canvas> element");
         case WI.Canvas.ContextType.WebGL:
@@ -465,6 +470,7 @@ WI.Canvas.CSSCanvasNameCookieKey = "canvas-css-canvas-name";
 
 WI.Canvas.ContextType = {
     Canvas2D: "canvas-2d",
+    OffscreenCanvas: "offscreen-canvas-2d",
     BitmapRenderer: "bitmaprenderer",
     WebGL: "webgl",
     WebGL2: "webgl2",

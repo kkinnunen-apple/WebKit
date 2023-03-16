@@ -212,6 +212,9 @@ WI.RecordingAction = class RecordingAction extends WI.Object
         switch (type) {
         case WI.Recording.Type.Canvas2D:
             return CanvasRenderingContext2D.prototype;
+        case WI.Recording.Type.OffscreenCanvas2D:
+            if (window.OffscreenCanvasRenderingContext2D)
+                return OffscreenCanvasRenderingContext2D.prototype;
         case WI.Recording.Type.CanvasBitmapRenderer:
             if (window.ImageBitmapRenderingContext)
                 return ImageBitmapRenderingContext.prototype;
@@ -298,7 +301,7 @@ WI.RecordingAction = class RecordingAction extends WI.Object
                 this._warning = WI.UIString("This action causes no visual change");
         }
 
-        if (recording.type === WI.Recording.Type.Canvas2D) {
+        if (recording.isCanvas2D()) {
             let currentState = WI.RecordingState.fromContext(recording.type, context, {source: this});
             console.assert(currentState);
 
@@ -368,7 +371,7 @@ WI.RecordingAction = class RecordingAction extends WI.Object
         if (this._payloadSnapshot >= 0)
             this._snapshot = snapshot;
 
-        if (recording.type === WI.Recording.Type.Canvas2D || recording.type === WI.Recording.Type.CanvasBitmapRenderer || recording.type === WI.Recording.Type.CanvasWebGL || recording.type === WI.Recording.Type.CanvasWebGL2) {
+        if (recording.isCanvas2D() || recording.type === WI.Recording.Type.CanvasBitmapRenderer || recording.type === WI.Recording.Type.CanvasWebGL || recording.type === WI.Recording.Type.CanvasWebGL2) {
             if (this._name === "width" || this._name === "height") {
                 this._contextReplacer = "canvas";
                 this._isFunction = false;
@@ -727,6 +730,8 @@ WI.RecordingAction._visualNames = {
     ]),
 };
 
+WI.RecordingAction._visualNames[WI.Recording.Type.OffscreenCanvas2D] = WI.RecordingAction._visualNames[WI.Recording.Type.Canvas2D];
+
 WI.RecordingAction._stateModifiers = {
     [WI.Recording.Type.Canvas2D]: {
         arc: ["currentX", "currentY"],
@@ -756,3 +761,5 @@ WI.RecordingAction._stateModifiers = {
         translate: ["transform"],
     },
 };
+
+WI.RecordingAction._stateModifiers[WI.Recording.Type.OffscreenCanvas2D] = WI.RecordingAction._stateModifiers[WI.Recording.Type.Canvas2D];
