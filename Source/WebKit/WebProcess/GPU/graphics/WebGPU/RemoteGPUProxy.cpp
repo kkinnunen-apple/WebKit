@@ -75,6 +75,16 @@ void RemoteGPUProxy::initializeIPC(IPC::StreamServerConnection::Handle&& serverC
     waitUntilInitialized();
 }
 
+// something like this.
+void RemoteGPUProxy::disconnectGpuProcessIfNeeded()
+{
+    if (m_connection) {
+        m_streamConnection->invalidate();
+        m_gpuProcessConnection->send(Messages::GPUConnectionToWebProcess::ReleaseRemoteGPU(m_backing), 0, IPC::SendOption::DispatchMessageEvenWhenWaitingForSyncReply);
+        m_gpuProcessConnection = nullptr;
+    }
+}
+
 void RemoteGPUProxy::gpuProcessConnectionDidClose(GPUProcessConnection& connection)
 {
     ASSERT(m_gpuProcessConnection);
