@@ -21,8 +21,11 @@
       __TV_OS_VERSION_MIN_REQUIRED >= 150000)) &&                             \
     (defined(__has_include) && __has_include(<Metal/MTLResource_Private.h>))
 #    define ANGLE_HAVE_MTLRESOURCE_SET_OWNERSHIP_IDENTITY 1
+// FIXME: Below should be set in proper condition.
+#    define ANGLE_HAVE_MTLCOMMANDBUFFER_SET_GPU_PRIORITY 1
 #else
 #    define ANGLE_HAVE_MTLRESOURCE_SET_OWNERSHIP_IDENTITY 0
+#    define ANGLE_HAVE_MTLCOMMANDBUFFER_SET_GPU_PRIORITY 0
 #endif
 
 #if (ANGLE_HAVE_MTLRESOURCE_SET_OWNERSHIP_IDENTITY && \
@@ -30,6 +33,13 @@
 #    define ANGLE_USE_METAL_OWNERSHIP_IDENTITY 1
 #else
 #    define ANGLE_USE_METAL_OWNERSHIP_IDENTITY 0
+#endif
+
+#if (ANGLE_HAVE_MTLCOMMANDBUFFER_SET_GPU_PRIORITY && \
+     defined(ANGLE_ENABLE_METAL_GPU_PRIORITY))
+#    define ANGLE_USE_METAL_GPU_PRIORITY 1
+#else
+#    define ANGLE_USE_METAL_GPU_PRIORITY 0
 #endif
 
 #endif /* COMMON_APPLE_PLATFORM_H_ */

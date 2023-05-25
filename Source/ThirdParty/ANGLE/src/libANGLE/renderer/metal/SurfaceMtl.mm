@@ -453,7 +453,7 @@ egl::Error WindowSurfaceMtl::initialize(const egl::Display *display)
     DisplayMtl *displayMtl    = mtl::GetImpl(display);
     id<MTLDevice> metalDevice = displayMtl->getMetalDevice();
 
-    StartFrameCapture(metalDevice, displayMtl->cmdQueue().get());
+    //StartFrameCapture(metalDevice, displayMtl->cmdQueue().get());
 
     ANGLE_MTL_OBJC_SCOPE
     {

@@ -551,13 +551,14 @@ class ErrorHandler
 class Context : public ErrorHandler
 {
   public:
-    Context(DisplayMtl *displayMtl);
-    mtl::CommandQueue &cmdQueue();
+    Context(DisplayMtl *displayMtl/*, egl::ContextPriority priority*/);
+//    mtl::CommandQueue &cmdQueue();
 
     DisplayMtl *getDisplay() const { return mDisplay; }
 
   protected:
     DisplayMtl *mDisplay;
+//    const egl::ContextPriority mPriority;
 };
 
 std::string FormatMetalErrorMessage(GLenum errorCode);

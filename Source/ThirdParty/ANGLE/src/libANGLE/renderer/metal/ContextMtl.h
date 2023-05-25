@@ -42,9 +42,10 @@ class ContextMtl : public ContextImpl, public mtl::Context
                const egl::AttributeMap &attribs,
                DisplayMtl *display);
     ~ContextMtl() override;
+    mtl::CommandQueue &cmdQueue();
 
     angle::Result initialize() override;
-
+    
     void onDestroy(const gl::Context *context) override;
 
     // Flush and finish.

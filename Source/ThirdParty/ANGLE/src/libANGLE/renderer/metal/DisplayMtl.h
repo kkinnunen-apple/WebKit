@@ -141,7 +141,7 @@ class DisplayMtl : public DisplayImpl
 
     id<MTLDevice> getMetalDevice() const { return mMetalDevice; }
 
-    mtl::CommandQueue &cmdQueue() { return mCmdQueue; }
+    mtl::CommandQueue &cmdQueue(egl::ContextPriority priority);
     const mtl::FormatTable &getFormatTable() const { return mFormatTable; }
     mtl::RenderUtils &getUtils() { return mUtils; }
     mtl::StateCache &getStateCache() { return mStateCache; }
@@ -192,8 +192,12 @@ class DisplayMtl : public DisplayImpl
     mtl::AutoObjCPtr<id<MTLDevice>> mMetalDevice = nil;
     uint32_t mMetalDeviceVendorId                = 0;
 
-    mtl::CommandQueue mCmdQueue;
-
+#if ANGLE_USE_METAL_GPU_PRIORITY
+    static constexpr size_t kSupportedPriorities = 2;
+#else
+    static constexpr size_t kSupportedPriorities = 1;
+#endif
+    std::array<mtl::CommandQueue, kSupportedPriorities> mCmdQueues { };
     mutable mtl::FormatTable mFormatTable;
     mtl::StateCache mStateCache;
     mtl::LibraryCache mLibraryCache;

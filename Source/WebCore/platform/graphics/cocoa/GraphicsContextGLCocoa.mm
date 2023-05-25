@@ -123,6 +123,19 @@ static bool platformSupportsMetal()
     return false;
 }
 
+#if HAVE(METAL_GPU_PRIORITY)
+static bool platformForceLowPriority()
+{
+    static bool result = []() {
+        uint32_t vmmPresent = 0;
+        size_t size = sizeof(vmmPresent);
+        int result = sysctlbyname("kern.hv_vmm_present", &vmmPresent, &size, nullptr, 0);
+        return result >= 0;
+    }();
+    return result;
+}
+#endif
+
 static EGLDisplay initializeEGLDisplay(const GraphicsContextGLAttributes& attrs)
 {
     if (!platformIsANGLEAvailable()) {
@@ -181,6 +194,13 @@ static EGLDisplay initializeEGLDisplay(const GraphicsContextGLAttributes& attrs)
                 displayAttributes.append(static_cast<EGLAttrib>(attrs.windowGPUID >> 32));
                 displayAttributes.append(EGL_PLATFORM_ANGLE_DEVICE_ID_LOW_ANGLE);
                 displayAttributes.append(static_cast<EGLAttrib>(attrs.windowGPUID));
+            }
+#endif
+#if HAVE(METAL_GPU_PRIORITY)
+            ASSERT(clientExtensions, "EGL_IMG_context_priority");
+            if (platformForceLowPriority()) {
+                displayAttributes.append(EGL_CONTEXT_PRIORITY_LEVEL_IMG);
+                displayAttributes.append(EGL_CONTEXT_PRIORITY_LOW_IMG);
             }
 #endif
             ASSERT(strstr(clientExtensions, "EGL_ANGLE_feature_control"));

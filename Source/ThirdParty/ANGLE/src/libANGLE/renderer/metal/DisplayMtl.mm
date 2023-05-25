@@ -33,6 +33,10 @@
 #    include "libANGLE/renderer/metal/mtl_default_shaders_compiled.inc"
 #endif
 
+#if ANGLE_USE_METAL_GPU_PRIORITY
+#include "libANGLE/renderer/metal/mtl_command_queue_spi.h"
+#endif
+
 #include "EGL/eglext.h"
 
 namespace rx
@@ -149,8 +153,6 @@ angle::Result DisplayMtl::initializeImpl(egl::Display *display)
             return angle::Result::Stop;
         }
 
-        mCmdQueue.set([[mMetalDevice newCommandQueue] ANGLE_MTL_AUTORELEASE]);
-
         mCapsInitialized = false;
 
         if (!mState.featuresAllDisabled)
@@ -165,10 +167,27 @@ angle::Result DisplayMtl::initializeImpl(egl::Display *display)
     }
 }
 
+mtl::CommandQueue &DisplayMtl::cmdQueue(egl::ContextPriority priority)
+{
+    size_t i = std::min(static_cast<size_t>(priority), mCmdQueues.size());
+    if (!mCmdQueues[i].valid())
+    {
+        mCmdQueues[i] = mtl::adoptObjCObj([mMetalDevice newCommandQueue]);
+#if ANGLE_USE_METAL_GPU_PRIORITY
+        if (priority == egl::ContextPriority::Low)
+        {
+            mtl::setCommandQueuePriorityLow(mCmdQueues[i].get());
+        }
+#endif
+    }
+    return mCmdQueues[i];
+}
+
 void DisplayMtl::terminate()
 {
     mUtils.onDestroy();
-    mCmdQueue.reset();
+    for (auto& cmdQueue : mCmdQueues)
+        cmdQueue.reset();
     mDefaultShadersAsyncInfo = nullptr;
     mMetalDevice             = nil;
 #if ANGLE_MTL_EVENT_AVAILABLE
@@ -494,6 +513,10 @@ void DisplayMtl::generateExtensions(egl::DisplayExtensions *outExtensions) const
 
     // EGL_ANGLE_metal_sync_shared_event
     outExtensions->mtlSyncSharedEventANGLE = true;
+
+#if ANGLE_USE_METAL_GPU_PRIORITY
+    outExtensions->contextPriority  = true;
+#endif
 }
 
 void DisplayMtl::generateCaps(egl::Caps *outCaps) const

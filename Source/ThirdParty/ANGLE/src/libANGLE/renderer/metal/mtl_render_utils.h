@@ -575,11 +575,11 @@ class VertexFormatConversionUtils final : angle::NonCopyable
 };
 
 // RenderUtils: container class of various util classes above
-class RenderUtils : public Context, angle::NonCopyable
+class RenderUtils : angle::NonCopyable
 {
   public:
     RenderUtils(DisplayMtl *display);
-    ~RenderUtils() override;
+    ~RenderUtils();
 
     angle::Result initialize();
     void onDestroy();
@@ -683,6 +683,7 @@ class RenderUtils : public Context, angle::NonCopyable
                                                           size_t *indicesGenerated);
 
   private:
+#if 0
     // override ErrorHandler
     void handleError(GLenum error,
                      const char *message,
@@ -694,7 +695,7 @@ class RenderUtils : public Context, angle::NonCopyable
                      const char *file,
                      const char *function,
                      unsigned int line) override;
-
+#endif
     std::array<ClearUtils, angle::EnumSize<PixelType>()> mClearUtils;
 
     std::array<ColorBlitUtils, angle::EnumSize<PixelType>()> mColorBlitUtils;

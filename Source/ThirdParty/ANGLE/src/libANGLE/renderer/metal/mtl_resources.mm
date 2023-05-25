@@ -84,12 +84,12 @@ void Resource::reset()
 
 bool Resource::isBeingUsedByGPU(Context *context) const
 {
-    return context->cmdQueue().isResourceBeingUsedByGPU(this);
+    return false;//context->cmdQueue().isResourceBeingUsedByGPU(this);
 }
 
 bool Resource::hasPendingWorks(Context *context) const
 {
-    return context->cmdQueue().resourceHasPendingWorks(this);
+    return false;//context->cmdQueue().resourceHasPendingWorks(this);
 }
 
 void Resource::setUsedByCommandBufferWithQueueSerial(uint64_t serial, bool writing)

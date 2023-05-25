@@ -901,7 +901,7 @@ StencilBlitViaBufferParams::StencilBlitViaBufferParams(const DepthStencilBlitPar
 
 // RenderUtils implementation
 RenderUtils::RenderUtils(DisplayMtl *display)
-    : Context(display),
+    :
       mClearUtils(
           {ClearUtils("clearIntFS"), ClearUtils("clearUIntFS"), ClearUtils("clearFloatFS")}),
       mColorBlitUtils({ColorBlitUtils("blitIntFS"), ColorBlitUtils("blitUIntFS"),
@@ -943,6 +943,7 @@ void RenderUtils::onDestroy()
     }
 }
 
+#if 0
 // override ErrorHandler
 void RenderUtils::handleError(GLenum glErrorCode,
                               const char *message,
@@ -966,6 +967,7 @@ void RenderUtils::handleError(NSError *nserror,
 
     ERR() << message;
 }
+#endif
 
 // Clear current framebuffer
 angle::Result RenderUtils::clearWithDraw(const gl::Context *context,

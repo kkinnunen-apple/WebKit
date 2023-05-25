@@ -80,13 +80,13 @@ ImageNativeIndexIterator ImageNativeIndex::getLayerIterator(GLint layerCount) co
 }
 
 // Context implementation
-Context::Context(DisplayMtl *display) : mDisplay(display) {}
-
+Context::Context(DisplayMtl *display/*, egl::ContextPriority priority*/) : mDisplay(display)/*, mPriority(priority)*/ {}
+/*
 mtl::CommandQueue &Context::cmdQueue()
 {
-    return mDisplay->cmdQueue();
+    return mDisplay->cmdQueue(mPriority);
 }
-
+*/
 std::string FormatMetalErrorMessage(GLenum errorCode)
 {
     return "Metal backend encountered an error";

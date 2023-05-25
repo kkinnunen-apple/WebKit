@@ -57,7 +57,7 @@ angle::Result QueryMtl::begin(const gl::Context *context)
             // End any command buffer being encoded, to get a clean boundary for beginning
             // measurement.
             contextMtl->flushCommandBuffer(mtl::NoWait);
-            mtl::CommandQueue &queue = contextMtl->getDisplay()->cmdQueue();
+            mtl::CommandQueue &queue = contextMtl->cmdQueue();
             if (mTimeElapsedEntry != 0)
             {
                 queue.deleteTimeElapsedEntry(mTimeElapsedEntry);
@@ -90,7 +90,7 @@ angle::Result QueryMtl::end(const gl::Context *context)
         {
             // End any command buffer being encoded, to get a clean boundary for ending measurement.
             contextMtl->flushCommandBuffer(mtl::NoWait);
-            mtl::CommandQueue &queue = contextMtl->getDisplay()->cmdQueue();
+            mtl::CommandQueue &queue = contextMtl->cmdQueue();
             queue.setActiveTimeElapsedEntry(0);
             break;
         }
@@ -136,7 +136,7 @@ angle::Result QueryMtl::waitAndGetResult(const gl::Context *context, T *params)
         case gl::QueryType::TimeElapsed:
         {
             ASSERT(mTimeElapsedEntry != 0);
-            mtl::CommandQueue &queue = contextMtl->getDisplay()->cmdQueue();
+            mtl::CommandQueue &queue = contextMtl->cmdQueue();
             if (!queue.isTimeElapsedEntryComplete(mTimeElapsedEntry))
             {
                 contextMtl->flushCommandBuffer(mtl::WaitUntilFinished);
@@ -176,7 +176,7 @@ angle::Result QueryMtl::isResultAvailable(const gl::Context *context, bool *avai
             break;
         case gl::QueryType::TimeElapsed:
             *available =
-                contextMtl->getDisplay()->cmdQueue().isTimeElapsedEntryComplete(mTimeElapsedEntry);
+                contextMtl->cmdQueue().isTimeElapsedEntryComplete(mTimeElapsedEntry);
             break;
         default:
             UNIMPLEMENTED();
@@ -228,7 +228,7 @@ void QueryMtl::onContextMakeCurrent(const gl::Context *context)
     // At present this should only be called for time elapsed queries.
     ASSERT(getType() == gl::QueryType::TimeElapsed);
     ContextMtl *contextMtl = mtl::GetImpl(context);
-    contextMtl->getDisplay()->cmdQueue().setActiveTimeElapsedEntry(mTimeElapsedEntry);
+    contextMtl->cmdQueue().setActiveTimeElapsedEntry(mTimeElapsedEntry);
 }
 
 void QueryMtl::onContextUnMakeCurrent(const gl::Context *context)
@@ -236,7 +236,7 @@ void QueryMtl::onContextUnMakeCurrent(const gl::Context *context)
     // At present this should only be called for time elapsed queries.
     ASSERT(getType() == gl::QueryType::TimeElapsed);
     ContextMtl *contextMtl = mtl::GetImpl(context);
-    contextMtl->getDisplay()->cmdQueue().setActiveTimeElapsedEntry(0);
+    contextMtl->cmdQueue().setActiveTimeElapsedEntry(0);
 }
 
 }  // namespace rx
