@@ -54,7 +54,7 @@ void WebGLContextObject::detachContext(const AbstractLocker& locker)
     }
 }
 
-Lock& WebGLContextObject::objectGraphLockForContext()
+ExclusiveSharedLock& WebGLContextObject::objectGraphLockForContext()
 {
     // Should not call this if the object or context has been deleted.
     ASSERT(m_context);

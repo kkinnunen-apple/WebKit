@@ -276,7 +276,7 @@ private:
 
     bool isWebGL2() const final { return true; }
 
-    void initializeContextState() final;
+    void initializeContextState() final WTF_REQUIRES_LOCK(objectGraphLock());
 
     RefPtr<ArrayBufferView> arrayBufferViewSliceFactory(const char* const functionName, const ArrayBufferView& data, unsigned startByte, unsigned bytelength);
     RefPtr<ArrayBufferView> sliceArrayBufferView(const char* const functionName, const ArrayBufferView& data, GCGLuint srcOffset, GCGLuint length);

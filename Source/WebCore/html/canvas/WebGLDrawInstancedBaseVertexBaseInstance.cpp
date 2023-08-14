@@ -57,7 +57,7 @@ bool WebGLDrawInstancedBaseVertexBaseInstance::supported(GraphicsContextGL& cont
 void WebGLDrawInstancedBaseVertexBaseInstance::drawArraysInstancedBaseInstanceWEBGL(GCGLenum mode, GCGLint first, GCGLsizei count, GCGLsizei instanceCount, GCGLuint baseInstance)
 {
     auto context = WebGLExtensionScopedContext(this);
-    if (context.isLost())
+    if (context->validateContext())
         return;
 
     if (!context->validateVertexArrayObject("drawArraysInstancedBaseInstanceWEBGL"))
@@ -80,7 +80,7 @@ void WebGLDrawInstancedBaseVertexBaseInstance::drawArraysInstancedBaseInstanceWE
 void WebGLDrawInstancedBaseVertexBaseInstance::drawElementsInstancedBaseVertexBaseInstanceWEBGL(GCGLenum mode, GCGLsizei count, GCGLenum type, GCGLintptr offset, GCGLsizei instanceCount, GCGLint baseVertex, GCGLuint baseInstance)
 {
     auto context = WebGLExtensionScopedContext(this);
-    if (context.isLost())
+    if (context->validateContext())
         return;
 
     if (!context->validateVertexArrayObject("drawElementsInstancedBaseVertexBaseInstanceWEBGL"))

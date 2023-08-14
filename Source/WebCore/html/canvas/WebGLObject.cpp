@@ -47,16 +47,8 @@ void WebGLObject::setObject(PlatformGLObject object)
 
 void WebGLObject::runDestructor()
 {
-    auto& lock = objectGraphLockForContext();
-    if (lock.isHeld()) {
-        // Destruction of WebGLObjects can happen in chains triggered from GC.
-        // The lock must be held only once, at the beginning of the chain.
-        auto locker = AbstractLocker(NoLockingNecessary);
-        deleteObject(locker, nullptr);
-    } else {
-        Locker locker { lock };
-        deleteObject(locker, nullptr);
-    }
+    auto locker = AbstractLocker(NoLockingNecessary);
+    deleteObject(locker, nullptr);
 }
 
 void WebGLObject::deleteObject(const AbstractLocker& locker, GraphicsContextGL* context3d)

@@ -725,8 +725,11 @@ void WebGLRenderingContextBase::initializeNewContext(Ref<GraphicsContextGL> cont
     if (!wasActive)
         addActiveContext(*this);
     addActivityStateChangeObserverIfNecessary();
-    initializeContextState();
-    initializeVertexArrayObjects();
+    {
+        Locker locker { objectGraphLock() };
+        initializeContextState();
+        initializeVertexArrayObjects();
+    }
     // Next calls will receive the context lost callback.
     m_context->setClient(this);
 }
@@ -1907,8 +1910,9 @@ bool WebGLRenderingContextBase::validateWebGLProgramOrShader(const char* functio
 
 void WebGLRenderingContextBase::drawArrays(GCGLenum mode, GCGLint first, GCGLsizei count)
 {
-    if (isContextLost())
+    if (!validateContext())
         return;
+
     if (!validateVertexArrayObject("drawArrays"))
         return;
 
@@ -1928,8 +1932,9 @@ void WebGLRenderingContextBase::drawArrays(GCGLenum mode, GCGLint first, GCGLsiz
 
 void WebGLRenderingContextBase::drawElements(GCGLenum mode, GCGLsizei count, GCGLenum type, long long offset)
 {
-    if (isContextLost())
+    if (!validateContext())
         return;
+
     if (!validateVertexArrayObject("drawElements"))
         return;
 
@@ -2210,8 +2215,8 @@ GCGLenum WebGLRenderingContextBase::getError()
 
 WebGLAny WebGLRenderingContextBase::getParameter(GCGLenum pname)
 {
-    if (isContextLost())
-        return nullptr;
+    if (!validateContext())
+        return nullptr;  
 
     switch (pname) {
     case GraphicsContextGL::ACTIVE_TEXTURE:
@@ -3107,6 +3112,12 @@ GCGLboolean WebGLRenderingContextBase::isBuffer(WebGLBuffer* buffer)
         return 0;
 
     return m_context->isBuffer(buffer->object());
+}
+
+bool WebGLRenderingContextBase::validateContext()
+{
+    objectGraphLock().assertIsExclusiveCurrent();
+    return !isContextLost();
 }
 
 bool WebGLRenderingContextBase::isContextLost() const
@@ -4689,15 +4700,16 @@ bool WebGLRenderingContextBase::validateUniformLocation(const char* functionName
 
 void WebGLRenderingContextBase::uniform1f(const WebGLUniformLocation* location, GCGLfloat x)
 {
-    if (isContextLost() || !validateUniformLocation("uniform1f", location))
+    if (!validateContext())
         return;
-
+    if (!validateUniformLocation("uniform1f", location))
+        return;
     m_context->uniform1f(location->location(), x);
 }
 
 void WebGLRenderingContextBase::uniform2f(const WebGLUniformLocation* location, GCGLfloat x, GCGLfloat y)
 {
-    if (isContextLost() || !validateUniformLocation("uniform2f", location))
+    if (!validateContext() || !validateUniformLocation("uniform2f", location))
         return;
 
     m_context->uniform2f(location->location(), x, y);
@@ -4705,7 +4717,7 @@ void WebGLRenderingContextBase::uniform2f(const WebGLUniformLocation* location, 
 
 void WebGLRenderingContextBase::uniform3f(const WebGLUniformLocation* location, GCGLfloat x, GCGLfloat y, GCGLfloat z)
 {
-    if (isContextLost() || !validateUniformLocation("uniform3f", location))
+    if (!validateContext() || !validateUniformLocation("uniform3f", location))
         return;
 
     m_context->uniform3f(location->location(), x, y, z);
@@ -4713,7 +4725,7 @@ void WebGLRenderingContextBase::uniform3f(const WebGLUniformLocation* location, 
 
 void WebGLRenderingContextBase::uniform4f(const WebGLUniformLocation* location, GCGLfloat x, GCGLfloat y, GCGLfloat z, GCGLfloat w)
 {
-    if (isContextLost() || !validateUniformLocation("uniform4f", location))
+    if (!validateContext() || !validateUniformLocation("uniform4f", location))
         return;
 
     m_context->uniform4f(location->location(), x, y, z, w);
@@ -4721,14 +4733,14 @@ void WebGLRenderingContextBase::uniform4f(const WebGLUniformLocation* location, 
 
 void WebGLRenderingContextBase::uniform1i(const WebGLUniformLocation* location, GCGLint x)
 {
-    if (isContextLost() || !validateUniformLocation("uniform1i", location))
+    if (!validateContext() || !validateUniformLocation("uniform1i", location))
         return;
     m_context->uniform1i(location->location(), x);
 }
 
 void WebGLRenderingContextBase::uniform2i(const WebGLUniformLocation* location, GCGLint x, GCGLint y)
 {
-    if (isContextLost() || !validateUniformLocation("uniform2i", location))
+    if (!validateContext() || !validateUniformLocation("uniform2i", location))
         return;
 
     m_context->uniform2i(location->location(), x, y);
@@ -4736,7 +4748,7 @@ void WebGLRenderingContextBase::uniform2i(const WebGLUniformLocation* location, 
 
 void WebGLRenderingContextBase::uniform3i(const WebGLUniformLocation* location, GCGLint x, GCGLint y, GCGLint z)
 {
-    if (isContextLost() || !validateUniformLocation("uniform3i", location))
+    if (!validateContext() || !validateUniformLocation("uniform3i", location))
         return;
 
     m_context->uniform3i(location->location(), x, y, z);
@@ -4744,7 +4756,7 @@ void WebGLRenderingContextBase::uniform3i(const WebGLUniformLocation* location, 
 
 void WebGLRenderingContextBase::uniform4i(const WebGLUniformLocation* location, GCGLint x, GCGLint y, GCGLint z, GCGLint w)
 {
-    if (isContextLost() || !validateUniformLocation("uniform4i", location))
+    if (!validateContext() || !validateUniformLocation("uniform4i", location))
         return;
 
     m_context->uniform4i(location->location(), x, y, z, w);
@@ -4752,7 +4764,7 @@ void WebGLRenderingContextBase::uniform4i(const WebGLUniformLocation* location, 
 
 void WebGLRenderingContextBase::uniform1fv(const WebGLUniformLocation* location, Float32List&& v)
 {
-    if (isContextLost())
+    if (!validateContext())
         return;
     auto data = validateUniformParameters("uniform1fv", location, v, 1);
     if (!data)
@@ -4762,7 +4774,7 @@ void WebGLRenderingContextBase::uniform1fv(const WebGLUniformLocation* location,
 
 void WebGLRenderingContextBase::uniform2fv(const WebGLUniformLocation* location, Float32List&& v)
 {
-    if (isContextLost())
+    if (!validateContext())
         return;
     auto data = validateUniformParameters("uniform2fv", location, v, 2);
     if (!data)
@@ -4772,7 +4784,7 @@ void WebGLRenderingContextBase::uniform2fv(const WebGLUniformLocation* location,
 
 void WebGLRenderingContextBase::uniform3fv(const WebGLUniformLocation* location, Float32List&& v)
 {
-    if (isContextLost())
+    if (!validateContext())
         return;
     auto data = validateUniformParameters("uniform3fv", location, v, 3);
     if (!data)
@@ -4782,7 +4794,7 @@ void WebGLRenderingContextBase::uniform3fv(const WebGLUniformLocation* location,
 
 void WebGLRenderingContextBase::uniform4fv(const WebGLUniformLocation* location, Float32List&& v)
 {
-    if (isContextLost())
+    if (!validateContext())
         return;
     auto data = validateUniformParameters("uniform4fv", location, v, 4);
     if (!data)
@@ -4792,7 +4804,7 @@ void WebGLRenderingContextBase::uniform4fv(const WebGLUniformLocation* location,
 
 void WebGLRenderingContextBase::uniform1iv(const WebGLUniformLocation* location, Int32List&& v)
 {
-    if (isContextLost())
+    if (!validateContext())
         return;
     auto result = validateUniformParameters("uniform1iv", location, v, 1);
     if (!result)
@@ -4805,7 +4817,7 @@ void WebGLRenderingContextBase::uniform1iv(const WebGLUniformLocation* location,
 
 void WebGLRenderingContextBase::uniform2iv(const WebGLUniformLocation* location, Int32List&& v)
 {
-    if (isContextLost())
+    if (!validateContext())
         return;
     auto data = validateUniformParameters("uniform2iv", location, v, 2);
     if (!data)
@@ -4815,7 +4827,7 @@ void WebGLRenderingContextBase::uniform2iv(const WebGLUniformLocation* location,
 
 void WebGLRenderingContextBase::uniform3iv(const WebGLUniformLocation* location, Int32List&& v)
 {
-    if (isContextLost())
+    if (!validateContext())
         return;
     auto data = validateUniformParameters("uniform3iv", location, v, 3);
     if (!data)
@@ -4825,7 +4837,7 @@ void WebGLRenderingContextBase::uniform3iv(const WebGLUniformLocation* location,
 
 void WebGLRenderingContextBase::uniform4iv(const WebGLUniformLocation* location, Int32List&& v)
 {
-    if (isContextLost())
+    if (!validateContext())
         return;
     auto data = validateUniformParameters("uniform4iv", location, v, 4);
     if (!data)
@@ -4835,7 +4847,7 @@ void WebGLRenderingContextBase::uniform4iv(const WebGLUniformLocation* location,
 
 void WebGLRenderingContextBase::uniformMatrix2fv(const WebGLUniformLocation* location, GCGLboolean transpose, Float32List&& v)
 {
-    if (isContextLost())
+    if (!validateContext())
         return;
     auto data = validateUniformMatrixParameters("uniformMatrix2fv", location, transpose, v, 4);
     if (!data)
@@ -4845,7 +4857,7 @@ void WebGLRenderingContextBase::uniformMatrix2fv(const WebGLUniformLocation* loc
 
 void WebGLRenderingContextBase::uniformMatrix3fv(const WebGLUniformLocation* location, GCGLboolean transpose, Float32List&& v)
 {
-    if (isContextLost())
+    if (!validateContext())
         return;
     auto data = validateUniformMatrixParameters("uniformMatrix3fv", location, transpose, v, 9);
     if (!data)
@@ -4855,7 +4867,7 @@ void WebGLRenderingContextBase::uniformMatrix3fv(const WebGLUniformLocation* loc
 
 void WebGLRenderingContextBase::uniformMatrix4fv(const WebGLUniformLocation* location, GCGLboolean transpose, Float32List&& v)
 {
-    if (isContextLost())
+    if (!validateContext())
         return;
     auto data = validateUniformMatrixParameters("uniformMatrix4fv", location, transpose, v, 16);
     if (!data)
@@ -4945,7 +4957,7 @@ void WebGLRenderingContextBase::vertexAttribPointer(GCGLuint index, GCGLint size
 {
     Locker locker { objectGraphLock() };
 
-    if (isContextLost())
+    if (!validateContext())
         return;
     switch (type) {
     case GraphicsContextGL::BYTE:
@@ -5013,7 +5025,7 @@ void WebGLRenderingContextBase::vertexAttribPointer(GCGLuint index, GCGLint size
 
 void WebGLRenderingContextBase::viewport(GCGLint x, GCGLint y, GCGLsizei width, GCGLsizei height)
 {
-    if (isContextLost())
+    if (!validateContext())
         return;
     if (!validateSize("viewport", width, height))
         return;
@@ -5022,7 +5034,7 @@ void WebGLRenderingContextBase::viewport(GCGLint x, GCGLint y, GCGLsizei width, 
 
 void WebGLRenderingContextBase::forceLostContext(WebGLRenderingContextBase::LostContextMode mode)
 {
-    if (isContextLost()) {
+    if (!validateContext()) {
         synthesizeLostContextGLError(GraphicsContextGL::INVALID_OPERATION, "loseContext", "context already lost");
         return;
     }
@@ -5032,7 +5044,7 @@ void WebGLRenderingContextBase::forceLostContext(WebGLRenderingContextBase::Lost
 
 void WebGLRenderingContextBase::loseContextImpl(WebGLRenderingContextBase::LostContextMode mode)
 {
-    if (isContextLost())
+    if (!validateContext())
         return;
     if (mode == RealLostContext)
         printToConsole(MessageLevel::Error, "WebGL: context lost."_s);
@@ -5919,7 +5931,7 @@ bool WebGLRenderingContextBase::supportsDrawBuffers()
 
 void WebGLRenderingContextBase::drawArraysInstanced(GCGLenum mode, GCGLint first, GCGLsizei count, GCGLsizei primcount)
 {
-    if (isContextLost())
+    if (!validateContext())
         return;
     if (!validateVertexArrayObject("drawArraysInstanced"))
         return;
@@ -5940,7 +5952,7 @@ void WebGLRenderingContextBase::drawArraysInstanced(GCGLenum mode, GCGLint first
 
 void WebGLRenderingContextBase::drawElementsInstanced(GCGLenum mode, GCGLsizei count, GCGLenum type, long long offset, GCGLsizei primcount)
 {
-    if (isContextLost())
+    if (!validateContext())
         return;
     if (!validateVertexArrayObject("drawElementsInstanced"))
         return;
@@ -6115,7 +6127,7 @@ void WebGLRenderingContextBase::addMembersToOpaqueRoots(JSC::AbstractSlotVisitor
     // roots for extensions.
 }
 
-Lock& WebGLRenderingContextBase::objectGraphLock()
+ExclusiveSharedLock& WebGLRenderingContextBase::objectGraphLock()
 {
     return m_objectGraphLock;
 }

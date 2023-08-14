@@ -74,6 +74,9 @@ void WebGLMultiDraw::multiDrawArraysWEBGL(GCGLenum mode, Int32List&& firstsList,
 
     if (!context->validateVertexArrayObject("multiDrawArraysWEBGL"))
         return;
+    
+    //ExclusiveSharedLocker locker { context->objectGraphLock(), context->objectGraphExclusiveThread() };
+    Locker locker { context->objectGraphLock() };
 
     if (context->m_currentProgram && InspectorInstrumentation::isWebGLProgramDisabled(*context, *context->m_currentProgram))
         return;
@@ -105,6 +108,8 @@ void WebGLMultiDraw::multiDrawArraysInstancedWEBGL(GCGLenum mode, Int32List&& fi
     if (!context->validateVertexArrayObject("multiDrawArraysInstancedWEBGL"))
         return;
 
+    Locker locker { context->objectGraphLock() };
+
     if (context->m_currentProgram && InspectorInstrumentation::isWebGLProgramDisabled(*context, *context->m_currentProgram))
         return;
 
@@ -133,6 +138,8 @@ void WebGLMultiDraw::multiDrawElementsWEBGL(GCGLenum mode, Int32List&& countsLis
 
     if (!context->validateVertexArrayObject("multiDrawElementsWEBGL"))
         return;
+
+    Locker locker { context->objectGraphLock() };
 
     if (context->m_currentProgram && InspectorInstrumentation::isWebGLProgramDisabled(*context, *context->m_currentProgram))
         return;
@@ -163,6 +170,8 @@ void WebGLMultiDraw::multiDrawElementsInstancedWEBGL(GCGLenum mode, Int32List&& 
 
     if (!context->validateVertexArrayObject("multiDrawElementsInstancedWEBGL"))
         return;
+
+    Locker locker { context->objectGraphLock() };
 
     if (context->m_currentProgram && InspectorInstrumentation::isWebGLProgramDisabled(*context, *context->m_currentProgram))
         return;

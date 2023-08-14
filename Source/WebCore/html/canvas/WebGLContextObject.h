@@ -49,7 +49,7 @@ public:
 
     void detachContext(const AbstractLocker&);
 
-    Lock& objectGraphLockForContext() override;
+    WTF::ExclusiveSharedLock& objectGraphLockForContext() override;
 
 protected:
     WebGLContextObject(WebGLRenderingContextBase&);

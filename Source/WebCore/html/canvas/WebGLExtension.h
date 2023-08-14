@@ -46,7 +46,7 @@ public:
     constexpr bool isLost() const { return !m_context; }
 
     constexpr WebGLRenderingContextBase& operator*() const { ASSERT(!isLost()); return *m_context; }
-    constexpr WebGLRenderingContextBase* operator->() const { ASSERT(!isLost()); return m_context; }
+    constexpr WebGLRenderingContextBase* operator->() const { return m_context; }
 
 private:
     WebGLRenderingContextBase* m_context;

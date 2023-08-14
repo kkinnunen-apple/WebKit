@@ -64,6 +64,84 @@
 
 #include "GCGLSpan.h"
 
+namespace WTF {
+
+class WTF_CAPABILITY_LOCK ExclusiveSharedLock {
+    WTF_MAKE_NONCOPYABLE(ExclusiveSharedLock);
+    WTF_MAKE_FAST_ALLOCATED;
+public:
+    ExclusiveSharedLock() = default;
+
+    void assertIsExclusiveCurrent() WTF_ASSERTS_ACQUIRED_SHARED_LOCK()
+    {
+        assertIsCurrent(m_threadLikeAssertion);
+    }
+
+    void lock() WTF_ACQUIRES_LOCK()
+    {
+        m_lock.lock();
+    }
+
+    bool tryLock() WTF_ACQUIRES_LOCK_IF(true) // NOLINT: Intentional deviation to support std::scoped_lock.
+    {
+        return m_lock.tryLock();
+    }
+
+    // Need this version for std::unique_lock.
+    bool try_lock() WTF_ACQUIRES_LOCK_IF(true)
+    {
+        return tryLock();
+    }
+
+    void unlock() WTF_RELEASES_LOCK()
+    {
+        m_lock.unlock();
+    }
+
+private:
+   Lock m_lock;
+   NO_UNIQUE_ADDRESS ThreadLikeAssertion m_threadLikeAssertion;
+};
+template <>
+class WTF_CAPABILITY_SCOPED_LOCK Locker<ExclusiveSharedLock> : public AbstractLocker {
+public:
+    explicit Locker(ExclusiveSharedLock& lock) WTF_ACQUIRES_LOCK(lock)
+        : m_lock(lock)
+        , m_isLocked(true)
+    {
+        m_lock.lock();
+    }
+    Locker(AdoptLockTag, ExclusiveSharedLock& lock) WTF_REQUIRES_LOCK(lock)
+        : m_lock(lock)
+        , m_isLocked(true)
+    {
+    }
+    ~Locker() WTF_RELEASES_LOCK()
+    {
+        if (m_isLocked)
+            m_lock.unlock();
+    }
+    void unlockEarly() WTF_RELEASES_LOCK()
+    {
+        ASSERT(m_isLocked);
+        m_isLocked = false;
+        m_lock.unlock();
+    }
+    Locker(const Locker<ExclusiveSharedLock>&) = delete;
+    Locker& operator=(const Locker<ExclusiveSharedLock>&) = delete;
+
+private:
+    ExclusiveSharedLock& m_lock;
+    bool m_isLocked { false };
+};
+
+Locker(ExclusiveSharedLock&) -> Locker<ExclusiveSharedLock>;
+Locker(AdoptLockTag, ExclusiveSharedLock&) -> Locker<ExclusiveSharedLock>;
+
+}
+using WTF::ExclusiveSharedLock;
+using WTF::ExclusiveSharedLock;
+
 namespace JSC {
 class AbstractSlotVisitor;
 }
@@ -494,7 +572,7 @@ public:
     // currently latched into the context - without traversing all of
     // the latched objects to find the current one, which would be
     // prohibitively expensive.
-    Lock& objectGraphLock() WTF_RETURNS_LOCK(m_objectGraphLock);
+    ExclusiveSharedLock& objectGraphLock() WTF_RETURNS_LOCK(m_objectGraphLock);
 
     // Returns the ordinal number of when the context was last active (drew, read pixels).
     uint64_t activeOrdinal() const { return m_activeOrdinal; }
@@ -536,7 +614,7 @@ protected:
     friend class InspectorScopedShaderProgramHighlight;
 
     void initializeNewContext(Ref<GraphicsContextGL>);
-    virtual void initializeContextState();
+    virtual void initializeContextState() WTF_REQUIRES_LOCK(objectGraphLock());
     virtual void initializeVertexArrayObjects() = 0;
 
     // ActiveDOMObject
@@ -570,6 +648,10 @@ protected:
     // Helper to return the size in bytes of OpenGL data types
     // like GL_FLOAT, GL_INT, etc.
     unsigned sizeInBytes(GCGLenum type);
+
+    // Validates the context. Establishes the object graph read assertion.
+    bool validateContext() WTF_ASSERTS_ACQUIRED_SHARED_LOCK(objectGraphLock());
+    bool validateContextForWrite();
 
     // Validates the incoming WebGL object, which is assumed to be non-null.
     // Checks that the object belongs to this context and that it's not marked for
@@ -616,7 +698,7 @@ protected:
 
     RefPtr<GraphicsContextGL> m_context;
     RefPtr<WebGLContextGroup> m_contextGroup;
-    Lock m_objectGraphLock;
+    ExclusiveSharedLock m_objectGraphLock;
 
     EventLoopTimerHandle m_restoreTimer;
     GCGLErrorCodeSet m_errors;
@@ -658,7 +740,7 @@ protected:
     Vector<VertexAttribValue> m_vertexAttribValue;
     unsigned m_maxVertexAttribs;
 
-    RefPtr<WebGLProgram> m_currentProgram;
+    RefPtr<WebGLProgram> m_currentProgram WTF_GUARDED_BY_LOCK(objectGraphLock());
     RefPtr<WebGLFramebuffer> m_framebufferBinding;
     RefPtr<WebGLRenderbuffer> m_renderbufferBinding;
     struct TextureUnitState {
@@ -1005,14 +1087,14 @@ protected:
     virtual bool validateCapability(const char* functionName, GCGLenum);
 
     // Helper function to validate input parameters for uniform functions.
-    bool validateUniformLocation(const char* functionName, const WebGLUniformLocation*);
+    bool validateUniformLocation(const char* functionName, const WebGLUniformLocation*) WTF_REQUIRES_SHARED_LOCK(objectGraphLock());
     template<typename T, typename TypedListType>
-    std::optional<std::span<const T>> validateUniformParameters(const char* functionName, const WebGLUniformLocation* location, const TypedList<TypedListType, T>& values, GCGLsizei requiredMinSize, GCGLuint srcOffset = 0, GCGLuint srcLength = 0)
+    std::optional<std::span<const T>> validateUniformParameters(const char* functionName, const WebGLUniformLocation* location, const TypedList<TypedListType, T>& values, GCGLsizei requiredMinSize, GCGLuint srcOffset = 0, GCGLuint srcLength = 0) WTF_REQUIRES_SHARED_LOCK(objectGraphLock())
     {
         return validateUniformMatrixParameters(functionName, location, false, values, requiredMinSize, srcOffset, srcLength);
     }
     template<typename T, typename TypedListType>
-    std::optional<std::span<const T>> validateUniformMatrixParameters(const char* functionName, const WebGLUniformLocation*, GCGLboolean transpose, const TypedList<TypedListType, T>&, GCGLsizei requiredMinSize, GCGLuint srcOffset = 0, GCGLuint srcLength = 0);
+    std::optional<std::span<const T>> validateUniformMatrixParameters(const char* functionName, const WebGLUniformLocation*, GCGLboolean transpose, const TypedList<TypedListType, T>&, GCGLsizei requiredMinSize, GCGLuint srcOffset = 0, GCGLuint srcLength = 0) WTF_REQUIRES_SHARED_LOCK(objectGraphLock());
 
     // Helper function to validate parameters for bufferData.
     // Return the current bound buffer to target, or 0 if parameters are invalid.

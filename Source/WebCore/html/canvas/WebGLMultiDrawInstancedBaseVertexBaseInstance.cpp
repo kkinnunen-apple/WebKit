@@ -75,6 +75,7 @@ void WebGLMultiDrawInstancedBaseVertexBaseInstance::multiDrawArraysInstancedBase
 
     if (!context->validateVertexArrayObject("multiDrawArraysInstancedBaseInstanceWEBGL"))
         return;
+    Locker locker { context->objectGraphLock() };
 
     if (context->m_currentProgram && InspectorInstrumentation::isWebGLProgramDisabled(*context, *context->m_currentProgram))
         return;
@@ -104,6 +105,8 @@ void WebGLMultiDrawInstancedBaseVertexBaseInstance::multiDrawElementsInstancedBa
         || !validateOffset(context, "multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL", "baseInstancesOffset out of bounds", baseInstancesList.length(), baseInstancesOffset, drawcount)) {
         return;
     }
+
+    Locker locker { context->objectGraphLock() };
 
     if (!context->validateVertexArrayObject("multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL"))
         return;
