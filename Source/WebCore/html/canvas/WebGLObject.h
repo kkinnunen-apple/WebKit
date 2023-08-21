@@ -38,6 +38,40 @@ class GraphicsContextGL;
 class WebCoreOpaqueRoot;
 class WebGLRenderingContextBase;
 
+template<typename T>
+class WebGLAttachmentPoint
+{
+public:
+    WebGLAttachmentPoint() = default;
+    explicit WebGLAttachmentPoint(RefPtr<T> object)
+        : m_object(WTFMove(object))
+    {
+        if (m_object)
+            m_object->onAttached();
+    }
+    ~WebGLAttachmentPoint()
+    {
+        if (m_object)
+            m_object->onDetached();
+    }
+    WebGLAttachmentPoint& operator=(RefPtr<T> object) 
+    {
+        if (m_object == object)
+            return;
+        if (m_object)
+            m_object->onDetached();
+        m_object = WTFMove(object);
+        if (m_object)
+            m_object->onAttached();
+        return *this;
+    }
+    auto operator<=>(RefPtr<T> object) const { return m_object <=> object; }
+    RefPtr<T> get() const { return m_object; }
+
+private:
+    RefPtr<T> m_object;
+};
+
 class WebGLObject : public RefCounted<WebGLObject> {
 public:
     virtual ~WebGLObject() = default;
@@ -60,10 +94,7 @@ public:
     // This indicates whether the client side issue a delete call already, not
     // whether the OpenGL resource is deleted.
     // object()==0 indicates the OpenGL resource is deleted.
-    bool isDeleted() { return m_deleted; }
-
-    // True if this object belongs to the context.
-    bool validate(const WebGLRenderingContextBase& context) const { return &context == m_context; }
+    bool isDeleted() const { return m_deleted; }
 
     Lock& objectGraphLockForContext();
 

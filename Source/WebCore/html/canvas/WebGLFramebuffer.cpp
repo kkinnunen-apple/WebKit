@@ -98,9 +98,9 @@ namespace {
             m_renderbuffer->setInitialized();
     }
 
-    void WebGLRenderbufferAttachment::onDetached(const AbstractLocker& locker, GraphicsContextGL* context)
+    void WebGLRenderbufferAttachment::onDetached()
     {
-        m_renderbuffer->onDetached(locker, context);
+        m_renderbuffer->onDetached();
     }
 
     void WebGLRenderbufferAttachment::attach(GraphicsContextGL* context, GCGLenum target, GCGLenum attachment)
@@ -371,7 +371,7 @@ void WebGLFramebuffer::deleteObjectImpl(const AbstractLocker& locker, GraphicsCo
 {
     for (auto& attachment : m_attachments.values())
         attachment->onDetached(locker, context3d);
-
+    m_attachments.clear();
     context3d->deleteFramebuffer(object);
 }
 

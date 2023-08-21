@@ -74,9 +74,9 @@ public:
     // Also, we invalidate the cached program info.
     void increaseLinkCount();
 
-    WebGLShader* getAttachedShader(GCGLenum);
-    bool attachShader(const AbstractLocker&, WebGLShader*);
-    bool detachShader(const AbstractLocker&, WebGLShader*);
+    RefPtr<WebGLShader> getAttachedShader(GCGLenum);
+    void attachShader(AbstractLocker&, WebGLShader&);
+    void detachShader(AbstractLocker&,GCGLenum);
     
     void setRequiredTransformFeedbackBufferCount(int count)
     {
@@ -90,6 +90,8 @@ public:
 
     void addMembersToOpaqueRoots(const AbstractLocker&, JSC::AbstractSlotVisitor&);
 
+    bool isDeleted() const { return object(); }
+    bool isValidObject() const { return true; }
 private:
     WebGLProgram(WebGLRenderingContextBase&);
 
@@ -107,8 +109,8 @@ private:
     // This is used to track whether a WebGLUniformLocation belongs to this program or not.
     unsigned m_linkCount { 0 };
 
-    RefPtr<WebGLShader> m_vertexShader;
-    RefPtr<WebGLShader> m_fragmentShader;
+    WebGLAttachmentPoint<WebGLShader> m_vertexShader;
+    WebGLAttachmentPoint<WebGLShader> m_fragmentShader;
 
     bool m_infoValid { true };
     int m_requiredTransformFeedbackBufferCountAfterNextLink { 0 };

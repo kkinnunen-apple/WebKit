@@ -69,15 +69,12 @@ void EXTDisjointTimerQuery::deleteQueryEXT(WebGLTimerQueryEXT* query)
         return;
 
     Locker locker { context->objectGraphLock() };
-
     if (!query)
         return;
-
-    if (!query->validate(*context)) {
-        context->synthesizeGLError(GraphicsContextGL::INVALID_OPERATION, "delete", "object does not belong to this context");
+    if (query->context() != &*context) {
+        context->synthesizeGLError(GraphicsContextGL::INVALID_OPERATION, "deleteQueryEXT", "object does not belong to this context");
         return;
     }
-
     if (query->isDeleted())
         return;
 
@@ -95,13 +92,12 @@ GCGLboolean EXTDisjointTimerQuery::isQueryEXT(WebGLTimerQueryEXT* query)
     auto context = WebGLExtensionScopedContext(this);
     if (context.isLost())
         return false;
-
-    if (!query || !query->validate(*context))
+    if (!query)
         return false;
-
+    if (query->context() != &*context)
+        return false;
     if (query->isDeleted())
         return false;
-
     return context->graphicsContextGL()->isQueryEXT(query->object());
 }
 
@@ -113,7 +109,7 @@ void EXTDisjointTimerQuery::beginQueryEXT(GCGLenum target, WebGLTimerQueryEXT& q
 
     Locker locker { context->objectGraphLock() };
 
-    if (!context->validateWebGLObject("beginQueryEXT", &query))
+    if (!context->validateWebGLObject("beginQueryEXT", query))
         return;
 
     // The WebGL extension requires ending time elapsed queries when they are deleted.
@@ -173,7 +169,7 @@ void EXTDisjointTimerQuery::queryCounterEXT(WebGLTimerQueryEXT& query, GCGLenum 
     if (context.isLost() || !context->scriptExecutionContext())
         return;
 
-    if (!context->validateWebGLObject("queryCounterEXT", &query))
+    if (!context->validateWebGLObject("queryCounterEXT", query))
         return;
 
     if (target != GraphicsContextGL::TIMESTAMP_EXT) {
@@ -225,7 +221,7 @@ WebGLAny EXTDisjointTimerQuery::getQueryObjectEXT(WebGLTimerQueryEXT& query, GCG
     if (context.isLost())
         return nullptr;
 
-    if (!context->validateWebGLObject("getQueryObjectEXT", &query))
+    if (!context->validateWebGLObject("getQueryObjectEXT", query))
         return nullptr;
 
     if (!query.target()) {

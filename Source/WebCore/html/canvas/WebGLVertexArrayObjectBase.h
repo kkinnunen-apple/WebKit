@@ -54,7 +54,7 @@ public:
         bool validateBinding() const { return !enabled || isBound(); }
 
         bool enabled { false };
-        RefPtr<WebGLBuffer> bufferBinding;
+        WebGLAttachmentPoint<WebGLBuffer> bufferBinding;
         GCGLsizei bytesPerElement { 0 };
         GCGLint size { 4 };
         GCGLenum type { GraphicsContextGL::FLOAT };
@@ -91,7 +91,7 @@ protected:
 
     Type m_type;
     bool m_hasEverBeenBound { false };
-    RefPtr<WebGLBuffer> m_boundElementArrayBuffer;
+    WebGLAttachmentPoint<WebGLBuffer> m_boundElementArrayBuffer;
     Vector<VertexAttribState> m_vertexAttribState;
     std::optional<bool> m_allEnabledAttribBuffersBoundCache;
 };

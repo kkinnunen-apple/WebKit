@@ -54,6 +54,7 @@
 #include <JavaScriptCore/TypedArrayAdaptors.h>
 #include <limits>
 #include <memory>
+#include <type_traits>
 #include <wtf/CheckedArithmetic.h>
 #include <wtf/ListHashSet.h>
 #include <wtf/Lock.h>
@@ -309,7 +310,7 @@ public:
 
     void lineWidth(GCGLfloat);
     void linkProgram(WebGLProgram&);
-    bool linkProgramWithoutInvalidatingAttribLocations(WebGLProgram*);
+    bool linkProgramWithoutInvalidatingAttribLocations(WebGLProgram&);
     virtual void pixelStorei(GCGLenum pname, GCGLint param);
 #if ENABLE(WEBXR)
     using MakeXRCompatiblePromise = DOMPromiseDeferred<void>;
@@ -564,16 +565,9 @@ protected:
     // like GL_FLOAT, GL_INT, etc.
     unsigned sizeInBytes(GCGLenum type);
 
-    // Validates the incoming WebGL object, which is assumed to be non-null.
-    // Checks that the object belongs to this context and that it's not marked for
-    // deletion. Performs a context lost check internally.
-    bool validateWebGLObject(const char*, WebGLObject*);
-
-    // Validates the incoming WebGL program or shader, which is assumed to be
-    // non-null. OpenGL ES's validation rules differ for these types of objects
-    // compared to others. Performs a context lost check internally.
-    bool validateWebGLProgramOrShader(const char*, WebGLObject*);
-
+    template<typename T> bool validateWebGLObject(const char*, const T&);
+    template<typename T> bool validateWebGLObjectForDelete(const T*);
+    template<typename T> bool isWebGLObject(const T*);
     bool validateVertexArrayObject(const char* functionName);
 
     // Adds a compressed texture format.
@@ -649,7 +643,7 @@ protected:
     Vector<VertexAttribValue> m_vertexAttribValue;
     unsigned m_maxVertexAttribs;
 
-    RefPtr<WebGLProgram> m_currentProgram;
+    WebGLAttachmentPoint<WebGLProgram> m_currentProgram;
     RefPtr<WebGLFramebuffer> m_framebufferBinding;
     RefPtr<WebGLRenderbuffer> m_renderbufferBinding;
     struct TextureUnitState {
@@ -1024,18 +1018,6 @@ protected:
     void vertexAttribfImpl(const char* functionName, GCGLuint index, GCGLsizei expectedSize, GCGLfloat, GCGLfloat, GCGLfloat, GCGLfloat);
     void vertexAttribfvImpl(const char* functionName, GCGLuint index, Float32List&&, GCGLsizei expectedSize);
 
-    // Helper function for delete* (deleteBuffer, deleteProgram, etc) functions.
-    // Return false if caller should return without further processing.
-    bool deleteObject(const AbstractLocker&, WebGLObject*);
-
-    // Helper function for APIs which can legally receive null objects, including
-    // the bind* calls (bindBuffer, bindTexture, etc.) and useProgram. Checks that
-    // the object belongs to this context and that it's not marked for deletion.
-    // Returns false if the caller should return without further processing.
-    // Performs a context lost check internally.
-    // This returns true for null WebGLObject arguments!
-    bool validateNullableWebGLObject(const char* functionName, WebGLObject*);
-
     // Helper function to validate the target for bufferData and
     // getBufferParameter.
     virtual bool validateBufferTarget(const char* functionName, GCGLenum target);
@@ -1119,6 +1101,44 @@ private:
 };
 
 WebCoreOpaqueRoot root(WebGLRenderingContextBase*);
+
+template<typename T>
+bool WebGLRenderingContextBase::validateWebGLObject(const char* functionName, const T& object)
+{
+    if (object.isDeleted()) {
+        synthesizeGLError(GraphicsContextGL::INVALID_OPERATION, functionName, "attempt to use a deleted object");
+        return false;
+    }
+    if (object.context() != this) {
+        synthesizeGLError(GraphicsContextGL::INVALID_OPERATION, functionName, "object does not belong to this context");
+        return false;
+    }
+    return true;
+}
+
+template<typename T>
+bool WebGLRenderingContextBase::validateWebGLObjectForDelete(const char* functionName, const T* object)
+{
+    if (!object)
+        return false;
+    if (object->context() != this) {
+        synthesizeGLError(GraphicsContextGL::INVALID_OPERATION, functionName, "object does not belong to this context");
+        return false;
+    }
+    if (object->isDeleted())
+        return false;
+    return true;
+}
+
+template<typename T>
+bool WebGLRenderingContextBase::isWebGLObject(const T* object)
+    if (!object)
+        return false;
+    if (object->context() != this)
+        return false;
+    if (!object->exists())
+        return false;
+}
 
 } // namespace WebCore
 

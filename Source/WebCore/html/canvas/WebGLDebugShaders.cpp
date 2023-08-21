@@ -54,7 +54,7 @@ String WebGLDebugShaders::getTranslatedShaderSource(WebGLShader& shader)
     auto context = WebGLExtensionScopedContext(this);
     if (context.isLost())
         return String();
-    if (!context->validateWebGLObject("getTranslatedShaderSource", &shader))
+    if (!context->validateWebGLShader("getTranslatedShaderSource", shader))
         return emptyString();
     return context->graphicsContextGL()->getTranslatedShaderSourceANGLE(shader.object());
 }

@@ -99,14 +99,10 @@ void WebGLProgram::contextDestroyed()
 void WebGLProgram::deleteObjectImpl(const AbstractLocker& locker, GraphicsContextGL* context3d, PlatformGLObject obj)
 {
     context3d->deleteProgram(obj);
-    if (m_vertexShader) {
-        m_vertexShader->onDetached(locker, context3d);
+    if (m_vertexShader)
         m_vertexShader = nullptr;
-    }
-    if (m_fragmentShader) {
-        m_fragmentShader->onDetached(locker, context3d);
+    if (m_fragmentShader)
         m_fragmentShader = nullptr;
-    }
 }
 
 unsigned WebGLProgram::numActiveAttribLocations()
@@ -151,7 +147,7 @@ void WebGLProgram::increaseLinkCount()
     m_infoValid = false;
 }
 
-WebGLShader* WebGLProgram::getAttachedShader(GCGLenum type)
+RefPtr<WebGLShader> WebGLProgram::getAttachedShader(GCGLenum type)
 {
     switch (type) {
     case GraphicsContextGL::VERTEX_SHADER:
@@ -163,43 +159,29 @@ WebGLShader* WebGLProgram::getAttachedShader(GCGLenum type)
     }
 }
 
-bool WebGLProgram::attachShader(const AbstractLocker&, WebGLShader* shader)
+void WebGLProgram::attachShader(AbstractLocker&, WebGLShader& shader)
 {
-    if (!shader || !shader->object())
-        return false;
-    switch (shader->getType()) {
+    switch (shader.getType()) {
     case GraphicsContextGL::VERTEX_SHADER:
-        if (m_vertexShader)
-            return false;
         m_vertexShader = shader;
-        return true;
+        return;
     case GraphicsContextGL::FRAGMENT_SHADER:
-        if (m_fragmentShader)
-            return false;
         m_fragmentShader = shader;
-        return true;
+        return;
     default:
-        return false;
     }
 }
 
-bool WebGLProgram::detachShader(const AbstractLocker&, WebGLShader* shader)
+void WebGLProgram::detachShader(AbstractLocker&, GCGLenum type)
 {
-    if (!shader || !shader->object())
-        return false;
-    switch (shader->getType()) {
+    switch (type) {
     case GraphicsContextGL::VERTEX_SHADER:
-        if (m_vertexShader != shader)
-            return false;
         m_vertexShader = nullptr;
-        return true;
+        return;
     case GraphicsContextGL::FRAGMENT_SHADER:
-        if (m_fragmentShader != shader)
-            return false;
         m_fragmentShader = nullptr;
-        return true;
+        return;
     default:
-        return false;
     }
 }
 

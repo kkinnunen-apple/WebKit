@@ -120,7 +120,7 @@ private:
     // null, remove the attached object.
     void removeAttachmentInternal(const AbstractLocker&, GCGLenum attachment);
 
-    typedef HashMap<GCGLenum, RefPtr<WebGLAttachment>> AttachmentMap;
+    typedef HashMap<GCGLenum, WebGLAttachmentPoint<WebGLAttachment>> AttachmentMap;
 
     AttachmentMap m_attachments;
 

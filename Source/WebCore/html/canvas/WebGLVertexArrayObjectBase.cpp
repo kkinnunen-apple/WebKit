@@ -44,13 +44,9 @@ WebGLVertexArrayObjectBase::WebGLVertexArrayObjectBase(WebGLRenderingContextBase
 
 void WebGLVertexArrayObjectBase::setElementArrayBuffer(const AbstractLocker& locker, WebGLBuffer* buffer)
 {
-    if (buffer)
-        buffer->onAttached();
-    if (m_boundElementArrayBuffer)
-        m_boundElementArrayBuffer->onDetached(locker, context()->graphicsContextGL());
-    m_boundElementArrayBuffer = buffer;
-    
+    m_boundElementArrayBuffer = buffer;  
 }
+
 void WebGLVertexArrayObjectBase::setVertexAttribEnabled(int index, bool flag)
 {
     auto& state = m_vertexAttribState[index];
@@ -67,10 +63,6 @@ void WebGLVertexArrayObjectBase::setVertexAttribState(const AbstractLocker& lock
 {
     auto& state = m_vertexAttribState[index];
     bool bindingWasValid = state.validateBinding();
-    if (buffer)
-        buffer->onAttached();
-    if (state.bufferBinding)
-        state.bufferBinding->onDetached(locker, context()->graphicsContextGL());
     state.bufferBinding = buffer;
     if (!state.validateBinding())
         m_allEnabledAttribBuffersBoundCache = false;
@@ -88,14 +80,11 @@ void WebGLVertexArrayObjectBase::setVertexAttribState(const AbstractLocker& lock
 
 void WebGLVertexArrayObjectBase::unbindBuffer(const AbstractLocker& locker, WebGLBuffer& buffer)
 {
-    if (m_boundElementArrayBuffer == &buffer) {
-        m_boundElementArrayBuffer->onDetached(locker, context()->graphicsContextGL());
+    if (m_boundElementArrayBuffer == &buffer)
         m_boundElementArrayBuffer = nullptr;
-    }
     
     for (auto& state : m_vertexAttribState) {
         if (state.bufferBinding == &buffer) {
-            buffer.onDetached(locker, context()->graphicsContextGL());
             state.bufferBinding = nullptr;
             if (!state.validateBinding())
                 m_allEnabledAttribBuffersBoundCache = false;
