@@ -45,7 +45,7 @@ WorkQueue& WorkQueue::main()
     static NeverDestroyed<RefPtr<WorkQueue>> mainWorkQueue;
     static std::once_flag onceKey;
     std::call_once(onceKey, [&] {
-        mainWorkQueue.get() = constructMainWorkQueue();
+        mainWorkQueue.get() = adoptRef(*new WorkQueue(CreateMain));
     });
     return *mainWorkQueue.get();
 }
@@ -65,9 +65,24 @@ Ref<WorkQueue> WorkQueue::create(const char* name, QOS qos)
     return adoptRef(*new WorkQueue(name, qos));
 }
 
+void WorkQueue::dispatch(Function<void()>&& function)
+{
+    WorkQueueBase::dispatch(WTFMove(function));
+}
+
+void WorkQueue::assertIsCurrent() const
+{
+    WTF::assertIsCurrent(threadLikeAssertion());
+}
+
 Ref<ConcurrentWorkQueue> ConcurrentWorkQueue::create(const char* name, QOS qos)
 {
     return adoptRef(*new ConcurrentWorkQueue(name, qos));
+}
+
+void ConcurrentWorkQueue::dispatch(Function<void()>&& function)
+{
+    WorkQueueBase::dispatch(WTFMove(function));
 }
 
 #if !PLATFORM(COCOA)
