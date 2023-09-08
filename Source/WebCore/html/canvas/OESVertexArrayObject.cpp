@@ -63,7 +63,7 @@ void OESVertexArrayObject::deleteVertexArrayOES(WebGLVertexArrayObjectOES* array
         return;
     auto& context = this->context();
 
-    Locker locker { context.objectGraphLock() };
+    Locker locker { context.m_lock };
 
     if (!arrayObject)
         return;
@@ -77,9 +77,9 @@ void OESVertexArrayObject::deleteVertexArrayOES(WebGLVertexArrayObjectOES* array
         return;
 
     if (!arrayObject->isDefaultObject() && arrayObject == context.m_boundVertexArrayObject)
-        context.setBoundVertexArrayObject(locker, nullptr);
+        context.setBoundVertexArrayObject(nullptr);
 
-    arrayObject->deleteObject(locker, context.graphicsContextGL());
+    arrayObject->deleteObject(context.graphicsContextGL());
 }
 
 GCGLboolean OESVertexArrayObject::isVertexArrayOES(WebGLVertexArrayObjectOES* arrayObject)
@@ -97,7 +97,6 @@ void OESVertexArrayObject::bindVertexArrayOES(WebGLVertexArrayObjectOES* arrayOb
     if (isContextLost())
         return;
     auto& context = this->context();
-    Locker locker { context.objectGraphLock() };
 
     // Checks for already deleted objects and objects from other contexts. 
     if (!context.validateNullableWebGLObject("bindVertexArrayOES", arrayObject))
@@ -106,10 +105,12 @@ void OESVertexArrayObject::bindVertexArrayOES(WebGLVertexArrayObjectOES* arrayOb
     auto* contextGL = context.graphicsContextGL();
     if (arrayObject && !arrayObject->isDefaultObject() && arrayObject->object()) {
         contextGL->bindVertexArray(arrayObject->object());
-        context.setBoundVertexArrayObject(locker, arrayObject);
+        Locker locker { context.m_lock };
+        context.setBoundVertexArrayObject(arrayObject);
     } else {
         contextGL->bindVertexArray(0);
-        context.setBoundVertexArrayObject(locker, nullptr);
+        Locker locker { context.m_lock };
+        context.setBoundVertexArrayObject(nullptr);
     }
 }
 

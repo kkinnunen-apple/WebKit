@@ -38,10 +38,6 @@ namespace JSC {
 class AbstractSlotVisitor;
 }
 
-namespace WTF {
-class AbstractLocker;
-};
-
 namespace WebCore {
 
 class ScriptExecutionContext;
@@ -75,8 +71,8 @@ public:
     void increaseLinkCount();
 
     WebGLShader* getAttachedShader(GCGLenum);
-    bool attachShader(const AbstractLocker&, WebGLShader*);
-    bool detachShader(const AbstractLocker&, WebGLShader*);
+    bool attachShader(WebGLShader*);
+    bool detachShader(WebGLShader*);
     
     void setRequiredTransformFeedbackBufferCount(int count)
     {
@@ -88,7 +84,7 @@ public:
         return m_requiredTransformFeedbackBufferCount;
     }
 
-    void addMembersToOpaqueRoots(const AbstractLocker&, JSC::AbstractSlotVisitor&);
+    void addMembersToOpaqueRoots(JSC::AbstractSlotVisitor&);
 
     bool isUsable() const { return object(); }
     bool isInitialized() const { return true; }
@@ -96,7 +92,7 @@ public:
 private:
     WebGLProgram(WebGLRenderingContextBase&, PlatformGLObject);
 
-    void deleteObjectImpl(const AbstractLocker&, GraphicsContextGL*, PlatformGLObject) override;
+    void deleteObjectImpl(GraphicsContextGL*, PlatformGLObject) override;
 
     void cacheActiveAttribLocations(GraphicsContextGL*);
     void cacheInfoIfNeeded();
@@ -110,8 +106,9 @@ private:
     // This is used to track whether a WebGLUniformLocation belongs to this program or not.
     unsigned m_linkCount { 0 };
 
-    RefPtr<WebGLShader> m_vertexShader;
-    RefPtr<WebGLShader> m_fragmentShader;
+    mutable Lock m_lock;
+    RefPtr<WebGLShader> m_vertexShader WTF_GUARDED_BY_LOCK(m_lock);
+    RefPtr<WebGLShader> m_fragmentShader WTF_GUARDED_BY_LOCK(m_lock);
 
     bool m_infoValid { true };
     int m_requiredTransformFeedbackBufferCountAfterNextLink { 0 };

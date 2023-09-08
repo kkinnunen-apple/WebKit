@@ -59,33 +59,50 @@ WebGLTransformFeedback::WebGLTransformFeedback(WebGL2RenderingContext& context, 
     m_boundIndexedTransformFeedbackBuffers.resize(context.maxTransformFeedbackSeparateAttribs());
 }
 
-void WebGLTransformFeedback::deleteObjectImpl(const AbstractLocker&, GraphicsContextGL* context3d, PlatformGLObject object)
+void WebGLTransformFeedback::deleteObjectImpl(GraphicsContextGL* context3d, PlatformGLObject object)
 {
     context3d->deleteTransformFeedback(object);
 }
 
-void WebGLTransformFeedback::setProgram(const AbstractLocker&, WebGLProgram& program)
+WebGLProgram* WebGLTransformFeedback::program() const
 {
-    m_program = &program;
-    m_programLinkCount = program.getLinkCount();
+    ExclusiveSharedLocker locker { m_lock };
+    return m_program.get();
 }
 
-void WebGLTransformFeedback::setBoundIndexedTransformFeedbackBuffer(const AbstractLocker&, GCGLuint index, WebGLBuffer* buffer)
+void WebGLTransformFeedback::setProgram(WebGLProgram& program)
 {
+    m_programLinkCount = program.getLinkCount();
+
+    Locker locker { m_lock };
+    m_program = &program;
+}
+
+void WebGLTransformFeedback::setBoundIndexedTransformFeedbackBuffer(GCGLuint index, WebGLBuffer* buffer)
+{
+    Locker locker { m_lock };
     ASSERT(index < m_boundIndexedTransformFeedbackBuffers.size());
     m_boundIndexedTransformFeedbackBuffers[index] = buffer;
 }
 
 bool WebGLTransformFeedback::getBoundIndexedTransformFeedbackBuffer(GCGLuint index, WebGLBuffer** outBuffer)
 {
+    ExclusiveSharedLocker locker { m_lock };
     if (index >= m_boundIndexedTransformFeedbackBuffers.size())
         return false;
     *outBuffer = m_boundIndexedTransformFeedbackBuffers[index].get();
     return true;
 }
 
+bool WebGLTransformFeedback::hasBoundIndexedTransformFeedbackBuffer(const WebGLBuffer* buffer)
+{
+    ExclusiveSharedLocker locker { m_lock };
+    return m_boundIndexedTransformFeedbackBuffers.contains(buffer);
+}
+
 bool WebGLTransformFeedback::hasEnoughBuffers(GCGLuint numRequired) const
 {
+    ExclusiveSharedLocker locker { m_lock };
     if (numRequired > m_boundIndexedTransformFeedbackBuffers.size())
         return false;
     for (GCGLuint i = 0; i < numRequired; i++) {
@@ -95,18 +112,20 @@ bool WebGLTransformFeedback::hasEnoughBuffers(GCGLuint numRequired) const
     return true;
 }
 
-void WebGLTransformFeedback::addMembersToOpaqueRoots(const AbstractLocker& locker, JSC::AbstractSlotVisitor& visitor)
+void WebGLTransformFeedback::addMembersToOpaqueRoots(JSC::AbstractSlotVisitor& visitor)
 {
+    SharedLocker locker { m_lock };
     for (auto& buffer : m_boundIndexedTransformFeedbackBuffers)
         addWebCoreOpaqueRoot(visitor, buffer.get());
 
     addWebCoreOpaqueRoot(visitor, m_program.get());
     if (m_program)
-        m_program->addMembersToOpaqueRoots(locker, visitor);
+        m_program->addMembersToOpaqueRoots(visitor);
 }
 
-void WebGLTransformFeedback::unbindBuffer(const AbstractLocker&, WebGLBuffer& buffer)
+void WebGLTransformFeedback::unbindBuffer(WebGLBuffer& buffer)
 {
+    Locker locker { m_lock };
     for (auto& boundBuffer : m_boundIndexedTransformFeedbackBuffers) {
         if (boundBuffer == &buffer)
             boundBuffer = nullptr;
@@ -115,6 +134,7 @@ void WebGLTransformFeedback::unbindBuffer(const AbstractLocker&, WebGLBuffer& bu
 
 bool WebGLTransformFeedback::validateProgramForResume(WebGLProgram* program) const
 {
+    ExclusiveSharedLocker locker { m_lock };
     return program && m_program == program && program->getLinkCount() == m_programLinkCount;
 }
 

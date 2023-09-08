@@ -56,7 +56,7 @@ WebGLRenderbuffer::WebGLRenderbuffer(WebGLRenderingContextBase& context, Platfor
 {
 }
 
-void WebGLRenderbuffer::deleteObjectImpl(const AbstractLocker&, GraphicsContextGL* context3d, PlatformGLObject object)
+void WebGLRenderbuffer::deleteObjectImpl(GraphicsContextGL* context3d, PlatformGLObject object)
 {
     context3d->deleteRenderbuffer(object);
 }

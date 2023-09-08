@@ -66,7 +66,7 @@ void WebGLMultiDraw::multiDrawArraysWEBGL(GCGLenum mode, Int32List&& firstsList,
         || !validateOffset(context, "multiDrawArraysWEBGL", "countsOffset out of bounds", countsList.length(), countsOffset, drawcount)) {
         return;
     }
-
+    ExclusiveSharedLocker locker { context.m_lock };
     if (!context.validateVertexArrayObject("multiDrawArraysWEBGL"))
         return;
 
@@ -96,7 +96,7 @@ void WebGLMultiDraw::multiDrawArraysInstancedWEBGL(GCGLenum mode, Int32List&& fi
         || !validateOffset(context, "multiDrawArraysInstancedWEBGL", "instanceCountsOffset out of bounds", instanceCountsList.length(), instanceCountsOffset, drawcount)) {
         return;
     }
-
+    ExclusiveSharedLocker locker { context.m_lock };
     if (!context.validateVertexArrayObject("multiDrawArraysInstancedWEBGL"))
         return;
 
@@ -125,7 +125,7 @@ void WebGLMultiDraw::multiDrawElementsWEBGL(GCGLenum mode, Int32List&& countsLis
         || !validateOffset(context, "multiDrawElementsWEBGL", "offsetsOffset out of bounds", offsetsList.length(), offsetsOffset, drawcount)) {
         return;
     }
-
+    ExclusiveSharedLocker locker { context.m_lock };
     if (!context.validateVertexArrayObject("multiDrawElementsWEBGL"))
         return;
 
@@ -155,7 +155,7 @@ void WebGLMultiDraw::multiDrawElementsInstancedWEBGL(GCGLenum mode, Int32List&& 
         || !validateOffset(context, "multiDrawElementsWEBGL", "instanceCountsOffset out of bounds", instanceCountsList.length(), instanceCountsOffset, drawcount)) {
         return;
     }
-
+    ExclusiveSharedLocker locker { context.m_lock };
     if (!context.validateVertexArrayObject("multiDrawElementsInstancedWEBGL"))
         return;
 

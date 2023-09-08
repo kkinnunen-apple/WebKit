@@ -54,6 +54,7 @@ void WebGLDrawInstancedBaseVertexBaseInstance::drawArraysInstancedBaseInstanceWE
     if (isContextLost())
         return;
     auto& context = this->context();
+    ExclusiveSharedLocker locker { context.m_lock };
 
     if (!context.validateVertexArrayObject("drawArraysInstancedBaseInstanceWEBGL"))
         return;
@@ -77,6 +78,7 @@ void WebGLDrawInstancedBaseVertexBaseInstance::drawElementsInstancedBaseVertexBa
     if (isContextLost())
         return;
     auto& context = this->context();
+    ExclusiveSharedLocker locker { context.m_lock };
 
     if (!context.validateVertexArrayObject("drawElementsInstancedBaseVertexBaseInstanceWEBGL"))
         return;

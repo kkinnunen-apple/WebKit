@@ -70,18 +70,18 @@ public:
 
     void didBind() { m_hasEverBeenBound = true; }
 
-    WebGLBuffer* getElementArrayBuffer() const { return m_boundElementArrayBuffer.get(); }
-    void setElementArrayBuffer(const AbstractLocker&, WebGLBuffer*);
+    WebGLBuffer* getElementArrayBuffer() const;
+    void setElementArrayBuffer(WebGLBuffer*);
 
     void setVertexAttribEnabled(int index, bool flag);
-    const VertexAttribState& getVertexAttribState(int index) { return m_vertexAttribState[index]; }
-    void setVertexAttribState(const AbstractLocker&, GCGLuint, GCGLsizei, GCGLint, GCGLenum, GCGLboolean, GCGLsizei, GCGLintptr, bool, WebGLBuffer*);
-    bool hasArrayBuffer(WebGLBuffer* buffer) { return m_vertexAttribState.containsIf([&](auto& item) { return item.bufferBinding == buffer; }); }
-    void unbindBuffer(const AbstractLocker&, WebGLBuffer&);
+    const VertexAttribState& getVertexAttribState(int index);
+    void setVertexAttribState(GCGLuint, GCGLsizei, GCGLint, GCGLenum, GCGLboolean, GCGLsizei, GCGLintptr, bool, WebGLBuffer*);
+    bool hasArrayBuffer(WebGLBuffer*);
+    void unbindBuffer(WebGLBuffer&);
 
     void setVertexAttribDivisor(GCGLuint index, GCGLuint divisor);
 
-    void addMembersToOpaqueRoots(const AbstractLocker&, JSC::AbstractSlotVisitor&);
+    void addMembersToOpaqueRoots(JSC::AbstractSlotVisitor&);
 
     bool areAllEnabledAttribBuffersBound();
 
@@ -90,12 +90,13 @@ public:
 
 protected:
     WebGLVertexArrayObjectBase(WebGLRenderingContextBase&, PlatformGLObject, Type);
-    void deleteObjectImpl(const AbstractLocker&, GraphicsContextGL*, PlatformGLObject) override = 0;
+    void deleteObjectImpl(GraphicsContextGL*, PlatformGLObject) override = 0;
 
     Type m_type;
     bool m_hasEverBeenBound { false };
-    WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::ELEMENT_ARRAY_BUFFER> m_boundElementArrayBuffer;
-    Vector<VertexAttribState> m_vertexAttribState;
+    mutable Lock m_lock;
+    WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::ELEMENT_ARRAY_BUFFER> m_boundElementArrayBuffer WTF_GUARDED_BY_LOCK(m_lock);
+    Vector<VertexAttribState> m_vertexAttribState WTF_GUARDED_BY_LOCK(m_lock);
     std::optional<bool> m_allEnabledAttribBuffersBoundCache;
 };
 

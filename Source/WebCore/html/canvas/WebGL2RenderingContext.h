@@ -255,7 +255,7 @@ public:
 
     bool checkAndTranslateAttachments(const char* functionName, GCGLenum, Vector<GCGLenum>&);
 
-    void addMembersToOpaqueRoots(JSC::AbstractSlotVisitor&) override;
+    void addMembersToOpaqueRootsImpl(JSC::AbstractSlotVisitor&) WTF_REQUIRES_LOCK(m_lock) final;
 
     bool isTransformFeedbackActiveAndNotPaused();
 
@@ -264,7 +264,7 @@ private:
 
     bool isWebGL2() const final { return true; }
 
-    void initializeContextState() final;
+    void initializeContextState() WTF_REQUIRES_LOCK(m_lock) final;
 
     RefPtr<ArrayBufferView> arrayBufferViewSliceFactory(const char* const functionName, const ArrayBufferView& data, unsigned startByte, unsigned bytelength);
     RefPtr<ArrayBufferView> sliceArrayBufferView(const char* const functionName, const ArrayBufferView& data, GCGLuint srcOffset, GCGLuint length);
@@ -272,12 +272,12 @@ private:
     long long getInt64Parameter(GCGLenum) final;
     Vector<bool> getIndexedBooleanArrayParameter(GCGLenum pname, GCGLuint index);
 
-    void initializeVertexArrayObjects() final;
+    void initializeVertexArrayObjects()WTF_REQUIRES_LOCK(m_lock) final;
     bool validateBufferTarget(const char* functionName, GCGLenum target) final;
     bool validateBufferTargetCompatibility(const char*, GCGLenum, WebGLBuffer*);
-    WebGLBuffer* validateBufferDataParameters(const char* functionName, GCGLenum target, GCGLenum usage) final;
-    WebGLBuffer* validateBufferDataTarget(const char* functionName, GCGLenum target) final;
-    bool validateAndCacheBufferBinding(const AbstractLocker&, const char* functionName, GCGLenum target, WebGLBuffer*) final;
+    WebGLBuffer* validateBufferDataParameters(const char* functionName, GCGLenum target, GCGLenum usage) WTF_REQUIRES_SHARED_LOCK(m_lock) final;
+    WebGLBuffer* validateBufferDataTarget(const char* functionName, GCGLenum target) WTF_REQUIRES_SHARED_LOCK(m_lock) final;
+    bool validateAndCacheBufferBinding(const char* functionName, GCGLenum target, WebGLBuffer*) WTF_REQUIRES_LOCK(m_lock) final;
     GCGLint getMaxDrawBuffers() final;
     GCGLint getMaxColorAttachments() final;
     bool validateBlendEquation(const char* functionName, GCGLenum mode) final;
@@ -285,7 +285,7 @@ private:
     template<typename T, typename TypedArrayType>
     std::optional<std::span<const T>> validateClearBuffer(const char* functionName, GCGLenum buffer, TypedList<TypedArrayType, T>& values, GCGLuint srcOffset);
     bool validateFramebufferTarget(GCGLenum target) final;
-    WebGLFramebuffer* getFramebufferBinding(GCGLenum target) final;
+    WebGLFramebuffer* getFramebufferBinding(GCGLenum target) WTF_REQUIRES_LOCK(m_lock) final;
     bool validateNonDefaultFramebufferAttachment(const char* functionName, GCGLenum attachment);
     enum ActiveQueryKey { SamplesPassed = 0, PrimitivesWritten = 1, TimeElapsed = 2, NumKeys = 3 };
     std::optional<ActiveQueryKey> validateQueryTarget(const char* functionName, GCGLenum target);
@@ -296,22 +296,22 @@ private:
 
     IntRect getTextureSourceSubRectangle(GCGLsizei width, GCGLsizei height);
 
-    RefPtr<WebGLTexture> validateTexImageBinding(TexImageFunctionID, GCGLenum) final;
+    RefPtr<WebGLTexture> validateTexImageBinding(TexImageFunctionID, GCGLenum) WTF_REQUIRES_LOCK(m_lock) final;
 
     // Helper function to check texture 3D target and texture bound to the target.
     // Generate GL errors and return 0 if target is invalid or texture bound is
     // null. Otherwise, return the texture bound to the target.
-    RefPtr<WebGLTexture> validateTexture3DBinding(const char* functionName, GCGLenum target);
+    RefPtr<WebGLTexture> validateTexture3DBinding(const char* functionName, GCGLenum target) WTF_REQUIRES_LOCK(m_lock);
 
     // Helper function to check immutable texture 2D target and texture bound to the target.
     // Generate GL errors and return 0 if target is invalid or texture bound is
     // null. Otherwise, return the texture bound to the target.
-    RefPtr<WebGLTexture> validateTextureStorage2DBinding(const char* functionName, GCGLenum target);
+    RefPtr<WebGLTexture> validateTextureStorage2DBinding(const char* functionName, GCGLenum target) WTF_REQUIRES_LOCK(m_lock);
 
     bool validateTexFuncLayer(const char*, GCGLenum texTarget, GCGLint layer);
     GCGLint maxTextureLevelForTarget(GCGLenum target) final;
 
-    void uncacheDeletedBuffer(const AbstractLocker&, WebGLBuffer*) final;
+    void uncacheDeletedBuffer(WebGLBuffer*) WTF_REQUIRES_LOCK(m_lock) final;
 
     enum class ClearBufferCaller : uint8_t {
         ClearBufferiv,
@@ -321,21 +321,21 @@ private:
     };
     void updateBuffersToAutoClear(ClearBufferCaller, GCGLenum buffer, GCGLint drawbuffer);
 
-    WebGLBindingPoint<WebGLFramebuffer> m_readFramebufferBinding;
-    WebGLBindingPoint<WebGLTransformFeedback> m_boundTransformFeedback;
-    RefPtr<WebGLTransformFeedback> m_defaultTransformFeedback;
+    WebGLBindingPoint<WebGLFramebuffer> m_readFramebufferBinding WTF_GUARDED_BY_LOCK(m_lock);
+    WebGLBindingPoint<WebGLTransformFeedback> m_boundTransformFeedback WTF_GUARDED_BY_LOCK(m_lock);
+    RefPtr<WebGLTransformFeedback> m_defaultTransformFeedback WTF_GUARDED_BY_LOCK(m_lock);
 
-    WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::COPY_READ_BUFFER> m_boundCopyReadBuffer;
-    WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::COPY_WRITE_BUFFER> m_boundCopyWriteBuffer;
-    WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::PIXEL_PACK_BUFFER> m_boundPixelPackBuffer;
-    WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::PIXEL_UNPACK_BUFFER> m_boundPixelUnpackBuffer;
-    WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::TRANSFORM_FEEDBACK_BUFFER> m_boundTransformFeedbackBuffer;
-    WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::UNIFORM_BUFFER> m_boundUniformBuffer;
-    Vector<WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::UNIFORM_BUFFER>> m_boundIndexedUniformBuffers;
+    WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::COPY_READ_BUFFER> m_boundCopyReadBuffer WTF_GUARDED_BY_LOCK(m_lock);
+    WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::COPY_WRITE_BUFFER> m_boundCopyWriteBuffer WTF_GUARDED_BY_LOCK(m_lock);
+    WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::PIXEL_PACK_BUFFER> m_boundPixelPackBuffer WTF_GUARDED_BY_LOCK(m_lock);
+    WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::PIXEL_UNPACK_BUFFER> m_boundPixelUnpackBuffer WTF_GUARDED_BY_LOCK(m_lock);
+    WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::TRANSFORM_FEEDBACK_BUFFER> m_boundTransformFeedbackBuffer WTF_GUARDED_BY_LOCK(m_lock);
+    WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::UNIFORM_BUFFER> m_boundUniformBuffer WTF_GUARDED_BY_LOCK(m_lock);
+    Vector<WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::UNIFORM_BUFFER>> m_boundIndexedUniformBuffers WTF_GUARDED_BY_LOCK(m_lock);
 
-    RefPtr<WebGLQuery> m_activeQueries[ActiveQueryKey::NumKeys];
+    RefPtr<WebGLQuery> m_activeQueries[ActiveQueryKey::NumKeys] WTF_GUARDED_BY_LOCK(m_lock);
 
-    Vector<RefPtr<WebGLSampler>> m_boundSamplers;
+    Vector<RefPtr<WebGLSampler>> m_boundSamplers WTF_GUARDED_BY_LOCK(m_lock);
 
     GCGLint m_uniformBufferOffsetAlignment { 0 };
     GCGLuint m_maxTransformFeedbackSeparateAttribs { 0 };

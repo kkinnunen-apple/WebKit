@@ -57,7 +57,7 @@ WebGLSync::WebGLSync(WebGLRenderingContextBase& context, GCGLsync object)
 {
 }
 
-void WebGLSync::deleteObjectImpl(const AbstractLocker&, GraphicsContextGL* context3d, PlatformGLObject)
+void WebGLSync::deleteObjectImpl(GraphicsContextGL* context3d, PlatformGLObject)
 {
     context3d->deleteSync(m_sync);
     m_sync = nullptr;

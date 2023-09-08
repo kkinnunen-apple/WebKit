@@ -51,7 +51,7 @@ public:
 
 private:
     WebGLTimerQueryEXT(WebGLRenderingContextBase&, PlatformGLObject);
-    void deleteObjectImpl(const AbstractLocker&, GraphicsContextGL*, PlatformGLObject) override;
+    void deleteObjectImpl(GraphicsContextGL*, PlatformGLObject) override;
 
     bool m_isResultAvailable { false };
     GCGLenum m_target { 0 };

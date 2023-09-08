@@ -64,7 +64,7 @@ public:
 private:
     WebGLRenderbuffer(WebGLRenderingContextBase&, PlatformGLObject);
 
-    void deleteObjectImpl(const AbstractLocker&, GraphicsContextGL*, PlatformGLObject) override;
+    void deleteObjectImpl(GraphicsContextGL*, PlatformGLObject) override;
 
     GCGLenum m_internalFormat { GraphicsContextGL::RGBA4 };
     GCGLsizei m_width { 0 };

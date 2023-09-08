@@ -28,6 +28,8 @@
 #if ENABLE(WEBGL)
 
 #include <atomic>
+#include <wtf/Lock.h>
+#include <wtf/Locker.h>
 
 namespace WebCore {
 
@@ -55,6 +57,10 @@ protected:
     {
     }
     bool isContextLost() const { return !m_context.load(std::memory_order::relaxed); }
+
+    // FIXME: Remove these once implemented. See same names on WebGLRenderingContextBase.
+    using ExclusiveSharedLocker = Locker<Lock>;
+    using SharedLocker = Locker<Lock>;
 
 private:
     std::atomic<T*> m_context;

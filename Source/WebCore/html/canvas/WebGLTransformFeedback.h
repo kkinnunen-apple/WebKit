@@ -36,10 +36,6 @@ namespace JSC {
 class AbstractSlotVisitor;
 }
 
-namespace WTF {
-class AbstractLocker;
-}
-
 namespace WebCore {
 
 class WebGL2RenderingContext;
@@ -61,22 +57,22 @@ public:
     // These are the indexed bind points for transform feedback buffers.
     // Returns false if index is out of range and the caller should
     // synthesize a GL error.
-    void setBoundIndexedTransformFeedbackBuffer(const AbstractLocker&, GCGLuint index, WebGLBuffer*);
+    void setBoundIndexedTransformFeedbackBuffer(GCGLuint index, WebGLBuffer*);
     bool getBoundIndexedTransformFeedbackBuffer(GCGLuint index, WebGLBuffer** outBuffer);
-    bool hasBoundIndexedTransformFeedbackBuffer(const WebGLBuffer* buffer) { return m_boundIndexedTransformFeedbackBuffers.contains(buffer); }
+    bool hasBoundIndexedTransformFeedbackBuffer(const WebGLBuffer*);
 
     bool validateProgramForResume(WebGLProgram*) const;
 
     void didBind() { m_hasEverBeenBound = true; }
 
-    WebGLProgram* program() const { return m_program.get(); }
-    void setProgram(const AbstractLocker&, WebGLProgram&);
+    WebGLProgram* program() const;
+    void setProgram(WebGLProgram&);
 
-    void unbindBuffer(const AbstractLocker&, WebGLBuffer&);
+    void unbindBuffer(WebGLBuffer&);
 
     bool hasEnoughBuffers(GCGLuint numRequired) const;
 
-    void addMembersToOpaqueRoots(const AbstractLocker&, JSC::AbstractSlotVisitor&);
+    void addMembersToOpaqueRoots(JSC::AbstractSlotVisitor&);
 
     bool isUsable() const { return object() && !isDeleted(); }
     bool isInitialized() const { return m_hasEverBeenBound; }
@@ -84,14 +80,15 @@ public:
 private:
     WebGLTransformFeedback(WebGL2RenderingContext&, PlatformGLObject);
 
-    void deleteObjectImpl(const AbstractLocker&, GraphicsContextGL*, PlatformGLObject) override;
+    void deleteObjectImpl(GraphicsContextGL*, PlatformGLObject) override;
 
     bool m_active { false };
     bool m_paused { false };
     bool m_hasEverBeenBound { false };
     unsigned m_programLinkCount { 0 };
-    Vector<WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::TRANSFORM_FEEDBACK_BUFFER>> m_boundIndexedTransformFeedbackBuffers;
-    RefPtr<WebGLProgram> m_program;
+    mutable Lock m_lock;
+    Vector<WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::TRANSFORM_FEEDBACK_BUFFER>> m_boundIndexedTransformFeedbackBuffers WTF_GUARDED_BY_LOCK(m_lock);
+    RefPtr<WebGLProgram> m_program WTF_GUARDED_BY_LOCK(m_lock);
 };
 
 } // namespace WebCore

@@ -29,6 +29,8 @@
 
 #include "GraphicsTypesGL.h"
 #include <wtf/Forward.h>
+#include <wtf/Lock.h>
+#include <wtf/Locker.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/RefCounted.h>
 #include <wtf/WeakPtr.h>
@@ -94,13 +96,10 @@ public:
 
     // deleteObject may not always delete the OpenGL resource.  For programs and
     // shaders, deletion is delayed until they are no longer attached.
-    // The AbstractLocker argument enforces at compile time that the objectGraphLock
-    // is held. This isn't necessary for all object types, but enough of them that
-    // it's done for all of them.
-    void deleteObject(const AbstractLocker&, GraphicsContextGL*);
+    void deleteObject(GraphicsContextGL*);
 
     void onAttached() { ++m_attachmentCount; }
-    void onDetached(const AbstractLocker&, GraphicsContextGL*);
+    void onDetached(GraphicsContextGL*);
 
     // This indicates whether the client side issue a delete call already, not
     // whether the OpenGL resource is deleted.
@@ -110,17 +109,20 @@ public:
     // True if this object belongs to the context.
     bool validate(const WebGLRenderingContextBase&) const;
 
-    Lock& objectGraphLockForContext();
-
 protected:
     WebGLObject(WebGLRenderingContextBase&, PlatformGLObject);
 
     void runDestructor();
 
     // deleteObjectImpl should be only called once to delete the OpenGL resource.
-    virtual void deleteObjectImpl(const AbstractLocker&, GraphicsContextGL*, PlatformGLObject) = 0;
+    virtual void deleteObjectImpl(GraphicsContextGL*, PlatformGLObject) = 0;
 
     WeakPtr<WebGLRenderingContextBase> m_context;
+
+    // FIXME: Remove these once implemented. See same names on WebGLRenderingContextBase.
+    using ExclusiveSharedLocker = Locker<Lock>;
+    using SharedLocker = Locker<Lock>;
+
 private:
     PlatformGLObject m_object { 0 };
     unsigned m_attachmentCount { 0 };

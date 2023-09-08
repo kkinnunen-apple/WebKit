@@ -55,7 +55,7 @@ public:
 
 private:
     WebGLTexture(WebGLRenderingContextBase&, PlatformGLObject);
-    void deleteObjectImpl(const AbstractLocker&, GraphicsContextGL*, PlatformGLObject) override;
+    void deleteObjectImpl(GraphicsContextGL*, PlatformGLObject) override;
     int mapTargetToIndex(GCGLenum) const;
 
     GCGLenum m_target { 0 };

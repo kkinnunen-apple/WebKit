@@ -65,7 +65,7 @@ void WebGLTexture::didBind(GCGLenum target)
     m_target = target;
 }
 
-void WebGLTexture::deleteObjectImpl(const AbstractLocker&, GraphicsContextGL* context3d, PlatformGLObject object)
+void WebGLTexture::deleteObjectImpl(GraphicsContextGL* context3d, PlatformGLObject object)
 {
     context3d->deleteTexture(object);
 }

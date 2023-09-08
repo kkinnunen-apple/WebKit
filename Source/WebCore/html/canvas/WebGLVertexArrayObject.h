@@ -43,7 +43,7 @@ public:
     virtual ~WebGLVertexArrayObject();
 private:
     WebGLVertexArrayObject(WebGLRenderingContextBase&, PlatformGLObject, Type);
-    void deleteObjectImpl(const AbstractLocker&, GraphicsContextGL*, PlatformGLObject) final;
+    void deleteObjectImpl(GraphicsContextGL*, PlatformGLObject) final;
 };
 
 } // namespace WebCore

@@ -76,7 +76,7 @@ public:
     using AttachmentObject = std::variant<RefPtr<WebGLRenderbuffer>, RefPtr<WebGLTexture>>;
 
     // If an object is attached to the currently bound framebuffer, remove it.
-    void removeAttachmentFromBoundFramebuffer(const AbstractLocker&, GCGLenum target, AttachmentObject);
+    void removeAttachmentFromBoundFramebuffer(GCGLenum target, AttachmentObject);
     std::optional<AttachmentObject> getAttachmentObject(GCGLenum) const;
 
     void didBind() { m_hasEverBeenBound = true; }
@@ -86,7 +86,7 @@ public:
 
     GCGLenum getDrawBuffer(GCGLenum);
 
-    void addMembersToOpaqueRoots(const AbstractLocker&, JSC::AbstractSlotVisitor&);
+    void addMembersToOpaqueRoots(JSC::AbstractSlotVisitor&);
 
 #if ENABLE(WEBXR)
     bool isOpaque() const { return m_isOpaque; }
@@ -104,10 +104,10 @@ private:
     };
     WebGLFramebuffer(WebGLRenderingContextBase&, PlatformGLObject, Type);
 
-    void deleteObjectImpl(const AbstractLocker&, GraphicsContextGL*, PlatformGLObject) override;
+    void deleteObjectImpl(GraphicsContextGL*, PlatformGLObject) override;
 
     // If a given attachment point for the currently bound framebuffer is not null, remove the attached object.
-    void removeAttachmentFromBoundFramebuffer(const AbstractLocker&, GCGLenum target, GCGLenum attachment);
+    void removeAttachmentFromBoundFramebuffer(GCGLenum target, GCGLenum attachment) WTF_REQUIRES_LOCK(m_lock);
 
     // Check if the framebuffer is currently bound to the given target.
     bool isBound(GCGLenum target) const;
@@ -115,12 +115,13 @@ private:
     // Check if a new drawBuffers call should be issued. This is called when we add or remove an attachment.
     void drawBuffersIfNecessary(bool force);
 
-    void setAttachmentInternal(GCGLenum attachment, AttachmentEntry);
+    void setAttachmentInternal(GCGLenum attachment, AttachmentEntry) WTF_REQUIRES_LOCK(m_lock);
     // If a given attachment point for the currently bound framebuffer is not
     // null, remove the attached object.
-    void removeAttachmentInternal(const AbstractLocker&, GCGLenum attachment);
+    void removeAttachmentInternal(GCGLenum attachment) WTF_REQUIRES_LOCK(m_lock);
 
-    HashMap<GCGLenum, AttachmentEntry> m_attachments;
+    mutable Lock m_lock;
+    HashMap<GCGLenum, AttachmentEntry> m_attachments WTF_GUARDED_BY_LOCK(m_lock);
     bool m_hasEverBeenBound { false };
     Vector<GCGLenum> m_drawBuffers;
     Vector<GCGLenum> m_filteredDrawBuffers;

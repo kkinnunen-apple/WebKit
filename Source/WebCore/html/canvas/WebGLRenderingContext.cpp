@@ -251,7 +251,7 @@ WebGLAny WebGLRenderingContext::getFramebufferAttachmentParameter(GCGLenum targe
     const char* functionName = "getFramebufferAttachmentParameter";
     if (!validateFramebufferFuncParameters(functionName, target, attachment))
         return nullptr;
-
+    ExclusiveSharedLocker locker { m_lock };
     if (!m_framebufferBinding || !m_framebufferBinding->object()) {
         synthesizeGLError(GraphicsContextGL::INVALID_OPERATION, functionName, "no framebuffer bound");
         return nullptr;
@@ -357,11 +357,8 @@ bool WebGLRenderingContext::validateBlendEquation(const char* functionName, GCGL
     }
 }
 
-void WebGLRenderingContext::addMembersToOpaqueRoots(JSC::AbstractSlotVisitor& visitor)
+void WebGLRenderingContext::addMembersToOpaqueRootsImpl(JSC::AbstractSlotVisitor& visitor)
 {
-    WebGLRenderingContextBase::addMembersToOpaqueRoots(visitor);
-
-    Locker locker { objectGraphLock() };
     addWebCoreOpaqueRoot(visitor, m_activeQuery.get());
 }
 

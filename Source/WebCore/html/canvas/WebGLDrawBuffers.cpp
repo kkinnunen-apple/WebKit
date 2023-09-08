@@ -52,6 +52,7 @@ void WebGLDrawBuffers::drawBuffersWEBGL(const Vector<GCGLenum>& buffers)
     if (isContextLost())
         return;
     auto& context = this->context();
+    ExclusiveSharedLocker locker { context.m_lock };
     GCGLsizei n = buffers.size();
     const GCGLenum* bufs = buffers.data();
     if (!context.m_framebufferBinding) {

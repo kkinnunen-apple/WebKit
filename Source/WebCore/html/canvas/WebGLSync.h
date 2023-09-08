@@ -47,7 +47,7 @@ public:
     bool isInitialized() const { return true; }
 private:
     WebGLSync(WebGLRenderingContextBase&, GCGLsync);
-    void deleteObjectImpl(const AbstractLocker&, GraphicsContextGL*, PlatformGLObject) override;
+    void deleteObjectImpl(GraphicsContextGL*, PlatformGLObject) override;
 
     bool m_allowCacheUpdate = { false };
     GCGLint m_syncStatus = { GraphicsContextGL::UNSIGNALED };

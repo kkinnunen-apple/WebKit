@@ -422,22 +422,7 @@ public:
 
     void recycleContext();
 
-    virtual void addMembersToOpaqueRoots(JSC::AbstractSlotVisitor&);
-    // This lock must be held across all mutations of containers like
-    // Vectors, HashSets, etc. which contain RefPtr<WebGLObject>, and
-    // which are traversed by addMembersToOpaqueRoots() or any of the
-    // similarly-named methods in WebGLObject subclasses.
-    //
-    // FIXME: consider changing this mechanism to instead record when
-    // individual WebGLObjects are latched / unlatched in the
-    // context's state, either directly, or indirectly through
-    // container objects. If that were done, then the
-    // "GenerateIsReachable=Impl" in various WebGL objects' IDL files
-    // would need to be changed to instead query whether the object is
-    // currently latched into the context - without traversing all of
-    // the latched objects to find the current one, which would be
-    // prohibitively expensive.
-    Lock& objectGraphLock() WTF_RETURNS_LOCK(m_objectGraphLock);
+    void addMembersToOpaqueRoots(JSC::AbstractSlotVisitor&);
 
     // Returns the ordinal number of when the context was last active (drew, read pixels).
     uint64_t activeOrdinal() const { return m_activeOrdinal; }
@@ -447,8 +432,16 @@ public:
     const PixelStoreParameters& unpackPixelStoreParameters() const { return m_unpackParameters; };
 
     WeakPtr<WebGLRenderingContextBase> createRefForContextObject();
+
+    // FIXME: The updates happen on specific thread. Unlocked reads in this thread are ok.
+    // Currently we do not have such a lock, so this is just a normal locker. 
+    using ExclusiveSharedLocker = Locker<Lock>;
+    // Shared lock from non-exclusive thread, JS GC thread.
+    using SharedLocker = Locker<Lock>;
+
 protected:
     WebGLRenderingContextBase(CanvasBase&, WebGLContextAttributes);
+    virtual void addMembersToOpaqueRootsImpl(JSC::AbstractSlotVisitor&) WTF_REQUIRES_LOCK(m_lock);
 
     friend class EXTDisjointTimerQuery;
     friend class EXTDisjointTimerQueryWebGL2;
@@ -480,8 +473,8 @@ protected:
     friend class InspectorScopedShaderProgramHighlight;
 
     void initializeNewContext(Ref<GraphicsContextGL>);
-    virtual void initializeContextState();
-    virtual void initializeVertexArrayObjects() = 0;
+    virtual void initializeContextState() WTF_REQUIRES_LOCK(m_lock);
+    virtual void initializeVertexArrayObjects() WTF_REQUIRES_LOCK(m_lock) = 0;
 
     // ActiveDOMObject
     void stop() override;
@@ -500,8 +493,8 @@ protected:
         CallerTypeOther,
     };
 
-    void markContextChanged();
-    void markContextChangedAndNotifyCanvasObserver(CallerType = CallerTypeDrawOrClear);
+    void markContextChanged() WTF_REQUIRES_SHARED_LOCK(m_lock);
+    void markContextChangedAndNotifyCanvasObserver(CallerType = CallerTypeDrawOrClear)  WTF_REQUIRES_SHARED_LOCK(m_lock);
 
     void addActivityStateChangeObserverIfNecessary();
     void removeActivityStateChangeObserver();
@@ -526,7 +519,7 @@ protected:
     // compared to others. Performs a context lost check internally.
     bool validateWebGLObject(const char*, WebGLObject*);
 
-    bool validateVertexArrayObject(const char* functionName);
+    bool validateVertexArrayObject(const char* functionName) WTF_REQUIRES_SHARED_LOCK(m_lock);
 
     // Adds a compressed texture format.
     void addCompressedTextureFormat(GCGLenum);
@@ -542,7 +535,7 @@ protected:
     bool enableSupportedExtension(ASCIILiteral extensionNameLiteral);
     void loseExtensions(LostContextMode);
 
-    virtual void uncacheDeletedBuffer(const AbstractLocker&, WebGLBuffer*);
+    virtual void uncacheDeletedBuffer(WebGLBuffer*) WTF_REQUIRES_LOCK(m_lock);
 
     bool compositingResultsNeedUpdating() const final { return m_compositingResultsNeedUpdating; }
     bool needsPreparationForDisplay() const final { return true; }
@@ -560,7 +553,10 @@ protected:
     };
 
     RefPtr<GraphicsContextGL> m_context;
-    Lock m_objectGraphLock;
+
+    // The values are read and written by JS thread. Reads can be unlocked, but this is not yet implemented. Writes must be locked.
+    // The values are read by JS GC thread. Reads must be locked.
+    mutable Lock m_lock;
 
     EventLoopTimerHandle m_restoreTimer;
     GCGLErrorCodeSet m_errors;
@@ -568,12 +564,12 @@ protected:
     bool m_markedCanvasDirty;
 
     // List of bound VBO's. Used to maintain info about sizes for ARRAY_BUFFER and stored values for ELEMENT_ARRAY_BUFFER
-    WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::ARRAY_BUFFER> m_boundArrayBuffer;
+    WebGLBindingPoint<WebGLBuffer, GraphicsContextGL::ARRAY_BUFFER> m_boundArrayBuffer WTF_GUARDED_BY_LOCK(m_lock);
 
     RefPtr<WebGLVertexArrayObjectBase> m_defaultVertexArrayObject;
-    WebGLBindingPoint<WebGLVertexArrayObjectBase> m_boundVertexArrayObject;
+    WebGLBindingPoint<WebGLVertexArrayObjectBase> m_boundVertexArrayObject WTF_GUARDED_BY_LOCK(m_lock);
 
-    void setBoundVertexArrayObject(const AbstractLocker&, WebGLVertexArrayObjectBase*);
+    void setBoundVertexArrayObject(WebGLVertexArrayObjectBase*) WTF_REQUIRES_LOCK(m_lock);
 
     class VertexAttribValue {
     public:
@@ -601,16 +597,16 @@ protected:
     Vector<VertexAttribValue> m_vertexAttribValue;
     unsigned m_maxVertexAttribs;
 
-    RefPtr<WebGLProgram> m_currentProgram;
-    WebGLBindingPoint<WebGLFramebuffer> m_framebufferBinding;
-    WebGLBindingPoint<WebGLRenderbuffer> m_renderbufferBinding;
+    RefPtr<WebGLProgram> m_currentProgram WTF_GUARDED_BY_LOCK(m_lock);;
+    WebGLBindingPoint<WebGLFramebuffer> m_framebufferBinding WTF_GUARDED_BY_LOCK(m_lock);;
+    WebGLBindingPoint<WebGLRenderbuffer> m_renderbufferBinding WTF_GUARDED_BY_LOCK(m_lock);;
     struct TextureUnitState {
         WebGLBindingPoint<WebGLTexture, GraphicsContextGL::TEXTURE_2D> texture2DBinding;
         WebGLBindingPoint<WebGLTexture, GraphicsContextGL::TEXTURE_CUBE_MAP> textureCubeMapBinding;
         WebGLBindingPoint<WebGLTexture, GraphicsContextGL::TEXTURE_3D> texture3DBinding;
         WebGLBindingPoint<WebGLTexture, GraphicsContextGL::TEXTURE_2D_ARRAY> texture2DArrayBinding;
     };
-    Vector<TextureUnitState> m_textureUnits;
+    Vector<TextureUnitState> m_textureUnits WTF_GUARDED_BY_LOCK(m_lock);;
     unsigned long m_activeTextureUnit;
 
     Vector<GCGLenum> m_compressedTextureFormats;
@@ -756,7 +752,7 @@ protected:
     // Clear the backbuffer if it was composited since the last operation.
     // clearMask is set to the bitfield of any clear that would happen anyway at this time
     // and the function returns true if that clear is now unnecessary.
-    bool clearIfComposited(CallerType, GCGLbitfield clearMask = 0);
+    bool clearIfComposited(CallerType, GCGLbitfield clearMask = 0) WTF_REQUIRES_SHARED_LOCK(m_lock);
 
     // Helper to restore state that clearing the framebuffer may destroy.
     void restoreStateAfterClear();
@@ -930,7 +926,7 @@ protected:
     virtual bool validateFramebufferTarget(GCGLenum target);
 
     // Get the framebuffer bound to the given target.
-    virtual WebGLFramebuffer* getFramebufferBinding(GCGLenum target);
+    virtual WebGLFramebuffer* getFramebufferBinding(GCGLenum target) WTF_REQUIRES_LOCK(m_lock);
 
     // Helper function to validate input parameters for framebuffer functions.
     // Generate GL error if parameters are illegal.
@@ -957,7 +953,7 @@ protected:
 
     // Helper function to validate parameters for bufferData.
     // Return the current bound buffer to target, or 0 if parameters are invalid.
-    virtual WebGLBuffer* validateBufferDataParameters(const char* functionName, GCGLenum target, GCGLenum usage);
+    virtual WebGLBuffer* validateBufferDataParameters(const char* functionName, GCGLenum target, GCGLenum usage) WTF_REQUIRES_SHARED_LOCK(m_lock);
 
     // Helper function for tex{Sub}Image2D to make sure image is ready.
     ExceptionOr<bool> validateHTMLImageElement(const char* functionName, HTMLImageElement&);
@@ -976,7 +972,7 @@ protected:
 
     // Helper function for delete* (deleteBuffer, deleteProgram, etc) functions.
     // Return false if caller should return without further processing.
-    bool deleteObject(const AbstractLocker&, WebGLObject*);
+    bool deleteObject(WebGLObject*);
 
     // Helper function to validate the target for bufferData and
     // getBufferParameter.
@@ -984,9 +980,9 @@ protected:
 
     // Helper function to validate the target for bufferData.
     // Return the current bound buffer to target, or 0 if the target is invalid.
-    virtual WebGLBuffer* validateBufferDataTarget(const char* functionName, GCGLenum target);
+    virtual WebGLBuffer* validateBufferDataTarget(const char* functionName, GCGLenum target) WTF_REQUIRES_SHARED_LOCK(m_lock);
 
-    virtual bool validateAndCacheBufferBinding(const AbstractLocker&, const char* functionName, GCGLenum target, WebGLBuffer*);
+    virtual bool validateAndCacheBufferBinding(const char* functionName, GCGLenum target, WebGLBuffer*) WTF_REQUIRES_LOCK(m_lock);
 
     // Wrapper for GraphicsContextGLOpenGL::synthesizeGLError that sends a message to the JavaScript console.
     void synthesizeGLError(GCGLenum, const char* functionName, const char* description);
@@ -999,7 +995,7 @@ protected:
     virtual GCGLint getMaxColorAttachments() = 0;
 
     void setBackDrawBuffer(GCGLenum);
-    void setFramebuffer(const AbstractLocker&, GCGLenum, WebGLFramebuffer*);
+    void setFramebuffer(GCGLenum, WebGLFramebuffer*) WTF_REQUIRES_LOCK(m_lock);
 
     // Check if EXT_draw_buffers extension is supported and if it satisfies the WebGL requirements.
     bool supportsDrawBuffers();

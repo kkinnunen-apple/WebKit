@@ -52,18 +52,17 @@ public:
 
     GCGLint getMaxDrawBuffers() final;
     GCGLint getMaxColorAttachments() final;
-    void initializeVertexArrayObjects() final;
+    void initializeVertexArrayObjects() WTF_REQUIRES_LOCK(m_lock) final;
     bool validateBlendEquation(const char* functionName, GCGLenum mode) final;
 
-    void addMembersToOpaqueRoots(JSC::AbstractSlotVisitor&) final;
-
 protected:
-    friend class EXTDisjointTimerQuery;
+    void addMembersToOpaqueRootsImpl(JSC::AbstractSlotVisitor&) WTF_REQUIRES_LOCK(m_lock) final;
 
-    WebGLBindingPoint<WebGLTimerQueryEXT, GraphicsContextGL::TIME_ELAPSED_EXT> m_activeQuery;
+    WebGLBindingPoint<WebGLTimerQueryEXT, GraphicsContextGL::TIME_ELAPSED_EXT> m_activeQuery WTF_GUARDED_BY_LOCK(m_lock);
 
 private:
     using WebGLRenderingContextBase::WebGLRenderingContextBase;
+    friend class EXTDisjointTimerQuery;
 };
 
 WebCoreOpaqueRoot root(const WebGLExtension<WebGLRenderingContext>*);

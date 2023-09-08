@@ -42,17 +42,26 @@ WebGLVertexArrayObjectBase::WebGLVertexArrayObjectBase(WebGLRenderingContextBase
     m_vertexAttribState.resize(context.getMaxVertexAttribs());
 }
 
-void WebGLVertexArrayObjectBase::setElementArrayBuffer(const AbstractLocker& locker, WebGLBuffer* buffer)
+WebGLBuffer* WebGLVertexArrayObjectBase::getElementArrayBuffer() const
+{
+    ExclusiveSharedLocker locker { m_lock };
+    return m_boundElementArrayBuffer.get();
+}
+
+void WebGLVertexArrayObjectBase::setElementArrayBuffer(WebGLBuffer* buffer)
 {
     if (buffer)
         buffer->onAttached();
+
+    Locker locker { m_lock };
     if (m_boundElementArrayBuffer)
-        m_boundElementArrayBuffer->onDetached(locker, context()->graphicsContextGL());
+        m_boundElementArrayBuffer->onDetached(context()->graphicsContextGL());
     m_boundElementArrayBuffer = buffer;
     
 }
 void WebGLVertexArrayObjectBase::setVertexAttribEnabled(int index, bool flag)
 {
+    Locker locker { m_lock }; // Redundant but done to get thread-safety analysis.
     auto& state = m_vertexAttribState[index];
     if (state.enabled == flag)
         return;
@@ -63,14 +72,21 @@ void WebGLVertexArrayObjectBase::setVertexAttribEnabled(int index, bool flag)
         m_allEnabledAttribBuffersBoundCache.reset();
 }
 
-void WebGLVertexArrayObjectBase::setVertexAttribState(const AbstractLocker& locker, GCGLuint index, GCGLsizei bytesPerElement, GCGLint size, GCGLenum type, GCGLboolean normalized, GCGLsizei stride, GCGLintptr offset, bool isInteger, WebGLBuffer* buffer)
+const WebGLVertexArrayObjectBase::VertexAttribState& WebGLVertexArrayObjectBase::getVertexAttribState(int index)
 {
+    ExclusiveSharedLocker locker { m_lock };
+    return m_vertexAttribState[index];
+}
+
+void WebGLVertexArrayObjectBase::setVertexAttribState(GCGLuint index, GCGLsizei bytesPerElement, GCGLint size, GCGLenum type, GCGLboolean normalized, GCGLsizei stride, GCGLintptr offset, bool isInteger, WebGLBuffer* buffer)
+{
+    Locker locker { m_lock };
     auto& state = m_vertexAttribState[index];
     bool bindingWasValid = state.validateBinding();
     if (buffer)
         buffer->onAttached();
     if (state.bufferBinding)
-        state.bufferBinding->onDetached(locker, context()->graphicsContextGL());
+        state.bufferBinding->onDetached(context()->graphicsContextGL());
     state.bufferBinding = buffer;
     if (!state.validateBinding())
         m_allEnabledAttribBuffersBoundCache = false;
@@ -86,16 +102,23 @@ void WebGLVertexArrayObjectBase::setVertexAttribState(const AbstractLocker& lock
     state.isInteger = isInteger;
 }
 
-void WebGLVertexArrayObjectBase::unbindBuffer(const AbstractLocker& locker, WebGLBuffer& buffer)
+bool WebGLVertexArrayObjectBase::hasArrayBuffer(WebGLBuffer* buffer)
 {
+    ExclusiveSharedLocker locker { m_lock };
+    return m_vertexAttribState.containsIf([&](auto& item) { return item.bufferBinding == buffer; });
+}
+ 
+void WebGLVertexArrayObjectBase::unbindBuffer(WebGLBuffer& buffer)
+{
+    Locker locker { m_lock };
     if (m_boundElementArrayBuffer == &buffer) {
-        m_boundElementArrayBuffer->onDetached(locker, context()->graphicsContextGL());
+        m_boundElementArrayBuffer->onDetached(context()->graphicsContextGL());
         m_boundElementArrayBuffer = nullptr;
     }
     
     for (auto& state : m_vertexAttribState) {
         if (state.bufferBinding == &buffer) {
-            buffer.onDetached(locker, context()->graphicsContextGL());
+            buffer.onDetached(context()->graphicsContextGL());
             state.bufferBinding = nullptr;
             if (!state.validateBinding())
                 m_allEnabledAttribBuffersBoundCache = false;
@@ -105,11 +128,13 @@ void WebGLVertexArrayObjectBase::unbindBuffer(const AbstractLocker& locker, WebG
 
 void WebGLVertexArrayObjectBase::setVertexAttribDivisor(GCGLuint index, GCGLuint divisor)
 {
+    Locker locker { m_lock }; // Redundant but done to get thread-safety analysis.
     m_vertexAttribState[index].divisor = divisor;
 }
 
-void WebGLVertexArrayObjectBase::addMembersToOpaqueRoots(const AbstractLocker&, JSC::AbstractSlotVisitor& visitor)
+void WebGLVertexArrayObjectBase::addMembersToOpaqueRoots(JSC::AbstractSlotVisitor& visitor)
 {
+    SharedLocker locker { m_lock };
     addWebCoreOpaqueRoot(visitor, m_boundElementArrayBuffer.get());
     for (auto& state : m_vertexAttribState)
         addWebCoreOpaqueRoot(visitor, state.bufferBinding.get());
@@ -119,6 +144,7 @@ bool WebGLVertexArrayObjectBase::areAllEnabledAttribBuffersBound()
 {
     if (!m_allEnabledAttribBuffersBoundCache) {
         m_allEnabledAttribBuffersBoundCache = [&] {
+            Locker locker { m_lock };
             for (const auto& state : m_vertexAttribState) {
                 if (!state.validateBinding())
                     return false;

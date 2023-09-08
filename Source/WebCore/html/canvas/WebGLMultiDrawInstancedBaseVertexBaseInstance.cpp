@@ -68,6 +68,7 @@ void WebGLMultiDrawInstancedBaseVertexBaseInstance::multiDrawArraysInstancedBase
         return;
     }
 
+    ExclusiveSharedLocker locker { context.m_lock };
     if (!context.validateVertexArrayObject("multiDrawArraysInstancedBaseInstanceWEBGL"))
         return;
 
@@ -99,7 +100,7 @@ void WebGLMultiDrawInstancedBaseVertexBaseInstance::multiDrawElementsInstancedBa
         || !validateOffset(context, "multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL", "baseInstancesOffset out of bounds", baseInstancesList.length(), baseInstancesOffset, drawcount)) {
         return;
     }
-
+    ExclusiveSharedLocker locker { context.m_lock };
     if (!context.validateVertexArrayObject("multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL"))
         return;
 

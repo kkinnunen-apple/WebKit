@@ -38,7 +38,7 @@
 
 namespace WebCore {
 
-static void entryAddMembersToOpaqueRoots(const WebGLFramebuffer::AttachmentEntry& entry, const AbstractLocker&, JSC::AbstractSlotVisitor& visitor)
+static void entryAddMembersToOpaqueRoots(const WebGLFramebuffer::AttachmentEntry& entry, JSC::AbstractSlotVisitor& visitor)
 {
     // This runs on GC thread, so use const RefPtr<>& to make ensure no RefPtrs are created.
     switchOn(entry,
@@ -53,19 +53,19 @@ static void entryAddMembersToOpaqueRoots(const WebGLFramebuffer::AttachmentEntry
         });
 }
 
-static void entryDetachAndClear(WebGLFramebuffer::AttachmentEntry& entry, const AbstractLocker& locker, GraphicsContextGL* gl)
+static void entryDetachAndClear(WebGLFramebuffer::AttachmentEntry& entry, GraphicsContextGL* gl)
 {
     switchOn(entry,
         [&](RefPtr<WebGLRenderbuffer>& renderbuffer) {
-            renderbuffer->onDetached(locker, gl);
+            renderbuffer->onDetached(gl);
             renderbuffer = nullptr;
         },
         [&](WebGLFramebuffer::TextureAttachment& textureAttachment) {
-            textureAttachment.texture->onDetached(locker, gl);
+            textureAttachment.texture->onDetached(gl);
             textureAttachment.texture = nullptr;
         },
         [&](WebGLFramebuffer::TextureLayerAttachment& layerAttachment) {
-            layerAttachment.texture->onDetached(locker, gl);
+            layerAttachment.texture->onDetached(gl);
             layerAttachment.texture = nullptr;
         });
 }
@@ -159,6 +159,7 @@ void WebGLFramebuffer::setAttachmentForBoundFramebuffer(GCGLenum target, GCGLenu
 {
     ASSERT(object());
     ASSERT(isBound(target));
+    Locker locker { m_lock };
     auto attachmentCount = m_attachments.size();
     auto* gl = context()->graphicsContextGL();
     if (attachment == GraphicsContextGL::DEPTH_STENCIL_ATTACHMENT && context()->isWebGL2()) {
@@ -177,17 +178,19 @@ std::optional<WebGLFramebuffer::AttachmentObject> WebGLFramebuffer::getAttachmen
 {
     if (!object())
         return std::nullopt;
+    ExclusiveSharedLocker locker { m_lock };
     auto it = m_attachments.find(attachment);
     if (it == m_attachments.end())
         return std::nullopt;
     return entryObject(it->value);
 }
 
-void WebGLFramebuffer::removeAttachmentFromBoundFramebuffer(const AbstractLocker& locker, GCGLenum target, AttachmentObject removedObject)
+void WebGLFramebuffer::removeAttachmentFromBoundFramebuffer(GCGLenum target, AttachmentObject removedObject)
 {
     ASSERT(isBound(target));
     if (!object())
         return;
+    Locker locker { m_lock };
     auto attachmentCount = m_attachments.size();
     bool checkMore = true;
     auto* gl = context()->graphicsContextGL();
@@ -200,7 +203,7 @@ void WebGLFramebuffer::removeAttachmentFromBoundFramebuffer(const AbstractLocker
             auto entry = WTFMove(it->value);
             m_attachments.remove(it);
             checkMore = true;
-            entryDetachAndClear(entry, locker, gl);
+            entryDetachAndClear(entry, gl);
             entryContextSetAttachment(entry, gl, target, attachment);
             break;
         }
@@ -209,10 +212,11 @@ void WebGLFramebuffer::removeAttachmentFromBoundFramebuffer(const AbstractLocker
         drawBuffersIfNecessary(false);
 }
 
-void WebGLFramebuffer::deleteObjectImpl(const AbstractLocker& locker, GraphicsContextGL* context3d, PlatformGLObject object)
+void WebGLFramebuffer::deleteObjectImpl(GraphicsContextGL* context3d, PlatformGLObject object)
 {
+    Locker locker { m_lock };
     for (auto& entry : m_attachments.values())
-        entryDetachAndClear(entry, locker, context3d);
+        entryDetachAndClear(entry, context3d);
 
     context3d->deleteFramebuffer(object);
 }
@@ -233,6 +237,7 @@ void WebGLFramebuffer::drawBuffers(const Vector<GCGLenum>& bufs)
 
 void WebGLFramebuffer::drawBuffersIfNecessary(bool force)
 {
+    ExclusiveSharedLocker locker { m_lock };
     if (context()->isWebGL2() || context()->m_webglDrawBuffers) {
         bool reset = force;
         // This filtering works around graphics driver bugs on macOS.
@@ -269,10 +274,11 @@ GCGLenum WebGLFramebuffer::getDrawBuffer(GCGLenum drawBuffer)
     return GraphicsContextGL::NONE;
 }
 
-void WebGLFramebuffer::addMembersToOpaqueRoots(const AbstractLocker& locker, JSC::AbstractSlotVisitor& visitor)
+void WebGLFramebuffer::addMembersToOpaqueRoots(JSC::AbstractSlotVisitor& visitor)
 {
+    SharedLocker lock { m_lock };
     for (auto& entry : m_attachments)
-        entryAddMembersToOpaqueRoots(entry.value, locker, visitor);
+        entryAddMembersToOpaqueRoots(entry.value, visitor);
 }
 
 void WebGLFramebuffer::setAttachmentInternal(GCGLenum attachment, AttachmentEntry entry)
@@ -281,13 +287,11 @@ void WebGLFramebuffer::setAttachmentInternal(GCGLenum attachment, AttachmentEntr
         // Context has been deleted - should not be calling this.
         return;
     }
-    Locker locker { objectGraphLockForContext() };
-
     auto it = m_attachments.find(attachment);
     if (it != m_attachments.end()) {
         if (entry == it->value)
             return;
-        entryDetachAndClear(it->value, locker, context()->graphicsContextGL());
+        entryDetachAndClear(it->value, context()->graphicsContextGL());
         m_attachments.remove(it);
     }
     if (!entryHasObject(entry))

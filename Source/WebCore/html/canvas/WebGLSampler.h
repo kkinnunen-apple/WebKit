@@ -44,7 +44,7 @@ public:
     bool isInitialized() const { return true; }
 private:
     explicit WebGLSampler(WebGLRenderingContextBase&, PlatformGLObject);
-    void deleteObjectImpl(const AbstractLocker&, GraphicsContextGL*, PlatformGLObject) final;
+    void deleteObjectImpl(GraphicsContextGL*, PlatformGLObject) final;
 };
 
 } // namespace WebCore

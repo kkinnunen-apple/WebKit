@@ -53,7 +53,7 @@ WebGLTimerQueryEXT::WebGLTimerQueryEXT(WebGLRenderingContextBase& context, Platf
 {
 }
 
-void WebGLTimerQueryEXT::deleteObjectImpl(const AbstractLocker&, GraphicsContextGL* context3d, PlatformGLObject object)
+void WebGLTimerQueryEXT::deleteObjectImpl(GraphicsContextGL* context3d, PlatformGLObject object)
 {
     context3d->deleteQueryEXT(object);
 }

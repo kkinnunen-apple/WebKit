@@ -48,13 +48,6 @@ WebGLRenderingContextBase* WebGLObject::context() const
     return m_context.get();
 }
 
-Lock& WebGLObject::objectGraphLockForContext()
-{
-    // Should not call this if the object or context has been deleted.
-    ASSERT(m_context);
-    return m_context->objectGraphLock();
-}
-
 GraphicsContextGL* WebGLObject::graphicsContextGL() const
 {
     return m_context ? m_context->graphicsContextGL() : nullptr;
@@ -62,19 +55,10 @@ GraphicsContextGL* WebGLObject::graphicsContextGL() const
 
 void WebGLObject::runDestructor()
 {
-    auto& lock = objectGraphLockForContext();
-    if (lock.isHeld()) {
-        // Destruction of WebGLObjects can happen in chains triggered from GC.
-        // The lock must be held only once, at the beginning of the chain.
-        auto locker = AbstractLocker(NoLockingNecessary);
-        deleteObject(locker, nullptr);
-    } else {
-        Locker locker { lock };
-        deleteObject(locker, nullptr);
-    }
+    deleteObject(nullptr);
 }
 
-void WebGLObject::deleteObject(const AbstractLocker& locker, GraphicsContextGL* context3d)
+void WebGLObject::deleteObject(GraphicsContextGL* context3d)
 {
     m_deleted = true;
     if (!m_object)
@@ -88,20 +72,20 @@ void WebGLObject::deleteObject(const AbstractLocker& locker, GraphicsContextGL* 
             context3d = graphicsContextGL();
 
         if (context3d)
-            deleteObjectImpl(locker, context3d, m_object);
+            deleteObjectImpl(context3d, m_object);
     }
 
     if (!m_attachmentCount)
         m_object = 0;
 }
 
-void WebGLObject::onDetached(const AbstractLocker& locker, GraphicsContextGL* context3d)
+void WebGLObject::onDetached(GraphicsContextGL* context3d)
 {
     ASSERT(m_attachmentCount); // FIXME: handle attachment with WebGLAttachmentPoint RAII object and remove the ifs.
     if (m_attachmentCount)
         --m_attachmentCount;
     if (m_deleted)
-        deleteObject(locker, context3d);
+        deleteObject(context3d);
 }
 
 bool WebGLObject::validate(const WebGLRenderingContextBase& context) const

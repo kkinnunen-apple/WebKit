@@ -55,7 +55,7 @@ WebGLVertexArrayObject::WebGLVertexArrayObject(WebGLRenderingContextBase& contex
 {
 }
 
-void WebGLVertexArrayObject::deleteObjectImpl(const AbstractLocker& locker, GraphicsContextGL* context3d, PlatformGLObject object)
+void WebGLVertexArrayObject::deleteObjectImpl(GraphicsContextGL* context3d, PlatformGLObject object)
 {
     switch (m_type) {
     case Type::Default:
@@ -64,13 +64,13 @@ void WebGLVertexArrayObject::deleteObjectImpl(const AbstractLocker& locker, Grap
         context3d->deleteVertexArray(object);
         break;
     }
-    
+    Locker locker { m_lock };
     if (m_boundElementArrayBuffer)
-        m_boundElementArrayBuffer->onDetached(locker, context3d);
+        m_boundElementArrayBuffer->onDetached(context3d);
     
     for (auto& state : m_vertexAttribState) {
         if (state.bufferBinding)
-            state.bufferBinding->onDetached(locker, context3d);
+            state.bufferBinding->onDetached(context3d);
     }
 }
 

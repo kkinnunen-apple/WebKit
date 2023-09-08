@@ -67,9 +67,6 @@ void EXTDisjointTimerQuery::deleteQueryEXT(WebGLTimerQueryEXT* query)
     if (isContextLost())
         return;
     auto& context = this->context();
-
-    Locker locker { context.objectGraphLock() };
-
     if (!query)
         return;
 
@@ -81,13 +78,14 @@ void EXTDisjointTimerQuery::deleteQueryEXT(WebGLTimerQueryEXT* query)
     if (query->isDeleted())
         return;
 
+    Locker locker { context.m_lock };
     if (query == context.m_activeQuery) {
         context.m_activeQuery = nullptr;
         ASSERT(query->target() == GraphicsContextGL::TIME_ELAPSED_EXT);
         context.graphicsContextGL()->endQueryEXT(GraphicsContextGL::TIME_ELAPSED_EXT);
     }
 
-    query->deleteObject(locker, context.graphicsContextGL());
+    query->deleteObject(context.graphicsContextGL());
 }
 
 GCGLboolean EXTDisjointTimerQuery::isQueryEXT(WebGLTimerQueryEXT* query)
@@ -106,7 +104,7 @@ void EXTDisjointTimerQuery::beginQueryEXT(GCGLenum target, WebGLTimerQueryEXT& q
         return;
     auto& context = this->context();
 
-    Locker locker { context.objectGraphLock() };
+    Locker locker { context.m_lock };
 
     if (!context.validateWebGLObject("beginQueryEXT", query))
         return;
@@ -143,13 +141,13 @@ void EXTDisjointTimerQuery::endQueryEXT(GCGLenum target)
     if (!context.scriptExecutionContext())
         return;
 
-    Locker locker { context.objectGraphLock() };
 
     if (target != GraphicsContextGL::TIME_ELAPSED_EXT) {
         context.synthesizeGLError(GraphicsContextGL::INVALID_ENUM, "endQueryEXT", "invalid target");
         return;
     }
 
+    ExclusiveSharedLocker locker { context.m_lock };
     if (!context.m_activeQuery) {
         context.synthesizeGLError(GraphicsContextGL::INVALID_OPERATION, "endQueryEXT", "query object of target is not active");
         return;
@@ -204,7 +202,7 @@ WebGLAny EXTDisjointTimerQuery::getQueryEXT(GCGLenum target, GCGLenum pname)
         context.synthesizeGLError(GraphicsContextGL::INVALID_ENUM, "getQueryEXT", "invalid target");
         return nullptr;
     }
-
+    ExclusiveSharedLocker locker { context.m_lock };    
     switch (pname) {
     case GraphicsContextGL::CURRENT_QUERY_EXT:
         if (target == GraphicsContextGL::TIME_ELAPSED_EXT)
@@ -230,7 +228,7 @@ WebGLAny EXTDisjointTimerQuery::getQueryObjectEXT(WebGLTimerQueryEXT& query, GCG
         context.synthesizeGLError(GraphicsContextGL::INVALID_OPERATION, "getQueryObjectEXT", "query has not been used");
         return nullptr;
     }
-
+    ExclusiveSharedLocker locker { context.m_lock };
     if (&query == context.m_activeQuery) {
         context.synthesizeGLError(GraphicsContextGL::INVALID_OPERATION, "getQueryObjectEXT", "query is currently active");
         return nullptr;

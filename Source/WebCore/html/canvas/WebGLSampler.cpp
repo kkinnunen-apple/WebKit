@@ -55,7 +55,7 @@ WebGLSampler::WebGLSampler(WebGLRenderingContextBase& context, PlatformGLObject 
 {
 }
 
-void WebGLSampler::deleteObjectImpl(const AbstractLocker&, GraphicsContextGL* context3d, PlatformGLObject object)
+void WebGLSampler::deleteObjectImpl(GraphicsContextGL* context3d, PlatformGLObject object)
 {
     context3d->deleteSampler(object);
 }
