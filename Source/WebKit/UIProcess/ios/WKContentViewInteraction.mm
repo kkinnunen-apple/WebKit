@@ -4881,7 +4881,12 @@ static void selectionChangedWithTouch(WKContentView *view, const WebCore::IntPoi
                 return;
             }
 
-            auto imageBitmap = WebKit::ShareableBitmap::create(WTFMove(imageData));
+            if (!imageData) {
+                completion();
+                return;
+            }
+
+            auto imageBitmap = WebKit::ShareableBitmap::create(WTFMove(*imageData));
             if (!imageBitmap) {
                 completion();
                 return;

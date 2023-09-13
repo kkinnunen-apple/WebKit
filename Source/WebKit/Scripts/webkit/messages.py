@@ -142,6 +142,7 @@ def types_that_must_be_moved():
         'MachSendRight',
         'std::optional<MachSendRight>',
         'std::optional<WebKit::SharedVideoFrame::Buffer>',
+        'std::optional<WebKit::ShareableBitmap::Handle>',
         'Vector<WebKit::SharedMemory::Handle>',
         'WebCore::GraphicsContextGL::EGLImageSource',
         'WebKit::ConsumerSharedCARingBuffer::Handle',

@@ -97,13 +97,10 @@ private:
 class ShareableBitmapHandle  {
     WTF_MAKE_NONCOPYABLE(ShareableBitmapHandle);
 public:
-    ShareableBitmapHandle();
     ShareableBitmapHandle(ShareableBitmapHandle&&) = default;
     ShareableBitmapHandle(SharedMemory::Handle&&, const ShareableBitmapConfiguration&);
 
     ShareableBitmapHandle& operator=(ShareableBitmapHandle&&) = default;
-
-    bool isNull() const { return m_handle.isNull(); }
 
     SharedMemory::Handle& handle() { return m_handle; }
 
@@ -113,6 +110,8 @@ public:
 private:
     friend struct IPC::ArgumentCoder<ShareableBitmapHandle, void>;
     friend class ShareableBitmap;
+
+    ShareableBitmapHandle();
 
     SharedMemory::Handle m_handle;
     ShareableBitmapConfiguration m_configuration;

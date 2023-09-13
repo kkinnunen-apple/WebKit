@@ -206,7 +206,7 @@ void UserData::encode(IPC::Encoder& encoder, const API::Object& object)
         auto& image = static_cast<const WebImage&>(object);
 
         auto handle = image.createHandle();
-        if (handle.isNull()) {
+        if (!handle) {
             // Initial false indicates no allocated bitmap or is not shareable.
             encoder << false;
             break;
@@ -385,17 +385,11 @@ bool UserData::decode(IPC::Decoder& decoder, RefPtr<API::Object>& result)
 
         if (!didEncode)
             break;
-
-        std::optional<WebCore::ImageBufferBackend::Parameters> parameters;
-        decoder >> parameters;
-        if (!parameters)
+        auto parameters = decoder.decode<WebCore::ImageBufferBackend::Parameters>();
+        auto handle = decoder.decode<ShareableBitmap::Handle>();
+        if (UNLIKELY(!decoder.isValid()))
             return false;
-
-        ShareableBitmap::Handle handle;
-        if (!decoder.decode(handle))
-            return false;
-
-        result = WebImage::create(*parameters, WTFMove(handle));
+        result = WebImage::create(*parameters, WTFMove(*handle));
         break;
     }
 
