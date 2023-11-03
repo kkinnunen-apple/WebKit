@@ -63,6 +63,7 @@ static HashSet<GCGLDisplay>& usedDisplays()
     return s_usedDisplays;
 }
 
+#if 0
 #if PLATFORM(MAC) || PLATFORM(IOS_FAMILY)
 static void wipeAlphaChannelFromPixels(int width, int height, unsigned char* pixels)
 {
@@ -73,17 +74,17 @@ static void wipeAlphaChannelFromPixels(int width, int height, unsigned char* pix
         pixels[i + 3] = 255;
 }
 #endif
+#endif
 
-GraphicsContextGLANGLE::GraphicsContextGLANGLE(GraphicsContextGLAttributes attributes)
-    : GraphicsContextGL(attributes)
-{
-}
+GraphicsContextGLANGLE::GraphicsContextGLANGLE() = default;
 
-bool GraphicsContextGLANGLE::initialize()
+bool GraphicsContextGLANGLE::initialize(GraphicsContextGLAttributes&& attributes)
 {
-    if (contextAttributes().failPlatformContextCreationForTesting)
+    if (attributes.failContextCreationForTesting == GraphicsContextGLSimulatedCreationFailure::FailPlatformContextCreation)
         return false;
-    if (!platformInitializeContext())
+    m_isForWebGL2 = attributes.webGLVersion == GraphicsContextGLWebGLVersion::WebGL2;
+
+    if (!platformInitializeContext(WTFMove(attributes)))
         return false;
 
     String extensionsString = String::fromLatin1(reinterpret_cast<const char*>(GL_GetString(GL_EXTENSIONS)));
@@ -92,9 +93,6 @@ bool GraphicsContextGLANGLE::initialize()
     extensionsString = String::fromLatin1(reinterpret_cast<const char*>(GL_GetString(GL_REQUESTABLE_EXTENSIONS_ANGLE)));
     for (auto& extension : extensionsString.split(' '))
         m_requestableExtensions.add(extension);
-
-    validateAttributes();
-    auto attributes = contextAttributes(); // They may have changed during validation.
 
     if (m_isForWebGL2) {
         if (!enableExtension("GL_EXT_occlusion_query_boolean"_s))
@@ -108,46 +106,6 @@ bool GraphicsContextGLANGLE::initialize()
 
     if (m_isForWebGL2)
         GL_Enable(GraphicsContextGL::PRIMITIVE_RESTART_FIXED_INDEX);
-
-    // Create the texture that will be used for the framebuffer.
-    GLenum textureTarget = drawingBufferTextureTarget();
-
-    GL_GenTextures(1, &m_texture);
-    GL_BindTexture(textureTarget, m_texture);
-    GL_TexParameteri(textureTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    GL_TexParameteri(textureTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    GL_TexParameteri(textureTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    GL_TexParameteri(textureTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    GL_BindTexture(textureTarget, 0);
-
-    GL_GenFramebuffers(1, &m_fbo);
-    GL_BindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-    m_state.boundDrawFBO = m_state.boundReadFBO = m_fbo;
-
-    if (!attributes.antialias && (attributes.stencil || attributes.depth))
-        GL_GenRenderbuffers(1, &m_depthStencilBuffer);
-
-    // If necessary, create another framebuffer for the multisample results.
-    if (attributes.antialias) {
-        GL_GenFramebuffers(1, &m_multisampleFBO);
-        GL_BindFramebuffer(GL_FRAMEBUFFER, m_multisampleFBO);
-        m_state.boundDrawFBO = m_state.boundReadFBO = m_multisampleFBO;
-        GL_GenRenderbuffers(1, &m_multisampleColorBuffer);
-        if (attributes.stencil || attributes.depth)
-            GL_GenRenderbuffers(1, &m_multisampleDepthStencilBuffer);
-    } else if (attributes.preserveDrawingBuffer) {
-        // If necessary, create another texture to handle preserveDrawingBuffer:true without
-        // antialiasing.
-        GL_GenTextures(1, &m_preserveDrawingBufferTexture);
-        GL_BindTexture(GL_TEXTURE_2D, m_preserveDrawingBufferTexture);
-        GL_TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        GL_TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        GL_TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        GL_TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        GL_BindTexture(GL_TEXTURE_2D, 0);
-        // Create an FBO with which to perform BlitFramebuffer from one texture to the other.
-        GL_GenFramebuffers(1, &m_preserveDrawingBufferFBO);
-    }
 
     GL_ClearColor(0, 0, 0, 0);
 
@@ -250,19 +208,14 @@ RefPtr<PixelBuffer> GraphicsContextGLANGLE::readPixelsForPaintResults()
     // cases expose the non-255 values.
     // https://bugs.webkit.org/show_bug.cgi?id=215804
 #if PLATFORM(MAC) || PLATFORM(IOS_FAMILY)
-    if (!contextAttributes().alpha)
-        wipeAlphaChannelFromPixels(pixelBuffer->size().width(), pixelBuffer->size().height(), pixelBuffer->bytes());
+    // FIXME REMOVE:
+    // if (!contextAttributes().alpha)
+    //    wipeAlphaChannelFromPixels(pixelBuffer->size().width(), pixelBuffer->size().height(), pixelBuffer->bytes());
 #endif
     return pixelBuffer;
 }
 
-void GraphicsContextGLANGLE::validateAttributes()
-{
-    m_internalColorFormat = contextAttributes().alpha ? GL_RGBA8 : GL_RGB8;
-
-    validateDepthStencil("GL_OES_packed_depth_stencil"_s);
-}
-
+#if 0
 bool GraphicsContextGLANGLE::reshapeFBOs(const IntSize& size)
 {
     auto attrs = contextAttributes();
@@ -340,8 +293,9 @@ bool GraphicsContextGLANGLE::reshapeFBOs(const IntSize& size)
         if (m_state.boundDrawFBO == m_fbo && m_state.boundReadFBO == m_fbo)
             mustRestoreFBO = false;
     }
-
     return mustRestoreFBO;
+    UNUSED_PARAM(size);
+    return false;
 }
 
 void GraphicsContextGLANGLE::attachDepthAndStencilBufferIfNeeded(GLuint internalDepthStencilFormat, int width, int height)
@@ -401,6 +355,8 @@ void GraphicsContextGLANGLE::resolveMultisamplingIfNecessary(const IntRect& rect
     } else
         GL_BindFramebuffer(GL_FRAMEBUFFER, boundFrameBuffer);
 }
+#endif
+
 
 void GraphicsContextGLANGLE::renderbufferStorage(GCGLenum target, GCGLenum internalformat, GCGLsizei width, GCGLsizei height)
 {
@@ -544,8 +500,9 @@ void GraphicsContextGLANGLE::readPixelsBufferObject(IntRect rect, GCGLenum forma
     readPixelsImpl(rect, format, type, 0, reinterpret_cast<uint8_t*>(offset), true);
 }
 
-std::optional<IntSize> GraphicsContextGLANGLE::readPixelsImpl(IntRect rect, GCGLenum format, GCGLenum type, GCGLsizei bufSize, uint8_t* data, bool readingToPixelBufferObject)
+std::optional<IntSize> GraphicsContextGLANGLE::readPixelsImpl(IntRect rect, GCGLenum format, GCGLenum type, GCGLsizei bufSize, uint8_t* data, bool /*readingToPixelBufferObject*/)
 {
+#if 0
     // FIXME: remove the two glFlush calls when the driver bug is fixed, i.e.,
     // all previous rendering calls should be done before reading pixels.
     GL_Flush();
@@ -556,17 +513,21 @@ std::optional<IntSize> GraphicsContextGLANGLE::readPixelsImpl(IntRect rect, GCGL
         GL_BindFramebuffer(framebufferTarget, m_fbo);
         GL_Flush();
     }
+#endif
     updateErrors();
     GLsizei rows = 0;
     GLsizei columns = 0;
     GL_ReadnPixelsRobustANGLE(rect.x(), rect.y(), rect.width(), rect.height(), format, type, bufSize, nullptr, &rows, &columns, data);
+#if 0
     if (attrs.antialias && m_state.boundReadFBO == m_multisampleFBO)
         GL_BindFramebuffer(framebufferTarget, m_multisampleFBO);
-
+#endif
     if (updateErrors()) {
         // ANGLE detected a failure during the ReadnPixelsRobustANGLE operation. Skip the alpha channel fixup below.
         return std::nullopt;
     }
+
+#if 0
 
 #if PLATFORM(MAC) || PLATFORM(IOS_FAMILY)
     if (!readingToPixelBufferObject && !attrs.alpha && (format == GraphicsContextGL::RGBA || format == GraphicsContextGL::BGRA) && (type == GraphicsContextGL::UNSIGNED_BYTE) && (m_state.boundReadFBO == m_fbo || (attrs.antialias && m_state.boundReadFBO == m_multisampleFBO)))
@@ -574,18 +535,19 @@ std::optional<IntSize> GraphicsContextGLANGLE::readPixelsImpl(IntRect rect, GCGL
 #else
     UNUSED_PARAM(readingToPixelBufferObject);
 #endif
+#endif
     return IntSize { rows, columns };
 }
 
 // The contents of GraphicsContextGLANGLECommon follow, ported to use ANGLE.
-
+#if 0
 void GraphicsContextGLANGLE::validateDepthStencil(ASCIILiteral packedDepthStencilExtension)
 {
     auto attrs = contextAttributes();
     if (attrs.stencil && attrs.depth) {
-        ASSERT(packedDepthStencilExtension == "GL_OES_packed_depth_stencil"_s);
+        ASSERT(packedDepthStencilExtension == );
         String packedDepthStencilExtensionString { packedDepthStencilExtension };
-        if (supportsExtension(packedDepthStencilExtensionString)) {
+        if (supportsExtension("GL_OES_packed_depth_stencil"_s)) {
             // This extension is always enabled when supported
             m_internalDepthStencilFormat = GL_DEPTH24_STENCIL8_OES;
         } else {
@@ -623,12 +585,13 @@ void GraphicsContextGLANGLE::validateDepthStencil(ASCIILiteral packedDepthStenci
         ensureExtensionEnabled("GL_ANGLE_framebuffer_blit"_s);
     }
 }
+#endif
 
+#if 0
 void GraphicsContextGLANGLE::prepareTexture()
 {
     if (contextAttributes().antialias)
         resolveMultisamplingIfNecessary();
-
     if (m_preserveDrawingBufferTexture) {
         // Blit m_preserveDrawingBufferTexture into m_texture.
         ScopedGLCapability scopedScissor(GL_SCISSOR_TEST, GL_FALSE);
@@ -654,6 +617,14 @@ RefPtr<PixelBuffer> GraphicsContextGLANGLE::readRenderingResults()
     }
     fboBinding.bindFramebuffer(m_fbo);
     return readPixelsForPaintResults();
+}
+
+void GraphicsContextGLANGLE::initializeDefaultFramebuffer(GraphicsContextGLDefaultFramebufferAttributes&& attributes)
+{
+    m_defaultFramebufferAttributes = WTFMove(attributes);
+
+    m_internalColorFormat = attributes.alpha ? GL_RGBA8 : GL_RGB8;
+
 }
 
 void GraphicsContextGLANGLE::reshape(int width, int height)
@@ -739,6 +710,7 @@ void GraphicsContextGLANGLE::reshape(int width, int height)
 
     GL_Flush();
 }
+#endif
 
 void GraphicsContextGLANGLE::activeTexture(GCGLenum texture)
 {
@@ -781,13 +753,8 @@ void GraphicsContextGLANGLE::bindFramebuffer(GCGLenum target, PlatformGLObject b
     if (!makeContextCurrent())
         return;
 
-    GLuint fbo;
-    if (buffer)
-        fbo = buffer;
-    else
-        fbo = (contextAttributes().antialias ? m_multisampleFBO : m_fbo);
-
-    GL_BindFramebuffer(target, fbo);
+    GL_BindFramebuffer(target, buffer);
+#if 0
     if (target == GL_FRAMEBUFFER) {
         m_state.boundReadFBO = m_state.boundDrawFBO = fbo;
     } else if (target == GL_READ_FRAMEBUFFER) {
@@ -795,6 +762,7 @@ void GraphicsContextGLANGLE::bindFramebuffer(GCGLenum target, PlatformGLObject b
     } else if (target == GL_DRAW_FRAMEBUFFER) {
         m_state.boundDrawFBO = fbo;
     }
+#endif
 }
 
 void GraphicsContextGLANGLE::bindRenderbuffer(GCGLenum target, PlatformGLObject renderbuffer)
@@ -1072,6 +1040,7 @@ void GraphicsContextGLANGLE::copyTexImage2D(GCGLenum target, GCGLint level, GCGL
     if (!makeContextCurrent())
         return;
 
+#if 0
     auto attrs = contextAttributes();
     GCGLenum framebufferTarget = m_isForWebGL2 ? GraphicsContextGL::READ_FRAMEBUFFER : GraphicsContextGL::FRAMEBUFFER;
 
@@ -1079,9 +1048,12 @@ void GraphicsContextGLANGLE::copyTexImage2D(GCGLenum target, GCGLint level, GCGL
         resolveMultisamplingIfNecessary(IntRect(x, y, width, height));
         GL_BindFramebuffer(framebufferTarget, m_fbo);
     }
+#endif
     GL_CopyTexImage2D(target, level, internalformat, x, y, width, height, border);
+#if 0
     if (attrs.antialias && m_state.boundReadFBO == m_multisampleFBO)
         GL_BindFramebuffer(framebufferTarget, m_multisampleFBO);
+#endif
 }
 
 void GraphicsContextGLANGLE::copyTexSubImage2D(GCGLenum target, GCGLint level, GCGLint xoffset, GCGLint yoffset, GCGLint x, GCGLint y, GCGLsizei width, GCGLsizei height)
@@ -1089,6 +1061,7 @@ void GraphicsContextGLANGLE::copyTexSubImage2D(GCGLenum target, GCGLint level, G
     if (!makeContextCurrent())
         return;
 
+#if 0
     auto attrs = contextAttributes();
     GCGLenum framebufferTarget = m_isForWebGL2 ? GraphicsContextGL::READ_FRAMEBUFFER : GraphicsContextGL::FRAMEBUFFER;
 
@@ -1096,9 +1069,12 @@ void GraphicsContextGLANGLE::copyTexSubImage2D(GCGLenum target, GCGLint level, G
         resolveMultisamplingIfNecessary(IntRect(x, y, width, height));
         GL_BindFramebuffer(framebufferTarget, m_fbo);
     }
+#endif
     GL_CopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
+#if 0
     if (attrs.antialias && m_state.boundReadFBO == m_multisampleFBO)
         GL_BindFramebuffer(framebufferTarget, m_multisampleFBO);
+#endif
 }
 
 void GraphicsContextGLANGLE::cullFace(GCGLenum mode)
@@ -2443,6 +2419,7 @@ void GraphicsContextGLANGLE::copyTexSubImage3D(GCGLenum target, GCGLint level, G
     if (!makeContextCurrent())
         return;
 
+#if 0
     auto attrs = contextAttributes();
     GCGLenum framebufferTarget = m_isForWebGL2 ? GraphicsContextGL::READ_FRAMEBUFFER : GraphicsContextGL::FRAMEBUFFER;
 
@@ -2450,9 +2427,12 @@ void GraphicsContextGLANGLE::copyTexSubImage3D(GCGLenum target, GCGLint level, G
         resolveMultisamplingIfNecessary(IntRect(x, y, width, height));
         GL_BindFramebuffer(framebufferTarget, m_fbo);
     }
+#endif
     GL_CopyTexSubImage3D(target, level, xoffset, yoffset, zoffset, x, y, width, height);
+#if 0
     if (attrs.antialias && m_state.boundReadFBO == m_multisampleFBO)
         GL_BindFramebuffer(framebufferTarget, m_multisampleFBO);
+#endif
 }
 
 GCGLint GraphicsContextGLANGLE::getFragDataLocation(PlatformGLObject program, const String& name)
@@ -3217,6 +3197,7 @@ void GraphicsContextGLANGLE::drawSurfaceBufferToImageBuffer(SurfaceBuffer buffer
     });
 }
 
+#if 0
 void GraphicsContextGLANGLE::withBufferAsNativeImage(SurfaceBuffer source, Function<void(NativeImage&)> func)
 {
     if (!makeContextCurrent())
@@ -3230,7 +3211,7 @@ void GraphicsContextGLANGLE::withBufferAsNativeImage(SurfaceBuffer source, Funct
         pixelBuffer = readCompositedResults();
     if (!pixelBuffer)
         return;
-    auto displayImage = createNativeImageFromPixelBuffer(contextAttributes(), pixelBuffer.releaseNonNull());
+    auto displayImage = createNativeImageFromPixelBuffer(m_defaultFramebufferProperties.alpha.has_value(), pixelBuffer.releaseNonNull());
     if (!displayImage)
         return;
 
@@ -3259,6 +3240,7 @@ RefPtr<PixelBuffer> GraphicsContextGLANGLE::drawingBufferToPixelBuffer(FlipY fli
     }
     return results;
 }
+#endif
 
 RefPtr<PixelBuffer> GraphicsContextGLANGLE::readRenderingResultsForPainting()
 {

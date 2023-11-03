@@ -1207,7 +1207,7 @@ public:
         virtual void forceContextLost() = 0;
     };
 
-    WEBCORE_EXPORT GraphicsContextGL(GraphicsContextGLAttributes);
+    WEBCORE_EXPORT GraphicsContextGL();
     WEBCORE_EXPORT virtual ~GraphicsContextGL();
 
     void setClient(Client* client) { m_client = client; }
@@ -1561,8 +1561,6 @@ public:
     // Has no other side-effects.
     virtual bool isExtensionEnabled(const String&) = 0;
 
-    virtual bool enableRequiredWebXRExtensions() { return false; }
-
     // GL_ANGLE_translated_shader_source
     virtual String getTranslatedShaderSourceANGLE(PlatformGLObject) = 0;
 
@@ -1612,7 +1610,6 @@ public:
     virtual void renderbufferStorageMultisampleANGLE(GCGLenum target, GCGLsizei samples, GCGLenum internalformat, GCGLsizei width, GCGLsizei height) = 0;
     virtual void blitFramebufferANGLE(GCGLint srcX0, GCGLint srcY0, GCGLint srcX1, GCGLint srcY1, GCGLint dstX0, GCGLint dstY0, GCGLint dstX1, GCGLint dstY1, GCGLbitfield mask, GCGLenum filter) = 0;
 
-
     // ========== Other functions.
     GCGLfloat getFloat(GCGLenum pname);
     GCGLboolean getBoolean(GCGLenum pname);
@@ -1620,9 +1617,6 @@ public:
     GCGLint getIntegeri(GCGLenum pname, GCGLuint index);
     GCGLint getActiveUniformBlocki(GCGLuint program, GCGLuint uniformBlockIndex, GCGLenum pname);
     GCGLint getInternalformati(GCGLenum target, GCGLenum internalformat, GCGLenum pname);
-
-    GraphicsContextGLAttributes contextAttributes() const { return m_attrs; }
-    void setContextAttributes(const GraphicsContextGLAttributes& attrs) { m_attrs = attrs; }
 
     virtual std::tuple<GCGLenum, GCGLenum> externalImageTextureBindingPoint();
 
@@ -1704,9 +1698,8 @@ public:
     // Returns true upon success.
     static bool packImageData(Image*, const void* pixels, GCGLenum format, GCGLenum type, bool flipY, AlphaOp, DataFormat sourceFormat, unsigned sourceImageWidth, unsigned sourceImageHeight, const IntRect& sourceImageSubRectangle, int depth, unsigned sourceUnpackAlignment, int unpackImageHeight, Vector<uint8_t>& data);
 
-    WEBCORE_EXPORT static RefPtr<NativeImage> createNativeImageFromPixelBuffer(const GraphicsContextGLAttributes&, Ref<PixelBuffer>&&);
+    WEBCORE_EXPORT static RefPtr<NativeImage> createNativeImageFromPixelBuffer(bool hasAlpha, Ref<PixelBuffer>&&);
     WEBCORE_EXPORT static void paintToCanvas(NativeImage&, const IntSize& canvasSize, GraphicsContext&);
-    WEBCORE_EXPORT static void paintToCanvas(const GraphicsContextGLAttributes&, Ref<PixelBuffer>&&, const IntSize& canvasSize, GraphicsContext&);
 
     bool isContextLost() const { return m_contextLost; }
 protected:
@@ -1716,12 +1709,9 @@ protected:
     int m_currentHeight { 0 };
     Client* m_client { nullptr };
     bool m_contextLost { false };
-
-private:
-    GraphicsContextGLAttributes m_attrs;
 };
 
-WEBCORE_EXPORT RefPtr<GraphicsContextGL> createWebProcessGraphicsContextGL(const GraphicsContextGLAttributes&, SerialFunctionDispatcher* = nullptr);
+WEBCORE_EXPORT RefPtr<GraphicsContextGL> createWebProcessGraphicsContextGL(GraphicsContextGLAttributes&&, SerialFunctionDispatcher* = nullptr);
 
 inline GCGLOwned::~GCGLOwned()
 {

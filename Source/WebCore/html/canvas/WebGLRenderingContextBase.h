@@ -54,6 +54,7 @@
 #include <JavaScriptCore/ConsoleTypes.h>
 #include <JavaScriptCore/GenericTypedArrayView.h>
 #include <JavaScriptCore/TypedArrayAdaptors.h>
+#include <initializer_list>
 #include <limits>
 #include <memory>
 #include <wtf/CheckedArithmetic.h>
@@ -242,8 +243,6 @@ public:
 
     bool extensionIsEnabled(const String&);
 
-    bool isPreservingDrawingBuffer() const { return m_attributes.preserveDrawingBuffer; }
-
     void hint(GCGLenum target, GCGLenum mode);
     GCGLboolean isBuffer(WebGLBuffer*);
     bool isContextLost() const;
@@ -261,7 +260,7 @@ public:
 #if ENABLE(WEBXR)
     using MakeXRCompatiblePromise = DOMPromiseDeferred<void>;
     void makeXRCompatible(MakeXRCompatiblePromise&&);
-    bool isXRCompatible() const { return m_isXRCompatible; }
+    bool isXRCompatible() const { return m_attributes.xrCompatible; }
 #endif
     void polygonOffset(GCGLfloat factor, GCGLfloat units);
     // This must be virtual so more validation can be added in WebGL 2.0.
@@ -473,6 +472,7 @@ protected:
     friend class WebGLVertexArrayObject;
     friend class WebGLVertexArrayObjectBase;
     friend class WebGLVertexArrayObjectOES;
+    friend class WebGLDefaultFramebuffer;
 
     // Implementation helpers.
     friend class InspectorScopedShaderProgramHighlight;
@@ -480,8 +480,9 @@ protected:
     friend class ScopedEnableBackbuffer;
     friend class ScopedDisableScissorTest;
 
-    void initializeNewContext(Ref<GraphicsContextGL>);
+    bool initializeNewContext(Ref<GraphicsContextGL>) WARN_UNUSED_RETURN;
     virtual void initializeContextState();
+    bool initializeAttributes() WARN_UNUSED_RETURN;
     virtual void initializeDefaultObjects();
 
     // ActiveDOMObject
@@ -1015,6 +1016,10 @@ private:
     void checkForContextLossHandling();
 
     void activityStateDidChange(OptionSet<ActivityState> oldActivityState, OptionSet<ActivityState> newActivityState) override;
+#if ENABLE(WEBXR)
+    bool enableWebXRExtensions() WARN_UNUSED_RETURN;
+#endif
+    bool enableExtensions(std::initializer_list<ASCIILiteral> names);
 
     ExceptionOr<void> texImageSource(TexImageFunctionID, GCGLenum target, GCGLint level, GCGLint internalformat, GCGLint border, GCGLenum format, GCGLenum type, GCGLint xoffset, GCGLint yoffset, GCGLint zoffset, const IntRect& inputSourceImageRect, GCGLsizei depth, GCGLint unpackImageHeight, ImageBitmap& source);
     ExceptionOr<void> texImageSource(TexImageFunctionID, GCGLenum target, GCGLint level, GCGLint internalformat, GCGLint border, GCGLenum format, GCGLenum type, GCGLint xoffset, GCGLint yoffset, GCGLint zoffset, const IntRect& inputSourceImageRect, GCGLsizei depth, GCGLint unpackImageHeight, ImageData& source);
@@ -1034,9 +1039,6 @@ private:
     Timer m_checkForContextLossHandlingTimer;
     bool m_isSuspended { false };
 
-#if ENABLE(WEBXR)
-    bool m_isXRCompatible { false };
-#endif
     // The ordinal number of when the context was last active (drew, read pixels).
     uint64_t m_activeOrdinal { 0 };
     WeakPtrFactory<WebGLRenderingContextBase> m_contextObjectWeakPtrFactory;

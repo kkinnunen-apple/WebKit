@@ -63,7 +63,7 @@ public:
     void prepareForDisplay() override;
 
     // GraphicsContextGLANGLE overrides
-    bool platformInitializeContext() override;
+    bool platformInitializeContext(GraphicsContextGLAttributes&&) override;
     bool platformInitializeExtensions() override;
 
     bool reshapeDrawingBuffer() override;
@@ -96,7 +96,7 @@ public:
     const EGLExtensions& eglExtensions() { return m_eglExtensions; }
 
 protected:
-    explicit GraphicsContextGLGBM(WebCore::GraphicsContextGLAttributes&&);
+    GraphicsContextGLGBM();
 
 private:
     void allocateDrawBufferObject();

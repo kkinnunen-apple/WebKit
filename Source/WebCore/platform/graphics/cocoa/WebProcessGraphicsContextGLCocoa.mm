@@ -145,23 +145,26 @@ public:
     ~WebProcessGraphicsContextGLCocoa();
 
     // GraphicsContextGLCocoa overrides.
-    RefPtr<GraphicsLayerContentsDisplayDelegate> layerContentsDisplayDelegate() final { return m_layerContentsDisplayDelegate.ptr(); }
+    RefPtr<GraphicsLayerContentsDisplayDelegate> layerContentsDisplayDelegate() final { return m_layerContentsDisplayDelegate; }
     void prepareForDisplay() final;
+
+protected:
+    bool platformInitializeContext(GraphicsContextGLAttributes&&) final;
+
 private:
 #if PLATFORM(MAC)
     // DisplayConfigurationMonitor::Client overrides.
     void displayWasReconfigured() final;
 #endif
-    WebProcessGraphicsContextGLCocoa(GraphicsContextGLAttributes&&, SerialFunctionDispatcher*);
-    Ref<DisplayBufferDisplayDelegate> m_layerContentsDisplayDelegate;
+    WebProcessGraphicsContextGLCocoa(SerialFunctionDispatcher*);
+    RefPtr<DisplayBufferDisplayDelegate> m_layerContentsDisplayDelegate;
 
-    friend RefPtr<GraphicsContextGL> WebCore::createWebProcessGraphicsContextGL(const GraphicsContextGLAttributes&, SerialFunctionDispatcher*);
+    friend RefPtr<GraphicsContextGL> WebCore::createWebProcessGraphicsContextGL(GraphicsContextGLAttributes&&, SerialFunctionDispatcher*);
     friend class GraphicsContextGLOpenGL;
 };
 
-WebProcessGraphicsContextGLCocoa::WebProcessGraphicsContextGLCocoa(GraphicsContextGLAttributes&& attributes, SerialFunctionDispatcher* dispatcher)
-    : GraphicsContextGLCocoa(WTFMove(attributes), { })
-    , m_layerContentsDisplayDelegate(DisplayBufferDisplayDelegate::create(!attributes.alpha, attributes.devicePixelRatio))
+WebProcessGraphicsContextGLCocoa::WebProcessGraphicsContextGLCocoa(SerialFunctionDispatcher* dispatcher)
+    : GraphicsContextGLCocoa({ })
 {
 #if PLATFORM(MAC)
     DisplayConfigurationMonitor::singleton().addClient(*this, dispatcher);
@@ -175,6 +178,12 @@ WebProcessGraphicsContextGLCocoa::~WebProcessGraphicsContextGLCocoa()
 #if PLATFORM(MAC)
     DisplayConfigurationMonitor::singleton().removeClient(*this);
 #endif
+}
+
+bool WebProcessGraphicsContextGLCocoa::platformInitializeContext(GraphicsContextGLAttributes&& attributes)
+{
+    m_layerContentsDisplayDelegate = DisplayBufferDisplayDelegate::create(!attributes.alpha, attributes.devicePixelRatio);
+    return GraphicsContextGLCocoa::platformInitializeContext(WTFMove(attributes));
 }
 
 void WebProcessGraphicsContextGLCocoa::prepareForDisplay()
@@ -199,10 +208,10 @@ void WebProcessGraphicsContextGLCocoa::displayWasReconfigured()
 
 }
 
-RefPtr<GraphicsContextGL> createWebProcessGraphicsContextGL(const GraphicsContextGLAttributes& attributes, SerialFunctionDispatcher* dispatcher)
+RefPtr<GraphicsContextGL> createWebProcessGraphicsContextGL(GraphicsContextGLAttributes&& attributes, SerialFunctionDispatcher* dispatcher)
 {
-    auto context = adoptRef(new WebProcessGraphicsContextGLCocoa(GraphicsContextGLAttributes { attributes }, dispatcher));
-    if (!context->initialize())
+    auto context = adoptRef(new WebProcessGraphicsContextGLCocoa(dispatcher));
+    if (!context->initialize(WTFMove(attributes)))
         return nullptr;
     return context;
 }

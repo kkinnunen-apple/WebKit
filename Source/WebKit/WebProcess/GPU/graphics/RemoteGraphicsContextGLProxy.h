@@ -367,8 +367,6 @@ public:
     RefPtr<WebCore::PixelBuffer> drawingBufferToPixelBuffer(WebCore::GraphicsContextGL::FlipY) final;
     bool destroyEGLSync(GCEGLSync) final;
     void clientWaitEGLSyncWithFlush(GCEGLSync, uint64_t timeout) final;
-
-    bool enableRequiredWebXRExtensions() final;
     // End of list used by generate-gpup-webgl script.
 
     static bool handleMessageToRemovedDestination(IPC::Connection&, IPC::Decoder&);
@@ -377,7 +375,7 @@ protected:
 #if ENABLE(VIDEO)
     RemoteGraphicsContextGLProxy(IPC::Connection&, RefPtr<IPC::StreamClientConnection>, const WebCore::GraphicsContextGLAttributes&, Ref<RemoteVideoFrameObjectHeapProxy>&&);
 #else
-    RemoteGraphicsContextGLProxy(IPC::Connection&, RefPtr<IPC::StreamClientConnection>, const WebCore::GraphicsContextGLAttributes&);
+    RemoteGraphicsContextGLProxy(IPC::Connection&, RefPtr<IPC::StreamClientConnection>);
 #endif
 
     bool isContextLost() const { return !m_connection; }
@@ -402,7 +400,7 @@ private:
 #else 
     static Ref<RemoteGraphicsContextGLProxy> platformCreate(IPC::Connection&, Ref<IPC::StreamClientConnection>, const WebCore::GraphicsContextGLAttributes&);
 #endif
-    void initializeIPC(IPC::StreamServerConnection::Handle&&, RemoteRenderingBackendProxy&);
+    void initializeIPC(const WebCore::GraphicsContextGLAttributes&, IPC::StreamServerConnection::Handle&&, RemoteRenderingBackendProxy&);
     // Messages to be received.
     void wasCreated(IPC::Semaphore&&, IPC::Semaphore&&, std::optional<RemoteGraphicsContextGLInitializationState>&&);
     void wasLost();

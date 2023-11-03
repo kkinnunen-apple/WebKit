@@ -36,25 +36,28 @@ class WebGLDefaultFramebuffer {
     WTF_MAKE_FAST_ALLOCATED;
     WTF_MAKE_NONCOPYABLE(WebGLDefaultFramebuffer);
 public:
-    static std::unique_ptr<WebGLDefaultFramebuffer> create(WebGLRenderingContextBase&, IntSize);
+    static std::unique_ptr<WebGLDefaultFramebuffer> create(WebGLRenderingContextBase&, const WebGLContextAttributes&, IntSize);
     ~WebGLDefaultFramebuffer() = default;
 
-    PlatformGLObject object() const { return 0; }
-    bool hasStencil() const { return m_hasStencil; }
-    bool hasDepth() const { return m_hasDepth; }
+    PlatformGLObject object() const { return m_object; }
     void reshape(IntSize);
     GCGLbitfield dirtyBuffers() const { return m_dirtyBuffers; }
     void markBuffersClear(GCGLbitfield clearBuffers);
     void markAllUnpreservedBuffersDirty();
 
 private:
-    WebGLDefaultFramebuffer(WebGLRenderingContextBase&);
+    WebGLDefaultFramebuffer(WebGLRenderingContextBase&, const WebGLContextAttributes&);
 
     WebGLRenderingContextBase& m_context;
+    PlatformGLObject m_object { 0 };
+    PlatformGLObject m_colorBuffer { 0 };
+    PlatformGLObject m_depthStencilBuffer { 0 };
+    GCGLenum m_internalDepthStencilFormat { 0 };
     GCGLbitfield m_unpreservedBuffers { 0 };
     GCGLbitfield m_dirtyBuffers { 0 };
-    bool m_hasStencil : 1;
-    bool m_hasDepth : 1;
+    GCGLint m_msaaSampleCount { 0 }; // 0 means antialias == false.
+    GCGLenum m_internalColorFormat { 0 };
+
 };
 
 }

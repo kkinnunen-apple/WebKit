@@ -54,7 +54,7 @@ public:
     virtual PlatformDisplayID displayID() const = 0;
 
 #if ENABLE(WEBGL)
-    virtual RefPtr<GraphicsContextGL> createGraphicsContextGL(const GraphicsContextGLAttributes&) const = 0;
+    virtual RefPtr<GraphicsContextGL> createGraphicsContextGL(GraphicsContextGLAttributes&&) const = 0;
 #endif
 #if HAVE(WEBGPU_IMPLEMENTATION)
     virtual RefPtr<WebCore::WebGPU::GPU> createGPUForWebGPU() const = 0;

@@ -49,7 +49,7 @@ public:
     bool platformInitialize() final;
 
 private:
-    GraphicsContextGLGBMTextureMapper(GraphicsContextGLAttributes&&);
+    GraphicsContextGLGBMTextureMapper();
 
     std::unique_ptr<Nicosia::GCGLANGLELayer> m_nicosiaLayer;
     RefPtr<GraphicsLayerContentsDisplayDelegate> m_layerContentsDisplayDelegate;

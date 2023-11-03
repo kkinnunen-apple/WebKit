@@ -26,6 +26,7 @@
 #pragma once
 
 #if ENABLE(WEBGL)
+#include "AlphaPremultiplication.h"
 #include <optional>
 #include <wtf/EnumTraits.h>
 
@@ -45,7 +46,8 @@ enum class GraphicsContextGLWebGLVersion : uint8_t {
 enum class GraphicsContextGLSimulatedCreationFailure : uint8_t {
     None,
     IPCBufferOOM,
-    CreationTimeout
+    CreationTimeout,
+    FailPlatformContextCreation
 };
 
 #if PLATFORM(MAC) || PLATFORM(MACCATALYST)
@@ -53,42 +55,25 @@ using PlatformGPUID = uint64_t;
 #endif
 
 struct GraphicsContextGLAttributes {
-    // WebGLContextAttributes
     bool alpha { true };
-    bool depth { true };
-    bool stencil { false };
-    bool antialias { true };
-    bool premultipliedAlpha { true };
-    bool preserveDrawingBuffer { false };
-    bool failIfMajorPerformanceCaveat { false };
-    using PowerPreference = GraphicsContextGLPowerPreference;
-    PowerPreference powerPreference { PowerPreference::Default };
-
-    // Additional attributes.
+    GraphicsContextGLPowerPreference powerPreference { GraphicsContextGLPowerPreference::Default };
     float devicePixelRatio { 1 };
-    PowerPreference initialPowerPreference { PowerPreference::Default };
-    using WebGLVersion = GraphicsContextGLWebGLVersion;
-    WebGLVersion webGLVersion { WebGLVersion::WebGL1 };
-    bool forceRequestForHighPerformanceGPU { false };
+    GraphicsContextGLWebGLVersion webGLVersion { GraphicsContextGLWebGLVersion::WebGL1 };
 #if PLATFORM(MAC) || PLATFORM(MACCATALYST)
     PlatformGPUID windowGPUID { 0 };
 #endif
 #if PLATFORM(COCOA)
     bool useMetal { true };
 #endif
-#if ENABLE(WEBXR)
-    bool xrCompatible { false };
-#endif
-    bool failPlatformContextCreationForTesting { false };
-    using SimulatedCreationFailure = GraphicsContextGLSimulatedCreationFailure;
-    SimulatedCreationFailure failContextCreationForTesting { SimulatedCreationFailure::None }; // Not serialized.
+    GraphicsContextGLSimulatedCreationFailure failContextCreationForTesting { GraphicsContextGLSimulatedCreationFailure::None };
+};
 
-    PowerPreference effectivePowerPreference() const
-    {
-        if (forceRequestForHighPerformanceGPU)
-            return PowerPreference::HighPerformance;
-        return powerPreference;
-    }
+struct GraphicsContextGLDefaultFramebufferProperties {
+    std::optional<AlphaPremultiplication> alpha;
+    bool depth { true };
+    bool stencil { false };
+    bool antialias { true };
+    bool preserveDrawingBuffer { false };
 };
 
 }

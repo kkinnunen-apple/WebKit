@@ -567,9 +567,9 @@ std::unique_ptr<WorkerClient> Chrome::createWorkerClient(SerialFunctionDispatche
 }
 
 #if ENABLE(WEBGL)
-RefPtr<GraphicsContextGL> Chrome::createGraphicsContextGL(const GraphicsContextGLAttributes& attributes) const
+RefPtr<GraphicsContextGL> Chrome::createGraphicsContextGL(GraphicsContextGLAttributes&& attributes) const
 {
-    return m_client->createGraphicsContextGL(attributes);
+    return m_client->createGraphicsContextGL(WTFMove(attributes));
 }
 #endif
 #if HAVE(WEBGPU_IMPLEMENTATION)

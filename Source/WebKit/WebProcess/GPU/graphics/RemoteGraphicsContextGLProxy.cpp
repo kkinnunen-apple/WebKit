@@ -85,12 +85,12 @@ RefPtr<RemoteGraphicsContextGLProxy> RemoteGraphicsContextGLProxy::create(IPC::C
     if (!connectionPair)
         return nullptr;
     auto [clientConnection, serverConnectionHandle] = WTFMove(*connectionPair);
-    auto instance = platformCreate(connection, clientConnection, attributes
+    auto instance = platformCreate(connection, clientConnection,
 #if ENABLE(VIDEO)
         , WTFMove(videoFrameObjectHeapProxy)
 #endif
     );
-    instance->initializeIPC(WTFMove(serverConnectionHandle), renderingBackend);
+    instance->initializeIPC({ attributes }, WTFMove(serverConnectionHandle), renderingBackend);
     if (attributes.failContextCreationForTesting == WebCore::GraphicsContextGLAttributes::SimulatedCreationFailure::CreationTimeout)
         instance->markContextLost();
     // TODO: We must wait until initialized, because at the moment we cannot receive IPC messages
@@ -100,13 +100,12 @@ RefPtr<RemoteGraphicsContextGLProxy> RemoteGraphicsContextGLProxy::create(IPC::C
 }
 
 
-RemoteGraphicsContextGLProxy::RemoteGraphicsContextGLProxy(IPC::Connection& connection, RefPtr<IPC::StreamClientConnection> streamConnection, const GraphicsContextGLAttributes& attributes
+RemoteGraphicsContextGLProxy::RemoteGraphicsContextGLProxy(IPC::Connection& connection, RefPtr<IPC::StreamClientConnection> streamConnection
 #if ENABLE(VIDEO)
     , Ref<RemoteVideoFrameObjectHeapProxy>&& videoFrameObjectHeapProxy
 #endif
     )
-    : GraphicsContextGL(attributes)
-    , m_connection(&connection) // NOLINT
+    : m_connection(&connection) // NOLINT
     , m_streamConnection(WTFMove(streamConnection)) // NOLINT
 #if ENABLE(VIDEO)
     , m_videoFrameObjectHeapProxy(WTFMove(videoFrameObjectHeapProxy))
@@ -114,9 +113,9 @@ RemoteGraphicsContextGLProxy::RemoteGraphicsContextGLProxy(IPC::Connection& conn
 {
 }
 
-void RemoteGraphicsContextGLProxy::initializeIPC(IPC::StreamServerConnection::Handle&& serverConnectionHandle, RemoteRenderingBackendProxy& renderingBackend)
+void RemoteGraphicsContextGLProxy::initializeIPC(GraphicsContextGLAttributes&& attributes, IPC::StreamServerConnection::Handle&& serverConnectionHandle, RemoteRenderingBackendProxy& renderingBackend)
 {
-    m_connection->send(Messages::GPUConnectionToWebProcess::CreateGraphicsContextGL(contextAttributes(), m_graphicsContextGLIdentifier, renderingBackend.ensureBackendCreated(), WTFMove(serverConnectionHandle)), 0, IPC::SendOption::DispatchMessageEvenWhenWaitingForSyncReply);
+    m_connection->send(Messages::GPUConnectionToWebProcess::CreateGraphicsContextGL(WTFMove(attributes), m_graphicsContextGLIdentifier, renderingBackend.ensureBackendCreated(), WTFMove(serverConnectionHandle)), 0, IPC::SendOption::DispatchMessageEvenWhenWaitingForSyncReply);
     m_streamConnection->open(*this, renderingBackend.dispatcher());
 }
 

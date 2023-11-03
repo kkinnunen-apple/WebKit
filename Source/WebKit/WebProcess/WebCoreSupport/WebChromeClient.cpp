@@ -996,11 +996,11 @@ std::unique_ptr<WebCore::WorkerClient> WebChromeClient::createWorkerClient(Seria
 }
 
 #if ENABLE(WEBGL)
-RefPtr<GraphicsContextGL> WebChromeClient::createGraphicsContextGL(const GraphicsContextGLAttributes& attributes) const
+RefPtr<GraphicsContextGL> WebChromeClient::createGraphicsContextGL(GraphicsContextGLAttributes&& attributes) const
 {
 #if ENABLE(GPU_PROCESS)
     if (WebProcess::singleton().shouldUseRemoteRenderingForWebGL())
-        return RemoteGraphicsContextGLProxy::create(WebProcess::singleton().ensureGPUProcessConnection().connection(), attributes, protectedPage()->ensureRemoteRenderingBackendProxy()
+        return RemoteGraphicsContextGLProxy::create(WebProcess::singleton().ensureGPUProcessConnection().connection(), WTFMove(attributes), protectedPage()->ensureRemoteRenderingBackendProxy()
 #if ENABLE(VIDEO)
             , WebProcess::singleton().ensureGPUProcessConnection().videoFrameObjectHeapProxy()
 #endif

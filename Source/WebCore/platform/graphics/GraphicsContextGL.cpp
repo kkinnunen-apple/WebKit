@@ -353,10 +353,7 @@ GraphicsContextGL::Client::Client() = default;
 
 GraphicsContextGL::Client::~Client() = default;
 
-GraphicsContextGL::GraphicsContextGL(GraphicsContextGLAttributes attrs)
-    : m_attrs(attrs)
-{
-}
+GraphicsContextGL::GraphicsContextGL() = default;
 
 GraphicsContextGL::~GraphicsContextGL() = default;
 
@@ -594,15 +591,6 @@ void GraphicsContextGL::paintToCanvas(NativeImage& image, const IntSize& canvasS
     context.translate(0, -imageSize.height());
     context.setImageInterpolationQuality(InterpolationQuality::DoNotInterpolate);
     context.drawNativeImage(image, imageSize, canvasRect, FloatRect(FloatPoint(), imageSize), { CompositeOperator::Copy });
-}
-
-void GraphicsContextGL::paintToCanvas(const GraphicsContextGLAttributes& sourceContextAttributes, Ref<PixelBuffer>&& pixelBuffer, const IntSize& canvasSize, GraphicsContext& context)
-{
-    if (canvasSize.isEmpty())
-        return;
-
-    auto image = createNativeImageFromPixelBuffer(sourceContextAttributes, WTFMove(pixelBuffer));
-    paintToCanvas(*image, canvasSize, context);
 }
 
 void GraphicsContextGL::forceContextLost()

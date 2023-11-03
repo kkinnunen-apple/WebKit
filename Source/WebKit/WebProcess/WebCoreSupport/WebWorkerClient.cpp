@@ -142,17 +142,19 @@ RefPtr<ImageBuffer> WebWorkerClient::createImageBuffer(const FloatSize& size, Re
 }
 
 #if ENABLE(WEBGL)
-RefPtr<GraphicsContextGL> WebWorkerClient::createGraphicsContextGL(const GraphicsContextGLAttributes& attributes) const
+RefPtr<GraphicsContextGL> WebWorkerClient::createGraphicsContextGL(GraphicsContextGLAttributes&& attributes) const
 {
 #if ENABLE(GPU_PROCESS)
-    if (WebProcess::singleton().shouldUseRemoteRenderingForWebGL())
+    if (WebProcess::singleton().shouldUseRemoteRenderingForWebGL()) {
+        return RemoteGraphicsContextGLProxy::create(m_connection, WTFMove(attributes), ensureRenderingBackend()
 #if ENABLE(VIDEO)
-        return RemoteGraphicsContextGLProxy::create(m_connection, attributes, ensureRenderingBackend(), m_videoFrameObjectHeapProxy.copyRef());
+            , m_videoFrameObjectHeapProxy.copyRef()
 #else
-    return RemoteGraphicsContextGLProxy::create(m_connection, attributes, ensureRenderingBackend());
+        );
 #endif
+    }
 #endif
-    return WebCore::createWebProcessGraphicsContextGL(attributes, &m_dispatcher);
+    return WebCore::createWebProcessGraphicsContextGL(WTFMove(attributes), &m_dispatcher);
 }
 #endif
 

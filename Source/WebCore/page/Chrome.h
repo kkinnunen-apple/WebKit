@@ -115,7 +115,7 @@ public:
     RefPtr<WebCore::ImageBuffer> sinkIntoImageBuffer(std::unique_ptr<WebCore::SerializedImageBuffer>) override;
 
 #if ENABLE(WEBGL)
-    RefPtr<GraphicsContextGL> createGraphicsContextGL(const GraphicsContextGLAttributes&) const override;
+    RefPtr<GraphicsContextGL> createGraphicsContextGL(GraphicsContextGLAttributes&&) const override;
 #endif
 #if HAVE(WEBGPU_IMPLEMENTATION)
     RefPtr<WebGPU::GPU> createGPUForWebGPU() const override;

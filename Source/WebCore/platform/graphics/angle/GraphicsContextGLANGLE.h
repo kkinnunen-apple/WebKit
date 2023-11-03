@@ -357,7 +357,7 @@ public:
 
     void addError(GCGLErrorCode);
 protected:
-    GraphicsContextGLANGLE(GraphicsContextGLAttributes);
+    GraphicsContextGLANGLE();
 
     bool updateErrors();
 
@@ -365,22 +365,15 @@ protected:
     bool makeContextCurrent() WARN_UNUSED_RETURN;
 
     // Initializes the instance. Returns false if the instance should not be used.
-    bool initialize();
+    bool initialize(GraphicsContextGLAttributes&&);
     // Called first by initialize(). Subclasses should override to instantiate the platform specific bits of EGLContext.
     // FIXME: Currently platforms do not share the context creation. They should.
-    virtual bool platformInitializeContext() = 0;
+    virtual bool platformInitializeContext(GraphicsContextGLAttributes&&) = 0;
     // Called by initialize(). Subclasses should override to enable platform specific extensions.
     virtual bool platformInitializeExtensions();
     // Called by initialize(). Subclasses should override to instantiate platform specific state that depend on
     // the shared state.
     virtual bool platformInitialize();
-
-    // Take into account the user's requested context creation attributes,
-    // in particular stencil and antialias, and determine which could or
-    // could not be honored based on the capabilities of the OpenGL
-    // implementation.
-    void validateDepthStencil(ASCIILiteral packedDepthStencilExtension);
-    void validateAttributes();
 
     std::optional<IntSize> readPixelsImpl(IntRect, GCGLenum format, GCGLenum type, GCGLsizei bufSize, uint8_t* data, bool readingToPixelBufferObject);
 

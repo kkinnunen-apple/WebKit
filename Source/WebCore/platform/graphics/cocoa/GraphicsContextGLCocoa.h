@@ -56,7 +56,7 @@ class ImageRotationSessionVT;
 
 class WEBCORE_EXPORT GraphicsContextGLCocoa : public GraphicsContextGLANGLE {
 public:
-    static RefPtr<GraphicsContextGLCocoa> create(WebCore::GraphicsContextGLAttributes&&, ProcessIdentity&& resourceOwner);
+    static RefPtr<GraphicsContextGLCocoa> create(GraphicsContextGLAttributes&&, ProcessIdentity&& resourceOwner);
     ~GraphicsContextGLCocoa();
     IOSurface* displayBufferSurface();
 
@@ -74,8 +74,6 @@ public:
     GCEGLSync createEGLSync(ExternalEGLSyncEvent) final;
     // Short term support for in-process WebGL.
     GCEGLSync createEGLSync(id, uint64_t);
-
-    bool enableRequiredWebXRExtensions() final;
 
     void waitUntilWorkScheduled();
 
@@ -105,12 +103,11 @@ public:
     void prepareForDisplayWithFinishedSignal(Function<void()> finishedSignal);
 
 protected:
-    GraphicsContextGLCocoa(WebCore::GraphicsContextGLAttributes&&, ProcessIdentity&& resourceOwner);
+    GraphicsContextGLCocoa(ProcessIdentity&& resourceOwner);
 
     // GraphicsContextGLANGLE overrides.
-    bool platformInitializeContext() final;
+    bool platformInitializeContext(GraphicsContextGLAttributes&&) override;
     bool platformInitializeExtensions() final;
-    bool platformInitialize() final;
     void invalidateKnownTextureContent(GCGLuint) final;
     bool reshapeDrawingBuffer() final;
 
@@ -131,16 +128,13 @@ protected:
     // Inserts new fence that will invoke `signal` from a background thread when completed.
     // If not possible, calls the `signal`.
     void insertFinishedSignalOrInvoke(Function<void()> signal);
-#if ENABLE(WEBXR)
-    bool enableRequiredWebXRExtensionsImpl();
-#endif
-
 
     ProcessIdentity m_resourceOwner;
     DestinationColorSpace m_drawingBufferColorSpace;
 #if ENABLE(VIDEO)
     std::unique_ptr<GraphicsContextGLCVCocoa> m_cv;
 #endif
+    bool m_useMetal { true };
 #if PLATFORM(MAC)
     bool m_switchesGPUOnDisplayReconfiguration { false };
     ScopedHighPerformanceGPURequest m_highPerformanceGPURequest;

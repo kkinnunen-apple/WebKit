@@ -64,26 +64,20 @@ GraphicsContextGLANGLE::~GraphicsContextGLANGLE()
 
     if (m_texture)
         GL_DeleteTextures(1, &m_texture);
-
-    auto attributes = contextAttributes();
-
-    if (attributes.antialias) {
+    if (m_multisampleColorBuffer)
         GL_DeleteRenderbuffers(1, &m_multisampleColorBuffer);
-        if (attributes.stencil || attributes.depth)
-            GL_DeleteRenderbuffers(1, &m_multisampleDepthStencilBuffer);
+    if (m_multisampleDepthStencilBuffer)
+        GL_DeleteRenderbuffers(1, &m_multisampleDepthStencilBuffer);
+    if (m_multisampleFBO)
         GL_DeleteFramebuffers(1, &m_multisampleFBO);
-    } else {
-        if (attributes.stencil || attributes.depth) {
-            if (m_depthStencilBuffer)
-                GL_DeleteRenderbuffers(1, &m_depthStencilBuffer);
-        }
-
-        if (m_preserveDrawingBufferTexture)
-            GL_DeleteTextures(1, &m_preserveDrawingBufferTexture);
-        if (m_preserveDrawingBufferFBO)
-            GL_DeleteFramebuffers(1, &m_preserveDrawingBufferFBO);
-    }
-    GL_DeleteFramebuffers(1, &m_fbo);
+    if (m_depthStencilBuffer)
+        GL_DeleteRenderbuffers(1, &m_depthStencilBuffer);
+    if (m_preserveDrawingBufferTexture)
+        GL_DeleteTextures(1, &m_preserveDrawingBufferTexture);
+    if (m_preserveDrawingBufferFBO)
+        GL_DeleteFramebuffers(1, &m_preserveDrawingBufferFBO);
+    if (m_fbo)
+        GL_DeleteFramebuffers(1, &m_fbo);
 
     if (m_contextObj) {
         EGL_MakeCurrent(m_displayObj, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
@@ -112,28 +106,25 @@ RefPtr<PixelBuffer> GraphicsContextGLTextureMapperANGLE::readCompositedResults()
     return readRenderingResults();
 }
 
-RefPtr<GraphicsContextGL> createWebProcessGraphicsContextGL(const GraphicsContextGLAttributes& attributes, SerialFunctionDispatcher*)
+RefPtr<GraphicsContextGL> createWebProcessGraphicsContextGL(GraphicsContextGLAttributes&& attributes, SerialFunctionDispatcher*)
 {
 #if USE(ANGLE_GBM)
     auto& eglExtensions = PlatformDisplay::sharedDisplayForCompositing().eglExtensions();
     if (eglExtensions.KHR_image_base && eglExtensions.EXT_image_dma_buf_import)
-        return GraphicsContextGLGBMTextureMapper::create(GraphicsContextGLAttributes { attributes });
+        return GraphicsContextGLGBMTextureMapper::create(WTFMove(attributes));
 #endif
-    return GraphicsContextGLTextureMapperANGLE::create(GraphicsContextGLAttributes { attributes });
+    return GraphicsContextGLTextureMapperANGLE::create(WTFMove(attributes));
 }
 
 RefPtr<GraphicsContextGLTextureMapperANGLE> GraphicsContextGLTextureMapperANGLE::create(GraphicsContextGLAttributes&& attributes)
 {
-    auto context = adoptRef(*new GraphicsContextGLTextureMapperANGLE(WTFMove(attributes)));
-    if (!context->initialize())
+    auto context = adoptRef(*new GraphicsContextGLTextureMapperANGLE());
+    if (!context->initialize(WTFMove(attributes)))
         return nullptr;
     return context;
 }
 
-GraphicsContextGLTextureMapperANGLE::GraphicsContextGLTextureMapperANGLE(GraphicsContextGLAttributes&& attributes)
-    : GraphicsContextGLANGLE(WTFMove(attributes))
-{
-}
+GraphicsContextGLTextureMapperANGLE::GraphicsContextGLTextureMapperANGLE() = default;
 
 GraphicsContextGLTextureMapperANGLE::~GraphicsContextGLTextureMapperANGLE()
 {
@@ -168,10 +159,8 @@ RefPtr<VideoFrame> GraphicsContextGLTextureMapperANGLE::surfaceBufferToVideoFram
 }
 #endif
 
-bool GraphicsContextGLTextureMapperANGLE::platformInitializeContext()
+bool GraphicsContextGLTextureMapperANGLE::platformInitializeContext(GraphicsContextGLAttributes&&)
 {
-    m_isForWebGL2 = contextAttributes().webGLVersion == GraphicsContextGLWebGLVersion::WebGL2;
-
     auto& sharedDisplay = PlatformDisplay::sharedDisplayForCompositing();
     m_displayObj = sharedDisplay.angleEGLDisplay();
     if (m_displayObj == EGL_NO_DISPLAY)
@@ -328,11 +317,10 @@ void GraphicsContextGLTextureMapperANGLE::setContextVisibility(bool)
 
 bool GraphicsContextGLTextureMapperANGLE::reshapeDrawingBuffer()
 {
-    auto attrs = contextAttributes();
     const auto size = getInternalFramebufferSize();
     const int width = size.width();
     const int height = size.height();
-    GLuint colorFormat = attrs.alpha ? GL_RGBA : GL_RGB;
+    GLuint colorFormat = m_defaultFramebufferAttributes.hasAlpha() ? GL_RGBA : GL_RGB;
     auto [textureTarget, textureBinding] = drawingBufferTextureBindingPoint();
     GLuint internalColorFormat = textureTarget == GL_TEXTURE_2D ? colorFormat : m_internalColorFormat;
     ScopedRestoreTextureBinding restoreBinding(textureBinding, textureTarget, textureTarget != TEXTURE_RECTANGLE_ARB);

@@ -39,9 +39,9 @@ ChromeClient::ChromeClient() = default;
 ChromeClient::~ChromeClient() = default;
 
 #if ENABLE(WEBGL)
-RefPtr<GraphicsContextGL> ChromeClient::createGraphicsContextGL(const GraphicsContextGLAttributes& attributes) const
+RefPtr<GraphicsContextGL> ChromeClient::createGraphicsContextGL(GraphicsContextGLAttributes&& attributes) const
 {
-    return createWebProcessGraphicsContextGL(attributes);
+    return createWebProcessGraphicsContextGL(WTFMove(attributes));
 }
 #endif
 

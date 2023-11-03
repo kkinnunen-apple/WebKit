@@ -39,6 +39,7 @@ messages -> RemoteGraphicsContextGL NotRefCounted Stream {
     void PrepareForDisplay() -> () Synchronous
 #endif
     void EnsureExtensionEnabled(String extension)
+    void MarkContextChanged()
     void GetErrors() -> (GCGLErrorCodeSet returnValue) Synchronous
     void DrawSurfaceBufferToImageBuffer(WebCore::GraphicsContextGL::SurfaceBuffer buffer, WebCore::RenderingResourceIdentifier imageBuffer) -> () Synchronous
 #if ENABLE(MEDIA_STREAM) || ENABLE(WEB_CODECS)
@@ -330,7 +331,6 @@ messages -> RemoteGraphicsContextGL NotRefCounted Stream {
     void DrawingBufferToPixelBuffer(WebCore::GraphicsContextGL::FlipY arg0) -> (RefPtr<WebCore::PixelBuffer> returnValue) Synchronous
     void DestroyEGLSync(uint64_t arg0) -> (bool returnValue) Synchronous
     void ClientWaitEGLSyncWithFlush(uint64_t arg0, uint64_t timeout)
-    void EnableRequiredWebXRExtensions() -> (bool returnValue) Synchronous
 }
 
 #endif

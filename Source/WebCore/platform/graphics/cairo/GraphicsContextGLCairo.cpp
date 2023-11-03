@@ -106,7 +106,7 @@ bool GraphicsContextGLImageExtractor::extractImage(bool premultiplyAlpha, bool i
     return true;
 }
 
-RefPtr<NativeImage> GraphicsContextGL::createNativeImageFromPixelBuffer(const GraphicsContextGLAttributes& sourceContextAttributes, Ref<PixelBuffer>&& pixelBuffer)
+RefPtr<NativeImage> GraphicsContextGL::createNativeImageFromPixelBuffer(bool hasAlpha, Ref<PixelBuffer>&& pixelBuffer)
 {
     ASSERT(!pixelBuffer->size().isEmpty());
 
@@ -117,7 +117,7 @@ RefPtr<NativeImage> GraphicsContextGL::createNativeImageFromPixelBuffer(const Gr
     for (size_t i = 0; i < totalBytes; i += 4)
         std::swap(pixels[i], pixels[i + 2]);
 
-    if (!sourceContextAttributes.premultipliedAlpha) {
+    if (hasAlpha && pixelBuffer->format().alphaFormat == AlphaPremultiplication::Unpremultiplied) {
         for (size_t i = 0; i < totalBytes; i += 4) {
             pixels[i + 0] = std::min(255, pixels[i + 0] * pixels[i + 3] / 255);
             pixels[i + 1] = std::min(255, pixels[i + 1] * pixels[i + 3] / 255);

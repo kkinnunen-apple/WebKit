@@ -5743,8 +5743,6 @@ Internals::RequestedGPU Internals::requestedGPU(WebGLRenderingContext& context)
     UNUSED_PARAM(context);
     if (auto optionalAttributes = context.getContextAttributes()) {
         auto attributes = *optionalAttributes;
-        if (attributes.forceRequestForHighPerformanceGPU)
-            return RequestedGPU::HighPerformance;
         switch (attributes.powerPreference) {
         case GraphicsContextGLPowerPreference::Default:
             return RequestedGPU::Default;

@@ -2700,30 +2700,33 @@ header: <WebCore/GraphicsContextGLAttributes.h>
     WebGL2
 };
 
-struct WebCore::GraphicsContextGLAttributes {
-    bool alpha;
-    bool depth;
-    bool stencil;
-    bool antialias;
-    bool premultipliedAlpha;
-    bool preserveDrawingBuffer;
-    bool failIfMajorPerformanceCaveat;
+[CustomHeader] enum class WebCore::GraphicsContextGLSimulatedCreationFailure : uint8_t {
+    None,
+    IPCBufferOOM,
+    CreationTimeout,
+    FailPlatformContextCreation
+};
+
+struct WebCore::GraphicsContextGLParameters {
     WebCore::GraphicsContextGLPowerPreference powerPreference;
     float devicePixelRatio;
-    WebCore::GraphicsContextGLPowerPreference initialPowerPreference;
     WebCore::GraphicsContextGLWebGLVersion webGLVersion;
-    bool forceRequestForHighPerformanceGPU;
 #if PLATFORM(MAC) || PLATFORM(MACCATALYST)
     uint64_t windowGPUID;
 #endif
 #if PLATFORM(COCOA)
     bool useMetal;
 #endif
-#if ENABLE(WEBXR)
-    bool xrCompatible;
-#endif
-    bool failPlatformContextCreationForTesting;
-    [NotSerialized] WebCore::GraphicsContextGLSimulatedCreationFailure failContextCreationForTesting;
+    WebCore::GraphicsContextGLSimulatedCreationFailure failContextCreationForTesting;
+};
+
+struct WebCore::GraphicsContextGLDefaultFramebufferParameters {
+    bool alpha;
+    bool depth;
+    bool stencil;
+    bool antialias;
+    bool premultipliedAlpha;
+    bool preserveDrawingBuffer;
 };
 #endif // ENABLE(GPU_PROCESS) && ENABLE(WEBGL)
 

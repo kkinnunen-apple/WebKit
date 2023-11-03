@@ -505,18 +505,20 @@ bool GraphicsContextGLImageExtractor::extractImage(bool premultiplyAlpha, bool i
     return true;
 }
 
-RefPtr<NativeImage> GraphicsContextGL::createNativeImageFromPixelBuffer(const GraphicsContextGLAttributes& sourceContextAttributes, Ref<PixelBuffer>&& pixelBuffer)
+RefPtr<NativeImage> GraphicsContextGL::createNativeImageFromPixelBuffer(bool hasAlpha, Ref<PixelBuffer>&& pixelBuffer)
 {
     ASSERT(!pixelBuffer->size().isEmpty());
     // Input is GL_RGBA == kCGBitmapByteOrder32Big | kCGImageAlpha*Last.
     // GL_BGRA would be kCGBitmapByteOrder32Little | kCGImageAlpha*First.
     CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Big;
-    if (!sourceContextAttributes.alpha)
+    if (!hasAlpha)
         bitmapInfo |= kCGImageAlphaNoneSkipLast;
-    else if (sourceContextAttributes.premultipliedAlpha)
-        bitmapInfo |= kCGImageAlphaPremultipliedLast;
-    else
-        bitmapInfo |= kCGImageAlphaLast;
+    else {
+        if (pixelBuffer->format().alphaFormat == AlphaPremultiplication::Premultiplied)
+            bitmapInfo |= kCGImageAlphaPremultipliedLast;
+        else
+            bitmapInfo |= kCGImageAlphaLast;
+    }
 
     Ref protectedPixelBuffer = pixelBuffer;
     auto dataSize = pixelBuffer->sizeInBytes();

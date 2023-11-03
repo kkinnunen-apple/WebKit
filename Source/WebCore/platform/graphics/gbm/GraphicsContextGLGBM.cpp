@@ -53,15 +53,13 @@ static inline bool isDMABufSupportedByANGLEPlatform(const GraphicsContextGLGBM::
 
 RefPtr<GraphicsContextGLGBM> GraphicsContextGLGBM::create(GraphicsContextGLAttributes&& attributes)
 {
-    auto context = adoptRef(*new GraphicsContextGLGBM(WTFMove(attributes)));
-    if (!context->initialize())
+    auto context = adoptRef(*new GraphicsContextGLGBM());
+    if (!context->initialize(WTFMove(attributes)))
         return nullptr;
     return context;
 }
 
-GraphicsContextGLGBM::GraphicsContextGLGBM(GraphicsContextGLAttributes&& attributes)
-    : GraphicsContextGLANGLE(WTFMove(attributes))
-{ }
+GraphicsContextGLGBM::GraphicsContextGLGBM() = default;
 
 GraphicsContextGLGBM::~GraphicsContextGLGBM() = default;
 
@@ -109,15 +107,13 @@ void GraphicsContextGLGBM::prepareForDisplay()
     allocateDrawBufferObject();
 }
 
-bool GraphicsContextGLGBM::platformInitializeContext()
+bool GraphicsContextGLGBM::platformInitializeContext(GraphicsContextGLAttributes&& attributes)
 {
     auto* device = GBMDevice::singleton().device();
     if (!device) {
         LOG(WebGL, "Warning: Unable to access the GBM device, we fallback to common GL images, they require a copy, that causes a performance penalty.");
         return false;
     }
-
-    m_isForWebGL2 = contextAttributes().webGLVersion == GraphicsContextGLWebGLVersion::WebGL2;
 
     Vector<EGLint> displayAttributes {
         EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_OPENGLES_ANGLE,

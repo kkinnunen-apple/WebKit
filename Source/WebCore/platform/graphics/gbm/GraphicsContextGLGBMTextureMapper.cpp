@@ -36,15 +36,13 @@ namespace WebCore {
 
 RefPtr<GraphicsContextGLGBMTextureMapper> GraphicsContextGLGBMTextureMapper::create(GraphicsContextGLAttributes&& attributes)
 {
-    auto context = adoptRef(*new GraphicsContextGLGBMTextureMapper(WTFMove(attributes)));
-    if (!context->initialize())
+    auto context = adoptRef(*new GraphicsContextGLGBMTextureMapper());
+    if (!context->initialize(WTFMove(attributes)))
         return nullptr;
     return context;
 }
 
-GraphicsContextGLGBMTextureMapper::GraphicsContextGLGBMTextureMapper(GraphicsContextGLAttributes&& attributes)
-    : GraphicsContextGLGBM(WTFMove(attributes))
-{ }
+GraphicsContextGLGBMTextureMapper::GraphicsContextGLGBMTextureMapper() = default;
 
 GraphicsContextGLGBMTextureMapper::~GraphicsContextGLGBMTextureMapper() = default;
 
