@@ -85,7 +85,7 @@ private:
     GCGLOwnedTexture m_colorTexture;
     GCEGLImage m_colorImage { };
     GCEGLImage m_depthStencilImage { };
-    GraphicsContextGL::ExternalEGLSyncEvent m_completionSyncEvent;
+    GCExternalEGLSyncEvent m_completionSyncEvent;
 #else
     PlatformGLObject m_colorTexture;
 #endif

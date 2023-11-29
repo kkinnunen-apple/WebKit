@@ -571,10 +571,6 @@ GCGLint GraphicsContextGL::getInternalformati(GCGLenum target, GCGLenum internal
     return value[0];
 }
 
-void GraphicsContextGL::setDrawingBufferColorSpace(const DestinationColorSpace&)
-{
-}
-
 void GraphicsContextGL::paintToCanvas(NativeImage& image, const IntSize& canvasSize, GraphicsContext& context)
 {
     if (canvasSize.isEmpty())

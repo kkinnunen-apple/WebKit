@@ -71,8 +71,8 @@ public:
     void didReceiveInvalidMessage(IPC::Connection&, IPC::MessageName) final { }
 
     // WebCore::GraphicsContextGL overrides.
-    std::optional<WebCore::GraphicsContextGL::EGLImageAttachResult> createAndBindEGLImage(GCGLenum, WebCore::GraphicsContextGL::EGLImageSource) override;
-    GCEGLSync createEGLSync(ExternalEGLSyncEvent) override;
+    std::optional<WebCore::GraphicsContextGL::GCEGLImageAttachResult> createAndBindEGLImage(GCGLenum, WebCore::GraphicsContextGL::GCEGLImageSource) override;
+    GCEGLSync createEGLSync(GCExternalEGLSyncEvent) override;
     std::tuple<GCGLenum, GCGLenum> externalImageTextureBindingPoint() final;
     void reshape(int width, int height) final;
     void setContextVisibility(bool) final;

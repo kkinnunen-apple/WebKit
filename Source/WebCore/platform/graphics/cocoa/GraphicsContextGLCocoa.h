@@ -61,26 +61,27 @@ public:
     IOSurface* displayBufferSurface();
 
     std::tuple<GCGLenum, GCGLenum> externalImageTextureBindingPoint() final;
+    RefPtr<PixelBuffer> readCompositedResults() final;
+    void setContextVisibility(bool) final;
+    void setDrawingBufferColorSpace(const DestinationColorSpace&) final;
+    void prepareForDisplay() override;
+    void withBufferAsNativeImage(SurfaceBuffer, Function<void(NativeImage&)>) override;
+    std::optional<GCEGLImageAttachResult> createAndBindEGLImage(GCGLenum, GCEGLImageSource) final;
+    GCEGLSync createEGLSync(GCExternalEGLSyncEvent) final;
 
     enum class PbufferAttachmentUsage { Read, Write, ReadWrite };
     // Returns a handle which, if non-null, must be released via the
     // detach call below.
     void* createPbufferAndAttachIOSurface(GCGLenum target, PbufferAttachmentUsage, GCGLenum internalFormat, GCGLsizei width, GCGLsizei height, GCGLenum type, IOSurfaceRef, GCGLuint plane);
     void destroyPbufferAndDetachIOSurface(void* handle);
-
-    std::optional<EGLImageAttachResult> createAndBindEGLImage(GCGLenum, EGLImageSource) final;
-
     RetainPtr<id> newSharedEventWithMachPort(mach_port_t);
-    GCEGLSync createEGLSync(ExternalEGLSyncEvent) final;
     // Short term support for in-process WebGL.
     GCEGLSync createEGLSync(id, uint64_t);
-
     bool enableRequiredWebXRExtensions() final;
-
     void waitUntilWorkScheduled();
 
+#if 0
     // GraphicsContextGLANGLE overrides.
-    RefPtr<GraphicsLayerContentsDisplayDelegate> layerContentsDisplayDelegate() override;
 #if ENABLE(VIDEO)
     bool copyTextureFromMedia(MediaPlayer&, PlatformGLObject texture, GCGLenum target, GCGLint level, GCGLenum internalFormat, GCGLenum format, GCGLenum type, bool premultiplyAlpha, bool flipY) final;
 #endif
@@ -90,12 +91,7 @@ public:
 #if ENABLE(MEDIA_STREAM) || ENABLE(WEB_CODECS)
     RefPtr<VideoFrame> surfaceBufferToVideoFrame(SurfaceBuffer) final;
 #endif
-    RefPtr<PixelBuffer> readCompositedResults() final;
-    void setContextVisibility(bool) final;
-    void setDrawingBufferColorSpace(const DestinationColorSpace&) final;
-    void prepareForDisplay() override;
-
-    void withBufferAsNativeImage(SurfaceBuffer, Function<void(NativeImage&)>) override;
+#endif
 
 #if PLATFORM(MAC)
     void updateContextOnDisplayReconfiguration();
@@ -134,7 +130,6 @@ protected:
 #if ENABLE(WEBXR)
     bool enableRequiredWebXRExtensionsImpl();
 #endif
-
 
     ProcessIdentity m_resourceOwner;
     DestinationColorSpace m_drawingBufferColorSpace;

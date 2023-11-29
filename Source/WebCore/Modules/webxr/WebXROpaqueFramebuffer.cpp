@@ -46,7 +46,7 @@ namespace WebCore {
 using GL = GraphicsContextGL;
 
 #if PLATFORM(COCOA)
-static std::optional<GL::EGLImageAttachResult> createAndBindCompositorTexture(GL& gl, GCGLenum target, GCGLOwnedTexture& texture, GL::EGLImageSource source)
+static std::optional<GL::GCEGLImageAttachResult> createAndBindCompositorTexture(GL& gl, GCGLenum target, GCGLOwnedTexture& texture, GCEGLImageSource source)
 {
     texture.ensure(gl);
     gl.bindTexture(target, texture);
@@ -64,7 +64,7 @@ static std::optional<GL::EGLImageAttachResult> createAndBindCompositorTexture(GL
     return attachResult;
 }
 
-static std::optional<GL::EGLImageAttachResult> createAndBindCompositorBuffer(GL& gl, GCGLOwnedRenderbuffer& buffer, GL::EGLImageSource source)
+static std::optional<GL::GCEGLImageAttachResult> createAndBindCompositorBuffer(GL& gl, GCGLOwnedRenderbuffer& buffer, GCEGLImageSource source)
 {
     buffer.ensure(gl);
     gl.bindRenderbuffer(GL::RENDERBUFFER, buffer);
@@ -78,12 +78,12 @@ static std::optional<GL::EGLImageAttachResult> createAndBindCompositorBuffer(GL&
     return attachResult;
 }
 
-static GL::EGLImageSource makeEGLImageSource(const std::tuple<WTF::MachSendRight, bool>& imageSource)
+static GCEGLImageSource makeEGLImageSource(const std::tuple<WTF::MachSendRight, bool>& imageSource)
 {
     auto [imageHandle, isSharedTexture] = imageSource;
     if (isSharedTexture)
-        return GL::EGLImageSourceMTLSharedTextureHandle { WTF::MachSendRight(imageHandle) };
-    return GL::EGLImageSourceIOSurfaceHandle { WTF::MachSendRight(imageHandle) };
+        return GCEGLImageSourceMTLSharedTextureHandle { WTF::MachSendRight(imageHandle) };
+    return GCEGLImageSourceIOSurfaceHandle { WTF::MachSendRight(imageHandle) };
 }
 #endif
 

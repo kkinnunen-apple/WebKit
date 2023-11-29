@@ -32,6 +32,7 @@
 #import "PlatformCALayer.h"
 #import "PlatformCALayerDelegatedContents.h"
 #import "ProcessIdentity.h"
+#import "WebProcessGraphicsContextGL.h"
 #import <wtf/Condition.h>
 #import <wtf/FastMalloc.h>
 #import <wtf/Lock.h>
@@ -44,6 +45,20 @@
 namespace WebCore {
 
 constexpr Seconds frameFinishedTimeout = 5_s;
+
+// In isCurrentContextVolatile() == true case this variable is accessed in single-threaded manner.
+// In isCurrentContextVolatile() == false case this variable is accessed from multiple threads but always sequentially
+// and it always contains nullptr and nullptr is always written to it.
+static GraphicsContextGLANGLE* currentContext;
+
+static bool isCurrentOpenGLContextVolatile()
+{
+#if PLATFORM(COCOA)
+    static bool value = !(isInWebProcess() || isInGPUProcess());
+    return value;
+#else
+    return false;
+}
 
 namespace {
 
@@ -136,7 +151,7 @@ private:
 };
 
 // GraphicsContextGL type that is used when WebGL is run in-process in WebContent process.
-class WebProcessGraphicsContextGLCocoa final : public GraphicsContextGLCocoa
+class WebProcessGraphicsContextGLCocoa final : public WebProcessGraphicsContextGL
 #if PLATFORM(MAC)
     , private DisplayConfigurationMonitor::Client
 #endif
@@ -144,9 +159,11 @@ class WebProcessGraphicsContextGLCocoa final : public GraphicsContextGLCocoa
 public:
     ~WebProcessGraphicsContextGLCocoa();
 
-    // GraphicsContextGLCocoa overrides.
+    // WebProcessGraphicsContextGL overrides.
     RefPtr<GraphicsLayerContentsDisplayDelegate> layerContentsDisplayDelegate() final { return m_layerContentsDisplayDelegate.ptr(); }
     void prepareForDisplay() final;
+protected:
+    bool makeContextCurrent() final;
 private:
 #if PLATFORM(MAC)
     // DisplayConfigurationMonitor::Client overrides.
@@ -159,9 +176,9 @@ private:
     friend class GraphicsContextGLOpenGL;
 };
 
-WebProcessGraphicsContextGLCocoa::WebProcessGraphicsContextGLCocoa(GraphicsContextGLAttributes&& attributes, SerialFunctionDispatcher* dispatcher)
-    : GraphicsContextGLCocoa(WTFMove(attributes), { })
-    , m_layerContentsDisplayDelegate(DisplayBufferDisplayDelegate::create(!attributes.alpha, attributes.devicePixelRatio))
+WebProcessGraphicsContextGLCocoa::WebProcessGraphicsContextGLCocoa(Ref<GraphicsContextGLCocoa> context, SerialFunctionDispatcher* dispatcher)
+    : WebProcessGraphicsContextGL(WTFMove(context))
+    , m_layerContentsDisplayDelegate(DisplayBufferDisplayDelegate::create(!m_context->getContextAttributes().alpha, attributes.devicePixelRatio))
 {
 #if PLATFORM(MAC)
     DisplayConfigurationMonitor::singleton().addClient(*this, dispatcher);
@@ -172,6 +189,7 @@ WebProcessGraphicsContextGLCocoa::WebProcessGraphicsContextGLCocoa(GraphicsConte
 
 WebProcessGraphicsContextGLCocoa::~WebProcessGraphicsContextGLCocoa()
 {
+    currentContext = nullptr; // Destroying the context will modify the underlying current context.
 #if PLATFORM(MAC)
     DisplayConfigurationMonitor::singleton().removeClient(*this);
 #endif
@@ -193,18 +211,31 @@ void WebProcessGraphicsContextGLCocoa::prepareForDisplay()
 #if PLATFORM(MAC)
 void WebProcessGraphicsContextGLCocoa::displayWasReconfigured()
 {
-    updateContextOnDisplayReconfiguration();
+    m_context->updateContextOnDisplayReconfiguration();
 }
 #endif
+
+bool WebProcessGraphicsContextGLCocoa::makeContextCurrent()
+{
+    if (currentContext == this)
+        return true;
+    if (!WebProcessGraphicsContextGL::makeContextCurrent())
+        return false;
+    if (m_attributes.useMetal || !isCurrentOpenGLContextVolatile())
+        currentContext = this;
+    return true;
+}
 
 }
 
 RefPtr<GraphicsContextGL> createWebProcessGraphicsContextGL(const GraphicsContextGLAttributes& attributes, SerialFunctionDispatcher* dispatcher)
 {
-    auto context = adoptRef(new WebProcessGraphicsContextGLCocoa(GraphicsContextGLAttributes { attributes }, dispatcher));
+    currentContext = nullptr; // Creating the context will change the underlying current context.
+    attributes.openGLContextIsVolatile = isCurrentOpenGLContextVolatile();
+    UniqueRef context { *new GraphicsContextGLCocoa(GraphicsContextGLAttributes { attributes }, dispatcher) };
     if (!context->initialize())
         return nullptr;
-    return context;
+    return adoptRef(*new WebProcessGraphicsContextGLCocoa(WTFMove(context)));
 }
 
 }

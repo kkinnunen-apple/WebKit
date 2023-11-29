@@ -135,8 +135,8 @@ private:
 class RemoteGraphicsContextGLProxyCocoa final : public RemoteGraphicsContextGLProxy {
 public:
     // GraphicsContextGL override.
-    std::optional<WebCore::GraphicsContextGL::EGLImageAttachResult> createAndBindEGLImage(GCGLenum, WebCore::GraphicsContextGL::EGLImageSource) final;
-    GCEGLSync createEGLSync(ExternalEGLSyncEvent) final;
+    std::optional<WebCore::GraphicsContextGL::GCEGLImageAttachResult> createAndBindEGLImage(GCGLenum, WebCore::GraphicsContextGL::GCEGLImageSource) final;
+    GCEGLSync createEGLSync(GCExternalEGLSyncEvent) final;
 
     // RemoteGraphicsContextGLProxy overrides.
     RefPtr<WebCore::GraphicsLayerContentsDisplayDelegate> layerContentsDisplayDelegate() final { return m_layerContentsDisplayDelegate.ptr(); }
@@ -160,7 +160,7 @@ private:
     friend class RemoteGraphicsContextGLProxy;
 };
 
-std::optional<WebCore::GraphicsContextGL::EGLImageAttachResult> RemoteGraphicsContextGLProxyCocoa::createAndBindEGLImage(GCGLenum target, WebCore::GraphicsContextGL::EGLImageSource source)
+std::optional<WebCore::GraphicsContextGL::GCEGLImageAttachResult> RemoteGraphicsContextGLProxyCocoa::createAndBindEGLImage(GCGLenum target, WebCore::GraphicsContextGL::GCEGLImageSource source)
 {
     if (isContextLost())
         return std::nullopt;
@@ -175,7 +175,7 @@ std::optional<WebCore::GraphicsContextGL::EGLImageAttachResult> RemoteGraphicsCo
     return std::make_tuple(reinterpret_cast<GCEGLImage>(static_cast<intptr_t>(handle)), size);
 }
 
-GCEGLSync RemoteGraphicsContextGLProxyCocoa::createEGLSync(ExternalEGLSyncEvent syncEvent)
+GCEGLSync RemoteGraphicsContextGLProxyCocoa::createEGLSync(GCExternalEGLSyncEvent syncEvent)
 {
     if (isContextLost())
         return { };

@@ -36,6 +36,7 @@
 #include "PixelBuffer.h"
 #include "PlatformDisplay.h"
 #include "PlatformLayerDisplayDelegate.h"
+#include "WebProcessGraphicsContextGL.h"
 
 #if ENABLE(MEDIA_STREAM) || ENABLE(WEB_CODECS)
 #include "VideoFrame.h"
@@ -93,11 +94,6 @@ GraphicsContextGLANGLE::~GraphicsContextGLANGLE()
         EGL_DestroySurface(m_displayObj, m_surfaceObj);
 }
 
-bool GraphicsContextGLANGLE::makeContextCurrent()
-{
-    return !!EGL_MakeCurrent(m_displayObj, m_surfaceObj, m_surfaceObj, m_contextObj);
-}
-
 void GraphicsContextGLANGLE::checkGPUStatus()
 {
 }
@@ -113,12 +109,17 @@ RefPtr<PixelBuffer> GraphicsContextGLTextureMapperANGLE::readCompositedResults()
 
 RefPtr<GraphicsContextGL> createWebProcessGraphicsContextGL(const GraphicsContextGLAttributes& attributes, SerialFunctionDispatcher*)
 {
+    WebProcessGraphicsContextGL::willChangeCurrentContext();
+    UniqueRef<GraphicsContextGLANGLE> context;
 #if USE(ANGLE_GBM)
     auto& eglExtensions = PlatformDisplay::sharedDisplayForCompositing().eglExtensions();
     if (eglExtensions.KHR_image_base && eglExtensions.EXT_image_dma_buf_import)
-        return GraphicsContextGLGBMTextureMapper::create(GraphicsContextGLAttributes { attributes });
+        context = GraphicsContextGLGBMTextureMapper::create(GraphicsContextGLAttributes { attributes });
 #endif
-    return GraphicsContextGLTextureMapperANGLE::create(GraphicsContextGLAttributes { attributes });
+    context = GraphicsContextGLTextureMapperANGLE::create(GraphicsContextGLAttributes { attributes });
+    if (!context)
+        return nullptr;
+    return adoptRef(*new WebProcessGraphicsContextGL(WTFMove(context)));
 }
 
 RefPtr<GraphicsContextGLTextureMapperANGLE> GraphicsContextGLTextureMapperANGLE::create(GraphicsContextGLAttributes&& attributes)

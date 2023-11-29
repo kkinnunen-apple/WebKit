@@ -2330,6 +2330,8 @@ platform/graphics/TrackPrivateBase.cpp
 platform/graphics/VP9Utilities.cpp
 platform/graphics/VelocityData.cpp
 platform/graphics/WebMResourceClient.cpp
+platform/graphics/WebProcessGraphicsContextGL.cpp
+platform/graphics/WebProcessGraphicsContextGLGenerated.cpp
 platform/graphics/WOFFFileFormat.cpp
 platform/graphics/WidthIterator.cpp
 platform/graphics/controls/ApplePayButtonPart.cpp

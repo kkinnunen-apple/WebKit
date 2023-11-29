@@ -165,7 +165,7 @@ void RemoteGraphicsContextGL::forceContextLost()
     send(Messages::RemoteGraphicsContextGLProxy::WasLost());
 }
 
-void RemoteGraphicsContextGL::createAndBindEGLImage(GCGLenum target, WebCore::GraphicsContextGL::EGLImageSource source, CompletionHandler<void(uint64_t handle, WebCore::IntSize size)>&& completionHandler)
+void RemoteGraphicsContextGL::createAndBindEGLImage(GCGLenum target, WebCore::GraphicsContextGL::GCEGLImageSource source, CompletionHandler<void(uint64_t handle, WebCore::IntSize size)>&& completionHandler)
 {
     assertIsCurrent(workQueue());
     auto attachment = m_context->createAndBindEGLImage(target, WTFMove(source));

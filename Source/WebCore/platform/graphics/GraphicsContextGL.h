@@ -100,19 +100,6 @@ DECLARE_GCGL_OWNED(Texture);
 
 #undef DECLARE_GCGL_OWNED
 
-#if PLATFORM(COCOA)
-struct GraphicsContextGLEGLImageSourceIOSurfaceHandle {
-    MachSendRight handle;
-};
-struct GraphicsContextGLEGLImageSourceMTLSharedTextureHandle {
-    MachSendRight handle;
-};
-using GraphicsContextGLEGLImageSource = std::variant<
-    GraphicsContextGLEGLImageSourceIOSurfaceHandle,
-    GraphicsContextGLEGLImageSourceMTLSharedTextureHandle
-    >;
-#endif // PLATFORM(COCOA)
-
 // Base class for graphics context for implementing WebGL rendering model.
 class GraphicsContextGL : public RefCounted<GraphicsContextGL> {
 public:
@@ -1210,10 +1197,15 @@ public:
     WEBCORE_EXPORT GraphicsContextGL(GraphicsContextGLAttributes);
     WEBCORE_EXPORT virtual ~GraphicsContextGL();
 
-    void setClient(Client* client) { m_client = client; }
 
+    virtual void setClient(Client*) = 0;
+    virtual GraphicsContextGLAttributes contextAttributes() const = 0;
+    virtual std::tuple<GCGLenum, GCGLenum> externalImageTextureBindingPoint() = 0;
+
+    // Functions with a generated implementation. This list is used by generate-gpup-webgl script.
     // ========== WebGL 1 entry points.
     virtual void activeTexture(GCGLenum texture) = 0;
+
     virtual void attachShader(PlatformGLObject program, PlatformGLObject shader) = 0;
     virtual void bindAttribLocation(PlatformGLObject, GCGLuint index, const String& name) = 0;
     virtual void bindBuffer(GCGLenum target, PlatformGLObject) = 0;
@@ -1522,24 +1514,10 @@ public:
     virtual void getActiveUniformBlockiv(GCGLuint program, GCGLuint uniformBlockIndex, GCGLenum pname, std::span<GCGLint> params) = 0;
 
     // ========== EGL related entry points.
-
-#if PLATFORM(COCOA)
-    using EGLImageSourceIOSurfaceHandle = GraphicsContextGLEGLImageSourceIOSurfaceHandle;
-    using EGLImageSourceMTLSharedTextureHandle = GraphicsContextGLEGLImageSourceMTLSharedTextureHandle;
-    using EGLImageSource = GraphicsContextGLEGLImageSource;
-#else
-    using EGLImageSource = int;
-#endif
-    using EGLImageAttachResult = std::tuple<GCEGLImage, IntSize>;
-    virtual std::optional<EGLImageAttachResult> createAndBindEGLImage(GCGLenum, EGLImageSource) = 0;
+    virtual std::optional<GCEGLImageAttachResult> createAndBindEGLImage(GCGLenum, GCEGLImageSource) = 0;
     virtual void destroyEGLImage(GCEGLImage) = 0;
 
-#if PLATFORM(COCOA)
-    using ExternalEGLSyncEvent = std::tuple<MachSendRight, uint64_t>;
-#else
-    using ExternalEGLSyncEvent = int;
-#endif
-    virtual GCEGLSync createEGLSync(ExternalEGLSyncEvent) = 0;
+    virtual GCEGLSync createEGLSync(GCExternalEGLSyncEvent) = 0;
     virtual bool destroyEGLSync(GCEGLSync) = 0;
     virtual void clientWaitEGLSyncWithFlush(GCEGLSync, uint64_t) = 0;
 
@@ -1561,7 +1539,7 @@ public:
     // Has no other side-effects.
     virtual bool isExtensionEnabled(const String&) = 0;
 
-    virtual bool enableRequiredWebXRExtensions() { return false; }
+    virtual bool enableRequiredWebXRExtensions() = 0;
 
     // GL_ANGLE_translated_shader_source
     virtual String getTranslatedShaderSourceANGLE(PlatformGLObject) = 0;
@@ -1612,7 +1590,6 @@ public:
     virtual void renderbufferStorageMultisampleANGLE(GCGLenum target, GCGLsizei samples, GCGLenum internalformat, GCGLsizei width, GCGLsizei height) = 0;
     virtual void blitFramebufferANGLE(GCGLint srcX0, GCGLint srcY0, GCGLint srcX1, GCGLint srcY1, GCGLint dstX0, GCGLint dstY0, GCGLint dstX1, GCGLint dstY1, GCGLbitfield mask, GCGLenum filter) = 0;
 
-
     // ========== Other functions.
     GCGLfloat getFloat(GCGLenum pname);
     GCGLboolean getBoolean(GCGLenum pname);
@@ -1621,17 +1598,9 @@ public:
     GCGLint getActiveUniformBlocki(GCGLuint program, GCGLuint uniformBlockIndex, GCGLenum pname);
     GCGLint getInternalformati(GCGLenum target, GCGLenum internalformat, GCGLenum pname);
 
-    GraphicsContextGLAttributes contextAttributes() const { return m_attrs; }
-    void setContextAttributes(const GraphicsContextGLAttributes& attrs) { m_attrs = attrs; }
-
-    virtual std::tuple<GCGLenum, GCGLenum> externalImageTextureBindingPoint();
-
     virtual void reshape(int width, int height) = 0;
-
     virtual void setContextVisibility(bool) = 0;
-
-    WEBCORE_EXPORT virtual void setDrawingBufferColorSpace(const DestinationColorSpace&);
-
+    virtual void setDrawingBufferColorSpace(const DestinationColorSpace&) = 0;
     virtual void prepareForDisplay() = 0;
 
     // FIXME: these should be removed, they're part of drawing buffer and
@@ -1642,14 +1611,16 @@ public:
         DisplayBuffer
     };
     virtual void drawSurfaceBufferToImageBuffer(SurfaceBuffer, ImageBuffer&) = 0;
-#if ENABLE(MEDIA_STREAM) || ENABLE(WEB_CODECS)
-    virtual RefPtr<VideoFrame> surfaceBufferToVideoFrame(SurfaceBuffer) = 0;
-#endif
+
     virtual RefPtr<PixelBuffer> drawingBufferToPixelBuffer(FlipY) = 0;
 
     using SimulatedEventForTesting = GraphicsContextGLSimulatedEventForTesting;
     virtual void simulateEventForTesting(SimulatedEventForTesting) = 0;
+    // End of list used by generate-gpup-webgl script.
 
+#if ENABLE(MEDIA_STREAM) || ENABLE(WEB_CODECS)
+    virtual RefPtr<VideoFrame> surfaceBufferToVideoFrame(SurfaceBuffer) = 0;
+#endif
 #if ENABLE(VIDEO) && USE(AVFOUNDATION)
     // Returns interface for CV interaction if the functionality is present.
     virtual GraphicsContextGLCV* asCV() = 0;
@@ -1659,6 +1630,7 @@ public:
     virtual bool copyTextureFromVideoFrame(VideoFrame&, PlatformGLObject /* texture */, GCGLenum /* target */, GCGLint /* level */, GCGLenum /* internalFormat */, GCGLenum /* format */, GCGLenum /* type */, bool /* premultiplyAlpha */, bool /* flipY */) { return false; }
     WEBCORE_EXPORT virtual RefPtr<Image> videoFrameToImage(VideoFrame&);
 #endif
+
 
     IntSize getInternalFramebufferSize() const { return IntSize(m_currentWidth, m_currentHeight); }
 
@@ -1714,11 +1686,7 @@ protected:
 
     int m_currentWidth { 0 };
     int m_currentHeight { 0 };
-    Client* m_client { nullptr };
     bool m_contextLost { false };
-
-private:
-    GraphicsContextGLAttributes m_attrs;
 };
 
 WEBCORE_EXPORT RefPtr<GraphicsContextGL> createWebProcessGraphicsContextGL(const GraphicsContextGLAttributes&, SerialFunctionDispatcher* = nullptr);

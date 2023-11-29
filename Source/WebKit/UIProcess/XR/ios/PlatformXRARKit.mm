@@ -149,7 +149,7 @@ void ARKitCoordinator::endSessionIfExists(std::optional<WebCore::PageIdentifier>
     RELEASE_LOG(XR, "ARKitCoordinator::endSessionIfExists");
     ASSERT(RunLoop::isMain());
 
-    WTF::switchOn(m_state,
+    WTF::switchOn(m_state,œ
         [&](Idle&) { },
         [&](Active& active) {
             if (pageIdentifier && active.pageIdentifier != *pageIdentifier) {

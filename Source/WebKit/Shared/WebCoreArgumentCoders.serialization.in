@@ -1967,11 +1967,11 @@ enum class WebCore::MediaCaptureType : uint8_t {
 
 #if PLATFORM(COCOA) && ENABLE(GPU_PROCESS) && ENABLE(WEBGL)
 header: <WebCore/GraphicsContextGL.h>
-[CustomHeader, RValue] struct WebCore::GraphicsContextGLEGLImageSourceIOSurfaceHandle {
+[CustomHeader, RValue] struct WebCore::GCEGLImageSourceIOSurfaceHandle {
     MachSendRight handle;
 };
 
-[CustomHeader, RValue] struct WebCore::GraphicsContextGLEGLImageSourceMTLSharedTextureHandle {
+[CustomHeader, RValue] struct WebCore::GCEGLImageSourceMTLSharedTextureHandle {
     MachSendRight handle;
 };
 #endif // PLATFORM(COCOA) && ENABLE(GPU_PROCESS) && ENABLE(WEBGL)
@@ -2729,6 +2729,7 @@ struct WebCore::GraphicsContextGLAttributes {
 #endif
 #if PLATFORM(COCOA)
     bool useMetal;
+    [NotSerialized] bool openGLContextIsVolatile;
 #endif
 #if ENABLE(WEBXR)
     bool xrCompatible;

@@ -75,6 +75,7 @@ struct GraphicsContextGLAttributes {
 #endif
 #if PLATFORM(COCOA)
     bool useMetal { true };
+    bool openGLContextIsVolatile { false }; // Not serialized, never volatile for GPUP.
 #endif
 #if ENABLE(WEBXR)
     bool xrCompatible { false };

@@ -165,13 +165,13 @@ void RemoteGraphicsContextGLProxy::initialize(const RemoteGraphicsContextGLIniti
     m_externalImageBindingQuery = initializationState.externalImageBindingQuery;
 }
 
-std::optional<GraphicsContextGL::EGLImageAttachResult> RemoteGraphicsContextGLProxy::createAndBindEGLImage(GCGLenum, GraphicsContextGL::EGLImageSource)
+std::optional<GraphicsContextGL::GCEGLImageAttachResult> RemoteGraphicsContextGLProxy::createAndBindEGLImage(GCGLenum, GraphicsContextGL::GCEGLImageSource)
 {
     notImplemented();
     return { };
 }
 
-GCEGLSync RemoteGraphicsContextGLProxy::createEGLSync(ExternalEGLSyncEvent)
+GCEGLSync RemoteGraphicsContextGLProxy::createEGLSync(GCExternalEGLSyncEvent)
 {
     notImplemented();
     return { };

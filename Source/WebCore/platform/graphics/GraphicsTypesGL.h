@@ -25,9 +25,14 @@
 
 #pragma once
 
+#include "IntSize.h"
 #include <cstdint>
 #include <wtf/EnumTraits.h>
 #include <wtf/OptionSet.h>
+
+#if PLATFORM(COCOA)
+#include <wtf/MachSendRight.h>
+#endif
 
 // GCGL types match the corresponding GL types as defined in OpenGL ES 2.0
 // header file gl2.h from khronos.org.
@@ -69,6 +74,27 @@ using GCGLContext = void*;
 using GCEGLImage = void*;
 using GCEGLSuface = void*;
 using GCEGLSync = void*;
+
+
+#if PLATFORM(COCOA)
+struct GCEGLImageSourceIOSurfaceHandle {
+    MachSendRight handle;
+};
+struct GCEGLImageSourceMTLSharedTextureHandle {
+    MachSendRight handle;
+};
+using GCEGLImageSource = std::variant<GCEGLImageSourceIOSurfaceHandle, GCEGLImageSourceMTLSharedTextureHandle>;
+#else
+using GCEGLImageSource = int;
+#endif
+
+using GCEGLImageAttachResult = std::tuple<GCEGLImage, WebCore::IntSize>;
+
+#if PLATFORM(COCOA)
+using GCExternalEGLSyncEvent = std::tuple<MachSendRight, uint64_t>;
+#else
+using GCExternalEGLSyncEvent = int;
+#endif
 
 #if !PLATFORM(COCOA)
 typedef unsigned GLuint;

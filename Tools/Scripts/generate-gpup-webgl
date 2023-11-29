@@ -37,6 +37,7 @@ import pathlib
 import re
 import sys
 import collections
+import datetime
 
 from typing import List, Dict, Iterable, Callable, Tuple, Set, Optional, Generator, Iterator, Counter
 
@@ -47,8 +48,12 @@ functions_input_fns = [
 ]
 types_input_fn = root_dir / "Source" / "WebKit" / "WebProcess" / "GPU" / "graphics" / "RemoteGraphicsContextGLProxy.h"
 
+web_process_functions_input_fns = [
+    root_dir / "Source" / "WebCore" / "platform" / "graphics" / "GraphicsContextGL.h"
+]
 
-template_preamble = """/* Copyright (C) 2020 Apple Inc. All rights reserved.
+
+template_preamble = f"""/* Copyright (C) {datetime.date.today().year} Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -103,7 +108,6 @@ messages -> RemoteGraphicsContextGL NotRefCounted Stream {{
     void PrepareForDisplay() -> () Synchronous
 #endif
     void EnsureExtensionEnabled(String extension)
-    void MarkContextChanged()
     void GetErrors() -> (GCGLErrorCodeSet returnValue) Synchronous
     void DrawSurfaceBufferToImageBuffer(WebCore::GraphicsContextGL::SurfaceBuffer buffer, WebCore::RenderingResourceIdentifier imageBuffer) -> () Synchronous
 #if ENABLE(MEDIA_STREAM) || ENABLE(WEB_CODECS)
@@ -153,6 +157,33 @@ namespace WebKit {{
 """
 )
 
+webprocess_context_header_fn = root_dir / "Source" / "WebCore" / "platform" / "graphics" / "WebProcessGraphicsContextGLGenerated.h"
+webprocess_context_header_template = (
+    template_preamble
+    + """
+// This file should be included in the public section of the
+// WebProcessGraphicsContextGL implementations.
+    #pragma once
+{}
+
+"""
+)
+
+webprocess_context_cpp_fn = root_dir / "Source" / "WebCore" / "platform" / "graphics" / "WebProcessGraphicsContextGLGenerated.cpp"
+webprocess_context_cpp_template = (
+    template_preamble
+    + """
+#include "config.h"
+
+#include "WebProcessGraphicsContextGL.h"
+
+namespace WebCore {{
+{}
+
+}}
+
+"""
+)
 
 def write_file(fn, new_contents):
     try:
@@ -443,15 +474,17 @@ class cpp_func(object):
     args: cpp_arg_list
     return_type: cpp_type
     overload_suffix: str
+    is_const: bool
 
-    def __init__(self, name: str, return_type: cpp_type, args: cpp_arg_list):
+    def __init__(self, name: str, return_type: cpp_type, args: cpp_arg_list, is_const: bool):
         self.name = name
         self.return_type = return_type
         self.args = args
         self.overload_suffix = ""
+        self.is_const = is_const
 
     def __str__(self):
-        return f"{self.return_type} {self.name}({str(self.args)})"
+        return f"{self.return_type} {self.name}({str(self.args)}){' const' if self.is_const else ''}"
 
     def get_args_categories(self) -> Tuple[List[cpp_arg], List[cpp_arg]]:
         in_args = []
@@ -869,6 +902,70 @@ def webkit_ipc_resolve_overload_suffix(funcs : Iterable[cpp_func]):
             f.overload_suffix = str(suffixes[f.name])
             suffixes.update([f.name])
 
+class webprocess_context_header_impl(object):
+    name: str
+    return_type: cpp_type
+    args: cpp_arg_list
+    is_const: bool
+
+    pre_call_stmts: List[str]
+    call_stmts: List[str]
+    post_call_stmts: List[str]
+    return_stmts: List[str]
+    in_exprs: List[cpp_expr]
+    out_exprs: List[cpp_expr]
+
+    def __init__(self, cpp_func: cpp_func):
+        self.name = cpp_func.name
+        self.return_type = cpp_func.return_type
+        self.args = cpp_func.args
+        self.is_const = cpp_func.is_const
+     
+    def __str__(self):
+        nolint = " // NOLINT" if "_" in self.name else ""
+        return f"""    {str(self.return_type)} {self.name}({str(self.args)}){' const' if self.is_const else ''} final{nolint};"""
+
+class webprocess_context_cpp_impl(object):
+    name: str
+    msg_name: str
+    return_type: cpp_type
+    args: cpp_arg_list
+
+    call_stmts: List[str]
+    in_exprs: List[cpp_expr]
+    out_exprs: List[cpp_expr]
+
+    def __init__(self, cpp_func: cpp_func):
+        self.name = cpp_func.name
+        self.return_type = cpp_func.return_type
+        self.args = cpp_func.args
+        self.pre_call_stmts = []
+        self.call_stmts = []
+        self.post_call_stmts = []
+        self.return_stmts = []
+        self.in_exprs = []
+        self.out_exprs = []
+        in_args, out_args = cpp_func.get_args_categories()
+        self.process_call()
+
+    def process_call(self):
+        in_exprs = ", ".join([str(i) for i in self.in_exprs])
+        out_exprs = ", ".join(str(o) for o in self.out_exprs)
+        is_async = self.return_type.is_void() and len(out_exprs) == 0
+        self.call_stmts += [ "if (!makeContextCurrent())" ]
+        if self.return_type.is_void():
+            self.call_stmts += [ "    return;" ]
+            self.call_stmts += [ f"m_context->{self.name}({self.args.names()});"]
+        else:
+            self.call_stmts += [ "    return { };"]
+            self.call_stmts += [ f"return m_context->{self.name}({self.args.names()});"]
+
+    def __str__(self):
+        nolint = " // NOLINT" if "_" in self.name else ""
+        body = "".join(f"\n    {b}" for b in self.call_stmts)
+        return f"""\n{str(self.return_type)} WebProcessGraphicsContextGL::{self.name}({str(self.args)}){nolint}
+{{{body}
+}}"""
 
 class context_cpp_webkit_ipc_generator(object):
     "RemoteGraphicsContextGL C++ implementation generator."
@@ -901,6 +998,39 @@ class context_msg_webkit_ipc_generator(object):
         write_file(context_messages_fn, context_messages_template.format(self.get_messages()))
 
 
+class webprocess_context_header_generator(object):
+    "WebProcessGraphicsContextGL C++ implementation generator."
+    impls: List[webprocess_context_header_impl]
+
+    def __init__(self, funcs: Iterable[cpp_func]):
+        self.impls = [webprocess_context_header_impl(f) for f in funcs]
+
+    def get_functions(self):
+        return "\n".join(str(i) for i in self.impls)
+
+    def generate(self):
+        write_file(
+            webprocess_context_header_fn,
+            webprocess_context_header_template.format(self.get_functions()),
+        )
+
+class webprocess_context_cpp_generator(object):
+    "WebProcessGraphicsContextGL C++ implementation generator."
+    impls: List[webprocess_context_cpp_impl]
+
+    def __init__(self, funcs: Iterable[cpp_func]):
+        self.impls = [webprocess_context_cpp_impl(f) for f in funcs]
+
+    def get_functions(self):
+        return "\n".join(str(i) for i in self.impls)
+
+    def generate(self):
+        write_file(
+            webprocess_context_cpp_fn,
+            webprocess_context_cpp_template.format(self.get_functions()),
+        )
+
+
 def create_cpp_arg(arg_spec: str, arg_index: int):
     r = arg_spec.rsplit(" ", 1)
     name = ""
@@ -918,8 +1048,8 @@ def create_cpp_arg_list(args_specs: Iterable[str]):
     return cpp_arg_list([create_cpp_arg(arg_spec=e, arg_index=i) for i, e in enumerate(args_specs)])
 
 
-def create_cpp_func(name: str, return_spec: str, args_specs: List[str]):
-    return cpp_func(name=name, return_type=get_cpp_type(return_spec), args=create_cpp_arg_list(args_specs))
+def create_cpp_func(name: str, return_spec: str, args_specs: List[str], is_const: bool = False):
+    return cpp_func(name=name, return_type=get_cpp_type(return_spec), args=create_cpp_arg_list(args_specs), is_const=is_const)
 
 
 def read_lines_until(lines : Iterable[str], match : str) -> Generator[str, None, None]:
@@ -928,11 +1058,7 @@ def read_lines_until(lines : Iterable[str], match : str) -> Generator[str, None,
             break
         yield line
 
-def main():
-    parser = argparse.ArgumentParser("usage: %prog [options]")
-    parser.add_argument("--verbose", action="store_true", help="Print some debug info from the generator script")
-    options = parser.parse_args()
-
+def generate_remote(options):
     # Construct the list of functions to remote from web process to GPU process.
 
     funcs = []
@@ -1058,11 +1184,11 @@ def main():
         g.generate()
 
     if options.verbose:
-        print("Implemented:")
+        print("Remote implemented:")
         print("".join(f"    {str(i)} final\n" for i in funcs))
-        print("Unimplemented:")
+        print("Remote unimplemented:")
         print("".join(f"    {str(u)} final\n" for u in unimplemented))
-        print(f"Implemented: {len(funcs)}, unimplemented: {len(unimplemented)}, total: {len(funcs)+len(unimplemented)}")
+        print(f"Remote implemented: {len(funcs)}, unimplemented: {len(unimplemented)}, total: {len(funcs)+len(unimplemented)}")
         print("C++ type map to WebKit IPC type map:")
         for _, t in cpp_types.items():
             if t in webkit_ipc_types:
@@ -1074,9 +1200,53 @@ def main():
         print("WebKit IPC type conversions")
         for (a, b), converter in webkit_ipc_types_converters.items():
             print(f"    {str(a)} -> {str(b)} : {converter.__name__}")
-        print("Done.")
-    return 0
 
+def generate_webprocess(options):
+    # Construct the list of functions to generate web process implementation.
+
+    funcs = []
+    unimplemented = []
+    for fn in web_process_functions_input_fns:
+        with open(fn) as f:
+            lines = iter(f.readlines())
+            for _ in read_lines_until(lines, "// Functions with a generated implementation. This list is used by generate-gpup-webgl script."):
+                pass
+
+            for line in read_lines_until(lines, "// End of list used by generate-gpup-webgl script."):
+                m = re.match(r"\s*virtual (\S+)\s+(\w+)\((.*)\)(\s*const)?\s*=\s*0;", line)
+                print(m)
+                if m:
+                    func_name = m[2]
+                    func = create_cpp_func(
+                        name=func_name,
+                        return_spec=m[1],
+                        args_specs=cpp_split_args_specs(m[3]),
+                        is_const=True if m[4] else False
+                    )
+                    if func.is_implemented():
+                        funcs.append(func)
+                    else:
+                        unimplemented.append(func)
+    generators = [
+        webprocess_context_header_generator(funcs),
+        webprocess_context_cpp_generator(funcs)
+    ]
+    for g in generators:
+        g.generate()
+
+    if options.verbose:
+        print("Web process implemented:")
+        print("".join(f"    {str(i)}\n" for i in funcs))
+        print("Web process unimplemented:")
+        print("".join(f"    {str(u)}\n" for u in unimplemented))
+
+def main():
+    parser = argparse.ArgumentParser("usage: %prog [options]")
+    parser.add_argument("--verbose", action="store_true", help="Print some debug info from the generator script")
+    options = parser.parse_args()
+    generate_remote(options)
+    generate_webprocess(options)
+    return 0
 
 if __name__ == "__main__":
     sys.exit(main())

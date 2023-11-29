@@ -2021,6 +2021,8 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     platform/graphics/VideoTrackPrivateClient.h
     platform/graphics/WidthCache.h
     platform/graphics/WindRule.h
+    platform/graphics/WebProcessGraphicsContextGL.h
+    platform/graphics/WebProcessGraphicsContextGLGenerated.h
 
     platform/graphics/angle/ANGLEHeaders.h
     platform/graphics/angle/ANGLEUtilities.h
