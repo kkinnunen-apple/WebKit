@@ -25,7 +25,6 @@
 messages -> RemoteRenderingBackendProxy NotRefCounted WantsDispatchMessage {
     DidFinalizeRenderingUpdate(WebKit::RenderingUpdateID didRenderingUpdateID)
     DidInitialize(IPC::Semaphore wakeUpSemaphore, IPC::Semaphore clientWaitSemaphore) CanDispatchOutOfOrder
-    DidMarkLayersAsVolatile(WebKit::MarkSurfacesAsVolatileRequestIdentifier requestIdentifier, Vector<WebCore::RenderingResourceIdentifier> markedVolatileBufferIdentifiers, bool didMarkAllLayersAsVolatile)
 }
 
 #endif // ENABLE(GPU_PROCESS)

@@ -39,13 +39,12 @@ public:
 
     RefPtr<WebCore::ImageBuffer> allocateBuffer() const final;
 
-    bool setBufferVolatile(BufferType);
+    void setBufferVolatile(BufferType);
 private:
     SwapBuffersDisplayRequirement prepareBuffers();
     WebCore::SetNonVolatileResult swapToValidFrontBuffer();
 
-    // Returns true if it was able to fulfill the request. This can fail when trying to mark an in-use surface as volatile.
-    bool setBufferVolatile(Buffer&);
+    void setBufferVolatile(Buffer&);
 
     WebCore::SetNonVolatileResult setBufferNonVolatile(Buffer&);
     WebCore::SetNonVolatileResult setFrontBufferNonVolatile();

@@ -70,10 +70,8 @@ protected:
     bool isInUse() const override;
     void releaseGraphicsContext() override;
 
-    bool setVolatile() final;
+    void setVolatile() final;
     SetNonVolatileResult setNonVolatile() final;
-    VolatilityState volatilityState() const final;
-    void setVolatilityState(VolatilityState) final;
 
     void ensureNativeImagesHaveCopiedBackingStore() final;
 

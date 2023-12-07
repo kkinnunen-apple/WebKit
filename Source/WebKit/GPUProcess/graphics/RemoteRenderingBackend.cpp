@@ -429,28 +429,16 @@ void RemoteRenderingBackend::prepareLayerBuffersForDisplay(const PrepareBackingS
 }
 #endif
 
-void RemoteRenderingBackend::markSurfacesVolatile(MarkSurfacesAsVolatileRequestIdentifier requestIdentifier, const Vector<RenderingResourceIdentifier>& identifiers)
+void RemoteRenderingBackend::markSurfacesVolatile(const Vector<RenderingResourceIdentifier>& identifiers)
 {
     LOG_WITH_STREAM(RemoteLayerBuffers, stream << "GPU Process: RemoteRenderingBackend::markSurfacesVolatile " << identifiers);
-
-    auto makeVolatile = [](ImageBuffer& imageBuffer) {
-        imageBuffer.releaseGraphicsContext();
-        return imageBuffer.setVolatile();
-    };
-
-    Vector<RenderingResourceIdentifier> markedVolatileBufferIdentifiers;
     for (auto identifier : identifiers) {
         if (auto target = imageBuffer(identifier)) {
-            if (makeVolatile(*target))
-                markedVolatileBufferIdentifiers.append(identifier);
+            target->releaseGraphicsContext();
+            target->setVolatile();
         } else
             LOG_WITH_STREAM(RemoteLayerBuffers, stream << " failed to find ImageBuffer for identifier " << identifier);
     }
-
-    LOG_WITH_STREAM(RemoteLayerBuffers, stream << "GPU Process: markSurfacesVolatile - surfaces marked volatile " << markedVolatileBufferIdentifiers);
-
-    bool didMarkAllLayerAsVolatile = identifiers.size() == markedVolatileBufferIdentifiers.size();
-    send(Messages::RemoteRenderingBackendProxy::DidMarkLayersAsVolatile(requestIdentifier, markedVolatileBufferIdentifiers, didMarkAllLayerAsVolatile), m_renderingBackendIdentifier);
 }
 
 void RemoteRenderingBackend::finalizeRenderingUpdate(RenderingUpdateID renderingUpdateID)

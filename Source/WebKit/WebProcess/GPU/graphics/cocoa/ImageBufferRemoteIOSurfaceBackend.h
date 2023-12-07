@@ -69,9 +69,6 @@ private:
 
     unsigned bytesPerRow() const final;
 
-    WebCore::VolatilityState volatilityState() const final { return m_volatilityState; }
-    void setVolatilityState(WebCore::VolatilityState volatilityState) final { m_volatilityState = volatilityState; }
-
     // ImageBufferBackendSharing
     ImageBufferBackendSharing* toBackendSharing() final { return this; }
     void setBackendHandle(ImageBufferBackendHandle&&) final;

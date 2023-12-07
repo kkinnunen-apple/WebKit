@@ -73,9 +73,6 @@ RemoteRenderingBackendProxy::RemoteRenderingBackendProxy(const RemoteRenderingBa
 
 RemoteRenderingBackendProxy::~RemoteRenderingBackendProxy()
 {
-    for (auto& markAsVolatileHandlers : m_markAsVolatileRequests.values())
-        markAsVolatileHandlers(false);
-
     if (!m_streamConnection)
         return;
 
@@ -387,7 +384,7 @@ auto RemoteRenderingBackendProxy::prepareBuffersForDisplay(const Vector<LayerPre
 
         if (isFrontBuffer) {
             // We know the GPU Process always sets the new front buffer to be non-volatile.
-            buffer->setVolatilityState(VolatilityState::NonVolatile);
+            buffer->resetNonVolatile();
         }
 
         return buffer;
@@ -406,27 +403,9 @@ auto RemoteRenderingBackendProxy::prepareBuffersForDisplay(const Vector<LayerPre
 }
 #endif
 
-void RemoteRenderingBackendProxy::markSurfacesVolatile(Vector<WebCore::RenderingResourceIdentifier>&& identifiers, CompletionHandler<void(bool)>&& completionHandler)
+void RemoteRenderingBackendProxy::markSurfacesVolatile(Vector<WebCore::RenderingResourceIdentifier>&& identifiers)
 {
-    auto requestIdentifier = MarkSurfacesAsVolatileRequestIdentifier::generate();
-    m_markAsVolatileRequests.add(requestIdentifier, WTFMove(completionHandler));
-
-    send(Messages::RemoteRenderingBackend::MarkSurfacesVolatile(requestIdentifier, identifiers));
-}
-
-void RemoteRenderingBackendProxy::didMarkLayersAsVolatile(MarkSurfacesAsVolatileRequestIdentifier requestIdentifier, const Vector<WebCore::RenderingResourceIdentifier>& markedVolatileBufferIdentifiers, bool didMarkAllLayersAsVolatile)
-{
-    ASSERT(requestIdentifier);
-    auto completionHandler = m_markAsVolatileRequests.take(requestIdentifier);
-    if (!completionHandler)
-        return;
-
-    for (auto identifier : markedVolatileBufferIdentifiers) {
-        auto imageBuffer = m_remoteResourceCacheProxy.cachedImageBuffer(identifier);
-        if (imageBuffer)
-            imageBuffer->setVolatilityState(WebCore::VolatilityState::Volatile);
-    }
-    completionHandler(didMarkAllLayersAsVolatile);
+    send(Messages::RemoteRenderingBackend::MarkSurfacesVolatile(identifiers));
 }
 
 void RemoteRenderingBackendProxy::finalizeRenderingUpdate()

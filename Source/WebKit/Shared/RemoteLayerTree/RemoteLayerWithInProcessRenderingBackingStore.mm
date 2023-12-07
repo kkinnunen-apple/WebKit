@@ -64,13 +64,13 @@ SwapBuffersDisplayRequirement RemoteLayerWithInProcessRenderingBackingStore::pre
     return displayRequirement;
 }
 
-bool RemoteLayerWithInProcessRenderingBackingStore::setBufferVolatile(Buffer& buffer)
+void RemoteLayerWithInProcessRenderingBackingStore::setBufferVolatile(Buffer& buffer)
 {
     if (!buffer.imageBuffer || buffer.imageBuffer->volatilityState() == VolatilityState::Volatile)
-        return true;
+        return;
 
     buffer.imageBuffer->releaseGraphicsContext();
-    return buffer.imageBuffer->setVolatile();
+    buffer.imageBuffer->setVolatile();
 }
 
 SetNonVolatileResult RemoteLayerWithInProcessRenderingBackingStore::setBufferNonVolatile(Buffer& buffer)
@@ -84,23 +84,26 @@ SetNonVolatileResult RemoteLayerWithInProcessRenderingBackingStore::setBufferNon
     return buffer.imageBuffer->setNonVolatile();
 }
 
-bool RemoteLayerWithInProcessRenderingBackingStore::setBufferVolatile(BufferType bufferType)
+void RemoteLayerWithInProcessRenderingBackingStore::setBufferVolatile(BufferType bufferType)
 {
     if (m_parameters.type != Type::IOSurface)
-        return true;
+        return;
 
     switch (bufferType) {
     case BufferType::Front:
-        return setBufferVolatile(m_frontBuffer);
+         setBufferVolatile(m_frontBuffer);
+         break;
 
     case BufferType::Back:
-        return setBufferVolatile(m_backBuffer);
+        setBufferVolatile(m_backBuffer);
+        break;
 
     case BufferType::SecondaryBack:
-        return setBufferVolatile(m_secondaryBackBuffer);
+        setBufferVolatile(m_secondaryBackBuffer);
+        break;
     }
 
-    return true;
+    return;
 }
 
 SetNonVolatileResult RemoteLayerWithInProcessRenderingBackingStore::setFrontBufferNonVolatile()

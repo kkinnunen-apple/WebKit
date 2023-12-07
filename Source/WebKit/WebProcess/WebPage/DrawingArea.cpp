@@ -103,9 +103,8 @@ void DrawingArea::dispatchAfterEnsuringUpdatedScrollPosition(WTF::Function<void 
     function();
 }
 
-void DrawingArea::tryMarkLayersVolatile(CompletionHandler<void(bool)>&& completionFunction)
+void DrawingArea::tryMarkLayersVolatile()
 {
-    completionFunction(true);
 }
 
 void DrawingArea::removeMessageReceiverIfNeeded()

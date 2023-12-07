@@ -67,10 +67,8 @@ private:
     RefPtr<WebCore::NativeImage> sinkIntoNativeImage() final;
     bool isInUse() const final;
     void releaseGraphicsContext() final;
-    bool setVolatile() final;
+    void setVolatile() final;
     WebCore::SetNonVolatileResult setNonVolatile() final;
-    WebCore::VolatilityState volatilityState() const final;
-    void setVolatilityState(WebCore::VolatilityState) final;
     void transferToNewContext(const WebCore::ImageBufferCreationContext&) final;
     void getPixelBuffer(const WebCore::IntRect&, WebCore::PixelBuffer&) final;
     void putPixelBuffer(const WebCore::PixelBuffer&, const WebCore::IntRect&, const WebCore::IntPoint&, WebCore::AlphaPremultiplication) final;
@@ -78,7 +76,6 @@ private:
 
     std::unique_ptr<WebCore::IOSurface> m_surface;
     std::optional<WebCore::IOSurface::Locker<WebCore::IOSurface::AccessMode::ReadWrite>> m_lock;
-    WebCore::VolatilityState m_volatilityState { WebCore::VolatilityState::NonVolatile };
     RefPtr<WebCore::IOSurfacePool> m_ioSurfacePool;
 };
 

@@ -467,32 +467,26 @@ void ImageBuffer::releaseGraphicsContext()
         return backend->releaseGraphicsContext();
 }
 
-bool ImageBuffer::setVolatile()
+void ImageBuffer::setVolatile()
 {
+    m_volatilityState = VolatilityState::Volatile;
     if (auto* backend = ensureBackend())
-        return backend->setVolatile();
-
-    return true; // Just claim we succeedded.
+        backend->setVolatile();
 }
 
 SetNonVolatileResult ImageBuffer::setNonVolatile()
 {
+    if (m_volatilityState == VolatilityState::NonVolatile)
+        return SetNonVolatileResult::Valid;
+    m_volatilityState = VolatilityState::NonVolatile;
     if (auto* backend = ensureBackend())
         return backend->setNonVolatile();
-    return SetNonVolatileResult::Valid;
+    return SetNonVolatileResult::Empty;
 }
 
 VolatilityState ImageBuffer::volatilityState() const
 {
-    if (auto* backend = ensureBackend())
-        return backend->volatilityState();
-    return VolatilityState::NonVolatile;
-}
-
-void ImageBuffer::setVolatilityState(VolatilityState volatilityState)
-{
-    if (auto* backend = ensureBackend())
-        backend->setVolatilityState(volatilityState);
+    return m_volatilityState;
 }
 
 std::unique_ptr<ThreadSafeImageBufferFlusher> ImageBuffer::createFlusher()

@@ -34,18 +34,101 @@
 #import "PlatformScreen.h"
 #import "ProcessCapabilities.h"
 #import "ProcessIdentity.h"
+#import "Timer.h"
 #import <pal/spi/cg/CoreGraphicsSPI.h>
 #import <wtf/Assertions.h>
 #import <wtf/MachSendRight.h>
 #import <wtf/MathExtras.h>
 #import <wtf/cocoa/TypeCastsCocoa.h>
 #import <wtf/text/TextStream.h>
-
+#import <wtf/NeverDestroyed.h>
 #import "CoreVideoSoftLink.h"
 #import <pal/cg/CoreGraphicsSoftLink.h>
 #import <pal/cocoa/QuartzCoreSoftLink.h>
 
 namespace WebCore {
+
+static const Seconds inUsePollerInterval { 200_ms };
+namespace {
+class IOSurfaceInUseSetVolatileWhenUnusedPoller {
+public:
+    IOSurfaceInUseSetVolatileWhenUnusedPoller()
+        : m_pollTimer(RunLoop::main(), this, &IOSurfaceInUseSetVolatileWhenUnusedPoller::pollTimerFired)
+    {
+    }
+    
+    static IOSurfaceInUseSetVolatileWhenUnusedPoller& shared()
+    {
+        static LazyNeverDestroyed<IOSurfaceInUseSetVolatileWhenUnusedPoller> poller;
+        static std::once_flag s_onceFlag;
+        std::call_once(s_onceFlag, [] {
+            poller.construct();
+        });
+        return poller;
+    }
+
+    SetNonVolatileResult setNonVolatile(IOSurfaceRef surface)
+    {
+        Locker locker { m_lock }; 
+        if (m_surfaces.remove(surface)) 
+            reschedulePoll();
+        else {
+            uint32_t previousState = 0;
+            IOReturn ret = IOSurfaceSetPurgeable(surface, kIOSurfacePurgeableNonVolatile, &previousState);
+            ASSERT_UNUSED(ret, ret == kIOReturnSuccess);
+            if (previousState == kIOSurfacePurgeableEmpty)
+                return SetNonVolatileResult::Empty;
+        } 
+        return SetNonVolatileResult::Valid;
+    }
+
+    void setVolatile(IOSurfaceRef surface)
+    {
+        Locker locker { m_lock }; 
+        if (setVolatileIfNotInUse(surface))
+            m_surfaces.remove(surface); // If called twice and was in use before, remove the previous one.
+        else
+            m_surfaces.add(surface);
+        reschedulePoll();
+    }
+
+private:
+    void pollTimerFired()
+    {
+        Locker locker { m_lock };
+        HashSet<IOSurfaceRef> surfaces = m_surfaces;
+        for (auto surface : surfaces) {
+            if (setVolatileIfNotInUse(surface))
+                m_surfaces.remove(surface);
+        }
+        reschedulePoll();
+    }
+
+    bool setVolatileIfNotInUse(IOSurfaceRef surface) WTF_REQUIRES_LOCK(m_lock)
+    {
+        if (IOSurfaceIsInUse(surface))
+            return false;
+        IOReturn ret = IOSurfaceSetPurgeable(surface, kIOSurfacePurgeableVolatile, nullptr);
+        ASSERT_UNUSED(ret, ret == kIOReturnSuccess);
+        return true;
+    }
+
+    void reschedulePoll() WTF_REQUIRES_LOCK(m_lock)
+    {
+        bool needTimer = !m_surfaces.isEmpty();
+        bool hasTimer = m_pollTimer.isActive();
+        if (!needTimer && hasTimer)
+            m_pollTimer.stop();
+        else if (needTimer && !hasTimer)
+            m_pollTimer.startRepeating(inUsePollerInterval);
+    }
+
+    Lock m_lock;
+    RunLoop::Timer m_pollTimer WTF_GUARDED_BY_LOCK(m_lock);
+    HashSet<IOSurfaceRef> m_surfaces;
+};
+
+}
 
 static auto surfaceNameToNSString(IOSurface::Name name)
 {
@@ -135,8 +218,10 @@ std::unique_ptr<IOSurface> IOSurface::createFromImage(IOSurfacePool* pool, CGIma
 
 void IOSurface::moveToPool(std::unique_ptr<IOSurface>&& surface, IOSurfacePool* pool)
 {
-    if (pool)
+    if (pool && surface) {
+        surface->setNonVolatile();
         pool->addSurface(WTFMove(surface));
+    }
 }
 
 static NSDictionary *optionsForBiplanarSurface(IntSize size, unsigned pixelFormat, size_t firstPlaneBytesPerPixel, size_t secondPlaneBytesPerPixel, IOSurface::Name name)
@@ -282,7 +367,10 @@ IOSurface::IOSurface(IOSurfaceRef surface, std::optional<DestinationColorSpace>&
         setColorSpaceProperty();
 }
 
-IOSurface::~IOSurface() = default;
+IOSurface::~IOSurface()
+{
+    setNonVolatile();
+}
 
 static constexpr IntSize fallbackMaxSurfaceDimension()
 {
@@ -474,14 +562,6 @@ std::optional<IOSurface::LockAndContext> IOSurface::createBitmapPlatformContext(
     return LockAndContext { WTFMove(*locker), WTFMove(context) };
 }
 
-SetNonVolatileResult IOSurface::state() const
-{
-    uint32_t previousState = 0;
-    IOReturn ret = IOSurfaceSetPurgeable(m_surface.get(), kIOSurfacePurgeableKeepCurrent, &previousState);
-    ASSERT_UNUSED(ret, ret == kIOReturnSuccess);
-    return previousState == kIOSurfacePurgeableEmpty ? SetNonVolatileResult::Empty : SetNonVolatileResult::Valid;
-}
-
 IOSurfaceSeed IOSurface::seed() const
 {
     return IOSurfaceGetSeed(m_surface.get());
@@ -489,22 +569,23 @@ IOSurfaceSeed IOSurface::seed() const
 
 bool IOSurface::isVolatile() const
 {
-    uint32_t previousState = 0;
-    IOReturn ret = IOSurfaceSetPurgeable(m_surface.get(), kIOSurfacePurgeableKeepCurrent, &previousState);
-    ASSERT_UNUSED(ret, ret == kIOReturnSuccess);
-    return previousState != kIOSurfacePurgeableNonVolatile;
+    return m_isVolatile;
 }
 
-SetNonVolatileResult IOSurface::setVolatile(bool isVolatile)
+void IOSurface::setVolatileWhenUnused()
 {
-    uint32_t previousState = 0;
-    IOReturn ret = IOSurfaceSetPurgeable(m_surface.get(), isVolatile ? kIOSurfacePurgeableVolatile : kIOSurfacePurgeableNonVolatile, &previousState);
-    ASSERT_UNUSED(ret, ret == kIOReturnSuccess);
+    if (m_isVolatile)
+        return;
+    m_isVolatile = true;
+    IOSurfaceInUseSetVolatileWhenUnusedPoller::shared().setVolatile(m_surface.get());
+}
 
-    if (previousState == kIOSurfacePurgeableEmpty)
-        return SetNonVolatileResult::Empty;
-
-    return SetNonVolatileResult::Valid;
+SetNonVolatileResult IOSurface::setNonVolatile()
+{
+    if (!m_isVolatile)
+        return SetNonVolatileResult::Valid;
+    m_isVolatile = false;
+    return IOSurfaceInUseSetVolatileWhenUnusedPoller::shared().setNonVolatile(m_surface.get());
 }
 
 DestinationColorSpace IOSurface::colorSpace()
@@ -718,22 +799,9 @@ TextStream& operator<<(TextStream& ts, IOSurface::Format format)
     return ts;
 }
 
-static TextStream& operator<<(TextStream& ts, SetNonVolatileResult state)
-{
-    switch (state) {
-    case SetNonVolatileResult::Valid:
-        ts << "valid";
-        break;
-    case SetNonVolatileResult::Empty:
-        ts << "empty";
-        break;
-    }
-    return ts;
-}
-
 TextStream& operator<<(TextStream& ts, const IOSurface& surface)
 {
-    return ts << "IOSurface " << surface.surfaceID() << " name " << [surfaceNameToNSString(surface.name()) UTF8String] << " size " << surface.size() << " format " << surface.m_format << " state " << surface.state();
+    return ts << "IOSurface " << surface.surfaceID() << " name " << [surfaceNameToNSString(surface.name()) UTF8String] << " size " << surface.size() << " format " << surface.m_format << " isVolatile " << surface.isVolatile();
 }
 
 } // namespace WebCore

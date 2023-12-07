@@ -153,30 +153,14 @@ void ImageBufferShareableMappedIOSurfaceBitmapBackend::releaseGraphicsContext()
     m_lock = std::nullopt;
 }
 
-bool ImageBufferShareableMappedIOSurfaceBitmapBackend::setVolatile()
+void ImageBufferShareableMappedIOSurfaceBitmapBackend::setVolatile()
 {
-    if (m_surface->isInUse())
-        return false;
-
-    setVolatilityState(VolatilityState::Volatile);
-    m_surface->setVolatile(true);
-    return true;
+    m_surface->setVolatileWhenUnused();
 }
 
 SetNonVolatileResult ImageBufferShareableMappedIOSurfaceBitmapBackend::setNonVolatile()
 {
-    setVolatilityState(VolatilityState::NonVolatile);
-    return m_surface->setVolatile(false);
-}
-
-VolatilityState ImageBufferShareableMappedIOSurfaceBitmapBackend::volatilityState() const
-{
-    return m_volatilityState;
-}
-
-void ImageBufferShareableMappedIOSurfaceBitmapBackend::setVolatilityState(VolatilityState volatilityState)
-{
-    m_volatilityState = volatilityState;
+    return m_surface->setNonVolatile();
 }
 
 void ImageBufferShareableMappedIOSurfaceBitmapBackend::transferToNewContext(const ImageBufferCreationContext&)

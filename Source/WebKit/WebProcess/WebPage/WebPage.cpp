@@ -3219,14 +3219,13 @@ void WebPage::updateFrameSize(WebCore::FrameIdentifier frameID, WebCore::IntSize
     }
 }
 
-void WebPage::tryMarkLayersVolatile(CompletionHandler<void(bool)>&& completionHandler)
+void WebPage::tryMarkLayersVolatile()
 {
     if (!drawingArea()) {
-        completionHandler(false);
         return;
     }
     
-    drawingArea()->tryMarkLayersVolatile(WTFMove(completionHandler));
+    drawingArea()->tryMarkLayersVolatile();
 }
 
 void WebPage::callVolatilityCompletionHandlers(bool succeeded)
@@ -3258,9 +3257,7 @@ void WebPage::markLayersVolatile(CompletionHandler<void(bool)>&& completionHandl
 
 void WebPage::markLayersVolatileOrRetry(MarkLayersVolatileDontRetryReason dontRetryReason)
 {
-    tryMarkLayersVolatile([dontRetryReason, protectedThis = Ref { *this }](bool didSucceed) {
-        protectedThis->tryMarkLayersVolatileCompletionHandler(dontRetryReason, didSucceed);
-    });
+    tryMarkLayersVolatile();
 }
 
 void WebPage::tryMarkLayersVolatileCompletionHandler(MarkLayersVolatileDontRetryReason dontRetryReason, bool didSucceed)

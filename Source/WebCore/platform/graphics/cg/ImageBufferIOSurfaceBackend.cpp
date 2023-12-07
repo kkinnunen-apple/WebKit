@@ -214,40 +214,16 @@ void ImageBufferIOSurfaceBackend::releaseGraphicsContext()
     m_platformContext = nullptr;
 }
 
-bool ImageBufferIOSurfaceBackend::setVolatile()
+void ImageBufferIOSurfaceBackend::setVolatile()
 {
-    if (m_surface->isInUse())
-        return false;
-
-    if (m_volatilityState == VolatilityState::Volatile) {
-        ASSERT(m_surface->isVolatile());
-        return true;
-    }
-
-    setVolatilityState(VolatilityState::Volatile);
-    m_surface->setVolatile(true);
-    return true;
+    m_surface->setVolatileWhenUnused();
 }
 
 SetNonVolatileResult ImageBufferIOSurfaceBackend::setNonVolatile()
 {
-    if (m_volatilityState == VolatilityState::Volatile) {
-        setVolatilityState(VolatilityState::NonVolatile);
-        return m_surface->setVolatile(false);
-    }
-    ASSERT(!m_surface->isVolatile());
-    return SetNonVolatileResult::Valid;
+    return m_surface->setNonVolatile();
 }
 
-VolatilityState ImageBufferIOSurfaceBackend::volatilityState() const
-{
-    return m_volatilityState;
-}
-
-void ImageBufferIOSurfaceBackend::setVolatilityState(VolatilityState volatilityState)
-{
-    m_volatilityState = volatilityState;
-}
 
 void ImageBufferIOSurfaceBackend::ensureNativeImagesHaveCopiedBackingStore()
 {

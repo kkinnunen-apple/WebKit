@@ -577,7 +577,7 @@ void ViewGestureController::removeSwipeSnapshot()
 void ViewGestureController::resetState()
 {
     if (m_currentSwipeSnapshot)
-        m_currentSwipeSnapshot->setVolatile(true);
+        m_currentSwipeSnapshot->setVolatile();
     m_currentSwipeSnapshot = nullptr;
 
     if (m_swipeCancellationTracker)

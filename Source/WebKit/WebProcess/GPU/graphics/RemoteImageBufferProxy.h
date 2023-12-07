@@ -68,6 +68,9 @@ public:
     // Messages
     void didCreateBackend(std::optional<ImageBufferBackendHandle>);
 
+    // For RemoteRenderingBackend.
+    void resetNonVolatile();
+
 private:
     RemoteImageBufferProxy(Parameters, const WebCore::ImageBufferBackend::Info&, RemoteRenderingBackendProxy&, std::unique_ptr<WebCore::ImageBufferBackend>&& = nullptr, WebCore::RenderingResourceIdentifier = WebCore::RenderingResourceIdentifier::generate());
 

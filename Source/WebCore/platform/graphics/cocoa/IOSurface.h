@@ -175,10 +175,10 @@ public:
     // Querying volatility can be expensive, so in cases where the surface is
     // going to be used immediately, use the return value of setVolatile to
     // determine whether the data was purged, instead of first calling state() or isVolatile().
-    SetNonVolatileResult state() const;
     bool isVolatile() const;
 
-    WEBCORE_EXPORT SetNonVolatileResult setVolatile(bool);
+    WEBCORE_EXPORT void setVolatileWhenUnused();
+    WEBCORE_EXPORT SetNonVolatileResult setNonVolatile();
 
     bool hasFormat(Format format) const { return m_format && *m_format == format; }
     IntSize size() const { return m_size; }
@@ -231,6 +231,7 @@ private:
     static std::optional<IntSize> s_maximumSize;
 
     Name m_name;
+    bool m_isVolatile { false };
 
     WEBCORE_EXPORT friend WTF::TextStream& operator<<(WTF::TextStream&, const WebCore::IOSurface&);
 };

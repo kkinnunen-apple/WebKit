@@ -136,11 +136,8 @@ public:
 
     virtual void transferToNewContext(const ImageBufferCreationContext&) { }
 
-    // Returns true on success.
-    virtual bool setVolatile() { return true; }
+    virtual void setVolatile() { }
     virtual SetNonVolatileResult setNonVolatile() { return SetNonVolatileResult::Valid; }
-    virtual VolatilityState volatilityState() const { return VolatilityState::NonVolatile; }
-    virtual void setVolatilityState(VolatilityState) { }
 
     virtual std::unique_ptr<ThreadSafeImageBufferFlusher> createFlusher() { return nullptr; }
 

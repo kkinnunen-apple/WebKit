@@ -140,7 +140,7 @@ std::unique_ptr<IOSurface> IOSurfacePool::takeSurface(IntSize size, const Destin
 
         didRemoveSurface(*surface, false);
 
-        surface->setVolatile(false);
+        surface->setNonVolatile();
 
         DUMP_POOL_STATISTICS(stream << "IOSurfacePool::takeSurface - taking surface " << surface.get() << " with size " << size << " color space " << colorSpace << " format " << format << "\n" << poolStatistics());
         return surface;
@@ -157,7 +157,7 @@ std::unique_ptr<IOSurface> IOSurfacePool::takeSurface(IntSize size, const Destin
         m_inUseSurfaces.remove(surfaceIter);
         didRemoveSurface(*surface, true);
 
-        surface->setVolatile(false);
+        surface->setNonVolatile();
 
         DUMP_POOL_STATISTICS(stream << "IOSurfacePool::takeSurface - taking surface " << surface.get() << " with size " << size << " color space " << colorSpace << " format " << format << "\n" << poolStatistics());
         return surface;
@@ -309,7 +309,7 @@ bool IOSurfacePool::markOlderSurfacesPurgeable()
             continue;
         }
 
-        surfaceAndDetails.key->setVolatile(true);
+        surfaceAndDetails.key->setVolatileWhenUnused();
         surfaceAndDetails.value.hasMarkedPurgeable = true;
     }
 

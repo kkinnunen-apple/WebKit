@@ -72,7 +72,7 @@ public:
     void willCommitLayerTree(RemoteLayerTreeTransaction&);
     Vector<std::unique_ptr<WebCore::ThreadSafeImageBufferFlusher>> didFlushLayers(RemoteLayerTreeTransaction&);
 
-    virtual void tryMarkAllBackingStoreVolatile(CompletionHandler<void(bool)>&&);
+    virtual void tryMarkAllBackingStoreVolatile();
 
     void scheduleVolatilityTimer();
 
@@ -96,14 +96,14 @@ protected:
 
 
 private:
-    bool markInProcessBackingStoreVolatile(RemoteLayerWithInProcessRenderingBackingStore&, OptionSet<VolatilityMarkingBehavior> = { }, MonotonicTime = { });
-    bool markAllBackingStoreVolatile(OptionSet<VolatilityMarkingBehavior> liveBackingStoreMarkingBehavior, OptionSet<VolatilityMarkingBehavior> unparentedBackingStoreMarkingBehavior);
+    void markInProcessBackingStoreVolatile(RemoteLayerWithInProcessRenderingBackingStore&, OptionSet<VolatilityMarkingBehavior> = { }, MonotonicTime = { });
+    void markAllBackingStoreVolatile(OptionSet<VolatilityMarkingBehavior> liveBackingStoreMarkingBehavior, OptionSet<VolatilityMarkingBehavior> unparentedBackingStoreMarkingBehavior);
 
     bool updateUnreachableBackingStores();
     void volatilityTimerFired();
 
 protected:
-    void sendMarkBuffersVolatile(Vector<WebCore::RenderingResourceIdentifier>&&, CompletionHandler<void(bool)>&&);
+    void sendMarkBuffersVolatile(Vector<WebCore::RenderingResourceIdentifier>&&);
 
     static constexpr auto volatileBackingStoreAgeThreshold = 1_s;
     static constexpr auto volatileSecondaryBackingStoreAgeThreshold = 200_ms;
@@ -116,7 +116,6 @@ protected:
     // Only used during a single flush.
     WeakHashSet<RemoteLayerBackingStore> m_reachableBackingStoreInLatestFlush;
     WeakHashSet<RemoteLayerBackingStore> m_backingStoresNeedingDisplay;
-
     WebCore::Timer m_volatilityTimer;
 
     bool m_inLayerFlush { false };

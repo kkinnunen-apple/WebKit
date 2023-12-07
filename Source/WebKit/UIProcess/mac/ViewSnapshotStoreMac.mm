@@ -79,10 +79,13 @@ WebCore::SetNonVolatileResult ViewSnapshot::setVolatile(bool becomeVolatile)
 {
     if (ViewSnapshotStore::singleton().disableSnapshotVolatilityForTesting())
         return WebCore::SetNonVolatileResult::Valid;
-
     if (!m_surface)
         return WebCore::SetNonVolatileResult::Empty;
-    return m_surface->setVolatile(becomeVolatile);
+    if (becomeVolatile) {
+        m_surface->setVolatileWhenUnused(); 
+        return WebCore::SetNonVolatileResult::Empty;
+    }
+    return m_surface->setNonVolatile();
 }
 
 id ViewSnapshot::asLayerContents()
