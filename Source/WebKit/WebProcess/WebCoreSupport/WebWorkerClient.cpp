@@ -88,7 +88,7 @@ RemoteRenderingBackendProxy& WebWorkerClient::ensureRenderingBackend() const
 {
     assertIsCurrent(m_dispatcher);
     if (!m_remoteRenderingBackendProxy)
-        m_remoteRenderingBackendProxy = RemoteRenderingBackendProxy::create({ RenderingBackendIdentifier::generate(), m_pageProxyID, m_pageID }, m_dispatcher);
+        m_remoteRenderingBackendProxy = RemoteRenderingBackendProxy::create({ RenderingBackendIdentifier::generate(), m_pageProxyID, m_pageID });
     return *m_remoteRenderingBackendProxy;
 }
 #endif

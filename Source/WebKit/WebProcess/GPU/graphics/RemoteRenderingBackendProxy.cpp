@@ -58,17 +58,17 @@ using namespace WebCore;
 
 std::unique_ptr<RemoteRenderingBackendProxy> RemoteRenderingBackendProxy::create(WebPage& webPage)
 {
-    return create({ RenderingBackendIdentifier::generate(), webPage.webPageProxyIdentifier(), webPage.identifier() }, RunLoop::main());
+    return create({ RenderingBackendIdentifier::generate(), webPage.webPageProxyIdentifier(), webPage.identifier() });
 }
 
-std::unique_ptr<RemoteRenderingBackendProxy> RemoteRenderingBackendProxy::create(const RemoteRenderingBackendCreationParameters& parameters, SerialFunctionDispatcher& dispatcher)
+std::unique_ptr<RemoteRenderingBackendProxy> RemoteRenderingBackendProxy::create(const RemoteRenderingBackendCreationParameters& parameters)
 {
-    return std::unique_ptr<RemoteRenderingBackendProxy>(new RemoteRenderingBackendProxy(parameters, dispatcher));
+    return std::unique_ptr<RemoteRenderingBackendProxy>(new RemoteRenderingBackendProxy(parameters));
 }
 
-RemoteRenderingBackendProxy::RemoteRenderingBackendProxy(const RemoteRenderingBackendCreationParameters& parameters, SerialFunctionDispatcher& dispatcher)
+RemoteRenderingBackendProxy::RemoteRenderingBackendProxy(const RemoteRenderingBackendCreationParameters& parameters)
     : m_parameters(parameters)
-    , m_dispatcher(dispatcher)
+    , m_queue(WorkQueue::create("RemoteRenderingBackendProxy", WorkQueue::QOS::UserInteractive))
 {
 }
 
@@ -96,14 +96,14 @@ void RemoteRenderingBackendProxy::ensureGPUProcessConnection()
             CRASH();
         auto [streamConnection, serverHandle] = WTFMove(*connectionPair);
         m_streamConnection = WTFMove(streamConnection);
-        // RemoteRenderingBackendProxy behaves as the dispatcher for the connection to obtain isolated state for its
-        // connection. This prevents waits on RemoteRenderingBackendProxy to process messages from other connections.
-        m_streamConnection->open(*this, *this);
+        m_streamConnection->open(*this, m_queue.get());
 
         callOnMainRunLoopAndWait([this, serverHandle = WTFMove(serverHandle)]() mutable {
             m_connection = &WebProcess::singleton().ensureGPUProcessConnection().connection();
             m_connection->send(Messages::GPUConnectionToWebProcess::CreateRenderingBackend(m_parameters, WTFMove(serverHandle)), 0, IPC::SendOption::DispatchMessageEvenWhenWaitingForSyncReply);
         });
+
+        restoreGPUProcessState();
     }
 }
 template<typename T, typename U, typename V>
@@ -130,9 +130,22 @@ auto RemoteRenderingBackendProxy::sendSync(T&& message, ObjectIdentifierGeneric<
 
 void RemoteRenderingBackendProxy::didClose(IPC::Connection&)
 {
+    Locker locker { m_locker };
     if (!m_streamConnection)
         return;
-    disconnectGPUProcess();
+    m_streamConnection->invalidate();
+    m_streamConnection = nullptr;
+    m_condition.notifyAll();
+}
+
+void RemoteRenderingBackendProxy::restoreGPUProcessState()
+{
+    if (m_destroyGetPixelBufferSharedMemoryTimer.isActive())
+        m_destroyGetPixelBufferSharedMemoryTimer.stop();
+    m_getPixelBufferSharedMemory = nullptr;
+    m_renderingUpdateID = { };
+    m_didRenderingUpdateID = { };
+        
     // Note: The cache will call back to this to setup a new connection.
     m_remoteResourceCacheProxy.remoteResourceCacheWasDestroyed();
 
@@ -140,17 +153,6 @@ void RemoteRenderingBackendProxy::didClose(IPC::Connection&)
         bufferSet.value->remoteBufferSetWasDestroyed();
         send(Messages::RemoteRenderingBackend::CreateRemoteImageBufferSet(bufferSet.value->identifier(), bufferSet.value->displayListResourceIdentifier()));
     }
-}
-
-void RemoteRenderingBackendProxy::disconnectGPUProcess()
-{
-    if (m_destroyGetPixelBufferSharedMemoryTimer.isActive())
-        m_destroyGetPixelBufferSharedMemoryTimer.stop();
-    m_getPixelBufferSharedMemory = nullptr;
-    m_renderingUpdateID = { };
-    m_didRenderingUpdateID = { };
-    m_streamConnection->invalidate();
-    m_streamConnection = nullptr;
 }
 
 void RemoteRenderingBackendProxy::createRemoteImageBuffer(ImageBuffer& imageBuffer)
@@ -445,6 +447,7 @@ void RemoteRenderingBackendProxy::finalizeRenderingUpdate()
     if (!m_streamConnection)
         return;
     send(Messages::RemoteRenderingBackend::FinalizeRenderingUpdate(m_renderingUpdateID));
+    Locker locker { m_lock };
     m_renderingUpdateID.increment();
 }
 
@@ -474,8 +477,8 @@ bool RemoteRenderingBackendProxy::dispatchSyncMessage(IPC::Connection&, IPC::Dec
 
 void RemoteRenderingBackendProxy::didFinalizeRenderingUpdate(RenderingUpdateID didRenderingUpdateID)
 {
-    ASSERT(didRenderingUpdateID <= m_renderingUpdateID);
-    m_didRenderingUpdateID = std::min(didRenderingUpdateID, m_renderingUpdateID);
+    Locker lock { m_lock };
+    m_didRenderingUpdateID = std::max(didRenderingUpdateID, m_didRenderingUpdateID);
 }
 
 RenderingBackendIdentifier RemoteRenderingBackendProxy::renderingBackendIdentifier() const
@@ -492,18 +495,22 @@ RenderingBackendIdentifier RemoteRenderingBackendProxy::ensureBackendCreated()
 IPC::StreamClientConnection& RemoteRenderingBackendProxy::streamConnection()
 {
     ensureGPUProcessConnection();
-    if (UNLIKELY(!m_streamConnection->hasSemaphores()))
-        m_streamConnection->waitForAndDispatchImmediately<Messages::RemoteRenderingBackendProxy::DidInitialize>(renderingBackendIdentifier(), defaultTimeout);
+    {
+        Locker lock { m_lock };
+        m_condition.waitUntil(m_lock, defaultTimeout, [&] -> bool {
+            return m_streamConnection->hasSemaphores();
+        });
+    }
     return *m_streamConnection;
 }
 
 void RemoteRenderingBackendProxy::didInitialize(IPC::Semaphore&& wakeUp, IPC::Semaphore&& clientWait)
 {
-    if (!m_streamConnection) {
-        ASSERT_NOT_REACHED();
-        return;
-    }
-    m_streamConnection->setSemaphores(WTFMove(wakeUp), WTFMove(clientWait));
+    Locker lock { m_lock };
+    ASSERT(m_streamConnection);
+    if (m_streamConnection)
+        m_streamConnection->setSemaphores(WTFMove(wakeUp), WTFMove(clientWait));
+    m_condition.notifyAll();
 }
 
 bool RemoteRenderingBackendProxy::isCached(const ImageBuffer& imageBuffer) const

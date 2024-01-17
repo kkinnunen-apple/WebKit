@@ -72,11 +72,10 @@ class RemoteLayerBackingStore;
 class RemoteImageBufferProxyFlushState;
 class RemoteImageBufferSetProxy;
 
-class RemoteRenderingBackendProxy
-    : public IPC::Connection::Client, SerialFunctionDispatcher {
+class RemoteRenderingBackendProxy : public IPC::Connection::Client {
 public:
     static std::unique_ptr<RemoteRenderingBackendProxy> create(WebPage&);
-    static std::unique_ptr<RemoteRenderingBackendProxy> create(const RemoteRenderingBackendCreationParameters&, SerialFunctionDispatcher&);
+    static std::unique_ptr<RemoteRenderingBackendProxy> create(const RemoteRenderingBackendCreationParameters&);
 
     ~RemoteRenderingBackendProxy();
 
@@ -162,11 +161,11 @@ public:
     IPC::StreamClientConnection& streamConnection();
     IPC::Connection* connection() { return m_connection.get(); }
 
-    SerialFunctionDispatcher& dispatcher() { return m_dispatcher; }
+    SerialFunctionDispatcher& dispatcher() { return m_queue.get(); }
 
     static constexpr Seconds defaultTimeout = 15_s;
 private:
-    explicit RemoteRenderingBackendProxy(const RemoteRenderingBackendCreationParameters&, SerialFunctionDispatcher&);
+    explicit RemoteRenderingBackendProxy(const RemoteRenderingBackendCreationParameters&);
 
     template<typename T, typename U, typename V> auto send(T&& message, ObjectIdentifierGeneric<U, V>);
     template<typename T> auto send(T&& message) { return send(std::forward<T>(message), renderingBackendIdentifier()); }
@@ -192,9 +191,6 @@ private:
     void didFinalizeRenderingUpdate(RenderingUpdateID didRenderingUpdateID);
     void didMarkLayersAsVolatile(MarkSurfacesAsVolatileRequestIdentifier, Vector<std::pair<RemoteImageBufferSetIdentifier, OptionSet<BufferInSetType>>>, bool didMarkAllLayerAsVolatile);
 
-    // SerialFunctionDispatcher
-    void dispatch(Function<void()>&& function) final { m_dispatcher.dispatch(WTFMove(function)); }
-    bool isCurrent() const final { return m_dispatcher.isCurrent(); }
     RefPtr<IPC::Connection> m_connection;
     RefPtr<IPC::StreamClientConnection> m_streamConnection;
     RemoteRenderingBackendCreationParameters m_parameters;
@@ -204,12 +200,13 @@ private:
     MarkSurfacesAsVolatileRequestIdentifier m_currentVolatilityRequest;
     HashMap<MarkSurfacesAsVolatileRequestIdentifier, CompletionHandler<void(bool)>> m_markAsVolatileRequests;
     HashMap<RemoteImageBufferSetIdentifier, WeakPtr<RemoteImageBufferSetProxy>> m_bufferSets;
-    SerialFunctionDispatcher& m_dispatcher;
-
+    Ref<WorkQueue> m_queue;
+    Lock m_lock;
+    Condition m_condition;
+    IPC::Connection::AsyncReplyID m_prepareReply WTF_GUARDED_BY_LOCK(m_lock);
     RenderingUpdateID m_renderingUpdateID;
-    RenderingUpdateID m_didRenderingUpdateID;
-
-    IPC::Connection::AsyncReplyID m_prepareReply;
+    RenderingUpdateID m_didRenderingUpdateID WTF_GUARDED_BY_LOCK(m_lock);
+    
 };
 
 } // namespace WebKit
