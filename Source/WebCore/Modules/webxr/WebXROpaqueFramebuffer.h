@@ -63,7 +63,7 @@ public:
     void endFrame();
 
 private:
-    WebXROpaqueFramebuffer(PlatformXR::LayerHandle, Ref<WebGLFramebuffer>&&, WebGLRenderingContextBase&, Attributes&&, IntSize);
+    WebXROpaqueFramebuffer(PlatformXR::LayerHandle, PlatformGLObject, WebGLRenderingContextBase&, Attributes&&, IntSize);
 
     bool setupFramebuffer();
     PlatformGLObject allocateRenderbufferStorage(GraphicsContextGL&, GCGLsizei, GCGLenum, IntSize);
@@ -73,7 +73,7 @@ private:
     void bindDepthStencilBuffer(GraphicsContextGL&, PlatformGLObject);
 
     PlatformXR::LayerHandle m_handle;
-    Ref<WebGLFramebuffer> m_framebuffer;
+    GCGLOwnedFramebuffer m_framebuffer;
     WebGLRenderingContextBase& m_context;
     Attributes m_attributes;
     IntSize m_framebufferSize;

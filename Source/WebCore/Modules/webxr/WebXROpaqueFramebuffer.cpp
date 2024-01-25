@@ -89,15 +89,15 @@ static GL::EGLImageSource makeEGLImageSource(const std::tuple<WTF::MachSendRight
 
 std::unique_ptr<WebXROpaqueFramebuffer> WebXROpaqueFramebuffer::create(PlatformXR::LayerHandle handle, WebGLRenderingContextBase& context, Attributes&& attributes, IntSize framebufferSize)
 {
-    auto framebuffer = WebGLFramebuffer::createOpaque(context);
+    auto framebuffer = context.protectedGraphicsContextGL()->createFramebuffer();
     if (!framebuffer)
         return nullptr;
-    return std::unique_ptr<WebXROpaqueFramebuffer>(new WebXROpaqueFramebuffer(handle, framebuffer.releaseNonNull(), context, WTFMove(attributes), framebufferSize));
+    return std::unique_ptr<WebXROpaqueFramebuffer>(new WebXROpaqueFramebuffer(handle, framebuffer, context, WTFMove(attributes), framebufferSize));
 }
 
-WebXROpaqueFramebuffer::WebXROpaqueFramebuffer(PlatformXR::LayerHandle handle, Ref<WebGLFramebuffer>&& framebuffer, WebGLRenderingContextBase& context, Attributes&& attributes, IntSize framebufferSize)
+WebXROpaqueFramebuffer::WebXROpaqueFramebuffer(PlatformXR::LayerHandle handle, PlatformGLObject framebuffer, WebGLRenderingContextBase& context, Attributes&& attributes, IntSize framebufferSize)
     : m_handle(handle)
-    , m_framebuffer(WTFMove(framebuffer))
+    , m_framebuffer(framebuffer)
     , m_context(context)
     , m_attributes(WTFMove(attributes))
     , m_framebufferSize(framebufferSize)
@@ -113,16 +113,17 @@ WebXROpaqueFramebuffer::~WebXROpaqueFramebuffer()
         m_depthStencilBuffer.release(*gl);
         m_multisampleColorBuffer.release(*gl);
         m_resolvedFBO.release(*gl);
-        m_context.deleteFramebuffer(m_framebuffer.ptr());
+        m_framebuffer.release(*gl);
     } else {
         // The GraphicsContextGL is gone, so disarm the GCGLOwned objects so
         // their destructors don't assert.
 #if PLATFORM(COCOA)
-        m_colorTexture.release(*gl);
+        m_colorTexture.leakObject();
 #endif
         m_depthStencilBuffer.leakObject();
         m_multisampleColorBuffer.leakObject();
         m_resolvedFBO.leakObject();
+        m_framebuffer.leakObject();
     }
 }
 
@@ -138,7 +139,7 @@ void WebXROpaqueFramebuffer::startFrame(const PlatformXR::FrameData::LayerData& 
     ScopedWebGLRestoreTexture restoreTexture { m_context, textureTarget };
     ScopedWebGLRestoreRenderbuffer restoreRenderBuffer { m_context };
 
-    gl->bindFramebuffer(GraphicsContextGL::FRAMEBUFFER, m_framebuffer->object());
+    gl->bindFramebuffer(GraphicsContextGL::FRAMEBUFFER, m_framebuffer);
     // https://immersive-web.github.io/webxr/#opaque-framebuffer
     // The buffers attached to an opaque framebuffer MUST be cleared to the values in the provided table when first created,
     // or prior to the processing of each XR animation frame.
@@ -169,7 +170,7 @@ void WebXROpaqueFramebuffer::startFrame(const PlatformXR::FrameData::LayerData& 
     }
 
     // Set up the framebuffer to use the texture that points to the IOSurface. If we're not multisampling,
-    // the target framebuffer is m_framebuffer->object() (bound above). If we are multisampling, the target
+    // the target framebuffer is m_framebuffer (bound above). If we are multisampling, the target
     // is the resolved framebuffer we created in setupFramebuffer.
     if (m_multisampleColorBuffer)
         gl->bindFramebuffer(GL::FRAMEBUFFER, m_resolvedFBO);
@@ -201,7 +202,7 @@ void WebXROpaqueFramebuffer::endFrame()
         if (m_depthStencilBuffer)
             buffers |= GL::DEPTH_BUFFER_BIT | GL::STENCIL_BUFFER_BIT;
 
-        gl->bindFramebuffer(GL::READ_FRAMEBUFFER, m_framebuffer->object());
+        gl->bindFramebuffer(GL::READ_FRAMEBUFFER, m_framebuffer);
         gl->bindFramebuffer(GL::DRAW_FRAMEBUFFER, m_resolvedFBO);
         gl->blitFramebufferANGLE(0, 0, width(), height(), 0, 0, width(), height(), buffers, GL::NEAREST);
     }
@@ -248,7 +249,7 @@ bool WebXROpaqueFramebuffer::setupFramebuffer()
     // Set up recommended samples for WebXR.
     auto sampleCount = m_attributes.antialias ? std::min(4, m_context.maxSamples()) : 0;
 
-    gl->bindFramebuffer(GL::FRAMEBUFFER, m_framebuffer->object());
+    gl->bindFramebuffer(GL::FRAMEBUFFER, m_framebuffer);
 
     if (m_attributes.antialias) {
         m_resolvedFBO.ensure(*gl);
