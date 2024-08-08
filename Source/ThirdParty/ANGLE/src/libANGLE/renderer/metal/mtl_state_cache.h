@@ -321,6 +321,11 @@ struct RenderPassAttachmentDesc
 
     ANGLE_INLINE bool hasResolveTexture() const { return resolveTexture.get(); }
 
+    const TextureRef &getImplicitMSTextureIfAvailOrTexture() const
+    {
+        return texture ? texture : resolveTexture;
+    }
+
     // When rendering with implicit multisample, |texture| is the texture that
     // will be rendered into and discarded at the end of a render pass. Its
     // result will be automatically resolved into |resolveTexture|.

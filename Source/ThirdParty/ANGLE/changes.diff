@@ -47,7 +47,7 @@ index 7952b50a5b8637eaf53d7d9611225a12c80cdcdd..24f072e9eddcb3c7ce480a4f83558d4a
 +
  #endif  // INCLUDE_GLES2_GL2EXT_ANGLE_H_
 diff --git a/include/platform/autogen/FeaturesMtl_autogen.h b/include/platform/autogen/FeaturesMtl_autogen.h
-index 28e27213619de12f342cdced7abe175d5a82555a..ff048aa260513b2c1536f0b858803328a8e96499 100644
+index 0ad7a6b901fac51d4d91d09a83247cda2fa0b932..d79889bcfa9ad58b608ae07cb85845ca885c136f 100644
 --- a/include/platform/autogen/FeaturesMtl_autogen.h
 +++ b/include/platform/autogen/FeaturesMtl_autogen.h
 @@ -83,6 +83,13 @@ struct FeaturesMtl : FeatureSetBase
@@ -65,7 +65,7 @@ index 28e27213619de12f342cdced7abe175d5a82555a..ff048aa260513b2c1536f0b858803328
          "allowInlineConstVertexData",
          FeatureCategory::MetalFeatures,
 diff --git a/include/platform/mtl_features.json b/include/platform/mtl_features.json
-index 8aabccca1e1edee5fae5e28ff6bf9ab6f8967f73..bf2798455b282be6ff38a5f049e0a14a0022473e 100644
+index 4b78291c54fb916dd9cd7f7b0cf396c93b8522ad..2c33cbabf896877cb301acae5889e405f751dd27 100644
 --- a/include/platform/mtl_features.json
 +++ b/include/platform/mtl_features.json
 @@ -70,6 +70,13 @@
@@ -1475,7 +1475,7 @@ index acdd008c5424d3ab67df0ffe384bb459143348a1..7283095e00b5c260f276c497de5d53d1
  };
  
 diff --git a/src/libANGLE/renderer/metal/ContextMtl.mm b/src/libANGLE/renderer/metal/ContextMtl.mm
-index 763f717c171f46212dd4c7de75718de9716f7c93..2f34e489feacc07a009a1659af345d11f0d7cf92 100644
+index 2575266dce1a914509864397ffda9c277a9ca429..65721594d04c8bffad5088fc53ced3da36dc70c0 100644
 --- a/src/libANGLE/renderer/metal/ContextMtl.mm
 +++ b/src/libANGLE/renderer/metal/ContextMtl.mm
 @@ -263,6 +263,8 @@ void ContextMtl::onDestroy(const gl::Context *context)
@@ -1612,7 +1612,7 @@ index 16ae6340e37283bcd49e8ea926f75a1f6f17f1d6..34aadf0c7e20c05ab4c6791ba412ae2a
      bool isAMDBronzeDriver() const;
      bool isAMDFireProDevice() const;
 diff --git a/src/libANGLE/renderer/metal/DisplayMtl.mm b/src/libANGLE/renderer/metal/DisplayMtl.mm
-index faf3ce89f10dba6d83dafe4460dda337afe980e9..e2cb837dc6ac2d51a20c34d44900f15a68a63850 100644
+index 7c7727de602b5f55078e1c80ffcde656b96c4390..5f4adf60f2ecd3f6de2d51c8b569037e8502e0b9 100644
 --- a/src/libANGLE/renderer/metal/DisplayMtl.mm
 +++ b/src/libANGLE/renderer/metal/DisplayMtl.mm
 @@ -184,12 +184,22 @@ void DisplayMtl::terminate()
@@ -1638,7 +1638,7 @@ index faf3ce89f10dba6d83dafe4460dda337afe980e9..e2cb837dc6ac2d51a20c34d44900f15a
  }
  
  std::string DisplayMtl::getRendererDescription()
-@@ -1176,6 +1186,14 @@ void DisplayMtl::initializeExtensions() const
+@@ -1168,6 +1178,14 @@ void DisplayMtl::initializeExtensions() const
              mNativeCaps.maxImageUnits = gl::IMPLEMENTATION_MAX_PIXEL_LOCAL_STORAGE_PLANES;
          }
      }
@@ -1653,7 +1653,7 @@ index faf3ce89f10dba6d83dafe4460dda337afe980e9..e2cb837dc6ac2d51a20c34d44900f15a
      // "The GPUs in Apple3 through Apple8 families only support memory barriers for compute command
      // encoders, and for vertex-to-vertex and vertex-to-fragment stages of render command encoders."
      mHasFragmentMemoryBarriers = !supportsAppleGPUFamily(3);
-@@ -1248,6 +1266,8 @@ void DisplayMtl::initializeFeatures()
+@@ -1240,6 +1258,8 @@ void DisplayMtl::initializeFeatures()
                              supportsMetal2_1() && (isOSX || isCatalyst) && !isARM);
      ANGLE_FEATURE_CONDITION((&mFeatures), hasDepthAutoResolve, supportsEitherGPUFamily(3, 2));
      ANGLE_FEATURE_CONDITION((&mFeatures), hasStencilAutoResolve, supportsEitherGPUFamily(5, 2));
@@ -1662,17 +1662,7 @@ index faf3ce89f10dba6d83dafe4460dda337afe980e9..e2cb837dc6ac2d51a20c34d44900f15a
      ANGLE_FEATURE_CONDITION((&mFeatures), allowMultisampleStoreAndResolve,
                              supportsEitherGPUFamily(3, 1));
  
-@@ -1438,8 +1458,7 @@ bool DisplayMtl::supportsMetal2_2() const
- bool DisplayMtl::supports32BitFloatFiltering() const
- {
- #if (defined(__MAC_11_0) && __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_11_0) || \
--    (defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_14_0) || \
--    (defined(__TVOS_14_0) && __TV_OS_VERSION_MIN_REQUIRED >= __TVOS_14_0)
-+    (defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_14_0)
-     if (@available(ios 14.0, macOS 11.0, *))
-     {
-         return [mMetalDevice supports32BitFloatFiltering];
-@@ -1459,6 +1478,17 @@ bool DisplayMtl::supportsDepth24Stencil8PixelFormat() const
+@@ -1445,6 +1465,17 @@ bool DisplayMtl::supportsDepth24Stencil8PixelFormat() const
      return false;
  #endif
  }
@@ -1691,10 +1681,10 @@ index faf3ce89f10dba6d83dafe4460dda337afe980e9..e2cb837dc6ac2d51a20c34d44900f15a
  {
      return angle::IsAMD(mMetalDeviceVendorId);
 diff --git a/src/libANGLE/renderer/metal/FrameBufferMtl.h b/src/libANGLE/renderer/metal/FrameBufferMtl.h
-index 51f2f2b96dddedf975ec17ec60e8eb8255592c25..9ce9bf08134f2ef93504397df9f8acc4fa0eed1a 100644
+index f8a15d589405149d2d85f15174ea29989c2bb06d..ca845ad3e93985a6459773242ec0c83d9f3940e7 100644
 --- a/src/libANGLE/renderer/metal/FrameBufferMtl.h
 +++ b/src/libANGLE/renderer/metal/FrameBufferMtl.h
-@@ -207,6 +207,14 @@ class FramebufferMtl : public FramebufferImpl
+@@ -212,6 +212,14 @@ class FramebufferMtl : public FramebufferImpl
      angle::FixedVector<RenderTargetMtl *, mtl::kMaxRenderTargets> mColorRenderTargets;
      RenderTargetMtl *mDepthRenderTarget   = nullptr;
      RenderTargetMtl *mStencilRenderTarget = nullptr;
@@ -1710,7 +1700,7 @@ index 51f2f2b96dddedf975ec17ec60e8eb8255592c25..9ce9bf08134f2ef93504397df9f8acc4
  
      const mtl::Format *mRenderPassFirstColorAttachmentFormat = nullptr;
 diff --git a/src/libANGLE/renderer/metal/FrameBufferMtl.mm b/src/libANGLE/renderer/metal/FrameBufferMtl.mm
-index d4650cb71be42d55b19bb57cb98c06437086dfb5..9c7e1d9e5c00c8a69e2d7299c23154334e833e3f 100644
+index 8cab198f0ce832cae8b564356066d2a457ad18fa..9dd143a327389fe10cca8b227503bd5c04396f51 100644
 --- a/src/libANGLE/renderer/metal/FrameBufferMtl.mm
 +++ b/src/libANGLE/renderer/metal/FrameBufferMtl.mm
 @@ -121,6 +121,9 @@ angle::Result Copy2DTextureSlice0Level0ToTempTexture(const gl::Context *context,
@@ -1738,7 +1728,7 @@ index d4650cb71be42d55b19bb57cb98c06437086dfb5..9c7e1d9e5c00c8a69e2d7299c2315433
      mRenderPassFirstColorAttachmentFormat = nullptr;
  
      mReadPixelBuffer = nullptr;
-@@ -958,7 +969,7 @@ void FramebufferMtl::setLoadStoreActionOnRenderPassFirstStart(
+@@ -968,7 +979,7 @@ void FramebufferMtl::setLoadStoreActionOnRenderPassFirstStart(
          attachment.loadAction = MTLLoadActionLoad;
      }
  
@@ -1747,7 +1737,7 @@ index d4650cb71be42d55b19bb57cb98c06437086dfb5..9c7e1d9e5c00c8a69e2d7299c2315433
      {
          attachment.storeAction = MTLStoreActionStoreAndMultisampleResolve;
      }
-@@ -1025,22 +1036,47 @@ angle::Result FramebufferMtl::updateColorRenderTarget(const gl::Context *context
+@@ -1035,22 +1046,47 @@ angle::Result FramebufferMtl::updateColorRenderTarget(const gl::Context *context
      ASSERT(colorIndexGL < mColorRenderTargets.size());
      // Reset load store action
      mRenderPassDesc.colorAttachments[colorIndexGL].reset();
@@ -1799,7 +1789,7 @@ index d4650cb71be42d55b19bb57cb98c06437086dfb5..9c7e1d9e5c00c8a69e2d7299c2315433
  }
  
  angle::Result FramebufferMtl::updateCachedRenderTarget(const gl::Context *context,
-@@ -1082,6 +1118,9 @@ angle::Result FramebufferMtl::prepareRenderPass(const gl::Context *context,
+@@ -1092,6 +1128,9 @@ angle::Result FramebufferMtl::prepareRenderPass(const gl::Context *context,
  
          mtl::RenderPassColorAttachmentDesc &colorAttachment = desc.colorAttachments[colorIndexGL];
          const RenderTargetMtl *colorRenderTarget            = mColorRenderTargets[colorIndexGL];
@@ -1809,7 +1799,7 @@ index d4650cb71be42d55b19bb57cb98c06437086dfb5..9c7e1d9e5c00c8a69e2d7299c2315433
  
          // GL allows data types of fragment shader color outputs to be incompatible with disabled
          // color attachments. To prevent various Metal validation issues, assign textures only to
-@@ -1089,6 +1128,12 @@ angle::Result FramebufferMtl::prepareRenderPass(const gl::Context *context,
+@@ -1099,6 +1138,12 @@ angle::Result FramebufferMtl::prepareRenderPass(const gl::Context *context,
          if (colorRenderTarget && enabledDrawBuffers.test(colorIndexGL))
          {
              colorRenderTarget->toRenderPassAttachmentDesc(&colorAttachment);
@@ -1822,7 +1812,7 @@ index d4650cb71be42d55b19bb57cb98c06437086dfb5..9c7e1d9e5c00c8a69e2d7299c2315433
  
              desc.numColorAttachments = std::max(desc.numColorAttachments, colorIndexGL + 1);
              desc.sampleCount = std::max(desc.sampleCount, colorRenderTarget->getRenderSamples());
-@@ -1117,6 +1162,12 @@ angle::Result FramebufferMtl::prepareRenderPass(const gl::Context *context,
+@@ -1127,6 +1172,12 @@ angle::Result FramebufferMtl::prepareRenderPass(const gl::Context *context,
      if (mDepthRenderTarget)
      {
          mDepthRenderTarget->toRenderPassAttachmentDesc(&desc.depthAttachment);
@@ -1835,7 +1825,7 @@ index d4650cb71be42d55b19bb57cb98c06437086dfb5..9c7e1d9e5c00c8a69e2d7299c2315433
          desc.sampleCount = std::max(desc.sampleCount, mDepthRenderTarget->getRenderSamples());
      }
      else
-@@ -1127,6 +1178,12 @@ angle::Result FramebufferMtl::prepareRenderPass(const gl::Context *context,
+@@ -1137,6 +1188,12 @@ angle::Result FramebufferMtl::prepareRenderPass(const gl::Context *context,
      if (mStencilRenderTarget)
      {
          mStencilRenderTarget->toRenderPassAttachmentDesc(&desc.stencilAttachment);
@@ -1848,7 +1838,7 @@ index d4650cb71be42d55b19bb57cb98c06437086dfb5..9c7e1d9e5c00c8a69e2d7299c2315433
          desc.sampleCount = std::max(desc.sampleCount, mStencilRenderTarget->getRenderSamples());
      }
      else
-@@ -1200,7 +1257,7 @@ angle::Result FramebufferMtl::clearWithLoadOpRenderPassNotStarted(
+@@ -1210,7 +1267,7 @@ angle::Result FramebufferMtl::clearWithLoadOpRenderPassNotStarted(
              colorAttachment.loadAction = MTLLoadActionLoad;
          }
  
@@ -1857,7 +1847,7 @@ index d4650cb71be42d55b19bb57cb98c06437086dfb5..9c7e1d9e5c00c8a69e2d7299c2315433
          {
              colorAttachment.storeAction = MTLStoreActionStoreAndMultisampleResolve;
          }
-@@ -1220,7 +1277,7 @@ angle::Result FramebufferMtl::clearWithLoadOpRenderPassNotStarted(
+@@ -1230,7 +1287,7 @@ angle::Result FramebufferMtl::clearWithLoadOpRenderPassNotStarted(
          tempDesc.depthAttachment.loadAction = MTLLoadActionLoad;
      }
  
@@ -1866,7 +1856,7 @@ index d4650cb71be42d55b19bb57cb98c06437086dfb5..9c7e1d9e5c00c8a69e2d7299c2315433
      {
          tempDesc.depthAttachment.storeAction = MTLStoreActionStoreAndMultisampleResolve;
      }
-@@ -1239,7 +1296,7 @@ angle::Result FramebufferMtl::clearWithLoadOpRenderPassNotStarted(
+@@ -1249,7 +1306,7 @@ angle::Result FramebufferMtl::clearWithLoadOpRenderPassNotStarted(
          tempDesc.stencilAttachment.loadAction = MTLLoadActionLoad;
      }
  
@@ -1875,7 +1865,7 @@ index d4650cb71be42d55b19bb57cb98c06437086dfb5..9c7e1d9e5c00c8a69e2d7299c2315433
      {
          tempDesc.stencilAttachment.storeAction = MTLStoreActionStoreAndMultisampleResolve;
      }
-@@ -1477,31 +1534,54 @@ angle::Result FramebufferMtl::invalidateImpl(const gl::Context *context,
+@@ -1487,31 +1544,54 @@ angle::Result FramebufferMtl::invalidateImpl(const gl::Context *context,
                  }
              }
  
@@ -1937,7 +1927,7 @@ index d4650cb71be42d55b19bb57cb98c06437086dfb5..9c7e1d9e5c00c8a69e2d7299c2315433
          }
      }
  
-@@ -1685,8 +1765,13 @@ angle::Result FramebufferMtl::readPixelsToPBO(const gl::Context *context,
+@@ -1695,8 +1775,13 @@ angle::Result FramebufferMtl::readPixelsToPBO(const gl::Context *context,
  
      ContextMtl *contextMtl = mtl::GetImpl(context);
  
@@ -2107,7 +2097,7 @@ index d93f10afc07d12b88cd234e569fa658a1fbf6ad2..24fc07ff9b0e8294d972e7623173b9d4
      params.srcDefaultAlphaData  = convertedFormat.defaultAlpha;
  
 diff --git a/src/libANGLE/renderer/metal/mtl_command_buffer.h b/src/libANGLE/renderer/metal/mtl_command_buffer.h
-index d8abf0f1ba04749840bb993a650febf766a471d0..c846a73d188b6890617cb1a3c15be0c62e0acc30 100644
+index 4e8f010a22fd8987db9cddec1a8e0fd48bae0892..2856bdf4e1f16dcec8d95543e5d2478d46f9b33e 100644
 --- a/src/libANGLE/renderer/metal/mtl_command_buffer.h
 +++ b/src/libANGLE/renderer/metal/mtl_command_buffer.h
 @@ -104,6 +104,8 @@ class CommandQueue final : public WrappedObject<id<MTLCommandQueue>>, angle::Non
@@ -2163,7 +2153,7 @@ index d8abf0f1ba04749840bb993a650febf766a471d0..c846a73d188b6890617cb1a3c15be0c6
    private:
      // Override CommandEncoder
 diff --git a/src/libANGLE/renderer/metal/mtl_command_buffer.mm b/src/libANGLE/renderer/metal/mtl_command_buffer.mm
-index 6ec5b329019ff4e7e2f459a0c72b71871d696732..56f7fb0b2eda3360e152d0d0aa074d39e6d4ffd8 100644
+index 8060b9699ec2c369616cddbec84e542e722b8f6e..5aac22f0641a2135e7590075959751ff4e96deb5 100644
 --- a/src/libANGLE/renderer/metal/mtl_command_buffer.mm
 +++ b/src/libANGLE/renderer/metal/mtl_command_buffer.mm
 @@ -373,12 +373,20 @@ inline void SetVisibilityResultModeCmd(id<MTLRenderCommandEncoder> encoder,
@@ -2224,7 +2214,7 @@ index 6ec5b329019ff4e7e2f459a0c72b71871d696732..56f7fb0b2eda3360e152d0d0aa074d39
      mCommands.clear();
  }
  
-@@ -1491,13 +1515,13 @@ void RenderCommandEncoder::endEncodingImpl(bool considerDiscardSimulation)
+@@ -1514,13 +1538,13 @@ void RenderCommandEncoder::endEncodingImpl(bool considerDiscardSimulation)
  inline void RenderCommandEncoder::initAttachmentWriteDependencyAndScissorRect(
      const RenderPassAttachmentDesc &attachment)
  {
@@ -2241,7 +2231,7 @@ index 6ec5b329019ff4e7e2f459a0c72b71871d696732..56f7fb0b2eda3360e152d0d0aa074d39
          mRenderPassMaxScissorRect.width =
              std::min<NSUInteger>(mRenderPassMaxScissorRect.width, texture->width(mipLevel));
          mRenderPassMaxScissorRect.height =
-@@ -1775,7 +1799,8 @@ RenderCommandEncoder &RenderCommandEncoder::setStencilRefVal(uint32_t ref)
+@@ -1798,7 +1822,8 @@ RenderCommandEncoder &RenderCommandEncoder::setStencilRefVal(uint32_t ref)
      return setStencilRefVals(ref, ref);
  }
  
@@ -2251,7 +2241,7 @@ index 6ec5b329019ff4e7e2f459a0c72b71871d696732..56f7fb0b2eda3360e152d0d0aa074d39
  {
      if (mStateCache.viewport.valid() && mStateCache.viewport.value() == viewport)
      {
-@@ -1788,12 +1813,22 @@ RenderCommandEncoder &RenderCommandEncoder::setViewport(const MTLViewport &viewp
+@@ -1811,12 +1836,22 @@ RenderCommandEncoder &RenderCommandEncoder::setViewport(const MTLViewport &viewp
      return *this;
  }
  
@@ -2277,7 +2267,7 @@ index 6ec5b329019ff4e7e2f459a0c72b71871d696732..56f7fb0b2eda3360e152d0d0aa074d39
  
      MTLScissorRect clampedRect = {rect.x, rect.y, std::min(rect.width, clampedWidth),
                                    std::min(rect.height, clampedHeight)};
-@@ -1805,6 +1840,23 @@ RenderCommandEncoder &RenderCommandEncoder::setScissorRect(const MTLScissorRect
+@@ -1828,6 +1863,23 @@ RenderCommandEncoder &RenderCommandEncoder::setScissorRect(const MTLScissorRect
  
      mStateCache.scissorRect = clampedRect;
  
@@ -2301,7 +2291,7 @@ index 6ec5b329019ff4e7e2f459a0c72b71871d696732..56f7fb0b2eda3360e152d0d0aa074d39
      mCommands.push(CmdType::SetScissorRect).push(clampedRect);
  
      return *this;
-@@ -2210,6 +2262,17 @@ void RenderCommandEncoder::popDebugGroup()
+@@ -2233,6 +2285,17 @@ void RenderCommandEncoder::popDebugGroup()
      mCommands.push(CmdType::PopDebugGroup);
  }
  
@@ -2319,7 +2309,7 @@ index 6ec5b329019ff4e7e2f459a0c72b71871d696732..56f7fb0b2eda3360e152d0d0aa074d39
  RenderCommandEncoder &RenderCommandEncoder::setColorStoreAction(MTLStoreAction action,
                                                                  uint32_t colorAttachmentIndex)
  {
-@@ -2305,6 +2368,16 @@ RenderCommandEncoder &RenderCommandEncoder::setStencilLoadAction(MTLLoadAction a
+@@ -2328,6 +2391,16 @@ RenderCommandEncoder &RenderCommandEncoder::setStencilLoadAction(MTLLoadAction a
      return *this;
  }
  
@@ -2507,10 +2497,10 @@ index 3eaa9a64e79af26faa786102ece3f0bdea84d090..7ecb6db9d993df8985fcb6f701dfe7ca
 +
 +#endif /* LIBANGLE_RENDERER_METAL_RESOURCE_SPI_H_ */
 diff --git a/src/libANGLE/renderer/metal/mtl_resources.h b/src/libANGLE/renderer/metal/mtl_resources.h
-index 081c46ef66b3e24f228cd8ee4db46f68abfbcd35..dcd2aee71eb386f3c8d4e8ee773863b048aac379 100644
+index 07c1c78e13da4fa72070cbcc5152b806477dc9f4..d6c26bd72ca672f5ad3deaeb657af0723377c410 100644
 --- a/src/libANGLE/renderer/metal/mtl_resources.h
 +++ b/src/libANGLE/renderer/metal/mtl_resources.h
-@@ -227,6 +227,11 @@ class Texture final : public Resource,
+@@ -228,6 +228,11 @@ class Texture final : public Resource,
      TextureRef createCubeFaceView(uint32_t face);
      // Create a view of one slice at a level.
      TextureRef createSliceMipView(uint32_t slice, const MipmapNativeLevel &level);
@@ -2523,7 +2513,7 @@ index 081c46ef66b3e24f228cd8ee4db46f68abfbcd35..dcd2aee71eb386f3c8d4e8ee773863b0
      TextureRef createMipsView(const MipmapNativeLevel &baseLevel, uint32_t levels);
      // Create a view of a level.
 diff --git a/src/libANGLE/renderer/metal/mtl_resources.mm b/src/libANGLE/renderer/metal/mtl_resources.mm
-index 50873854b075ce7327e2ecff25a2c37ba707eb88..d9a21b6ec4f1928acace805e61254c20d0f80cda 100644
+index 1b20954c46bf4346e77a96a19511a263b9e59946..e0c4c7789813160815a4bf5341175f8b1f634634 100644
 --- a/src/libANGLE/renderer/metal/mtl_resources.mm
 +++ b/src/libANGLE/renderer/metal/mtl_resources.mm
 @@ -78,12 +78,10 @@ MTLResourceOptions resourceOptionsForStorageMode(MTLStorageMode storageMode)
@@ -2539,7 +2529,7 @@ index 50873854b075ce7327e2ecff25a2c37ba707eb88..d9a21b6ec4f1928acace805e61254c20
      }
  }
  
-@@ -704,7 +702,9 @@ TextureRef Texture::createCubeFaceView(uint32_t face)
+@@ -724,7 +722,9 @@ TextureRef Texture::createCubeFaceView(uint32_t face)
      }
  }
  
@@ -2550,7 +2540,7 @@ index 50873854b075ce7327e2ecff25a2c37ba707eb88..d9a21b6ec4f1928acace805e61254c20
  {
      ANGLE_MTL_OBJC_SCOPE
      {
-@@ -713,7 +713,7 @@ TextureRef Texture::createSliceMipView(uint32_t slice, const MipmapNativeLevel &
+@@ -733,7 +733,7 @@ TextureRef Texture::createSliceMipView(uint32_t slice, const MipmapNativeLevel &
              case MTLTextureTypeCube:
              case MTLTextureType2D:
              case MTLTextureType2DArray:
@@ -2559,7 +2549,7 @@ index 50873854b075ce7327e2ecff25a2c37ba707eb88..d9a21b6ec4f1928acace805e61254c20
                                                NSMakeRange(level.get(), 1), NSMakeRange(slice, 1)));
              default:
                  UNREACHABLE();
-@@ -722,6 +722,11 @@ TextureRef Texture::createSliceMipView(uint32_t slice, const MipmapNativeLevel &
+@@ -742,6 +742,11 @@ TextureRef Texture::createSliceMipView(uint32_t slice, const MipmapNativeLevel &
      }
  }
  
@@ -2572,15 +2562,21 @@ index 50873854b075ce7327e2ecff25a2c37ba707eb88..d9a21b6ec4f1928acace805e61254c20
  {
      ANGLE_MTL_OBJC_SCOPE
 diff --git a/src/libANGLE/renderer/metal/mtl_state_cache.h b/src/libANGLE/renderer/metal/mtl_state_cache.h
-index 79afa2a499e6a508246edac7dd986b2eabf21a65..353840f9e8c7b1d2695e9cd07e0d357c2f8664ea 100644
+index 9eb4054c173b0cbc7a2fed6380402b0576c6891f..e3db060bae159ec86888cf7e7f5312f9d2275250 100644
 --- a/src/libANGLE/renderer/metal/mtl_state_cache.h
 +++ b/src/libANGLE/renderer/metal/mtl_state_cache.h
-@@ -319,15 +319,19 @@ struct RenderPassAttachmentDesc
+@@ -319,20 +319,24 @@ struct RenderPassAttachmentDesc
      bool equalIgnoreLoadStoreOptions(const RenderPassAttachmentDesc &other) const;
      bool operator==(const RenderPassAttachmentDesc &other) const;
  
 -    ANGLE_INLINE bool hasImplicitMSTexture() const { return implicitMSTexture.get(); }
 +    ANGLE_INLINE bool hasResolveTexture() const { return resolveTexture.get(); }
+ 
+     const TextureRef &getImplicitMSTextureIfAvailOrTexture() const
+     {
+-        return hasImplicitMSTexture() ? implicitMSTexture : texture;
++        return texture ? texture : resolveTexture;
+     }
  
 +    // When rendering with implicit multisample, |texture| is the texture that
 +    // will be rendered into and discarded at the end of a render pass. Its
@@ -2699,10 +2695,10 @@ index 8534c5c32fbc218da6c00ed95804026ccab508ef..43017fd33fe6be5af07864c2ec472b16
             blendable == other.blendable;
  }
 diff --git a/src/libANGLE/renderer/metal/mtl_utils.mm b/src/libANGLE/renderer/metal/mtl_utils.mm
-index b16fdeab51f65588f18e9ae7c19140474fd36eb2..a1a70f16490159ee4bb79d0dedfee6cfb93cbf05 100644
+index 62a4462ec8f8232a0f8faa84c1c4e5832a56fc61..164fcc330e263d173c0035dffe785ec858d35755 100644
 --- a/src/libANGLE/renderer/metal/mtl_utils.mm
 +++ b/src/libANGLE/renderer/metal/mtl_utils.mm
-@@ -1514,16 +1514,6 @@ bool SupportsAppleGPUFamily(id<MTLDevice> device, uint8_t appleFamily)
+@@ -1578,16 +1578,6 @@ bool SupportsAppleGPUFamily(id<MTLDevice> device, uint8_t appleFamily)
              case 7:
                  family = MTLGPUFamilyApple7;
                  break;
@@ -2719,7 +2715,7 @@ index b16fdeab51f65588f18e9ae7c19140474fd36eb2..a1a70f16490159ee4bb79d0dedfee6cf
  #    endif
              default:
                  return false;
-@@ -1573,6 +1563,24 @@ bool SupportsAppleGPUFamily(id<MTLDevice> device, uint8_t appleFamily)
+@@ -1637,6 +1627,24 @@ bool SupportsAppleGPUFamily(id<MTLDevice> device, uint8_t appleFamily)
  #endif      // TARGET_OS_IOS || TARGET_OS_TV
  }
  
@@ -2744,7 +2740,7 @@ index b16fdeab51f65588f18e9ae7c19140474fd36eb2..a1a70f16490159ee4bb79d0dedfee6cf
  bool SupportsMacGPUFamily(id<MTLDevice> device, uint8_t macFamily)
  {
  #if TARGET_OS_OSX || TARGET_OS_MACCATALYST
-@@ -1587,10 +1595,10 @@ bool SupportsMacGPUFamily(id<MTLDevice> device, uint8_t macFamily)
+@@ -1651,10 +1659,10 @@ bool SupportsMacGPUFamily(id<MTLDevice> device, uint8_t macFamily)
  #        if TARGET_OS_MACCATALYST
              ANGLE_APPLE_ALLOW_DEPRECATED_BEGIN
              case 1:
@@ -2757,7 +2753,7 @@ index b16fdeab51f65588f18e9ae7c19140474fd36eb2..a1a70f16490159ee4bb79d0dedfee6cf
                  break;
                  ANGLE_APPLE_ALLOW_DEPRECATED_END
  #        else   // TARGET_OS_MACCATALYST
-@@ -1613,7 +1621,7 @@ bool SupportsMacGPUFamily(id<MTLDevice> device, uint8_t macFamily)
+@@ -1677,7 +1685,7 @@ bool SupportsMacGPUFamily(id<MTLDevice> device, uint8_t macFamily)
  
      // If device doesn't support [MTLDevice supportsFamily:], then use
      // [MTLDevice supportsFeatureSet:].
@@ -2766,7 +2762,7 @@ index b16fdeab51f65588f18e9ae7c19140474fd36eb2..a1a70f16490159ee4bb79d0dedfee6cf
      UNREACHABLE();
      return false;
  #    else
-@@ -1662,8 +1670,7 @@ static NSUInteger getNextLocationForAttachment(const mtl::RenderPassAttachmentDe
+@@ -1726,8 +1734,7 @@ static NSUInteger getNextLocationForAttachment(const mtl::RenderPassAttachmentDe
                                                 const Context *context,
                                                 NSUInteger currentRenderTargetSize)
  {
@@ -3384,7 +3380,7 @@ index 969cd2f96d302d74dd3515ac842b93eb51387cd2..730d0ffa536caf536ec750e2bac82c81
      window->makeCurrent();
  
 diff --git a/util/autogen/angle_features_autogen.cpp b/util/autogen/angle_features_autogen.cpp
-index e88058987f8106847c4df94afc7cb385cbb19d62..0039bd26c9f925f7aa65c8ad63d26e1beb10c78b 100644
+index 07d1650384a49140ea4417d6ee8fd8f1429d8457..9b361e5606f45968e9a5e8996cc26b1eb0da4955 100644
 --- a/util/autogen/angle_features_autogen.cpp
 +++ b/util/autogen/angle_features_autogen.cpp
 @@ -204,6 +204,7 @@ constexpr PackedEnumMap<Feature, const char *> kFeatureNames = {{
@@ -3396,7 +3392,7 @@ index e88058987f8106847c4df94afc7cb385cbb19d62..0039bd26c9f925f7aa65c8ad63d26e1b
      {Feature::InitializeCurrentVertexAttributes, "initializeCurrentVertexAttributes"},
      {Feature::InjectAsmStatementIntoLoopBodies, "injectAsmStatementIntoLoopBodies"},
 diff --git a/util/autogen/angle_features_autogen.h b/util/autogen/angle_features_autogen.h
-index b9878bf856c75e1bd044108bd870c1976db88fab..15aab7123eca8c7efcb8f2754ec393087e52c8d0 100644
+index d755e7290ffd7bd0e69a69685ad6e2b2dd7519fd..5a42655f64dcfbd5935b6f91d34dd664db203746 100644
 --- a/util/autogen/angle_features_autogen.h
 +++ b/util/autogen/angle_features_autogen.h
 @@ -204,6 +204,7 @@ enum class Feature

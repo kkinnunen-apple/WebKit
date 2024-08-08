@@ -1945,14 +1945,14 @@ angle::Result Renderer::initialize(vk::Context *context,
     const VkBool32 setting_check_shaders = IsAndroid() ? VK_FALSE : VK_TRUE;
     // http://b/316013423 Disable QueueSubmit Synchronization Validation. Lots of failures and some
     // test timeout due to https://github.com/KhronosGroup/Vulkan-ValidationLayers/issues/7285
-    const VkBool32 setting_sync_queue_submit = VK_FALSE;
-    const VkLayerSettingEXT layerSettings[]  = {
+    const VkBool32 setting_syncval_submit_time_validation = VK_FALSE;
+    const VkLayerSettingEXT layerSettings[]               = {
         {name, "validate_core", VK_LAYER_SETTING_TYPE_BOOL32_EXT, 1, &setting_validate_core},
         {name, "validate_sync", VK_LAYER_SETTING_TYPE_BOOL32_EXT, 1, &setting_validate_sync},
         {name, "thread_safety", VK_LAYER_SETTING_TYPE_BOOL32_EXT, 1, &setting_thread_safety},
         {name, "check_shaders", VK_LAYER_SETTING_TYPE_BOOL32_EXT, 1, &setting_check_shaders},
-        {name, "sync_queue_submit", VK_LAYER_SETTING_TYPE_BOOL32_EXT, 1,
-          &setting_sync_queue_submit},
+        {name, "syncval_submit_time_validation", VK_LAYER_SETTING_TYPE_BOOL32_EXT, 1,
+                       &setting_syncval_submit_time_validation},
     };
     VkLayerSettingsCreateInfoEXT layerSettingsCreateInfo = {
         VK_STRUCTURE_TYPE_LAYER_SETTINGS_CREATE_INFO_EXT, nullptr,
@@ -3700,8 +3700,9 @@ angle::Result Renderer::createDeviceAndQueue(vk::Context *context, uint32_t queu
     mDefaultUniformBufferSize = std::min(
         mDefaultUniformBufferSize, getPhysicalDeviceProperties().limits.maxUniformBufferRange);
 
-    // Initialize the vulkan pipeline cache.
-    ANGLE_TRY(ensurePipelineCacheInitialized(context));
+    // Vulkan pipeline cache will be initialized lazily in ensurePipelineCacheInitialized() method.
+    ASSERT(!mPipelineCacheInitialized);
+    ASSERT(!mPipelineCache.valid());
 
     // Track the set of supported pipeline stages.  This is used when issuing image layout
     // transitions that cover many stages (such as AllGraphicsReadOnly) to mask out unsupported
@@ -5441,6 +5442,11 @@ angle::Result Renderer::syncPipelineCacheVk(vk::Context *context,
                                             vk::GlobalOps *globalOps,
                                             const gl::Context *contextGL)
 {
+    // Skip syncing until pipeline cache is initialized.
+    if (!mPipelineCacheInitialized)
+    {
+        return angle::Result::Continue;
+    }
     ASSERT(mPipelineCache.valid());
 
     if (!mFeatures.syncMonolithicPipelinesToBlobCache.enabled)
@@ -5454,6 +5460,17 @@ angle::Result Renderer::syncPipelineCacheVk(vk::Context *context,
     }
 
     mPipelineCacheVkUpdateTimeout = kPipelineCacheVkUpdatePeriod;
+
+    ContextVk *contextVk = vk::GetImpl(contextGL);
+
+    // Use worker thread pool to complete compression.
+    // If the last task hasn't been finished, skip the syncing.
+    if (mCompressEvent && !mCompressEvent->isReady())
+    {
+        ANGLE_PERF_WARNING(contextVk->getDebug(), GL_DEBUG_SEVERITY_LOW,
+                           "Skip syncing pipeline cache data when the last task is not ready.");
+        return angle::Result::Continue;
+    }
 
     size_t pipelineCacheSize = 0;
     ANGLE_TRY(getPipelineCacheSize(context, &pipelineCacheSize));
@@ -5469,17 +5486,6 @@ angle::Result Renderer::syncPipelineCacheVk(vk::Context *context,
     if (pipelineCacheSize < kPipelineCacheHeaderSize)
     {
         // No pipeline cache data to read, so return
-        return angle::Result::Continue;
-    }
-
-    ContextVk *contextVk = vk::GetImpl(contextGL);
-
-    // Use worker thread pool to complete compression.
-    // If the last task hasn't been finished, skip the syncing.
-    if (mCompressEvent && !mCompressEvent->isReady())
-    {
-        ANGLE_PERF_WARNING(contextVk->getDebug(), GL_DEBUG_SEVERITY_LOW,
-                           "Skip syncing pipeline cache data when the last task is not ready.");
         return angle::Result::Continue;
     }
 
