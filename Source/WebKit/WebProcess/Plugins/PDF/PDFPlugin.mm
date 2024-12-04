@@ -714,8 +714,9 @@ void PDFPlugin::updatePageAndDeviceScaleFactors()
         [m_pdfLayerController setDeviceScaleFactor:newScaleFactor];
 }
 
-void PDFPlugin::deviceScaleFactorChanged(float)
+void PDFPlugin::deviceScaleFactorChanged(float deviceScaleFactor)
 {
+    PDFPluginBase::deviceScaleFactorChanged(deviceScaleFactor);
     updatePageAndDeviceScaleFactors();
 }
 

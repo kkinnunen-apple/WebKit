@@ -165,7 +165,8 @@ UnifiedPDFPlugin::UnifiedPDFPlugin(HTMLPlugInElement& element)
 {
     this->setVerticalScrollElasticity(ScrollElasticity::Automatic);
     this->setHorizontalScrollElasticity(ScrollElasticity::Automatic);
-
+    if (RefPtr page = this->page())
+        m_pageIsVisibleAndActive = page->isVisibleAndActive();
     Ref document = element.document();
     m_annotationContainer = document->createElement(HTMLNames::divTag, false);
     m_annotationContainer->setAttributeWithoutSynchronization(HTMLNames::idAttr, "annotationContainer"_s);
@@ -638,19 +639,13 @@ void UnifiedPDFPlugin::updateLayerHierarchy()
     didChangeIsInWindow();
 }
 
-bool UnifiedPDFPlugin::shouldShowDebugIndicators() const
-{
-    RefPtr page = this->page();
-    return page && page->settings().showDebugBorders();
-}
-
 void UnifiedPDFPlugin::didChangeSettings()
 {
     RefPtr page = this->page();
     if (!page)
         return;
 
-    auto showDebugBorders = shouldShowDebugIndicators();
+    auto showDebugBorders =  page->settings().showDebugBorders();
     auto showRepaintCounter = page->settings().showRepaintCounter();
 
     auto propagateSettingsToLayer = [&] (GraphicsLayer& layer) {
@@ -709,6 +704,7 @@ void UnifiedPDFPlugin::didChangeIsInWindow()
 
 void UnifiedPDFPlugin::windowActivityDidChange()
 {
+    m_pageIsVisibleAndActive = page()->isVisibleAndActive();
     repaintOnSelectionChange(ActiveStateChangeReason::WindowActivityChanged);
 }
 
@@ -777,15 +773,12 @@ void UnifiedPDFPlugin::paintPDFContent(const WebCore::GraphicsLayer* layer, Grap
 
     auto stateSaver = GraphicsContextStateSaver(context);
 
-    auto showDebugIndicators = shouldShowDebugIndicators();
+    auto showDebugIndicators = layer && layer->isShowingDebugBorder();
 
     bool haveSelection = false;
-    bool isVisibleAndActive = false;
     bool shouldPaintSelection = behavior == PaintingBehavior::All && !canPaintSelectionIntoOwnedLayer();
     if (m_currentSelection && ![m_currentSelection isEmpty] && shouldPaintSelection) {
         haveSelection = true;
-        if (RefPtr page = this->page())
-            isVisibleAndActive = page->isVisibleAndActive();
     }
 
     auto pageWithAnnotation = pageIndexWithHoveredAnnotation();
@@ -854,7 +847,7 @@ void UnifiedPDFPlugin::paintPDFContent(const WebCore::GraphicsLayer* layer, Grap
             context.concatCTM(transformForBox);
 
             if (haveSelection)
-                [m_currentSelection drawForPage:page.get() withBox:kCGPDFCropBox active:isVisibleAndActive inContext:context.platformContext()];
+                [m_currentSelection drawForPage:page.get() withBox:kCGPDFCropBox active:m_pageIsVisibleAndActive inContext:context.platformContext()];
 
             if (currentPageHasAnnotation)
                 paintHoveredAnnotationOnPage(pageInfo.pageIndex, context, clipRect);
@@ -868,14 +861,11 @@ void UnifiedPDFPlugin::paintPDFSelection(const GraphicsLayer* layer, GraphicsCon
     if (!m_currentSelection || [m_currentSelection isEmpty] || !canPaintSelectionIntoOwnedLayer() || !m_presentationController)
         return;
 
-    bool isVisibleAndActive = false;
-    if (RefPtr page = this->page())
-        isVisibleAndActive = page->isVisibleAndActive();
-
-    auto selectionColor = [renderer = m_element->renderer(), isVisibleAndActive] {
+    auto selectionColor = [&] {
+        auto renderer = m_element->renderer();
         auto& renderTheme = renderer->theme();
         auto styleColorOptions = renderer->styleColorOptions();
-        auto selectionColor = isVisibleAndActive ? renderTheme.activeSelectionBackgroundColor(styleColorOptions) : renderTheme.inactiveSelectionBackgroundColor(styleColorOptions);
+        auto selectionColor = m_pageIsVisibleAndActive ? renderTheme.activeSelectionBackgroundColor(styleColorOptions) : renderTheme.inactiveSelectionBackgroundColor(styleColorOptions);
         return blendSourceOver(Color::white, selectionColor);
     }();
 
@@ -1082,11 +1072,6 @@ float UnifiedPDFPlugin::pageScaleFactor() const
 double UnifiedPDFPlugin::contentScaleFactor() const
 {
     return m_scaleFactor * m_documentLayout.scale();
-}
-
-float UnifiedPDFPlugin::deviceScaleFactor() const
-{
-    return PDFPluginBase::deviceScaleFactor();
 }
 
 void UnifiedPDFPlugin::didBeginMagnificationGesture()

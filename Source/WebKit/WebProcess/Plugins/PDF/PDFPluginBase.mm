@@ -118,6 +118,8 @@ PDFPluginBase::PDFPluginBase(HTMLPlugInElement& element)
     , m_incrementalPDFLoadingEnabled(element.document().settings().incrementalPDFLoadingEnabled())
 #endif
 {
+    if (RefPtr page = this->page())
+        m_pageDeviceScaleFactor = page->deviceScaleFactor();
 }
 
 PDFPluginBase::~PDFPluginBase()
@@ -642,6 +644,11 @@ void PDFPluginBase::visibilityDidChange(bool)
 #endif
 }
 
+void PDFPluginBase::deviceScaleFactorChanged(float deviceScaleFactor)
+{
+    m_pageDeviceScaleFactor = deviceScaleFactor;
+}
+
 FloatSize PDFPluginBase::pdfDocumentSizeForPrinting() const
 {
     return FloatSize { [[m_pdfDocument pageAtIndex:0] boundsForBox:kPDFDisplayBoxCropBox].size };
@@ -799,9 +806,7 @@ IntSize PDFPluginBase::overhangAmount() const
 
 float PDFPluginBase::deviceScaleFactor() const
 {
-    if (RefPtr page = this->page())
-        return page->deviceScaleFactor();
-    return 1;
+    return m_pageDeviceScaleFactor;
 }
 
 void PDFPluginBase::scrollbarStyleChanged(ScrollbarStyle style, bool forceUpdate)

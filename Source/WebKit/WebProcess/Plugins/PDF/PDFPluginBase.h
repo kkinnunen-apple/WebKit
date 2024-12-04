@@ -146,7 +146,7 @@ public:
 
     virtual bool geometryDidChange(const WebCore::IntSize& pluginSize, const WebCore::AffineTransform& pluginToRootViewTransform);
     virtual void visibilityDidChange(bool);
-    virtual void deviceScaleFactorChanged(float) { }
+    virtual void deviceScaleFactorChanged(float);
 
     bool handlesPageScaleFactor() const;
     virtual void didBeginMagnificationGesture() { }
@@ -444,6 +444,9 @@ protected:
     CompletionHandler<void(const String&, const URL&, std::span<const uint8_t>)> m_pendingSaveCompletionHandler;
     CompletionHandler<void(const String&, FrameInfoData&&, std::span<const uint8_t>, const String&)> m_pendingOpenCompletionHandler;
 #endif
+    // Page scale factor is stored so that it can be queried during off-thread painting.
+    // This info is not available from the GraphicsLayer tree at the moment.
+    float m_pageDeviceScaleFactor { 1.0f };
 };
 
 } // namespace WebKit

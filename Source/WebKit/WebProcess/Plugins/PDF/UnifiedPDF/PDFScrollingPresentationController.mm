@@ -426,6 +426,11 @@ bool PDFScrollingPresentationController::layerNeedsPlatformContext(const Graphic
     return layer == m_contentsLayer.get() && !(m_plugin->canPaintSelectionIntoOwnedLayer() && asyncRendererIfExists());
 }
 
+bool PDFScrollingPresentationController::layerSupportsConcurrentPaintContents(const GraphicsLayer* layer) const
+{
+    return layer == m_contentsLayer.get() && !asyncRendererIfExists();
+}
+
 void PDFScrollingPresentationController::tiledBackingUsageChanged(const GraphicsLayer* layer, bool usingTiledBacking)
 {
     if (usingTiledBacking)
