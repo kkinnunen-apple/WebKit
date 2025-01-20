@@ -38,7 +38,7 @@ class RenderObject;
 class SVGImageCache {
     WTF_MAKE_TZONE_ALLOCATED_EXPORT(SVGImageCache, WEBCORE_EXPORT);
 public:
-    explicit SVGImageCache(SVGImage*);
+    explicit SVGImageCache(SVGImage&);
     ~SVGImageCache();
 
     void removeClientFromCache(const CachedImageClient*);
@@ -50,11 +50,10 @@ public:
 
 private:
     Image* findImageForRenderer(const RenderObject*) const;
-    RefPtr<SVGImage> protectedSVGImage() const;
 
     typedef UncheckedKeyHashMap<const CachedImageClient*, RefPtr<SVGImageForContainer>> ImageForContainerMap;
 
-    WeakPtr<SVGImage> m_svgImage;
+    const Ref<SVGImage> m_svgImage;
     ImageForContainerMap m_imageForContainerMap;
 };
 

@@ -83,9 +83,12 @@ void Image::invalidateAdapter()
 
 Image& Image::nullImage()
 {
-    ASSERT(isMainThread());
-    static Image& nullImage = BitmapImage::create().leakRef();
-    return nullImage;
+    static LazyNeverDestroyed<Ref<BitmapImage>> instance;
+    static std::once_flag onceKey;
+    std::call_once(onceKey, [&] {
+        instance.construct(BitmapImage::create());
+    });
+    return instance.get().get();
 }
 
 RefPtr<Image> Image::create(ImageObserver& observer)

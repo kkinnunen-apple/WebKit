@@ -46,11 +46,11 @@ public:
     ~SVGImageChromeClient()
     {
         // Verify that page teardown destroyed the Chrome
-        ASSERT(!m_image);
+        ASSERT(!m_image.get());
     }
     
     bool isSVGImageChromeClient() const final { return true; }
-    SVGImage* image() const { return m_image.get(); }
+    RefPtr<SVGImage> image() const { return m_image.get(); }
     
 private:
     void chromeDestroyed() final
@@ -83,7 +83,7 @@ private:
         return true;
     }
 
-    WeakPtr<SVGImage> m_image;
+    ThreadSafeWeakPtr<SVGImage> m_image;
 };
 
 } // namespace WebCore

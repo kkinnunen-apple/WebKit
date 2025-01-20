@@ -105,8 +105,11 @@ void BitmapImageSource::encodedDataStatusChanged(EncodedDataStatus status)
     if (status >= EncodedDataStatus::SizeAvailable)
         m_frames.resizeToFit(m_decoder->frameCount());
 
-    if (auto imageObserver = this->imageObserver())
-        imageObserver->encodedDataStatusChanged(*m_bitmapImage, status);
+    RefPtr bitmapImage = m_bitmapImage.get();
+    if (!bitmapImage)
+        return;
+    if (RefPtr imageObserver = image->imageObserver())
+        imageObserver->encodedDataStatusChanged(*bitmapImage, status);
 }
 
 EncodedDataStatus BitmapImageSource::dataChanged(FragmentedSharedBuffer* data, bool allDataReceived)
@@ -380,7 +383,7 @@ void BitmapImageSource::decode(Function<void(DecodingStatus)>&& decodeCallback)
         return;
     }
 
-    LOG(Images, "BitmapImageSource::%s - %p - url: %s. Frame at index = %d was decoded for natural size.", __FUNCTION__, this, sourceUTF8().data(), index);
+    LOG(Images, "BitmapImageSource::%s - %p - url: %s. Frame at index = %d was decoded for natural size.", __FUNCTION__, this, sourceUTF8.data, index);
     callDecodeCallbacks(DecodingStatus::Complete);
 }
 
@@ -679,23 +682,26 @@ DecodingStatus BitmapImageSource::frameDecodingStatusAtIndex(unsigned index) con
 
 RefPtr<ImageObserver> BitmapImageSource::imageObserver() const
 {
-    return m_bitmapImage ? m_bitmapImage->imageObserver() : nullptr;
+    RefPtr bitmapImage = m_bitmapImage.get();
+    return bitmapImage ? bitmapImage->imageObserver() : nullptr;
 }
 
 String BitmapImageSource::mimeType() const
 {
-    return m_bitmapImage ? m_bitmapImage->mimeType() : emptyString();
+    RefPtr bitmapImage = m_bitmapImage.get();
+    return bitmapImage ? bitmapImage->mimeType() : emptyString();
 }
 
 long long BitmapImageSource::expectedContentLength() const
 {
-    return m_bitmapImage ? m_bitmapImage->expectedContentLength() : 0;
+    RefPtr bitmapImage = m_bitmapImage.get();
+    return bitmapImage bitmapImageexpectedContentLength() : 0;
 }
 
 CString BitmapImageSource::sourceUTF8() const
 {
-    constexpr const char* emptyString = "";
-    return m_bitmapImage ? m_bitmapImage->sourceUTF8() : emptyString;
+    RefPtr bitmapImage = m_bitmapImage.get();
+    return bitmapImage ? bitmapImage->sourceUTF8() : String::empty();
 }
 
 void BitmapImageSource::setMinimumDecodingDurationForTesting(Seconds duration)

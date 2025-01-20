@@ -51,8 +51,26 @@ RefPtr<NativeImage> ImageAdapter::nativeImageOfHBITMAP(HBITMAP bmp)
     return NativeImage::create(WTFMove(surface));
 }
 
+static RefPtr<NativeImage> nativeImageOfSize(Image& image, const IntSize& size)
+{
+    unsigned count = image.frameCount();
+
+    for (unsigned i = 0; i < count; ++i) {
+        RefPtr nativeImage = image.nativeImageAtIndex(i);
+        if (nativeImage && nativeImage->size() == size)
+            return nativeImage;
+    }
+
+    // Fallback to the first frame image if we can't find the right size
+    return image.nativeImageAtIndex(0);
+}
+
+
 bool ImageAdapter::getHBITMAPOfSize(HBITMAP bmp, const IntSize* size)
 {
+    RefPtr image = m_image;
+    if (!image)
+        return false;
     ASSERT(bmp);
 
     BITMAP bmpInfo;
@@ -69,17 +87,17 @@ bool ImageAdapter::getHBITMAPOfSize(HBITMAP bmp, const IntSize* size)
 
     GraphicsContextCairo gc(platformImage.get());
 
-    auto imageSize = image().size();
+    auto imageSize = image->size();
     auto destinationRect = FloatRect(0.0f, 0.0f, bmpInfo.bmWidth, bmpInfo.bmHeight);
 
-    if (auto nativeImage = size ? nativeImageOfSize(*size) : nullptr) {
+    if (auto nativeImage = size ? nativeImageOfSize(*image, *size) : nullptr) {
         auto sourceRect = FloatRect { { }, *size };
         gc.drawNativeImage(*nativeImage, destinationRect, sourceRect, { CompositeOperator::Copy });
         return true;
     }
 
     auto sourceRect = FloatRect { { }, imageSize };
-    gc.drawImage(image(), destinationRect, sourceRect, { CompositeOperator::Copy });
+    gc.drawImage(*image, destinationRect, sourceRect, { CompositeOperator::Copy });
     return true;
 }
 

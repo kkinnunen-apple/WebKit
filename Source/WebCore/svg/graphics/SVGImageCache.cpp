@@ -34,10 +34,9 @@ namespace WebCore {
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGImageCache);
 
-SVGImageCache::SVGImageCache(SVGImage* svgImage)
+SVGImageCache::SVGImageCache(SVGImage& svgImage)
     : m_svgImage(svgImage)
 {
-    ASSERT(m_svgImage);
 }
 
 SVGImageCache::~SVGImageCache()
@@ -64,17 +63,12 @@ void SVGImageCache::setContainerContextForClient(const CachedImageClient& client
     FloatSize containerSizeWithoutZoom(containerSize);
     containerSizeWithoutZoom.scale(1 / containerZoom);
 
-    m_imageForContainerMap.set(&client, SVGImageForContainer::create(protectedSVGImage().get(), containerSizeWithoutZoom, containerZoom, imageURL));
+    m_imageForContainerMap.set(&client, SVGImageForContainer::create(m_svgImage, containerSizeWithoutZoom, containerZoom, imageURL));
 }
 
 Image* SVGImageCache::findImageForRenderer(const RenderObject* renderer) const
 {
     return renderer ? m_imageForContainerMap.get(renderer) : nullptr;
-}
-
-RefPtr<SVGImage> SVGImageCache::protectedSVGImage() const
-{
-    return m_svgImage.get();
 }
 
 FloatSize SVGImageCache::imageSizeForRenderer(const RenderObject* renderer) const

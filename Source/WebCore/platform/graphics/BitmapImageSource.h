@@ -193,7 +193,7 @@ private:
     void dump(TextStream&) const final;
 
     // State
-    WeakPtr<BitmapImage> m_bitmapImage;
+    ThreadSafeWeakPtr<BitmapImage> m_bitmapImage;
     AlphaOption m_alphaOption { AlphaOption::Premultiplied };
     GammaAndColorProfileOption m_gammaAndColorProfileOption { GammaAndColorProfileOption::Applied };
     bool m_allDataReceived { false };

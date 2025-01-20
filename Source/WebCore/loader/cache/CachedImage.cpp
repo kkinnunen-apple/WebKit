@@ -129,8 +129,8 @@ void CachedImage::setBodyDataFrom(const CachedResource& resource)
     if (m_imageObserver)
         m_imageObserver->cachedImages().add(*this);
 
-    if (RefPtr svgImage = dynamicDowncast<SVGImage>(m_image.get()))
-        m_svgImageCache = makeUnique<SVGImageCache>(svgImage.get());
+    if (RefPtr svgImage = dynamicDowncast<SVGImage>(m_image))
+        m_svgImageCache = makeUnique<SVGImageCache>(*svgImage);
 }
 
 void CachedImage::didAddClient(CachedResourceClient& client)
@@ -231,20 +231,32 @@ void CachedImage::allClientsRemoved()
         image->resetAnimation();
 }
 
-std::pair<WeakPtr<Image>, float> CachedImage::brokenImage(float deviceScaleFactor) const
+std::pair<Ref<Image>, float> CachedImage::brokenImage(float deviceScaleFactor) const
 {
     if (deviceScaleFactor >= 3) {
-        static NeverDestroyed<Image*> brokenImageVeryHiRes(&ImageAdapter::loadPlatformResource("missingImage@3x").leakRef());
-        return std::make_pair(WeakPtr { *brokenImageVeryHiRes }, 3);
+        static LazyNeverDestroyed<Ref<Image>> instance;
+        static std::once_flag onceKey;
+        std::call_once(onceKey, [&] {
+                instance.construct(ImageAdapter::loadPlatformResource("missingImage@3x"));
+        });
+        return std::make_pair(instance.get(), 3);
     }
 
     if (deviceScaleFactor >= 2) {
-        static NeverDestroyed<Image*> brokenImageHiRes(&ImageAdapter::loadPlatformResource("missingImage@2x").leakRef());
-        return std::make_pair(WeakPtr { *brokenImageHiRes }, 2);
+        static LazyNeverDestroyed<Ref<Image>> instance;
+        static std::once_flag onceKey;
+        std::call_once(onceKey, [&] {
+            instance.construct(ImageAdapter::loadPlatformResource("missingImage@2x"));
+        });
+        return std::make_pair(instance.get(), 2);
     }
 
-    static NeverDestroyed<Image*> brokenImageLoRes(&ImageAdapter::loadPlatformResource("missingImage").leakRef());
-    return std::make_pair(WeakPtr { *brokenImageLoRes }, 1);
+    static LazyNeverDestroyed<Ref<Image>> instance;
+    static std::once_flag onceKey;
+    std::call_once(onceKey, [&] {
+       instance.construct(ImageAdapter::loadPlatformResource("missingImage"));
+    });
+    return std::make_pair(instance.get(), 1);
 }
 
 bool CachedImage::willPaintBrokenImage() const
@@ -258,7 +270,7 @@ Image* CachedImage::image() const
         // Returning the 1x broken image is non-ideal, but we cannot reliably access the appropriate
         // deviceScaleFactor from here. It is critical that callers use CachedImage::brokenImage() 
         // when they need the real, deviceScaleFactor-appropriate broken image icon. 
-        return brokenImage(1).first.get();
+        return &brokenImage(1).first.ptr();
     }
 
     if (m_image)
@@ -278,7 +290,7 @@ Image* CachedImage::imageForRenderer(const RenderObject* renderer)
         // Returning the 1x broken image is non-ideal, but we cannot reliably access the appropriate
         // deviceScaleFactor from here. It is critical that callers use CachedImage::brokenImage() 
         // when they need the real, deviceScaleFactor-appropriate broken image icon. 
-        return brokenImage(1).first.get();
+        return brokenImage(1).first.ptr();
     }
 
     if (!m_image)

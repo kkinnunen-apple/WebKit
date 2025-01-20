@@ -562,7 +562,7 @@ void RenderImage::paintReplaced(PaintInfo& paintInfo, const LayoutPoint& paintOf
             if (shouldDisplayBrokenImageIcon() && !image->isNull() && usableSize.width() >= image->width() && usableSize.height() >= image->height()) {
                 // Call brokenImage() explicitly to ensure we get the broken image icon at the appropriate resolution.
                 auto brokenImageAndImageScaleFactor = cachedImage()->brokenImage(deviceScaleFactor);
-                image = brokenImageAndImageScaleFactor.first.get();
+                image = brokenImageAndImageScaleFactor.first.ptr();
                 FloatSize imageSize = image->size();
                 imageSize.scale(1 / brokenImageAndImageScaleFactor.second);
 

@@ -70,7 +70,7 @@ Ref<Image> ImageAdapter::loadPlatformResource(const char *name)
     return Image::nullImage();
 }
 
-RetainPtr<CFDataRef> ImageAdapter::tiffRepresentation(const Vector<Ref<NativeImage>>& nativeImages)
+static RetainPtr<CFDataRef> tiffRepresentation(const Vector<Ref<NativeImage>>& nativeImages)
 {
     // If nativeImages.size() is zero, we know for certain this image doesn't have valid data
     // Even though the call to CGImageDestinationCreateWithData will fail and we'll handle it gracefully,
@@ -124,12 +124,25 @@ void ImageAdapter::invalidate()
 #endif
 }
 
+static Vector<Ref<NativeImage>> allNativeImages(Image& image)
+{
+    Vector<Ref<NativeImage>> nativeImages;
+    unsigned count = image.frameCount();
+    for (unsigned i = 0; i < count; ++i) {
+        if (RefPtr nativeImage = image.nativeImageAtIndex(i))
+            nativeImages.append(nativeImage.releaseNonNull());
+    }
+    return nativeImages;
+}
+
 CFDataRef ImageAdapter::tiffRepresentation()
 {
     if (m_tiffRep)
         return m_tiffRep.get();
-
-    auto data = tiffRepresentation(allNativeImages());
+    RefPtr image = m_image;
+    if (!image)
+        return nullptr;
+    auto data = tiffRepresentation(allNativeImages(*image));
     if (!data)
         return nullptr;
 

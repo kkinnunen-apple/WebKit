@@ -107,16 +107,7 @@ public:
     void invalidate();
 
 private:
-    Image& image() const { return m_image.get(); }
-
-#if PLATFORM(COCOA)
-    static RetainPtr<CFDataRef> tiffRepresentation(const Vector<Ref<NativeImage>>&);
-#endif
-
-    RefPtr<NativeImage> nativeImageOfSize(const IntSize&);
-    Vector<Ref<NativeImage>> allNativeImages();
-
-    WeakRef<Image> m_image;
+    ThreadSafeWeakPtr<Image> m_image;
 
 #if USE(APPKIT)
     mutable RetainPtr<NSImage> m_nsImage; // A cached NSImage of all the frames. Only built lazily if someone actually queries for one.

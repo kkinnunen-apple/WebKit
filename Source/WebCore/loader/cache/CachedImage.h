@@ -71,7 +71,7 @@ public:
     bool hasImage() const { return m_image.get(); }
     bool currentFrameKnownToBeOpaque(const RenderElement*);
 
-    std::pair<WeakPtr<Image>, float> brokenImage(float deviceScaleFactor) const; // Returns an image and the image's resolution scale factor.
+    std::pair<Ref<Image>, float> brokenImage(float deviceScaleFactor) const; // Returns an image and the image's resolution scale factor.
     bool willPaintBrokenImage() const;
 
     bool canRender(const RenderElement* renderer, float multiplier) { return !errorOccurred() && !imageSizeForRenderer(renderer, multiplier).isEmpty(); }
