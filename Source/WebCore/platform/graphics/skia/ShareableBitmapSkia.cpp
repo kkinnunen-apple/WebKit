@@ -26,9 +26,9 @@
 #include "config.h"
 #include "ShareableBitmap.h"
 
-#include "BitmapImage.h"
 #include "FontRenderOptions.h"
 #include "GraphicsContextSkia.h"
+#include "Image.h"
 #include "NotImplemented.h"
 
 WTF_IGNORE_WARNINGS_IN_THIRD_PARTY_CODE_BEGIN // GLib/Win ports
@@ -84,7 +84,7 @@ void ShareableBitmap::paint(GraphicsContext& context, float scaleFactor, const I
 
 RefPtr<Image> ShareableBitmap::createImage()
 {
-    return BitmapImage::create(createPlatformImage(BackingStoreCopy::DontCopyBackingStore));
+    return Image::create(NativeImage::create(createPlatformImage(BackingStoreCopy::DontCopyBackingStore)));
 }
 
 PlatformImagePtr ShareableBitmap::createPlatformImage(BackingStoreCopy backingStoreCopy, ShouldInterpolate)

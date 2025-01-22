@@ -28,10 +28,10 @@
 #include "config.h"
 #include "ShareableBitmap.h"
 
-#include "BitmapImage.h"
 #include "CairoOperations.h"
 #include "CairoUtilities.h"
 #include "GraphicsContextCairo.h"
+#include "Image.h"
 #include "NotImplemented.h"
 
 namespace WebCore {
@@ -107,7 +107,7 @@ RefPtr<Image> ShareableBitmap::createImage()
     if (!surface)
         return nullptr;
 
-    return BitmapImage::create(WTFMove(surface));
+    return Image::create(NativeImage::create(WTFMove(surface)));
 }
 
 void ShareableBitmap::setOwnershipOfMemory(const ProcessIdentity&)

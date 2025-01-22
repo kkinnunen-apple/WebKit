@@ -37,7 +37,7 @@
 #include "RemoteVideoFrameObjectHeapProxy.h"
 #include "WebPage.h"
 #include "WebProcess.h"
-#include <WebCore/BitmapImage.h>
+#include <WebCore/Image.h>
 #include <WebCore/GCGLSpan.h>
 #include <WebCore/ImageBuffer.h>
 #include <WebCore/PixelBufferConversion.h>
@@ -255,7 +255,7 @@ RefPtr<Image> RemoteGraphicsContextGLProxy::videoFrameToImage(WebCore::VideoFram
         nativeImage = protectedVideoFrameObjectHeapProxy()->getNativeImage(frame);
     });
 #endif
-    return BitmapImage::create(WTFMove(nativeImage));
+    return Image::create(WTFMove(nativeImage));
 }
 #endif
 

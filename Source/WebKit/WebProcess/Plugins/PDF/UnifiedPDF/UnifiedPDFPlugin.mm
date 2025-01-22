@@ -63,7 +63,6 @@
 #include <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #include <WebCore/AffineTransform.h>
 #include <WebCore/AutoscrollController.h>
-#include <WebCore/BitmapImage.h>
 #include <WebCore/Chrome.h>
 #include <WebCore/ChromeClient.h>
 #include <WebCore/ColorBlending.h>
@@ -83,6 +82,7 @@
 #include <WebCore/GraphicsTypes.h>
 #include <WebCore/HTMLNames.h>
 #include <WebCore/HTMLPlugInElement.h>
+#include <WebCore/Image.h>
 #include <WebCore/ImageBuffer.h>
 #include <WebCore/ImmediateActionStage.h>
 #include <WebCore/LocalFrame.h>
@@ -3390,7 +3390,7 @@ RefPtr<TextIndicator> UnifiedPDFPlugin::textIndicatorForSelection(PDFSelection *
     context.fillRect({ { 0, 0 }, rectInRootViewCoordinates.size() }, highlightColor, CompositeOperator::SourceOver, BlendMode::Multiply);
 
     TextIndicatorData data;
-    data.contentImage = BitmapImage::create(ImageBuffer::sinkIntoNativeImage(WTFMove(buffer)));
+    data.contentImage = Image::create(ImageBuffer::sinkIntoNativeImage(WTFMove(buffer)));
     data.contentImageScaleFactor = deviceScaleFactor;
     data.contentImageWithoutSelection = data.contentImage;
     data.contentImageWithoutSelectionRectInRootViewCoordinates = rectInRootViewCoordinates;

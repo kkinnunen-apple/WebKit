@@ -461,15 +461,6 @@ bool RenderImage::shouldDisplayBrokenImageIcon() const
     return imageResource().errorOccurred();
 }
 
-bool RenderImage::hasNonBitmapImage() const
-{
-    if (!imageResource().cachedImage())
-        return false;
-
-    Image* image = cachedImage()->imageForRenderer(this);
-    return image && !is<BitmapImage>(image);
-}
-
 bool RenderImage::hasAnimatedImage() const
 {
     if (auto* image = cachedImage() ? cachedImage()->image() : nullptr)

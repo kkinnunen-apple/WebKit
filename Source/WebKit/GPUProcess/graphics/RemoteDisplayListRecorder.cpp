@@ -35,9 +35,9 @@
 #include "RemoteImageBuffer.h"
 #include "RemoteSharedResourceCache.h"
 #include "SharedVideoFrame.h"
-#include <WebCore/BitmapImage.h>
 #include <WebCore/FEImage.h>
 #include <WebCore/FilterResults.h>
+#include <WebCore/Image.h>
 #include <WebCore/SVGFilter.h>
 
 #if USE(SYSTEM_PREVIEW)
@@ -367,7 +367,7 @@ void RemoteDisplayListRecorder::drawSystemImage(Ref<SystemImage> systemImage, co
             ASSERT_NOT_REACHED();
             return;
         }
-        badge->setImage(BitmapImage::create(nativeImage.releaseNonNull()));
+        badge->setImage(Image::create(nativeImage.releaseNonNull()));
     }
 #endif
     handleItem(DisplayList::DrawSystemImage(systemImage, destinationRect));

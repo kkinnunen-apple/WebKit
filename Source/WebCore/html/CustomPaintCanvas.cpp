@@ -26,9 +26,9 @@
 #include "config.h"
 #include "CustomPaintCanvas.h"
 
-#include "BitmapImage.h"
 #include "CSSParserContext.h"
 #include "CanvasRenderingContext.h"
+#include "Image.h"
 #include "ImageBitmap.h"
 #include "PaintRenderingContext2D.h"
 #include "ScriptExecutionContext.h"
@@ -89,7 +89,7 @@ Image* CustomPaintCanvas::copiedImage() const
     if (buffer) {
         if (m_context)
             m_context->replayDisplayList(buffer->context());
-        m_copiedImage = BitmapImage::create(ImageBuffer::sinkIntoNativeImage(buffer));
+        m_copiedImage = Image::create(ImageBuffer::sinkIntoNativeImage(buffer));
     }
     return m_copiedImage.get();
 }

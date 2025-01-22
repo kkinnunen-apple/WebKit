@@ -79,8 +79,6 @@ public:
 
     virtual bool shouldDisplayBrokenImageIcon() const;
 
-    bool hasNonBitmapImage() const;
-
     String accessibilityDescription() const { return imageResource().image()->accessibilityDescription(); }
 
     bool hasAnimatedImage() const;

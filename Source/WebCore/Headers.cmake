@@ -2126,7 +2126,6 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     platform/graphics/ImageObserver.h
     platform/graphics/ImageOrientation.h
     platform/graphics/ImagePaintingOptions.h
-    platform/graphics/ImageSource.h
     platform/graphics/ImageTypes.h
     platform/graphics/InbandGenericCue.h
     platform/graphics/InbandGenericCueIdentifier.h

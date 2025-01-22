@@ -157,9 +157,6 @@ DestinationColorSpace BitmapImageDescriptor::colorSpace() const
 
 std::optional<Color> BitmapImageDescriptor::singlePixelSolidColor() const
 {
-    if (!m_source.hasSolidColor())
-        return std::nullopt;
-
     return primaryNativeImageMetadata(m_singlePixelSolidColor, std::optional<Color>(), CachedFlag::SinglePixelSolidColor, &NativeImage::singlePixelSolidColor);
 }
 

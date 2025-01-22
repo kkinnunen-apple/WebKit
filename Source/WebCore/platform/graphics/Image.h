@@ -64,6 +64,14 @@ public:
     
     WEBCORE_EXPORT static RefPtr<Image> create(ImageObserver&);
     WEBCORE_EXPORT static std::optional<Ref<Image>> create(RefPtr<ShareableBitmap>&&);
+    WEBCORE_EXPORT static Ref<Image> create(Ref<NativeImage>&&, ImageOrientation::Orientation orientation = { });
+    static RefPtr<Image> create(RefPtr<NativeImage>&& nativeImage, ImageOrientation::Orientation orientation = { })
+    {
+        if (!nativeImage)
+            return nullptr;
+        return create(nativeImage.releaseNonNull(), orientation);
+    }
+
     WEBCORE_EXPORT static bool supportsType(const String&);
     static bool isPDFResource(const String& mimeType, const URL&);
 
@@ -77,6 +85,7 @@ public:
     virtual bool isSVGResourceImage() const { return false; }
     virtual bool isPDFDocumentImage() const { return false; }
     virtual bool isCustomPaintImage() const { return false; }
+    virtual bool isNativeImageImage() const { return false; }
 
     bool drawsSVGImage() const { return isSVGImage() || isSVGImageForContainer(); }
 
@@ -155,9 +164,6 @@ public:
 
     virtual void drawPattern(GraphicsContext&, const FloatRect& destRect, const FloatRect& srcRect, const AffineTransform& patternTransform, const FloatPoint& phase, const FloatSize& spacing, ImagePaintingOptions = { });
 
-#if ASSERT_ENABLED
-    virtual bool hasSolidColor() { return false; }
-#endif
 #if ENABLE(QUICKLOOK_FULLSCREEN)
     virtual bool shouldUseQuickLookForFullscreen() const { return false; }
 #endif

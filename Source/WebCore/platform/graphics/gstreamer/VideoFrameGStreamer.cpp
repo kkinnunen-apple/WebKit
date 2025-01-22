@@ -24,11 +24,11 @@
 
 #if ENABLE(VIDEO) && USE(GSTREAMER)
 
-#include "BitmapImage.h"
 #include "GLContext.h"
 #include "GStreamerCommon.h"
 #include "GStreamerVideoFrameConverter.h"
 #include "GraphicsContext.h"
+#include "Image.h"
 #include "ImageGStreamer.h"
 #include "ImageOrientation.h"
 #include "PixelBuffer.h"
@@ -582,7 +582,7 @@ void VideoFrame::draw(GraphicsContext& context, const FloatRect& destination, Im
     auto source = destinationImageOrientation.usesWidthAsHeight() ? FloatRect(imageRect.location(), imageRect.size().transposedSize()) : imageRect;
     auto compositeOperator = !shouldDiscardAlpha && image->hasAlpha() ? CompositeOperator::SourceOver : CompositeOperator::Copy;
     auto platformImage = image->image();
-    auto bitmapImage = BitmapImage::create(WTFMove(platformImage));
+    auto bitmapImage = Image::create(NativeImage::create(WTFMove(platformImage)));
     if (!bitmapImage)
         return;
     context.drawImage(*bitmapImage.get(), destination, source, { compositeOperator, destinationImageOrientation });

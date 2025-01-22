@@ -29,7 +29,6 @@
 #if ENABLE(WEBGL)
 
 #include "ANGLEInstancedArrays.h"
-#include "BitmapImage.h"
 #include "CachedImage.h"
 #include "Chrome.h"
 #include "DiagnosticLoggingClient.h"
@@ -64,6 +63,7 @@
 #include "HTMLImageElement.h"
 #include "HTMLVideoElement.h"
 #include "HostWindow.h"
+#include "Image.h"
 #include "ImageBitmap.h"
 #include "ImageBuffer.h"
 #include "ImageData.h"
@@ -3183,7 +3183,7 @@ ExceptionOr<void> WebGLRenderingContextBase::texImageSource(TexImageFunctionID f
         return { };
 
     // Fallback pure SW path.
-    RefPtr image = BitmapImage::create(buffer->createNativeImageReference());
+    RefPtr image = Image::create(buffer->createNativeImageReference());
     if (!image)
         return { };
     // The premultiplyAlpha and flipY pixel unpack parameters are ignored for ImageBitmaps.
@@ -4115,7 +4115,7 @@ RefPtr<Image> WebGLRenderingContextBase::drawImageIntoBuffer(Image& image, int w
     buf->context().drawImage(image, destRect, srcRect);
     // FIXME: createNativeImageReference() does not make sense for GPUP.
     // Instead, should fix by GPUP side upload.
-    return BitmapImage::create(buf->createNativeImageReference());
+    return Image::create(buf->createNativeImageReference());
 }
 
 #if ENABLE(VIDEO)
@@ -4167,7 +4167,7 @@ RefPtr<Image> WebGLRenderingContextBase::videoFrameToImage(HTMLVideoElement& vid
         }
         video.paintCurrentFrameInContext(imageBuffer->context(), { { }, videoSize });
     }
-    RefPtr<Image> image = BitmapImage::create(imageBuffer->createNativeImageReference());
+    RefPtr<Image> image = Image::create(imageBuffer->createNativeImageReference());
     if (!image) {
         synthesizeGLError(GraphicsContextGL::OUT_OF_MEMORY, functionName, "out of memory"_s);
         return nullptr;

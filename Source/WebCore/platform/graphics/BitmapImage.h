@@ -28,7 +28,8 @@
 #pragma once
 
 #include "Image.h"
-#include "ImageSource.h"
+#include "ImageFrame.h"
+#include "BitmapImageSource.h"
 #include <wtf/Function.h>
 
 namespace WebCore {
@@ -37,12 +38,10 @@ class ImageObserver;
 class ImageSource;
 class NativeImage;
 
+// Image from data, such as compressed PNG or JPEG.
 class BitmapImage final : public Image {
 public:
     WEBCORE_EXPORT static Ref<BitmapImage> create(ImageObserver* = nullptr, AlphaOption = AlphaOption::Premultiplied, GammaAndColorProfileOption = GammaAndColorProfileOption::Applied);
-    WEBCORE_EXPORT static Ref<BitmapImage> create(Ref<NativeImage>&&);
-    WEBCORE_EXPORT static RefPtr<BitmapImage> create(RefPtr<NativeImage>&&);
-    WEBCORE_EXPORT static RefPtr<BitmapImage> create(PlatformImagePtr&&);
 
     // Animation
     void startAnimation() final { m_source->startAnimation(); }
@@ -74,9 +73,6 @@ public:
     DestinationColorSpace colorSpace() final { return m_source->colorSpace(); }
     ImageOrientation orientation() const final { return m_source->orientation(); }
     unsigned frameCount() const final { return m_source->frameCount(); }
-#if ASSERT_ENABLED
-    bool hasSolidColor() final { return m_source->hasSolidColor(); }
-#endif
 
     // ImageFrame
     Seconds frameDurationAtIndex(unsigned index) const { return m_source->frameDurationAtIndex(index); }
@@ -95,7 +91,6 @@ public:
 
 private:
     BitmapImage(ImageObserver*, AlphaOption, GammaAndColorProfileOption);
-    BitmapImage(Ref<NativeImage>&&);
 
     // Encoded and decoded data
     EncodedDataStatus dataChanged(bool allDataReceived) final;
@@ -133,7 +128,7 @@ private:
 
     void dump(WTF::TextStream&) const final;
 
-    Ref<ImageSource> m_source;
+    Ref<BitmapImageSource> m_source;
 };
 
 } // namespace WebCore

@@ -30,7 +30,6 @@
 
 #if ENABLE(WEBGL)
 
-#include "BitmapImage.h"
 #include "FormatConverter.h"
 #include "GCGLSpan.h"
 #include "GraphicsContext.h"
@@ -648,7 +647,7 @@ RefPtr<Image> GraphicsContextGL::videoFrameToImage(VideoFrame& frame)
     if (!imageBuffer)
         return { };
     imageBuffer->context().drawVideoFrame(frame, { { }, size }, ImageOrientation::Orientation::None, true);
-    return BitmapImage::create(ImageBuffer::sinkIntoNativeImage(WTFMove(imageBuffer)));
+    return Image::create(ImageBuffer::sinkIntoNativeImage(WTFMove(imageBuffer)));
 }
 #endif
 

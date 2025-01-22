@@ -47,7 +47,7 @@ public:
     void clear() { m_cachedFlags = { }; }
 
     EncodedDataStatus encodedDataStatus() const;
-    IntSize size(ImageOrientation = ImageOrientation::Orientation::FromImage) const;
+    WEBCORE_EXPORT IntSize size(ImageOrientation = ImageOrientation::Orientation::FromImage) const;
     IntSize sourceSize(ImageOrientation = ImageOrientation::Orientation::FromImage) const;
     std::optional<IntSize> densityCorrectedSize() const;
     ImageOrientation orientation() const;

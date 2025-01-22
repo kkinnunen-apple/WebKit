@@ -22,7 +22,6 @@
 
 #if PLATFORM(MAC)
 
-#import "BitmapImage.h"
 #import "CSSValueKeywords.h"
 #import "CSSValueList.h"
 #import "Color.h"
@@ -1368,7 +1367,7 @@ ALLOW_DEPRECATED_DECLARATIONS_BEGIN
         NSImageHintSymbolScale : @(NSImageSymbolScaleMedium)
 ALLOW_DEPRECATED_DECLARATIONS_END
     }];
-    return { BitmapImage::create(cgImage), deviceScaleFactor };
+    return { Image::create(NativeImage::create(WTFMove(cgImage))), deviceScaleFactor };
 #else
     UNUSED_PARAM(layout);
     if (deviceScaleFactor >= 2)

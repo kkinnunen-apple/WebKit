@@ -26,9 +26,9 @@
 #import "config.h"
 #import "AttributedString.h"
 
-#import "BitmapImage.h"
 #import "ColorCocoa.h"
 #import "Font.h"
+#import "Image.h"
 #import "LoaderNSURLExtras.h"
 #import "Logging.h"
 #import "PlatformNSAdaptiveImageGlyph.h"
@@ -276,8 +276,7 @@ static MultiRepresentationHEICAttachmentData toMultiRepresentationHEICAttachment
 
     for (NSEmojiImageStrike *strike in attachment.strikes) {
         MultiRepresentationHEICAttachmentSingleImage image;
-        RefPtr nativeImage = NativeImage::create(strike.cgImage);
-        image.image = BitmapImage::create(WTFMove(nativeImage));
+        image.image = Image::create(NativeImage::create(strike.cgImage));
         image.size = FloatSize { strike.alignmentInset };
         attachmentData.images.append(image);
     }

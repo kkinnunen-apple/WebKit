@@ -26,7 +26,6 @@
 #include "config.h"
 #include "ImageBitmap.h"
 
-#include "BitmapImage.h"
 #include "Blob.h"
 #include "CSSStyleImageValue.h"
 #include "CachedImage.h"
@@ -40,6 +39,7 @@
 #include "HTMLImageElement.h"
 #include "HTMLVideoElement.h"
 #include "HostWindow.h"
+#include "BitmapImage.h"
 #include "ImageBitmapOptions.h"
 #include "ImageBuffer.h"
 #include "ImageData.h"
@@ -700,7 +700,7 @@ void ImageBitmap::createCompletionHandler(ScriptExecutionContext& scriptExecutio
         return;
     }
 
-    RefPtr imageForRender = BitmapImage::create(existingImageBitmap->buffer()->copyNativeImage());
+    RefPtr imageForRender = Image::create(existingImageBitmap->buffer()->copyNativeImage());
     if (!imageForRender) {
         completionHandler(createBlankImageBuffer(scriptExecutionContext, existingImageBitmap->originClean()));
         return;

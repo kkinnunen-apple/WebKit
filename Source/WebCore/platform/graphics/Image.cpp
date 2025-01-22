@@ -190,8 +190,6 @@ ImageDrawResult Image::drawTiled(GraphicsContext& ctxt, const FloatRect& destRec
         return ImageDrawResult::DidDraw;
     }
 
-    ASSERT_IMPLIES(isBitmapImage(), !hasSolidColor());
-
     FloatSize intrinsicTileSize = size();
     if (hasRelativeWidth())
         intrinsicTileSize.setWidth(scaledTileSize.width());

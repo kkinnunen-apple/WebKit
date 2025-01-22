@@ -28,7 +28,6 @@
 #include "config.h"
 #include "HTMLCanvasElement.h"
 
-#include "BitmapImage.h"
 #include "Blob.h"
 #include "BlobCallback.h"
 #include "CSSParserContext.h"
@@ -49,6 +48,7 @@
 #include "HTMLNames.h"
 #include "HTMLParserIdioms.h"
 #include "HostWindow.h"
+#include "Image.h"
 #include "ImageBitmapRenderingContext.h"
 #include "ImageBitmapRenderingContextSettings.h"
 #include "ImageBuffer.h"
@@ -915,7 +915,7 @@ Image* HTMLCanvasElement::copiedImage() const
     if (!m_copiedImage) {
         RefPtr buffer = const_cast<HTMLCanvasElement*>(this)->makeRenderingResultsAvailable(ShouldApplyPostProcessingToDirtyRect::No);
         if (buffer)
-            m_copiedImage = BitmapImage::create(buffer->copyNativeImage());
+            m_copiedImage = Image::create(buffer->copyNativeImage());
     }
     return m_copiedImage.get();
 }

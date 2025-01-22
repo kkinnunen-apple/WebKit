@@ -26,7 +26,6 @@
 #include "config.h"
 #include "TextIndicator.h"
 
-#include "BitmapImage.h"
 #include "ColorBlending.h"
 #include "ColorHash.h"
 #include "Document.h"
@@ -37,6 +36,7 @@
 #include "FrameSnapshotting.h"
 #include "GeometryUtilities.h"
 #include "GraphicsContext.h"
+#include "Image.h"
 #include "ImageBuffer.h"
 #include "IntRect.h"
 #include "LocalFrame.h"
@@ -171,7 +171,7 @@ static RefPtr<Image> takeSnapshot(LocalFrame& frame, IntRect rect, SnapshotOptio
     if (!buffer)
         return nullptr;
     scaleFactor = buffer->resolutionScale();
-    return BitmapImage::create(ImageBuffer::sinkIntoNativeImage(WTFMove(buffer)));
+    return Image::create(ImageBuffer::sinkIntoNativeImage(WTFMove(buffer)));
 }
 
 static bool takeSnapshots(TextIndicatorData& data, LocalFrame& frame, IntRect snapshotRect, const Vector<FloatRect>& clipRectsInDocumentCoordinates)

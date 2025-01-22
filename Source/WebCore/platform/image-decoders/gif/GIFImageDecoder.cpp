@@ -177,7 +177,7 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_END
     //   * We don't clear any frame from which a future initFrameBuffer() call
     //     will copy bitmap data
     // All other frames can be cleared.  Because of the constraints on when
-    // ImageSource::clear() can be called (see ImageSource.h), we're guaranteed
+    // BitmapImageSource::clear() can be called (see BitmapImageSource.h), we're guaranteed
     // not to have non-empty frames after the frame we're currently decoding.
     // So, scan backwards from |end| as follows:
     //   * If the frame is empty, we're still past any frames we care about.

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2024 Apple Inc.  All rights reserved.
+ * Copyright (C) 2025 Apple Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -23,26 +23,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-#include "ImageSource.h"
+#pragma once
+
+#include "Image.h"
+#include "ImageFrame.h"
 
 namespace WebCore {
 
-Expected<Ref<NativeImage>, DecodingStatus> ImageSource::primaryNativeImageForDrawing(SubsamplingLevel, const DecodingOptions&)
-{
-    if (auto nativeImage = primaryNativeImage())
-        return nativeImage.releaseNonNull();
-    return makeUnexpected(DecodingStatus::Invalid);
-}
+// Image that wraps a NativeImage.
+class NativeImageImage final : public Image {
+public:
+    WEBCORE_EXPORT static Ref<NativeImageImage> create(Ref<NativeImage>&&, ImageOrientation::Orientation = { });
 
-Expected<Ref<NativeImage>, DecodingStatus> ImageSource::currentNativeImageForDrawing(SubsamplingLevel subsamplingLevel, const DecodingOptions& options)
-{
-    return primaryNativeImageForDrawing(subsamplingLevel, options);
-}
+    bool isNativeImageImage() const override { return true; }
 
-bool ImageSource::hasSolidColor() const
-{
-    return size() == IntSize(1, 1) && frameCount() == 1;
-}
+    FloatSize size(ImageOrientation = ImageOrientation::Orientation::FromImage) const override;
+    bool currentFrameKnownToBeOpaque() const override;
+    RefPtr<NativeImage> currentNativeImage() override;
+    DestinationColorSpace colorSpace() override;
+    ImageOrientation orientation() const override;
+
+protected:
+    NativeImageImage(Ref<NativeImage>&&, ImageOrientation::Orientation);
+    std::optional<Color> singlePixelSolidColor() const override;
+    ImageDrawResult draw(GraphicsContext&, const FloatRect& destinationRect, const FloatRect& sourceRect, ImagePaintingOptions = { }) override;
+
+    ImageFrame m_frame;
+};
 
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_IMAGE(NativeImageImage)

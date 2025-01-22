@@ -28,7 +28,6 @@
 
 #include "AccessibilityObject.h"
 #include "Attr.h"
-#include "BitmapImage.h"
 #include "Chrome.h"
 #include "ChromeClient.h"
 #include "DOMTokenList.h"
@@ -50,6 +49,7 @@
 #include "HTMLNames.h"
 #include "HitTestRequest.h"
 #include "HitTestResult.h"
+#include "Image.h"
 #include "LocalFrame.h"
 #include "LocalFrameView.h"
 #include "NamedNodeMap.h"
@@ -2085,7 +2085,7 @@ RefPtr<Image> ElementTargetingController::snapshotIgnoringVisibilityAdjustment(E
         return { };
 
     auto buffer = snapshotFrameRect(*mainFrame, snapshotRect, { { }, ImageBufferPixelFormat::BGRA8, DestinationColorSpace::SRGB() });
-    return BitmapImage::create(ImageBuffer::sinkIntoNativeImage(WTFMove(buffer)));
+    return Image::create(ImageBuffer::sinkIntoNativeImage(WTFMove(buffer)));
 }
 
 } // namespace WebCore

@@ -32,7 +32,9 @@
 #include "ImageBuffer.h"
 #include "ImageDecoder.h"
 #include "ImageFrameAnimator.h"
+#include "ImageFrameWorkQueue.h"
 #include "ImageObserver.h"
+#include "SharedBuffer.h"
 #include "Logging.h"
 
 namespace WebCore {
@@ -442,6 +444,11 @@ void BitmapImageSource::imageFrameDecodeAtIndexHasFinished(unsigned index, Subsa
         stopDecodingWorkQueue();
 }
 
+unsigned BitmapImageSource::primaryFrameIndex() const
+{
+    return m_descriptor.primaryFrameIndex();
+}
+
 unsigned BitmapImageSource::currentFrameIndex() const
 {
     return m_frameAnimator ? m_frameAnimator->currentFrameIndex() : primaryFrameIndex();
@@ -650,6 +657,11 @@ RefPtr<NativeImage> BitmapImageSource::preTransformedNativeImageAtIndex(unsigned
 
     buffer->context().drawNativeImage(*nativeImage, destinationRect, sourceRect, { orientation });
     return ImageBuffer::sinkIntoNativeImage(WTFMove(buffer));
+}
+
+unsigned BitmapImageSource::frameCount() const
+{
+    return m_descriptor.frameCount();
 }
 
 IntSize BitmapImageSource::frameSizeAtIndex(unsigned index, SubsamplingLevel subsamplingLevel) const

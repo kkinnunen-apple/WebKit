@@ -26,8 +26,8 @@
 #pragma once
 
 #include "BitmapImageDescriptor.h"
-#include "ImageFrameWorkQueue.h"
-#include "ImageSource.h"
+#include "DecodingOptions.h"
+#include <wtf/ThreadSafeWeakPtr.h>
 #include <wtf/Expected.h>
 #include <wtf/WeakPtr.h>
 
@@ -36,9 +36,11 @@ namespace WebCore {
 class BitmapImage;
 class ImageDecoder;
 class ImageFrameAnimator;
+class ImageFrameWorkQueue;
 class ImageObserver;
+class FragmentedSharedBuffer;
 
-class BitmapImageSource : public ImageSource {
+class BitmapImageSource : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<BitmapImageSource> {
 public:
     static Ref<BitmapImageSource> create(BitmapImage&, AlphaOption, GammaAndColorProfileOption);
 
@@ -49,7 +51,7 @@ public:
     ImageDecoder* decoderIfExists() const { return m_decoder.get(); }
 
     // Encoded and decoded data
-    void destroyDecodedData(bool destroyAll) final;
+    void destroyDecodedData(bool destroyAll);
     void resetData();
     unsigned decodedSize() const { return m_decodedSize; }
     void didDecodeProperties(unsigned decodedPropertiesSize);
@@ -64,38 +66,31 @@ public:
     void imageFrameDecodeAtIndexHasFinished(unsigned index, SubsamplingLevel, ImageAnimatingState, const DecodingOptions&, RefPtr<NativeImage>&&);
 
     // ImageFrame
-    unsigned primaryFrameIndex() const final { return m_descriptor.primaryFrameIndex(); }
+    WEBCORE_EXPORT unsigned primaryFrameIndex() const;
 
     const Vector<ImageFrame>& frames() const { return m_frames; }
-    const ImageFrame& primaryImageFrame(const std::optional<SubsamplingLevel>& subsamplingLevel = std::nullopt) final { return frameAtIndexCacheIfNeeded(primaryFrameIndex(), subsamplingLevel); }
+    const ImageFrame& primaryImageFrame(const std::optional<SubsamplingLevel>& subsamplingLevel = std::nullopt) { return frameAtIndexCacheIfNeeded(primaryFrameIndex(), subsamplingLevel); }
 
     // NativeImage
     DecodingStatus requestNativeImageAtIndexIfNeeded(unsigned index, SubsamplingLevel, ImageAnimatingState, const DecodingOptions&);
 
-    RefPtr<NativeImage> primaryNativeImage() final { return nativeImageAtIndex(primaryFrameIndex()); }
+    RefPtr<NativeImage> primaryNativeImage() { return nativeImageAtIndex(primaryFrameIndex()); }
 
     // Image Metadata
-    unsigned frameCount() const final { return m_descriptor.frameCount(); }
+    WEBCORE_EXPORT unsigned frameCount() const;
     RepetitionCount repetitionCount() const { return m_descriptor.repetitionCount(); }
 
     // ImageFrame metadata
     IntSize frameSizeAtIndex(unsigned index, SubsamplingLevel = SubsamplingLevel::Default) const;
-    Seconds frameDurationAtIndex(unsigned index) const final;
-    DecodingStatus frameDecodingStatusAtIndex(unsigned index) const final;
+    WEBCORE_EXPORT Seconds frameDurationAtIndex(unsigned index) const;
+    DecodingStatus frameDecodingStatusAtIndex(unsigned index) const;
 
     // Testing support
     CString sourceUTF8() const;
 
-private:
-    BitmapImageSource(BitmapImage&, AlphaOption, GammaAndColorProfileOption);
-
-    // State
-    ImageFrameAnimator* frameAnimator() const;
-    ImageFrameWorkQueue& workQueue() const;
-
-    // Encoded and decoded data
+   // Encoded and decoded data
     void encodedDataStatusChanged(EncodedDataStatus);
-    EncodedDataStatus dataChanged(FragmentedSharedBuffer*, bool allDataReceived) final;
+    EncodedDataStatus dataChanged(FragmentedSharedBuffer*, bool allDataReceived);
     EncodedDataStatus setData(FragmentedSharedBuffer*, bool allDataReceived);
 
     void decodedSizeChanged(long long decodedSize);
@@ -107,32 +102,32 @@ private:
     void clearFrameBufferCache();
 
     // Animation
-    void startAnimation() final;
+    void startAnimation();
     bool startAnimation(SubsamplingLevel, const DecodingOptions&);
-    void stopAnimation() final;
-    void resetAnimation() final;
-    bool isAnimated() const final;
-    bool isAnimating() const final;
-    bool hasEverAnimated() const final;
+    void stopAnimation();
+    void resetAnimation();
+    bool isAnimated() const;
+    bool isAnimating() const;
+    bool hasEverAnimated() const;
 
     // Decoding
-    bool isLargeForDecoding() const final;
+    bool isLargeForDecoding() const;
     bool isDecodingWorkQueueIdle() const;
     bool isCompatibleWithOptionsAtIndex(unsigned index, SubsamplingLevel, const DecodingOptions&) const;
-    void stopDecodingWorkQueue() final;
-    void decode(Function<void(DecodingStatus)>&& decodeCallback) final;
+    void stopDecodingWorkQueue();
+    void decode(Function<void(DecodingStatus)>&& decodeCallback);
     void callDecodeCallbacks(DecodingStatus);
     void imageFrameDecodeAtIndexHasFinished(unsigned index, ImageAnimatingState, DecodingStatus);
 
     // ImageFrame
-    unsigned currentFrameIndex() const final;
+    WEBCORE_EXPORT unsigned currentFrameIndex() const;
 
     void cacheMetadataAtIndex(unsigned index, SubsamplingLevel, const DecodingOptions&);
     void cacheNativeImageAtIndex(unsigned index, SubsamplingLevel, const DecodingOptions&, Ref<NativeImage>&&);
 
     const ImageFrame& frameAtIndex(unsigned index) const;
-    const ImageFrame& frameAtIndexCacheIfNeeded(unsigned index, const std::optional<SubsamplingLevel>& = std::nullopt);
-    const ImageFrame& currentImageFrame(const std::optional<SubsamplingLevel>& subsamplingLevel = std::nullopt) final { return frameAtIndexCacheIfNeeded(currentFrameIndex(), subsamplingLevel); }
+    WEBCORE_EXPORT const ImageFrame& frameAtIndexCacheIfNeeded(unsigned index, const std::optional<SubsamplingLevel>& = std::nullopt);
+    const ImageFrame& currentImageFrame(const std::optional<SubsamplingLevel>& subsamplingLevel = std::nullopt) { return frameAtIndexCacheIfNeeded(currentFrameIndex(), subsamplingLevel); }
 
     // NativeImage
     DecodingStatus requestNativeImageAtIndex(unsigned index, SubsamplingLevel, ImageAnimatingState, const DecodingOptions&);
@@ -141,41 +136,41 @@ private:
     Expected<Ref<NativeImage>, DecodingStatus> nativeImageAtIndexRequestIfNeeded(unsigned index, SubsamplingLevel, const DecodingOptions&);
     Expected<Ref<NativeImage>, DecodingStatus> nativeImageAtIndexForDrawing(unsigned index, SubsamplingLevel, const DecodingOptions&);
 
-    Expected<Ref<NativeImage>, DecodingStatus> currentNativeImageForDrawing(SubsamplingLevel, const DecodingOptions&) final;
+    Expected<Ref<NativeImage>, DecodingStatus> currentNativeImageForDrawing(SubsamplingLevel, const DecodingOptions&);
 
-    RefPtr<NativeImage> nativeImageAtIndex(unsigned index) final;
+    WEBCORE_EXPORT RefPtr<NativeImage> nativeImageAtIndex(unsigned index);
     RefPtr<NativeImage> preTransformedNativeImageAtIndex(unsigned index, ImageOrientation);
 
-    RefPtr<NativeImage> currentNativeImage() final { return nativeImageAtIndex(currentFrameIndex()); }
-    RefPtr<NativeImage> currentPreTransformedNativeImage(ImageOrientation orientation) final { return preTransformedNativeImageAtIndex(currentFrameIndex(), orientation); }
+    RefPtr<NativeImage> currentNativeImage() { return nativeImageAtIndex(currentFrameIndex()); }
+    RefPtr<NativeImage> currentPreTransformedNativeImage(ImageOrientation orientation) { return preTransformedNativeImageAtIndex(currentFrameIndex(), orientation); }
 
     EncodedDataStatus encodedDataStatus() const { return m_descriptor.encodedDataStatus(); }
-    IntSize size(ImageOrientation orientation = ImageOrientation::Orientation::FromImage) const final { return m_descriptor.size(orientation); }
-    IntSize sourceSize(ImageOrientation orientation = ImageOrientation::Orientation::FromImage) const final { return m_descriptor.sourceSize(orientation); }
+    IntSize size(ImageOrientation orientation = ImageOrientation::Orientation::FromImage) const { return m_descriptor.size(orientation); }
+    IntSize sourceSize(ImageOrientation orientation = ImageOrientation::Orientation::FromImage) const { return m_descriptor.sourceSize(orientation); }
     std::optional<IntSize> densityCorrectedSize() const { return m_descriptor.densityCorrectedSize(); }
-    bool hasDensityCorrectedSize() const final { return densityCorrectedSize().has_value(); }
-    ImageOrientation orientation() const final { return m_descriptor.orientation(); }
-    DestinationColorSpace colorSpace() const final { return m_descriptor.colorSpace(); }
-    std::optional<Color> singlePixelSolidColor() const final { return m_descriptor.singlePixelSolidColor(); }
+    bool hasDensityCorrectedSize() const { return densityCorrectedSize().has_value(); }
+    ImageOrientation orientation() const { return m_descriptor.orientation(); }
+    DestinationColorSpace colorSpace() const { return m_descriptor.colorSpace(); }
+    std::optional<Color> singlePixelSolidColor() const { return m_descriptor.singlePixelSolidColor(); }
 
-    String uti() const final { return m_descriptor.uti(); }
-    String filenameExtension() const final { return m_descriptor.filenameExtension(); }
-    String accessibilityDescription() const final { return m_descriptor.accessibilityDescription(); }
-    std::optional<IntPoint> hotSpot() const final { return m_descriptor.hotSpot(); }
+    String uti() const { return m_descriptor.uti(); }
+    String filenameExtension() const { return m_descriptor.filenameExtension(); }
+    String accessibilityDescription() const { return m_descriptor.accessibilityDescription(); }
+    std::optional<IntPoint> hotSpot() const { return m_descriptor.hotSpot(); }
     SubsamplingLevel maximumSubsamplingLevel() const { return m_descriptor.maximumSubsamplingLevel(); }
-    SubsamplingLevel subsamplingLevelForScaleFactor(GraphicsContext& context, const FloatSize& scaleFactor, AllowImageSubsampling allowImageSubsampling) final { return m_descriptor.subsamplingLevelForScaleFactor(context, scaleFactor, allowImageSubsampling); }
+    SubsamplingLevel subsamplingLevelForScaleFactor(GraphicsContext& context, const FloatSize& scaleFactor, AllowImageSubsampling allowImageSubsampling) { return m_descriptor.subsamplingLevelForScaleFactor(context, scaleFactor, allowImageSubsampling); }
 
 #if ENABLE(QUICKLOOK_FULLSCREEN)
-    bool shouldUseQuickLookForFullscreen() const final { return m_descriptor.shouldUseQuickLookForFullscreen(); }
+    bool shouldUseQuickLookForFullscreen() const { return m_descriptor.shouldUseQuickLookForFullscreen(); }
 #endif
 
 #if ENABLE(SPATIAL_IMAGE_DETECTION)
-    bool isSpatial() const final { return m_descriptor.isSpatial(); }
+    bool isSpatial() const { return m_descriptor.isSpatial(); }
 #endif
 
     // ImageFrame metadata
-    ImageOrientation frameOrientationAtIndex(unsigned index) const final;
-    Headroom frameHeadroomAtIndex(unsigned index) const final;
+    ImageOrientation frameOrientationAtIndex(unsigned index) const;
+    Headroom frameHeadroomAtIndex(unsigned index) const;
 
     // BitmapImage metadata
     RefPtr<ImageObserver> imageObserver() const;
@@ -183,14 +178,21 @@ private:
     long long expectedContentLength() const;
 
     // Testing support
-    unsigned decodeCountForTesting() const final { return m_decodeCountForTesting; }
-    unsigned blankDrawCountForTesting() const final { return m_blankDrawCountForTesting; }
-    void setMinimumDecodingDurationForTesting(Seconds) final;
-    void setClearDecoderAfterAsyncFrameRequestForTesting(bool enabled) final { m_clearDecoderAfterAsyncFrameRequestForTesting = enabled; }
-    void setAsyncDecodingEnabledForTesting(bool enabled) final { m_isAsyncDecodingEnabledForTesting = enabled; }
-    bool isAsyncDecodingEnabledForTesting() const final { return m_isAsyncDecodingEnabledForTesting; }
+    unsigned decodeCountForTesting() const { return m_decodeCountForTesting; }
+    unsigned blankDrawCountForTesting() const { return m_blankDrawCountForTesting; }
+    WEBCORE_EXPORT void setMinimumDecodingDurationForTesting(Seconds);
+    void setClearDecoderAfterAsyncFrameRequestForTesting(bool enabled) { m_clearDecoderAfterAsyncFrameRequestForTesting = enabled; }
+    void setAsyncDecodingEnabledForTesting(bool enabled) { m_isAsyncDecodingEnabledForTesting = enabled; }
+    bool isAsyncDecodingEnabledForTesting() const { return m_isAsyncDecodingEnabledForTesting; }
 
-    void dump(TextStream&) const final;
+    void dump(TextStream&) const;
+
+private:
+    BitmapImageSource(BitmapImage&, AlphaOption, GammaAndColorProfileOption);
+
+    // State
+    ImageFrameAnimator* frameAnimator() const;
+    ImageFrameWorkQueue& workQueue() const;
 
     // State
     WeakPtr<BitmapImage> m_bitmapImage;

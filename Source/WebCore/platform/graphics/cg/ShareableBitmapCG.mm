@@ -26,9 +26,9 @@
 #include "config.h"
 #include "ShareableBitmap.h"
 
-#include "BitmapImage.h"
 #include "GraphicsContextCG.h"
 #include "IOSurface.h"
+#include "Image.h"
 #include "ImageBufferUtilitiesCG.h"
 #include "Logging.h"
 #include "NativeImage.h"
@@ -258,7 +258,7 @@ void ShareableBitmap::releaseBitmapContextData(void* typelessBitmap, void* typel
 RefPtr<Image> ShareableBitmap::createImage()
 {
     if (auto platformImage = makeCGImage())
-        return BitmapImage::create(WTFMove(platformImage));
+        return Image::create(NativeImage::create(WTFMove(platformImage)));
     return nullptr;
 }
 

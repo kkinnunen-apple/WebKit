@@ -1761,10 +1761,9 @@ ExceptionOr<void> CanvasRenderingContext2DBase::drawImage(Document& document, Ca
     if (RefPtr bitmapImage = dynamicDowncast<BitmapImage>(*image)) {
         // Drawing an animated image to a canvas should draw the first frame (except for a few layout tests)
         if (image->isAnimated() && !document.settings().animatedImageDebugCanvasDrawingEnabled()) {
-            bitmapImage = BitmapImage::create(image->nativeImage());
-            if (!bitmapImage)
+            image = Image::create(image->nativeImage());
+            if (!image)
                 return { };
-            image = bitmapImage.copyRef();
         }
 
         shouldPostProcess = false;

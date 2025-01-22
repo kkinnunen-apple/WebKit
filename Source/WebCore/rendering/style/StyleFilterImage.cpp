@@ -146,7 +146,7 @@ RefPtr<Image> StyleFilterImage::image(const RenderElement* renderer, const Float
     });
     if (!filteredImage)
         return &Image::nullImage();
-    return BitmapImage::create(WTFMove(filteredImage));
+    return Image::create(filteredImage.releaseNonNull());
 }
 
 bool StyleFilterImage::knownToBeOpaque(const RenderElement&) const

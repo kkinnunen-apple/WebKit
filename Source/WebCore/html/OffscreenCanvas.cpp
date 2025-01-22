@@ -28,7 +28,6 @@
 
 #if ENABLE(OFFSCREEN_CANVAS)
 
-#include "BitmapImage.h"
 #include "CSSParserContext.h"
 #include "CSSValuePool.h"
 #include "CanvasRenderingContext.h"
@@ -38,6 +37,7 @@
 #include "GPU.h"
 #include "GPUCanvasContext.h"
 #include "HTMLCanvasElement.h"
+#include "Image.h"
 #include "ImageBitmap.h"
 #include "ImageBitmapRenderingContext.h"
 #include "ImageData.h"
@@ -362,7 +362,7 @@ Image* OffscreenCanvas::copiedImage() const
     if (!m_copiedImage) {
         RefPtr buffer = const_cast<OffscreenCanvas*>(this)->makeRenderingResultsAvailable(ShouldApplyPostProcessingToDirtyRect::No);
         if (buffer)
-            m_copiedImage = BitmapImage::create(buffer->copyNativeImage());
+            m_copiedImage = Image::create(buffer->copyNativeImage());
     }
     return m_copiedImage.get();
 }
