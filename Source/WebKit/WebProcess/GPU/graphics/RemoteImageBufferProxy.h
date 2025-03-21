@@ -94,6 +94,7 @@ private:
 
     void flushDrawingContext() final;
     bool flushDrawingContextAsync() final;
+    void prepareForDisplay() final;
 
     void prepareForBackingStoreChange();
 
