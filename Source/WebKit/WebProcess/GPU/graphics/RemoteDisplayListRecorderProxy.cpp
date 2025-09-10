@@ -28,6 +28,7 @@
 
 #if ENABLE(GPU_PROCESS)
 
+#include "RemoteDisplayListRecorderMessages.h"
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebKit {
@@ -39,6 +40,13 @@ RemoteDisplayListRecorderProxy::RemoteDisplayListRecorderProxy(RemoteRenderingBa
     : RemoteGraphicsContextProxy(DestinationColorSpace::SRGB(), std::nullopt, RenderingMode::Accelerated, { }, { }, DrawGlyphsMode::Normal, RemoteGraphicsContextIdentifier::generate(), renderingBackend)
 {
 }
+
+void RemoteDisplayListRecorderProxy::drawRemoteFrame(FrameIdentifier frameIdentifier)
+{
+    appendStateChangeItemIfNecessary();
+    send(Messages::RemoteDisplayListRecorder::DrawRemoteFrame(frameIdentifier));
+}
+
 
 }
 

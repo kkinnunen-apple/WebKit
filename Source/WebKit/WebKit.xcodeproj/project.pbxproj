@@ -1999,6 +1999,7 @@
 		A5EC6AD42151BD7B00677D17 /* WebPageDebuggable.h in Headers */ = {isa = PBXBuildFile; fileRef = A5EC6AD32151BD6900677D17 /* WebPageDebuggable.h */; };
 		A5EFD38C16B0E88C00B2F0E8 /* WKPageVisibilityTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = A5EFD38B16B0E88C00B2F0E8 /* WKPageVisibilityTypes.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		A73E66BD2AB107C3005FC327 /* IPCEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = A73E66BC2AB107BB005FC327 /* IPCEvent.h */; };
+		A76EFA9B2E7258010022429C /* RemoteDisplayListRecorderMessages.h in Headers */ = {isa = PBXBuildFile; fileRef = A76EFA9A2E7257F70022429C /* RemoteDisplayListRecorderMessages.h */; };
 		A78A5FE42B0EB39E005036D3 /* RemoteImageBufferSetIdentifier.h in Headers */ = {isa = PBXBuildFile; fileRef = A78A5FE32B0EB39E005036D3 /* RemoteImageBufferSetIdentifier.h */; };
 		A7A3D555289395E2008D683D /* WebWorkerClient.h in Headers */ = {isa = PBXBuildFile; fileRef = A7A3D553289395E2008D683D /* WebWorkerClient.h */; };
 		A7D5005D2B266E0D00D3497E /* ImageBufferSet.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D5005C2B266E0600D3497E /* ImageBufferSet.h */; };
@@ -7463,6 +7464,9 @@
 		A5EFD38B16B0E88C00B2F0E8 /* WKPageVisibilityTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WKPageVisibilityTypes.h; sourceTree = "<group>"; };
 		A73E66BC2AB107BB005FC327 /* IPCEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPCEvent.h; sourceTree = "<group>"; };
 		A73E66BE2AB10958005FC327 /* IPCEventDarwin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IPCEventDarwin.cpp; sourceTree = "<group>"; };
+		A76EFA982E7244510022429C /* RemoteDisplayListRecorder.messages.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = RemoteDisplayListRecorder.messages.in; sourceTree = "<group>"; };
+		A76EFA992E7257F70022429C /* RemoteDisplayListRecorderMessageReceiver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = RemoteDisplayListRecorderMessageReceiver.cpp; path = RemoteDisplayListRecorderMessageReceiver.cpp; sourceTree = "<group>"; };
+		A76EFA9A2E7257F70022429C /* RemoteDisplayListRecorderMessages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RemoteDisplayListRecorderMessages.h; path = RemoteDisplayListRecorderMessages.h; sourceTree = "<group>"; };
 		A78A5FE32B0EB39E005036D3 /* RemoteImageBufferSetIdentifier.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemoteImageBufferSetIdentifier.h; sourceTree = "<group>"; };
 		A78A5FE52B0EE4C3005036D3 /* RemoteImageBufferSetProxy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RemoteImageBufferSetProxy.cpp; sourceTree = "<group>"; };
 		A78A5FE62B0EE4C3005036D3 /* RemoteImageBufferSetProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemoteImageBufferSetProxy.h; sourceTree = "<group>"; };
@@ -13507,6 +13511,7 @@
 				723C90A22A377AB400038126 /* PathSegment.serialization.in */,
 				7BE005B82E5C4E390014F7CF /* RemoteDisplayListRecorder.cpp */,
 				7BE005B72E5C4E390014F7CF /* RemoteDisplayListRecorder.h */,
+				A76EFA982E7244510022429C /* RemoteDisplayListRecorder.messages.in */,
 				F48BB8E026F96392001C1C40 /* RemoteGraphicsContext.cpp */,
 				F48BB8DF26F96392001C1C40 /* RemoteGraphicsContext.h */,
 				F451C1002703D853002BA03B /* RemoteGraphicsContext.messages.in */,
@@ -16222,6 +16227,8 @@
 				1C55A586275457C700EB7E95 /* RemoteComputePipelineMessages.h */,
 				1C55A588275457C700EB7E95 /* RemoteDeviceMessageReceiver.cpp */,
 				1C55A57C275457C500EB7E95 /* RemoteDeviceMessages.h */,
+				A76EFA992E7257F70022429C /* RemoteDisplayListRecorderMessageReceiver.cpp */,
+				A76EFA9A2E7257F70022429C /* RemoteDisplayListRecorderMessages.h */,
 				1C55A57E275457C500EB7E95 /* RemoteExternalTextureMessageReceiver.cpp */,
 				1C55A57A275457C500EB7E95 /* RemoteExternalTextureMessages.h */,
 				1C55A59D275457CA00EB7E95 /* RemoteGPUMessageReceiver.cpp */,
@@ -17744,6 +17751,7 @@
 				CDAC20B423FB58F20021DEE3 /* RemoteCDMInstanceProxy.h in Headers */,
 				CDAC20CA23FC2F750021DEE3 /* RemoteCDMInstanceSession.h in Headers */,
 				CDAC20C923FC2F750021DEE3 /* RemoteCDMInstanceSessionIdentifier.h in Headers */,
+				A76EFA9B2E7258010022429C /* RemoteDisplayListRecorderMessages.h in Headers */,
 				0F6E7C532C4C386800F1DB85 /* RemoteGraphicsContextMessages.h in Headers */,
 				F451C0FE2703B263002BA03B /* RemoteGraphicsContextProxy.h in Headers */,
 				A78A5FE42B0EB39E005036D3 /* RemoteImageBufferSetIdentifier.h in Headers */,

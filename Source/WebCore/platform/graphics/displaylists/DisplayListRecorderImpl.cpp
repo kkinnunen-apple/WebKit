@@ -424,6 +424,12 @@ void RecorderImpl::applyDeviceScaleFactor(float scaleFactor)
     m_items.append(ApplyDeviceScaleFactor(scaleFactor));
 }
 
+void RecorderImpl::addItem(Item&& item)
+{
+    appendStateChangeItemIfNecessary();
+    m_items.append(WTFMove(item));
+}
+
 void RecorderImpl::beginPage(const IntSize& pageSize)
 {
     appendStateChangeItemIfNecessary();

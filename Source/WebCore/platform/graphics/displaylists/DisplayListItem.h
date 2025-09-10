@@ -67,6 +67,7 @@ class DrawPath;
 class DrawPatternNativeImage;
 class DrawPatternImageBuffer;
 class DrawRect;
+class DrawRemoteFrame;
 class DrawSystemImage;
 class EndTransparencyLayer;
 class FillCompositedRect;
@@ -132,6 +133,7 @@ using Item = Variant
     , DrawPatternNativeImage
     , DrawPatternImageBuffer
     , DrawRect
+    , DrawRemoteFrame
     , DrawSystemImage
     , EndTransparencyLayer
     , FillCompositedRect

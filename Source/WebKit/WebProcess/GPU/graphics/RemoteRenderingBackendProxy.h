@@ -50,6 +50,7 @@
 #include <span>
 #include <wtf/Deque.h>
 #include <wtf/HashMap.h>
+#include <wtf/UniqueRef.h>
 #include <wtf/WeakPtr.h>
 #include <wtf/WorkQueue.h>
 
@@ -69,6 +70,7 @@ namespace WebKit {
 
 class ImageBufferSetClient;
 class WebPage;
+class RemoteDisplayListRecorderProxy;
 class RemoteImageBufferProxy;
 class RemoteSerializedImageBufferProxy;
 class RemoteSharedResourceCacheProxy;
@@ -99,7 +101,8 @@ public:
     Ref<RemoteImageBufferProxy> moveToImageBuffer(RemoteSerializedImageBufferProxy&);
 
 #if PLATFORM(COCOA)
-    void didDrawRemoteToPDF(WebCore::PageIdentifier, WebCore::RenderingResourceIdentifier imageBufferIdentifier, WebCore::SnapshotIdentifier);
+    void sinkDisplayListRecorderIntoSnapshot(UniqueRef<RemoteDisplayListRecorderProxy>&&, const WebCore::FloatSize&, WebCore::SnapshotIdentifier, CompletionHandler<void(bool)>&&);
+    void sinkFrameDisplayListRecorderIntoSnapshot(WebCore::FrameIdentifier, UniqueRef<RemoteDisplayListRecorderProxy>&&, WebCore::SnapshotIdentifier, CompletionHandler<void(bool)>&&);
 #endif
     bool isCached(const WebCore::ImageBuffer&) const;
 
@@ -125,6 +128,8 @@ public:
     Ref<RemoteImageBufferSetProxy> createImageBufferSet(ImageBufferSetClient&);
     void releaseImageBufferSet(RemoteImageBufferSetProxy&);
     void getImageBufferResourceLimitsForTesting(CompletionHandler<void(WebCore::ImageBufferResourceLimits)>&&);
+
+    UniqueRef<RemoteDisplayListRecorderProxy> createDisplayListRecorder();
 
 #if USE(GRAPHICS_LAYER_WC)
     Function<bool()> flushImageBuffers();

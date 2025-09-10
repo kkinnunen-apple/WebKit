@@ -66,6 +66,7 @@
 #include <WebCore/WebCoreKeyboardUIMode.h>
 #include <memory>
 #include <pal/HysteresisActivity.h>
+#include <wtf/CallbackAggregator.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/HashMap.h>
 #include <wtf/MonotonicTime.h>
@@ -396,6 +397,7 @@ class PageBanner;
 class PlatformXRSystemProxy;
 #endif
 class PluginView;
+class RemoteDisplayListRecorderProxy;
 class RemoteLayerTreeTransaction;
 class RemoteMediaSessionCoordinator;
 class RemoteRenderingBackendProxy;
@@ -1360,7 +1362,7 @@ public:
 
 #if PLATFORM(COCOA)
     void drawToPDF(WebCore::FrameIdentifier, const std::optional<WebCore::FloatRect>&, bool allowTransparentBackground,  CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&&);
-    void drawRemoteToPDF(WebCore::FrameIdentifier, const std::optional<WebCore::FloatRect>&, bool allowTransparentBackground, WebCore::SnapshotIdentifier);
+    void drawRemoteToPDF(WebCore::FrameIdentifier, const std::optional<WebCore::FloatRect>&, bool allowTransparentBackground, WebCore::SnapshotIdentifier, CompletionHandler<void(bool)>&&);
     void drawRectToImage(WebCore::FrameIdentifier, const PrintInfo&, const WebCore::IntRect&, const WebCore::IntSize&, CompletionHandler<void(std::optional<WebCore::ShareableBitmap::Handle>&&)>&&);
     void drawRectToImageDuringDOMPrintOperation(WebCore::FrameIdentifier frameID, const PrintInfo& printInfo, const WebCore::IntRect& rect, const WebCore::IntSize& imageSize, CompletionHandler<void(std::optional<WebCore::ShareableBitmap::Handle>&&)>&& completionHandler) { drawRectToImage(frameID, printInfo, rect, imageSize, WTFMove(completionHandler)); }
     void drawPagesToPDF(WebCore::FrameIdentifier, const PrintInfo&, uint32_t first, uint32_t count, CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&&);
@@ -1791,6 +1793,13 @@ public:
     uint64_t webPageProxyID() const { return messageSenderDestinationID(); }
     VisitedLinkTableIdentifier visitedLinkTableID() const { return m_visitedLinkTableID; }
 #endif
+
+    struct CurrentSnapshot {
+        WebCore::SnapshotIdentifier identifier;
+        UniqueRef<RemoteDisplayListRecorderProxy> recorder;
+        Ref<MainRunLoopSuccessCallbackAggregator> callback;
+    };
+    const CurrentSnapshot* currentSnapshot() const { return m_currentSnapshot.has_value() ? &m_currentSnapshot.value() : nullptr; }
 
     void getProcessDisplayName(CompletionHandler<void(String&&)>&&);
 
@@ -2591,6 +2600,8 @@ private:
     void updateRemotePageAccessibilityOffset(WebCore::FrameIdentifier, WebCore::IntPoint);
     void resolveAccessibilityHitTestForTesting(WebCore::FrameIdentifier, const WebCore::IntPoint&, CompletionHandler<void(String)>&&);
 
+    void paintFrameContents(WebCore::FrameIdentifier, const WebCore::IntRect&, WebCore::SnapshotIdentifier, CompletionHandler<void(bool)>&&);
+
     void requestAllTextAndRects(CompletionHandler<void(Vector<std::pair<String, WebCore::FloatRect>>&&)>&&);
 
     void requestTargetedElement(WebCore::TargetedElementRequest&&, CompletionHandler<void(Vector<WebCore::TargetedElementInfo>&&)>&&);
@@ -3068,6 +3079,7 @@ private:
     AtomString m_overriddenMediaType;
     String m_processDisplayName;
     WebCore::AllowsContentJavaScript m_allowsContentJavaScriptFromMostRecentNavigation { WebCore::AllowsContentJavaScript::Yes };
+    std::optional<CurrentSnapshot> m_currentSnapshot;
 
 #if PLATFORM(GTK)
     WebCore::Color m_accentColor;

@@ -71,6 +71,7 @@
 #include "PolicyDecision.h"
 #include "PrintInfo.h"
 #include "ProvisionalFrameCreationParameters.h"
+#include "RemoteDisplayListRecorderProxy.h"
 #include "RemoteNativeImageBackendProxy.h"
 #include "RemoteRenderingBackendProxy.h"
 #include "RemoteScrollingCoordinator.h"
@@ -200,6 +201,7 @@
 #include <WebCore/DataTransfer.h>
 #include <WebCore/DatabaseManager.h>
 #include <WebCore/DeprecatedGlobalSettings.h>
+#include <WebCore/DisplayListRecorderImpl.h>
 #include <WebCore/Document.h>
 #include <WebCore/DocumentFragment.h>
 #include <WebCore/DocumentFullscreen.h>
@@ -6674,25 +6676,71 @@ void WebPage::drawToPDF(FrameIdentifier frameID, const std::optional<FloatRect>&
     completionHandler(buffer->sinkIntoPDFDocument());
 }
 
-void WebPage::drawRemoteToPDF(FrameIdentifier frameID, const std::optional<FloatRect>& rect, bool allowTransparentBackground, SnapshotIdentifier snapshotIdentifier)
+void WebPage::drawRemoteToPDF(FrameIdentifier frameID, const std::optional<FloatRect>& rect, bool allowTransparentBackground, SnapshotIdentifier snapshotIdentifier, CompletionHandler<void(bool)>&& completionHandler)
 {
     ASSERT(m_page->settings().remoteSnapshottingEnabled());
 
     RefPtr localMainFrame = this->localMainFrame();
-    if (!localMainFrame)
+    if (!localMainFrame) {
+        completionHandler(false);
         return;
+    }
 
     Ref frameView = *localMainFrame->view();
     auto snapshotRect = IntRect { rect.value_or(FloatRect { { }, frameView->contentsSize() }) };
-    auto renderingMode = m_page->settings().siteIsolationEnabled() ? RenderingMode::DisplayList : RenderingMode::PDFDocument;
 
-    RefPtr buffer = ImageBuffer::create(snapshotRect.size(), renderingMode, RenderingPurpose::Snapshot, 1, DestinationColorSpace::SRGB(), PixelFormat::BGRA8, &m_page->chrome());
-    if (!buffer)
-        return;
+    Ref remoteRenderingBackend = ensureRemoteRenderingBackendProxy();
+    m_currentSnapshot = { snapshotIdentifier, remoteRenderingBackend->createDisplayListRecorder(), MainRunLoopSuccessCallbackAggregator::create(WTFMove(completionHandler)) };
 
-    drawMainFrameToPDF(*localMainFrame, buffer->context(), snapshotRect, allowTransparentBackground);
-    ensureProtectedRemoteRenderingBackendProxy()->didDrawRemoteToPDF(m_identifier, buffer->renderingResourceIdentifier(), snapshotIdentifier);
+    drawMainFrameToPDF(*localMainFrame, m_currentSnapshot->recorder, snapshotRect, allowTransparentBackground);
+
+    remoteRenderingBackend->sinkDisplayListRecorderIntoSnapshot(WTFMove(m_currentSnapshot->recorder), snapshotRect.size(), snapshotIdentifier, [snapshotCallback = currentSnapshot()->callback](bool success) {
+        if (!success)
+            snapshotCallback->failed();
+    });
+    m_currentSnapshot = std::nullopt;
 }
+
+void WebPage::paintFrameContents(FrameIdentifier frameID, const IntRect& rect, SnapshotIdentifier snapshotIdentifier, CompletionHandler<void(bool)>&& completionHandler)
+{
+    ASSERT(m_page->settings().siteIsolationEnabled());
+
+    // FIXME: Error handling, so that the GPUP doesn't wait for something not coming.
+
+    RefPtr webFrame = WebProcess::singleton().webFrame(frameID);
+    if (!webFrame) {
+        ASSERT_NOT_REACHED();
+        completionHandler(false);
+        return;
+    }
+
+    RefPtr coreLocalFrame = webFrame->coreLocalFrame();
+    if (!coreLocalFrame) {
+        ASSERT_NOT_REACHED();
+        completionHandler(false);
+        return;
+    }
+
+    RefPtr frameView = coreLocalFrame->view();
+    if (!frameView) {
+        completionHandler(false);
+        return;
+    }
+
+    Ref remoteRenderingBackend = ensureRemoteRenderingBackendProxy();
+    m_currentSnapshot = { snapshotIdentifier, remoteRenderingBackend->createDisplayListRecorder(), MainRunLoopSuccessCallbackAggregator::create(WTFMove(completionHandler)) };
+
+    LocalFrameView::SelectionInSnapshot shouldPaintSelection = LocalFrameView::IncludeSelection;
+    LocalFrameView::CoordinateSpaceForSnapshot coordinateSpace = LocalFrameView::DocumentCoordinates;
+
+    frameView->paintContentsForSnapshot(m_currentSnapshot->recorder, rect, shouldPaintSelection, coordinateSpace);
+
+    remoteRenderingBackend->sinkFrameDisplayListRecorderIntoSnapshot(frameID, WTFMove(m_currentSnapshot->recorder), snapshotIdentifier, [snapshotCallback = currentSnapshot()->callback](bool success) {
+        if (!success)
+            snapshotCallback->failed();
+    });
+    m_currentSnapshot = std::nullopt;
+ }
 
 void WebPage::drawRectToImage(FrameIdentifier frameID, const PrintInfo& printInfo, const IntRect& rect, const WebCore::IntSize& imageSize, CompletionHandler<void(std::optional<WebCore::ShareableBitmap::Handle>&&)>&& completionHandler)
 {

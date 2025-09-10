@@ -334,10 +334,22 @@ Ref<RemoteImageBufferProxy> RemoteRenderingBackendProxy::moveToImageBuffer(Remot
     return result;
 }
 
-#if PLATFORM(COCOA)
-void RemoteRenderingBackendProxy::didDrawRemoteToPDF(PageIdentifier pageID, RenderingResourceIdentifier imageBufferIdentifier, SnapshotIdentifier snapshotIdentifier)
+UniqueRef<RemoteDisplayListRecorderProxy> RemoteRenderingBackendProxy::createDisplayListRecorder()
 {
-    send(Messages::RemoteRenderingBackend::DidDrawRemoteToPDF(pageID, imageBufferIdentifier, snapshotIdentifier));
+    auto recorder = makeUniqueRef<RemoteDisplayListRecorderProxy>(*this);
+    send(Messages::RemoteRenderingBackend::CreateDisplayListRecorder(recorder->identifier()));
+    return recorder;
+}
+
+#if PLATFORM(COCOA)
+void RemoteRenderingBackendProxy::sinkDisplayListRecorderIntoSnapshot(UniqueRef<RemoteDisplayListRecorderProxy>&& recorder, const WebCore::FloatSize& size, SnapshotIdentifier snapshotIdentifier, CompletionHandler<void(bool)>&& completionHandler)
+{
+    sendWithAsyncReply(Messages::RemoteRenderingBackend::SinkDisplayListRecorderIntoSnapshot(recorder->identifier(), size, snapshotIdentifier), WTFMove(completionHandler));
+}
+
+void RemoteRenderingBackendProxy::sinkFrameDisplayListRecorderIntoSnapshot(FrameIdentifier frameID, UniqueRef<RemoteDisplayListRecorderProxy>&& recorder, SnapshotIdentifier snapshotIdentifier, CompletionHandler<void(bool)>&& completionHandler)
+{
+    sendWithAsyncReply(Messages::RemoteRenderingBackend::SinkFrameDisplayListRecorderIntoSnapshot(frameID, recorder->identifier(), snapshotIdentifier), WTFMove(completionHandler));
 }
 #endif
 

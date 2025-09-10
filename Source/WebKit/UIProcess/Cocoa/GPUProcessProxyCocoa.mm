@@ -127,6 +127,11 @@ void GPUProcessProxy::postWillTakeSnapshotNotification(CompletionHandler<void()>
     sendWithAsyncReply(Messages::GPUProcess::PostWillTakeSnapshotNotification { }, WTFMove(completionHandler));
 }
 
+void GPUProcessProxy::retrievePDFSnapshot(WebCore::SnapshotIdentifier snapshotIdentifier, bool valid,  CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&& completionHandler)
+{
+    sendWithAsyncReply(Messages::GPUProcess::RetrievePDFSnapshot(snapshotIdentifier, valid), WTFMove(completionHandler));
+}
+
 }
 
 #endif

@@ -69,7 +69,8 @@ messages -> RemoteRenderingBackend Stream {
     MoveToImageBuffer(WebKit::RemoteSerializedImageBufferIdentifier identifier, WebCore::RenderingResourceIdentifier imageBufferIdentifier, WebKit::RemoteGraphicsContextIdentifier contextIdentifier)
 
 #if PLATFORM(COCOA)
-    DidDrawRemoteToPDF(WebCore::PageIdentifier pageID, WebCore::RenderingResourceIdentifier imageBufferIdentifier, WebCore::SnapshotIdentifier snapshotIdentifier)
+    SinkDisplayListRecorderIntoSnapshot(WebKit::RemoteDisplayListRecorderIdentifier recorderIdentifier, WebCore::FloatSize size, WebCore::SnapshotIdentifier snapshotIdentifier) -> (bool success)
+    SinkFrameDisplayListRecorderIntoSnapshot(WebCore::FrameIdentifier frameID, WebKit::RemoteDisplayListRecorderIdentifier recorderIdentifier, WebCore::SnapshotIdentifier snapshotIdentifier) -> (bool success)
 #endif
 
     [EnabledBy=ShapeDetection] CreateRemoteBarcodeDetector(WebKit::ShapeDetectionIdentifier identifier, WebCore::ShapeDetection::BarcodeDetectorOptions barcodeDetectorOptions) AllowedWhenWaitingForSyncReply

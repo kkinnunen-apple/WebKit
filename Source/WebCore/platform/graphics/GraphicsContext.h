@@ -32,6 +32,7 @@
 #include <WebCore/FloatRect.h>
 #include <WebCore/FloatSegment.h>
 #include <WebCore/FontCascade.h>
+#include <WebCore/FrameIdentifier.h>
 #include <WebCore/GraphicsContextState.h>
 #include <WebCore/Image.h>
 #include <WebCore/ImageBufferFormat.h>

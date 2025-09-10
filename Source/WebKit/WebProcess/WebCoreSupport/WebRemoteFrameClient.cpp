@@ -27,12 +27,14 @@
 #include "WebRemoteFrameClient.h"
 
 #include "MessageSenderInlines.h"
+#include "RemoteDisplayListRecorderProxy.h"
 #include "WebFrameProxyMessages.h"
 #include "WebPage.h"
 #include "WebPageProxyMessages.h"
 #include <WebCore/FrameInlines.h>
 #include <WebCore/FrameLoadRequest.h>
 #include <WebCore/FrameTree.h>
+#include <WebCore/GraphicsContext.h>
 #include <WebCore/HTMLFrameOwnerElement.h>
 #include <WebCore/HitTestResult.h>
 #include <WebCore/NodeInlines.h>
@@ -72,6 +74,22 @@ void WebRemoteFrameClient::frameDetached()
 void WebRemoteFrameClient::sizeDidChange(IntSize size)
 {
     m_frame->updateRemoteFrameSize(size);
+}
+
+void WebRemoteFrameClient::paintContents(GraphicsContext& context, const IntRect& rect)
+{
+    RefPtr page = m_frame->page();
+    if (!page)
+        return;
+
+    if (!page->currentSnapshot() || page->currentSnapshot()->recorder.ptr() != &context)
+        return;
+
+    page->sendWithAsyncReply(Messages::WebPageProxy::PaintRemoteFrameContents(m_frame->frameID(), rect, page->currentSnapshot()->identifier), [snapshotCallback = page->currentSnapshot()->callback](bool success) {
+        if (!success)
+            snapshotCallback->failed();
+    });
+    page->currentSnapshot()->recorder->drawRemoteFrame(m_frame->frameID());
 }
 
 void WebRemoteFrameClient::postMessageToRemote(FrameIdentifier source, const String& sourceOrigin, FrameIdentifier target, std::optional<SecurityOriginData> targetOrigin, const MessageWithMessagePorts& message)

@@ -28,7 +28,9 @@
 
 #if ENABLE(GPU_PROCESS)
 
+#include "RemoteDisplayListRecorderMessages.h"
 #include "RemoteGraphicsContextMessages.h"
+#include <WebCore/DisplayListItems.h>
 
 namespace WebKit {
 using namespace WebCore;
@@ -52,11 +54,18 @@ RemoteDisplayListRecorder::~RemoteDisplayListRecorder() = default;
 void RemoteDisplayListRecorder::startListeningForIPC()
 {
     m_renderingBackend->streamConnection().startReceivingMessages(*this, Messages::RemoteGraphicsContext::messageReceiverName(), m_identifier.toUInt64());
+    m_renderingBackend->streamConnection().startReceivingMessages(*this, Messages::RemoteDisplayListRecorder::messageReceiverName(), m_identifier.toUInt64());
 }
 
 void RemoteDisplayListRecorder::stopListeningForIPC()
 {
     m_renderingBackend->streamConnection().stopReceivingMessages(Messages::RemoteGraphicsContext::messageReceiverName(), m_identifier.toUInt64());
+    m_renderingBackend->streamConnection().stopReceivingMessages(Messages::RemoteDisplayListRecorder::messageReceiverName(), m_identifier.toUInt64());
+}
+
+void RemoteDisplayListRecorder::drawRemoteFrame(FrameIdentifier frameIdentifier)
+{
+    m_recorder->addItem(DisplayList::DrawRemoteFrame(frameIdentifier));
 }
 
 } // namespace WebKit

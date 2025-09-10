@@ -65,6 +65,10 @@ messages -> GPUProcess : AuxiliaryProcess {
 
 #endif
 
+#if PLATFORM(COCOA)
+   RetrievePDFSnapshot(WebCore::SnapshotIdentifier snapshotIdentifier, bool valid) -> (RefPtr<WebCore::SharedBuffer> result)
+#endif
+
 #if HAVE(SCREEN_CAPTURE_KIT)
     PromptForGetDisplayMedia(enum:uint8_t WebCore::DisplayCapturePromptType type) -> (std::optional<WebCore::CaptureDevice> device)
     CancelGetDisplayMediaPrompt()

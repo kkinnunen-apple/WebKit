@@ -493,14 +493,6 @@ void GPUProcessProxy::cancelGetDisplayMediaPrompt()
 }
 #endif
 
-#if PLATFORM(COCOA)
-void GPUProcessProxy::didDrawRemoteToPDF(PageIdentifier pageID, RefPtr<SharedBuffer>&& data, SnapshotIdentifier snapshotIdentifier)
-{
-    if (auto page = WebProcessProxy::webPage(pageID))
-        page->didDrawRemoteToPDF(WTFMove(data), snapshotIdentifier);
-}
-#endif
-
 void GPUProcessProxy::getLaunchOptions(ProcessLauncher::LaunchOptions& launchOptions)
 {
     launchOptions.processType = ProcessLauncher::ProcessType::GPU;

@@ -42,11 +42,15 @@ public:
     ~RemoteDisplayListRecorder();
     void stopListeningForIPC();
 
+    void drawRemoteFrame(WebCore::FrameIdentifier);
+
     Ref<const WebCore::DisplayList::DisplayList> takeDisplayList() { return m_recorder->takeDisplayList(); }
 
 private:
     RemoteDisplayListRecorder(UniqueRef<WebCore::DisplayList::RecorderImpl>&&, RemoteDisplayListRecorderIdentifier, RemoteRenderingBackend&);
     void startListeningForIPC();
+
+    void didReceiveStreamMessage(IPC::StreamServerConnection&, IPC::Decoder&) final;
 
     UniqueRef<WebCore::DisplayList::RecorderImpl> m_recorder;
     const RemoteDisplayListRecorderIdentifier m_identifier;

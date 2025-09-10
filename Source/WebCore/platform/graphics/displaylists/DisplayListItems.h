@@ -396,7 +396,7 @@ public:
     ImageBuffer& imageBuffer() const { return m_imageBuffer; }
     FloatRect destinationRect() const { return m_destinationRect; }
 
-    void apply(GraphicsContext&) const;
+    WEBCORE_EXPORT void apply(GraphicsContext&) const;
     void dump(TextStream&, OptionSet<AsTextFlag>) const;
 
 private:
@@ -481,7 +481,7 @@ public:
     FloatRect sourceImageRect() const { return m_sourceImageRect; }
     Filter& filter() const { return m_filter; }
 
-    void apply(GraphicsContext&) const;
+    WEBCORE_EXPORT void apply(GraphicsContext&) const;
     void dump(TextStream&, OptionSet<AsTextFlag>) const;
 
 private:
@@ -526,11 +526,11 @@ public:
     static constexpr char name[] = "draw-display-list";
 
     DrawDisplayList(Ref<const DisplayList>&&);
-    ~DrawDisplayList();
+    WEBCORE_EXPORT ~DrawDisplayList();
 
     Ref<const DisplayList> displayList() const;
 
-    void apply(GraphicsContext&) const;
+    WEBCORE_EXPORT void apply(GraphicsContext&) const;
     void dump(TextStream&, OptionSet<AsTextFlag>) const;
 
 private:
@@ -554,7 +554,7 @@ public:
     FloatRect destinationRect() const { return m_destinationRect; }
     ImagePaintingOptions options() const { return m_options; }
 
-    void apply(GraphicsContext&) const;
+    WEBCORE_EXPORT void apply(GraphicsContext&) const;
     void dump(TextStream&, OptionSet<AsTextFlag>) const;
 
 private:
@@ -581,7 +581,7 @@ public:
     const FloatRect& source() const { return m_srcRect; }
     ImagePaintingOptions options() const { return m_options; }
 
-    void apply(GraphicsContext&) const;
+    WEBCORE_EXPORT void apply(GraphicsContext&) const;
     void dump(TextStream&, OptionSet<AsTextFlag>) const;
 
 private:
@@ -589,6 +589,24 @@ private:
     FloatRect m_destinationRect;
     FloatRect m_srcRect;
     ImagePaintingOptions m_options;
+};
+
+class DrawRemoteFrame {
+public:
+    static constexpr char name[] = "draw-remote-frame";
+
+    DrawRemoteFrame(FrameIdentifier frameIdentifier)
+        : m_frameIdentifier(frameIdentifier)
+    {
+    }
+
+    FrameIdentifier frameIdentifier() const { return m_frameIdentifier; }
+
+    [[noreturn]] void apply(GraphicsContext&) const;
+    void dump(TextStream&, OptionSet<AsTextFlag>) const;
+
+private:
+    FrameIdentifier m_frameIdentifier;
 };
 
 class DrawSystemImage {
@@ -604,7 +622,7 @@ public:
     const SystemImage& systemImage() const { return m_systemImage; }
     const FloatRect& destinationRect() const { return m_destinationRect; }
 
-    void apply(GraphicsContext&) const;
+    WEBCORE_EXPORT void apply(GraphicsContext&) const;
     void dump(TextStream&, OptionSet<AsTextFlag>) const;
 
 private:
@@ -634,7 +652,7 @@ public:
     FloatSize spacing() const { return m_spacing; }
     ImagePaintingOptions options() const { return m_options; }
 
-    void apply(GraphicsContext&) const;
+    WEBCORE_EXPORT void apply(GraphicsContext&) const;
     void dump(TextStream&, OptionSet<AsTextFlag>) const;
 
 private:
@@ -669,7 +687,7 @@ public:
     FloatSize spacing() const { return m_spacing; }
     ImagePaintingOptions options() const { return m_options; }
 
-    void apply(GraphicsContext&) const;
+    WEBCORE_EXPORT void apply(GraphicsContext&) const;
     void dump(TextStream&, OptionSet<AsTextFlag>) const;
 
 private:

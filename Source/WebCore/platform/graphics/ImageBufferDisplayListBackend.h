@@ -39,6 +39,8 @@ public:
 
     static constexpr RenderingMode renderingMode = RenderingMode::DisplayList;
 
+    WEBCORE_EXPORT Ref<const DisplayList::DisplayList> copyDisplayList();
+
 private:
     ImageBufferDisplayListBackend(const Parameters&, ControlFactory&);
 
@@ -46,6 +48,8 @@ private:
     unsigned bytesPerRow() const final { return 0; }
 
     GraphicsContext& context() final;
+
+    ImageBufferDisplayListBackend* toDisplayListBackend() final { return this; }
 
     RefPtr<NativeImage> copyNativeImage() final;
     RefPtr<NativeImage> createNativeImageReference() final { return copyNativeImage(); }

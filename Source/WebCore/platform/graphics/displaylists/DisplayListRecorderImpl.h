@@ -115,6 +115,8 @@ public:
 
     void setURLForRect(const URL&, const FloatRect&) final;
 
+    WEBCORE_EXPORT void addItem(Item&&);
+
 private:
     void appendStateChangeItemIfNecessary() final;
 

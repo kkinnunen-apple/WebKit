@@ -55,6 +55,11 @@ GraphicsContext& ImageBufferDisplayListBackend::context()
     return m_drawingContext;
 }
 
+Ref<const DisplayList::DisplayList> ImageBufferDisplayListBackend::copyDisplayList()
+{
+    return m_drawingContext.copyDisplayList();
+}
+
 RefPtr<NativeImage> ImageBufferDisplayListBackend::copyNativeImage()
 {
     RefPtr buffer = ImageBuffer::create(size(), RenderingMode::Unaccelerated, RenderingPurpose::Snapshot, 1, DestinationColorSpace::SRGB(), PixelFormat::BGRA8);
