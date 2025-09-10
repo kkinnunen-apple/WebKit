@@ -121,10 +121,6 @@ public:
     void cancelGetDisplayMediaPrompt();
 #endif
 
-#if PLATFORM(COCOA)
-    void didDrawRemoteToPDF(WebCore::PageIdentifier, RefPtr<WebCore::SharedBuffer>&&, WebCore::SnapshotIdentifier);
-#endif
-
     void removeSession(PAL::SessionID);
 
 #if PLATFORM(MAC)
@@ -177,7 +173,10 @@ public:
 
 #if PLATFORM(COCOA)
     void postWillTakeSnapshotNotification(CompletionHandler<void()>&&);
+
+    void retrievePDFSnapshot(WebCore::SnapshotIdentifier, bool, CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&&);
 #endif
+
 
 private:
     explicit GPUProcessProxy();

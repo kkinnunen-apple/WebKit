@@ -137,6 +137,7 @@ private:
 #endif
     void applyDeviceScaleFactor(float) final;
 
+    void drawRemoteFrame(WebCore::FrameIdentifier) final;
     void beginPage(const WebCore::IntSize& pageSize) final;
     void endPage() final;
     void setURLForRect(const URL&, const WebCore::FloatRect&) final;

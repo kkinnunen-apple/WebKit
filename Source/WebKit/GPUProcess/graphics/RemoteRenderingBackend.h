@@ -153,7 +153,8 @@ private:
     void sinkDisplayListRecorderIntoDisplayList(RemoteDisplayListRecorderIdentifier, RemoteDisplayListIdentifier);
     void releaseDisplayList(RemoteDisplayListIdentifier);
 #if PLATFORM(COCOA)
-    void didDrawRemoteToPDF(WebCore::PageIdentifier, WebCore::RenderingResourceIdentifier, WebCore::SnapshotIdentifier);
+    void didDrawRemoteToPDF(WebCore::PageIdentifier, const WebCore::FloatSize&, WebKit::RemoteDisplayListRecorderIdentifier, WebCore::SnapshotIdentifier, CompletionHandler<void(bool)>&&);
+    void didDrawSubframe(WebCore::FrameIdentifier, WebKit::RemoteDisplayListRecorderIdentifier, WebCore::SnapshotIdentifier, CompletionHandler<void(bool)>&&);
 #endif
     void destroyGetPixelBufferSharedMemory();
     void cacheNativeImage(WebCore::ShareableBitmap::Handle&&, WebCore::RenderingResourceIdentifier);

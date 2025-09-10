@@ -45,6 +45,8 @@
 #include "WebProcessPoolMessages.h"
 #include <WebCore/CommonAtomStrings.h>
 #include <WebCore/DeprecatedGlobalSettings.h>
+#include <WebCore/DisplayList.h>
+#include <WebCore/ImageBufferDisplayListBackend.h>
 #include <WebCore/LogInitialization.h>
 #include <WebCore/MediaPlayer.h>
 #include <WebCore/MemoryRelease.h>
@@ -81,6 +83,8 @@
 #endif
 
 namespace WebKit {
+
+WTF_MAKE_TZONE_ALLOCATED_IMPL(GPUProcess::SnapshotCompositor);
 
 // We wouldn't want the GPUProcess to repeatedly exit then relaunch when under memory pressure. In particular, we need to make sure the
 // WebProcess has a change to schedule work after the GPUProcess get launched. For this reason, we make sure that the GPUProcess never
@@ -353,9 +357,92 @@ void GPUProcess::updateSandboxAccess(const Vector<SandboxExtension::Handle>& ext
 }
 
 #if PLATFORM(COCOA)
-void GPUProcess::didDrawRemoteToPDF(PageIdentifier pageID, RefPtr<SharedBuffer>&& data, SnapshotIdentifier snapshotIdentifier)
+void GPUProcess::SnapshotCompositor::drawDisplayListResolvingRemoteFrames(GraphicsContext& context, const DisplayList::DisplayList& displayList)
 {
-    protectedParentProcessConnection()->send(Messages::GPUProcessProxy::DidDrawRemoteToPDF(pageID, WTFMove(data), snapshotIdentifier), 0);
+    for (auto& item : displayList.items()) {
+        WTF::switchOn(item,
+            [&](const DisplayList::DrawControlPart& item) {
+                item.apply(context, ControlFactory::shared());
+            }, [&](const DisplayList::DrawRemoteFrame& item) {
+                RefPtr innerDisplayList = m_frameDisplayLists.get(item.frameIdentifier());
+                if (innerDisplayList)
+                    drawDisplayListResolvingRemoteFrames(context, *innerDisplayList);
+            }, [&](const auto& item) {
+                item.apply(context);
+            }
+        );
+    }
+}
+
+void GPUProcess::SnapshotCompositor::setRootDisplayList(PageIdentifier pageID, const FloatSize& size,  Ref<const DisplayList::DisplayList>&& displayList)
+{
+    m_rootPageID = pageID;
+    m_size = size;
+    m_rootDisplayList = WTFMove(displayList);
+    processDisplayListDependencies(*m_rootDisplayList);
+}
+
+void GPUProcess::SnapshotCompositor::setFrameDisplayList(FrameIdentifier frameIdentifier, Ref<const DisplayList::DisplayList>&& displayList)
+{
+    m_pendingFrameDisplayLists.remove(frameIdentifier);
+    m_frameDisplayLists.add(frameIdentifier, displayList);
+    processDisplayListDependencies(displayList);
+}
+
+void GPUProcess::SnapshotCompositor::processDisplayListDependencies(const DisplayList::DisplayList& displayList)
+{
+    for (auto& item : displayList.items()) {
+        WTF::switchOn(item,
+            [&](const DisplayList::DrawRemoteFrame& item) {
+                if (!m_frameDisplayLists.contains(item.frameIdentifier()))
+                    m_pendingFrameDisplayLists.add(item.frameIdentifier());
+            }, [&](const auto&) {
+            }
+        );
+    }
+}
+
+RefPtr<SharedBuffer> GPUProcess::SnapshotCompositor::resolveToPDF()
+{
+    ASSERT(isComplete());
+    RefPtr buffer = ImageBuffer::create(m_size, RenderingMode::PDFDocument, RenderingPurpose::Snapshot, 1, DestinationColorSpace::SRGB(), PixelFormat::BGRA8);
+    ASSERT(buffer);
+
+    auto& context = buffer->context();
+    drawDisplayListResolvingRemoteFrames(context, *m_rootDisplayList);
+
+    return ImageBuffer::sinkIntoPDFDocument(WTFMove(buffer));
+}
+
+void GPUProcess::didDrawRemoteToPDF(PageIdentifier pageID, const FloatSize& size, Ref<const DisplayList::DisplayList>&& displayList, SnapshotIdentifier snapshotIdentifier)
+{
+    auto addResult = m_snapshots.ensure(snapshotIdentifier, [&] {
+        return makeUnique<SnapshotCompositor>();
+    });
+    auto& snapshotCompositor = *addResult.iterator->value;
+    snapshotCompositor.setRootDisplayList(pageID, size, WTFMove(displayList));
+}
+
+void GPUProcess::didDrawSubframe(FrameIdentifier frameID, Ref<const DisplayList::DisplayList>&& displayList, SnapshotIdentifier snapshotIdentifier)
+{
+    auto addResult = m_snapshots.ensure(snapshotIdentifier, [&] {
+        return makeUnique<SnapshotCompositor>();
+    });
+    auto& snapshotCompositor = *addResult.iterator->value;
+    snapshotCompositor.setFrameDisplayList(frameID, WTFMove(displayList));
+}
+
+void GPUProcess::retrievePDFSnapshot(WebCore::SnapshotIdentifier snapshotIdentifier, bool valid, CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&& completionHandler)
+{
+    auto snapshotCompositor = m_snapshots.take(snapshotIdentifier);
+    if (!snapshotCompositor || !valid) {
+        completionHandler({ });
+        return;
+    }
+
+    ASSERT(snapshotCompositor->isComplete());
+    RefPtr<SharedBuffer> data = snapshotCompositor->resolveToPDF();
+    completionHandler(WTFMove(data));
 }
 #endif
 

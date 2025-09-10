@@ -211,19 +211,31 @@ void RemoteRenderingBackend::moveToImageBuffer(RemoteSerializedImageBufferIdenti
 }
 
 #if PLATFORM(COCOA)
-void RemoteRenderingBackend::didDrawRemoteToPDF(PageIdentifier pageID, RenderingResourceIdentifier imageBufferIdentifier, SnapshotIdentifier snapshotIdentifier)
+void RemoteRenderingBackend::didDrawRemoteToPDF(PageIdentifier pageID, const FloatSize& size, RemoteDisplayListRecorderIdentifier recorderIdentifier, SnapshotIdentifier snapshotIdentifier, CompletionHandler<void(bool)>&& completionHandler)
 {
     assertIsCurrent(workQueue());
-    auto imageBuffer = this->imageBuffer(imageBufferIdentifier);
-    if (!imageBuffer) {
-        ASSERT_IS_TESTING_IPC();
-        return;
-    }
+    RefPtr recorder = m_remoteDisplayListRecorders.take(recorderIdentifier).get();
+    MESSAGE_CHECK(recorder, "Recorder sunk into display list before being cached");
 
-    auto data = imageBuffer->sinkIntoPDFDocument();
+    Ref displayList = recorder->takeDisplayList();
 
-    callOnMainRunLoop([pageID, data = WTFMove(data), snapshotIdentifier]() mutable {
-        GPUProcess::singleton().didDrawRemoteToPDF(pageID, WTFMove(data), snapshotIdentifier);
+    callOnMainRunLoop([pageID, size, displayList = WTFMove(displayList), snapshotIdentifier, completionHandler = WTFMove(completionHandler)]() mutable {
+        GPUProcess::singleton().didDrawRemoteToPDF(pageID, size, WTFMove(displayList), snapshotIdentifier);
+        completionHandler(true);
+    });
+}
+
+void RemoteRenderingBackend::didDrawSubframe(FrameIdentifier frameID, RemoteDisplayListRecorderIdentifier recorderIdentifier, SnapshotIdentifier snapshotIdentifier, CompletionHandler<void(bool)>&& completionHandler)
+{
+    assertIsCurrent(workQueue());
+    RefPtr recorder = m_remoteDisplayListRecorders.take(recorderIdentifier).get();
+    MESSAGE_CHECK(recorder, "Recorder sunk into display list before being cached");
+
+    Ref displayList = recorder->takeDisplayList();
+
+    callOnMainRunLoop([frameID, displayList = WTFMove(displayList), snapshotIdentifier, completionHandler = WTFMove(completionHandler)]() mutable {
+        GPUProcess::singleton().didDrawSubframe(frameID, WTFMove(displayList), snapshotIdentifier);
+        completionHandler(true);
     });
 }
 #endif

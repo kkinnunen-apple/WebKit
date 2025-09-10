@@ -609,6 +609,12 @@ void RemoteGraphicsContextProxy::applyDeviceScaleFactor(float scaleFactor)
     send(Messages::RemoteGraphicsContext::ApplyDeviceScaleFactor(scaleFactor));
 }
 
+void RemoteGraphicsContextProxy::drawRemoteFrame(FrameIdentifier frameIdentifier)
+{
+    appendStateChangeItemIfNecessary();
+    send(Messages::RemoteGraphicsContext::DrawRemoteFrame(frameIdentifier));
+}
+
 void RemoteGraphicsContextProxy::beginPage(const IntSize& pageSize)
 {
     appendStateChangeItemIfNecessary();

@@ -6657,7 +6657,7 @@ void WebPage::drawMainFrameToPDF(LocalFrame& localMainFrame, GraphicsContext& co
     frameView->setPaintBehavior(originalPaintBehavior);
 }
 
-void WebPage::drawToPDF(FrameIdentifier frameID, const std::optional<FloatRect>& rect, bool allowTransparentBackground, CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&& completionHandler)
+void WebPage::drawToPDF(const std::optional<FloatRect>& rect, bool allowTransparentBackground, CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&& completionHandler)
 {
     RefPtr localMainFrame = this->localMainFrame();
     if (!localMainFrame)
@@ -6674,24 +6674,80 @@ void WebPage::drawToPDF(FrameIdentifier frameID, const std::optional<FloatRect>&
     completionHandler(buffer->sinkIntoPDFDocument());
 }
 
-void WebPage::drawRemoteToPDF(FrameIdentifier frameID, const std::optional<FloatRect>& rect, bool allowTransparentBackground, SnapshotIdentifier snapshotIdentifier)
+void WebPage::drawToShareableDisplayList(const std::optional<FloatRect>& rect, bool allowTransparentBackground, ShareableDisplayListIdentifier identifier, CompletionHandler<void(bool)>&& completionHandler)
 {
     ASSERT(m_page->settings().remoteSnapshottingEnabled());
 
     RefPtr localMainFrame = this->localMainFrame();
-    if (!localMainFrame)
+    if (!localMainFrame) {
+        completionHandler(false);
         return;
+    }
 
     Ref frameView = *localMainFrame->view();
-    auto snapshotRect = IntRect { rect.value_or(FloatRect { { }, frameView->contentsSize() }) };
-    auto renderingMode = m_page->settings().siteIsolationEnabled() ? RenderingMode::DisplayList : RenderingMode::PDFDocument;
+    auto snapshotRect = rect.value_or(FloatRect { { }, frameView->contentsSize() });
 
-    RefPtr buffer = ImageBuffer::create(snapshotRect.size(), renderingMode, RenderingPurpose::Snapshot, 1, DestinationColorSpace::SRGB(), PixelFormat::BGRA8, &m_page->chrome());
-    if (!buffer)
+    Ref remoteRenderingBackend = ensureRemoteRenderingBackendProxy();
+    RefPtr recorder = remoteRenderingBackend->createDisplayListRecorder(snapshotRect);
+    if (!recorder) {
+        completionHandler(false);
         return;
+    }
 
-    drawMainFrameToPDF(*localMainFrame, buffer->context(), snapshotRect, allowTransparentBackground);
-    ensureProtectedRemoteRenderingBackendProxy()->didDrawRemoteToPDF(m_identifier, buffer->renderingResourceIdentifier(), snapshotIdentifier);
+    drawMainFrameToPDF(*localMainFrame, *recorder, snapshotRect, allowTransparentBackground);
+
+    auto result = remoteRenderingBackend->sinkDisplayListRecorderIntoShareableDisplayList(WTFMove(recorder), identifier);
+    if (!result) {
+        completionHandler(false);
+        return;
+    }
+    completionHandler(true);
+}
+
+void WebPage::paintFrameContents(FrameIdentifier frameID, const IntRect& rect, ShareableDisplayListIdentifier identifier, CompletionHandler<void(bool)>&& completionHandler)
+{
+    ASSERT(m_page->settings().siteIsolationEnabled());
+
+    // FIXME: Error handling, so that the GPUP doesn't wait for something not coming.
+
+    RefPtr webFrame = WebProcess::singleton().webFrame(frameID);
+    if (!webFrame) {
+        ASSERT_NOT_REACHED();
+        completionHandler(false);
+        return;
+    }
+
+    RefPtr coreLocalFrame = webFrame->coreLocalFrame();
+    if (!coreLocalFrame) {
+        ASSERT_NOT_REACHED();
+        completionHandler(false);
+        return;
+    }
+
+    RefPtr frameView = coreLocalFrame->view();
+    if (!frameView) {
+        completionHandler(false);
+        return;
+    }
+
+    Ref remoteRenderingBackend = ensureRemoteRenderingBackendProxy();
+    RefPtr recorder = remoteRenderingBackend->createDisplayListRecorder(FloatRect { { }, rect.size() });
+    if (!recorder) {
+        completionHandler(false);
+        return;
+    }
+
+    LocalFrameView::SelectionInSnapshot shouldPaintSelection = LocalFrameView::IncludeSelection;
+    LocalFrameView::CoordinateSpaceForSnapshot coordinateSpace = LocalFrameView::DocumentCoordinates;
+
+    frameView->paintContentsForSnapshot(*recorder, rect, shouldPaintSelection, coordinateSpace);
+
+    auto result = remoteRenderingBackend->sinkDisplayListRecorderIntoShareableDisplayList(recorder.releaseNonNull(), identifier);
+    if (!result) {
+        completionHandler(false);
+        return;
+    }
+    completionHandler(true);
 }
 
 void WebPage::drawRectToImage(FrameIdentifier frameID, const PrintInfo& printInfo, const IntRect& rect, const WebCore::IntSize& imageSize, CompletionHandler<void(std::optional<WebCore::ShareableBitmap::Handle>&&)>&& completionHandler)

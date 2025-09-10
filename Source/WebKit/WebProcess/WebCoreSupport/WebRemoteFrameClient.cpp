@@ -33,6 +33,7 @@
 #include <WebCore/FrameInlines.h>
 #include <WebCore/FrameLoadRequest.h>
 #include <WebCore/FrameTree.h>
+#include <WebCore/GraphicsContext.h>
 #include <WebCore/HTMLFrameOwnerElement.h>
 #include <WebCore/HitTestResult.h>
 #include <WebCore/NodeInlines.h>
@@ -72,6 +73,27 @@ void WebRemoteFrameClient::frameDetached()
 void WebRemoteFrameClient::sizeDidChange(IntSize size)
 {
     m_frame->updateRemoteFrameSize(size);
+}
+
+void WebRemoteFrameClient::paintContents(GraphicsContext& context, const IntRect& rect)
+{
+    RefPtr page = m_frame->page();
+    if (!page)
+        return;
+
+    auto snapshot = page->paintFrameContentsToShareableDisplayList(m_frame->frameID(), rect);
+    Ref remoteRenderingBackend = page->ensureRemoteRenderingBackend();
+    RefPtr displayList = remoteRenderingBackend->sinkShareableDisplayListIntoDisplayList(snapshot);
+    if (!displayList)
+        return;
+    context.drawDisplayList(displayList);
+    // FIXME: This should async return a success value, and we should block the WebPage::drawRemoteToPDF
+    // callback from being resolved until this is done too.
+    page->sendWithAsyncReply(Messages::WebPageProxy::PaintRemoteFrameContents(m_frame->frameID(), rect, *page->currentSnapshot()), [snapshotCallback = page->currentSnapshotCallback()](bool success) {
+        if (!success)
+            snapshotCallback->failed();
+    });
+    context.drawRemoteFrame(m_frame->frameID());
 }
 
 void WebRemoteFrameClient::postMessageToRemote(FrameIdentifier source, const String& sourceOrigin, FrameIdentifier target, std::optional<SecurityOriginData> targetOrigin, const MessageWithMessagePorts& message)

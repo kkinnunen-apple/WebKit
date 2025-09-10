@@ -30,7 +30,10 @@
 #include "AuxiliaryProcess.h"
 #include "GPUProcessPreferences.h"
 #include "SandboxExtension.h"
+#include "ThreadSafeObjectHeap.h"
 #include "WebPageProxyIdentifier.h"
+#include <WebCore/FrameIdentifier.h>
+#include <WebCore/ImageBuffer.h>
 #include <WebCore/IntDegrees.h>
 #include <WebCore/MediaPlayerIdentifier.h>
 #include <WebCore/PageIdentifier.h>
@@ -69,6 +72,10 @@ class SecurityOriginData;
 
 struct MockMediaDevice;
 struct ScreenProperties;
+
+namespace DisplayList {
+class DisplayList;
+}
 
 enum class VideoFrameRotation : uint16_t;
 }
@@ -158,7 +165,10 @@ public:
 #endif
 
 #if PLATFORM(COCOA)
-    void didDrawRemoteToPDF(WebCore::PageIdentifier, RefPtr<WebCore::SharedBuffer>&&, WebCore::SnapshotIdentifier);
+    void didDrawRemoteToPDF(WebCore::PageIdentifier, const WebCore::FloatSize&, Ref<const WebCore::DisplayList::DisplayList>&&, WebCore::SnapshotIdentifier);
+    void didDrawSubframe(WebCore::FrameIdentifier, Ref<const WebCore::DisplayList::DisplayList>&&, WebCore::SnapshotIdentifier);
+
+    void retrievePDFSnapshot(WebCore::SnapshotIdentifier snapshotIdentifier, bool valid, CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&&);
 #endif
 
 #if PLATFORM(VISION) && ENABLE(MODEL_PROCESS)
@@ -175,6 +185,34 @@ public:
 #endif
 
     void terminateWebProcess(WebCore::ProcessIdentifier);
+
+#if PLATFORM(COCOA)
+    struct SnapshotCompositor {
+        WTF_MAKE_TZONE_ALLOCATED(SnapshotCompositor);
+    public:
+        void setRootDisplayList(WebCore::PageIdentifier, const WebCore::FloatSize&, Ref<const WebCore::DisplayList::DisplayList>&& displayList);
+        void setFrameDisplayList(WebCore::FrameIdentifier, Ref<const WebCore::DisplayList::DisplayList>&& displayList);
+
+        bool isComplete() const
+        {
+            return m_rootDisplayList && m_pendingFrameDisplayLists.isEmpty();
+        }
+
+        std::optional<WebCore::PageIdentifier> rootPageID() { return m_rootPageID; }
+
+        RefPtr<WebCore::SharedBuffer> resolveToPDF();
+    private:
+        void processDisplayListDependencies(const WebCore::DisplayList::DisplayList&);
+        void drawDisplayListResolvingRemoteFrames(WebCore::GraphicsContext& context, const WebCore::DisplayList::DisplayList& displayList);
+
+        std::optional<WebCore::PageIdentifier> m_rootPageID;
+        WebCore::FloatSize m_size;
+        RefPtr<const WebCore::DisplayList::DisplayList> m_rootDisplayList;
+        HashMap<WebCore::FrameIdentifier, Ref<const WebCore::DisplayList::DisplayList>> m_frameDisplayLists;
+        HashSet<WebCore::FrameIdentifier> m_pendingFrameDisplayLists;
+    };
+#endif
+
 private:
     void lowMemoryHandler(Critical, Synchronous);
 
@@ -271,6 +309,10 @@ private:
 
 #if USE(GRAPHICS_LAYER_WC)
     WCSharedSceneContextHolder m_sharedSceneContext;
+#endif
+
+#if PLATFORM(COCOA)
+    HashMap<WebCore::SnapshotIdentifier, std::unique_ptr<SnapshotCompositor>> m_snapshots;
 #endif
 
     struct GPUSession {

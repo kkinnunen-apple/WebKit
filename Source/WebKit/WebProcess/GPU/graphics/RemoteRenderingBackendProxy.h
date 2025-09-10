@@ -99,9 +99,13 @@ public:
     Ref<RemoteImageBufferProxy> moveToImageBuffer(RemoteSerializedImageBufferProxy&);
 
 #if PLATFORM(COCOA)
-    void didDrawRemoteToPDF(WebCore::PageIdentifier, WebCore::RenderingResourceIdentifier imageBufferIdentifier, WebCore::SnapshotIdentifier);
+    void didDrawRemoteToPDF(WebCore::PageIdentifier, const WebCore::FloatSize&, const WebCore::DisplayList::DisplayList& imageBufferIdentifier, WebCore::SnapshotIdentifier, CompletionHandler<void(bool)>&&);
+    void didDrawSubframe(WebCore::FrameIdentifier, const WebCore::DisplayList::DisplayList&, WebCore::SnapshotIdentifier, CompletionHandler<void(bool)>&&);
 #endif
     bool isCached(const WebCore::ImageBuffer&) const;
+
+    RefPtr<RemoteDisplayListRecorderProxy> createDisplayListRecorder();
+    RefPtr<DisplayList> sinkDisplayListRecorderIntoDisplayList(Ref<RemoteDisplayListRecorder>&&);
 
     RefPtr<RemoteImageBufferProxy> createImageBuffer(const WebCore::FloatSize&, WebCore::RenderingMode, WebCore::RenderingPurpose, float resolutionScale, const WebCore::DestinationColorSpace&, WebCore::ImageBufferFormat);
     void releaseImageBuffer(RemoteImageBufferProxy&);
