@@ -27,31 +27,15 @@
 
 #if ENABLE(GPU_PROCESS)
 
-#include "RemoteDisplayListIdentifier.h"
-#include "RemoteDisplayListRecorderIdentifier.h"
-#include "RemoteGraphicsContext.h"
-#include <WebCore/DisplayListRecorderImpl.h>
+#include <wtf/ObjectIdentifier.h>
 
 namespace WebKit {
 
-// RemoteGraphicsContext playing back the IPC GraphicsContext drawing commands to a DisplayList::Recorder.
-// Used to create DisplayList instances.
-class RemoteDisplayListRecorder final : public RemoteGraphicsContext {
-public:
-    static Ref<RemoteDisplayListRecorder> create(RemoteDisplayListRecorderIdentifier, RemoteRenderingBackend&);
-    ~RemoteDisplayListRecorder();
-    void stopListeningForIPC();
-
-    Ref<const WebCore::DisplayList::DisplayList> takeDisplayList() { return m_recorder->takeDisplayList(); }
-
-private:
-    RemoteDisplayListRecorder(UniqueRef<WebCore::DisplayList::RecorderImpl>&&, RemoteDisplayListRecorderIdentifier, RemoteRenderingBackend&);
-    void startListeningForIPC();
-
-    UniqueRef<WebCore::DisplayList::RecorderImpl> m_recorder;
-    const RemoteDisplayListRecorderIdentifier m_identifier;
-};
+// RemoteSnapshotRecorderIdentifier has conceptual subclass relationship with
+// RemoteGraphicsContextIdentifier.
+struct RemoteSnapshotRecorderIdentifierType;
+using RemoteSnapshotRecorderIdentifier = AtomicObjectIdentifier<RemoteSnapshotRecorderIdentifierType>;
 
 } // namespace WebKit
 
-#endif // ENABLE(GPU_PROCESS)
+#endif

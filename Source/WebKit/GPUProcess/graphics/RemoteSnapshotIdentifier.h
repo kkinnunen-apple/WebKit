@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Apple Inc. All rights reserved.
+ * Copyright (C) 2024 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -25,33 +25,11 @@
 
 #pragma once
 
-#if ENABLE(GPU_PROCESS)
-
-#include "RemoteDisplayListIdentifier.h"
-#include "RemoteDisplayListRecorderIdentifier.h"
-#include "RemoteGraphicsContext.h"
-#include <WebCore/DisplayListRecorderImpl.h>
+#include <wtf/ObjectIdentifier.h>
 
 namespace WebKit {
 
-// RemoteGraphicsContext playing back the IPC GraphicsContext drawing commands to a DisplayList::Recorder.
-// Used to create DisplayList instances.
-class RemoteDisplayListRecorder final : public RemoteGraphicsContext {
-public:
-    static Ref<RemoteDisplayListRecorder> create(RemoteDisplayListRecorderIdentifier, RemoteRenderingBackend&);
-    ~RemoteDisplayListRecorder();
-    void stopListeningForIPC();
+struct RemoteSnapshotIdentifierType;
+using RemoteSnapshotIdentifier = AtomicObjectIdentifier<RemoteSnapshotIdentifierType>;
 
-    Ref<const WebCore::DisplayList::DisplayList> takeDisplayList() { return m_recorder->takeDisplayList(); }
-
-private:
-    RemoteDisplayListRecorder(UniqueRef<WebCore::DisplayList::RecorderImpl>&&, RemoteDisplayListRecorderIdentifier, RemoteRenderingBackend&);
-    void startListeningForIPC();
-
-    UniqueRef<WebCore::DisplayList::RecorderImpl> m_recorder;
-    const RemoteDisplayListRecorderIdentifier m_identifier;
-};
-
-} // namespace WebKit
-
-#endif // ENABLE(GPU_PROCESS)
+}

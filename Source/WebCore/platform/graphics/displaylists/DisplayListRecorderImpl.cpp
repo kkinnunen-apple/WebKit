@@ -424,12 +424,6 @@ void RecorderImpl::applyDeviceScaleFactor(float scaleFactor)
     m_items.append(ApplyDeviceScaleFactor(scaleFactor));
 }
 
-void RecorderImpl::addItem(Item&& item)
-{
-    appendStateChangeItemIfNecessary();
-    m_items.append(WTFMove(item));
-}
-
 void RecorderImpl::beginPage(const IntSize& pageSize)
 {
     appendStateChangeItemIfNecessary();
@@ -492,6 +486,11 @@ void RecorderImpl::appendStateChangeItemIfNecessary()
 
     state.didApplyChanges();
     currentState().lastDrawingState = state;
+}
+
+void RecorderImpl::drawPlaceholder(Function<void(GraphicsContext&)>&& function)
+{
+    m_items.append(DrawPlaceholder(WTFMove(function)));
 }
 
 } // namespace DisplayList

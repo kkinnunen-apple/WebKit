@@ -28,28 +28,37 @@
 #if ENABLE(GPU_PROCESS)
 
 #include "RemoteDisplayListIdentifier.h"
-#include "RemoteDisplayListRecorderIdentifier.h"
 #include "RemoteGraphicsContext.h"
+#include "RemoteSnapshotRecorderIdentifier.h"
 #include <WebCore/DisplayListRecorderImpl.h>
 
 namespace WebKit {
+class RemoteSnapshot;
 
-// RemoteGraphicsContext playing back the IPC GraphicsContext drawing commands to a DisplayList::Recorder.
-// Used to create DisplayList instances.
-class RemoteDisplayListRecorder final : public RemoteGraphicsContext {
+// RemoteSnapshotRecorder is a display list recorder that can convert a snapshot subframe rendering into
+// its own draw item. In other words, RemoteSnapshotRecorder has the right to source snapshot subframe
+// renderings.
+class RemoteSnapshotRecorder final : public RemoteGraphicsContext {
 public:
-    static Ref<RemoteDisplayListRecorder> create(RemoteDisplayListRecorderIdentifier, RemoteRenderingBackend&);
-    ~RemoteDisplayListRecorder();
+    static Ref<RemoteSnapshotRecorder> create(RemoteSnapshotRecorderIdentifier, RemoteSnapshot&, RemoteRenderingBackend&);
+    ~RemoteSnapshotRecorder();
     void stopListeningForIPC();
-
+    Ref<RemoteSnapshot> snapshot() const;
     Ref<const WebCore::DisplayList::DisplayList> takeDisplayList() { return m_recorder->takeDisplayList(); }
 
 private:
-    RemoteDisplayListRecorder(UniqueRef<WebCore::DisplayList::RecorderImpl>&&, RemoteDisplayListRecorderIdentifier, RemoteRenderingBackend&);
+    RemoteSnapshotRecorder(UniqueRef<WebCore::DisplayList::RecorderImpl>&&, RemoteSnapshotRecorderIdentifier, RemoteSnapshot&, RemoteRenderingBackend&);
     void startListeningForIPC();
 
+    // RemoteGraphicsContext overrides.
+    void didReceiveStreamMessage(IPC::StreamServerConnection&, IPC::Decoder&) final;
+
+    // Messages.
+    void drawSnapshotFrame(WebCore::FrameIdentifier);
+
+    const Ref<RemoteSnapshot> m_snapshot;
     UniqueRef<WebCore::DisplayList::RecorderImpl> m_recorder;
-    const RemoteDisplayListRecorderIdentifier m_identifier;
+    const RemoteSnapshotRecorderIdentifier m_identifier;
 };
 
 } // namespace WebKit

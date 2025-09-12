@@ -38,8 +38,6 @@ class RemoteDisplayListRecorderProxy : public RemoteGraphicsContextProxy {
 public:
     RemoteDisplayListRecorderProxy(RemoteRenderingBackendProxy&);
     RemoteDisplayListRecorderIdentifier identifier() const { return RemoteDisplayListRecorderIdentifier { RemoteGraphicsContextProxy::identifier().toUInt64() }; }
-
-    void drawRemoteFrame(WebCore::FrameIdentifier);
 };
 
 }

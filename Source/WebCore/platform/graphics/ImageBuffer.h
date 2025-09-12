@@ -254,7 +254,6 @@ public:
     WEBCORE_EXPORT virtual String debugDescription() const;
 
     WEBCORE_EXPORT virtual ImageBufferBackendSharing* toBackendSharing();
-    WEBCORE_EXPORT virtual ImageBufferDisplayListBackend* toDisplayListBackend();
 
 protected:
     WEBCORE_EXPORT ImageBuffer(ImageBufferParameters, const ImageBufferBackend::Info&, const WebCore::ImageBufferCreationContext&, std::unique_ptr<ImageBufferBackend>&& = nullptr, RenderingResourceIdentifier = RenderingResourceIdentifier::generate());

@@ -13392,35 +13392,37 @@ void WebPageProxy::drawPagesForPrinting(WebFrameProxy& frame, const PrintInfo& p
 #endif
 
 #if PLATFORM(COCOA)
-void WebPageProxy::drawToPDF(FrameIdentifier frameID, const std::optional<FloatRect>& rect, bool allowTransparentBackground, CompletionHandler<void(RefPtr<SharedBuffer>&&)>&& callback)
+
+void WebPageProxy::drawToPDF(const std::optional<FloatRect>& rect, bool allowTransparentBackground, CompletionHandler<void(RefPtr<SharedBuffer>&&)>&& callback)
 {
     if (!hasRunningProcess()) {
         callback({ });
         return;
     }
-    sendWithAsyncReply(Messages::WebPage::DrawToPDF(frameID, rect, allowTransparentBackground), WTFMove(callback));
-}
-
-void WebPageProxy::drawRemoteToPDF(FrameIdentifier frameID, const std::optional<FloatRect>& rect, bool allowTransparentBackground, CompletionHandler<void(RefPtr<SharedBuffer>&&)>&& callback)
-{
-    if (!hasRunningProcess()) {
-        callback({ });
+    Ref preferences = this->preferences();
+    if (!(preferences->remoteSnapshottingEnabled() && preferences->useGPUProcessForDOMRenderingEnabled())) {
+        sendWithAsyncReply(Messages::WebPage::DrawToPDF(rect, allowTransparentBackground), WTFMove(callback));
         return;
     }
 
-    auto snapshotIdentifier = SnapshotIdentifier::generate();
-    sendWithAsyncReply(Messages::WebPage::DrawRemoteToPDF(frameID, rect, allowTransparentBackground, snapshotIdentifier), [snapshotIdentifier, callback = WTFMove(callback)](bool success) mutable {
-        RefPtr gpuProcess = GPUProcessProxy::singletonIfCreated();
+    auto snapshotIdentifier = RemoteSnapshotIdentifier::generate();
+    Ref gpuProcess = GPUProcessProxy::getOrCreate();
+    sendWithAsyncReply(Messages::WebPage::DrawToSnapshot(rect, allowTransparentBackground, snapshotIdentifier),
+        [weakGPUProcess = WeakPtr { gpuProcess }, snapshotIdentifier, callback = WTFMove(callback), rootFrameIdentifier = m_mainFrame->frameID()](std::optional<IntSize> result) mutable {
+        RefPtr gpuProcess = weakGPUProcess.get();
         if (!gpuProcess || !gpuProcess->hasConnection()) {
             callback({ });
             return;
         }
-
-        // Call retrieve even if we know we failed somewhere to make sure we clean
-        // up any resources there.
-        gpuProcess->retrievePDFSnapshot(snapshotIdentifier, success, WTFMove(callback));
+        if (!result) {
+            gpuProcess->releaseSnapshot(snapshotIdentifier);
+            callback({ });
+            return;
+        }
+        gpuProcess->sinkCompletedSnapshotToPDF(snapshotIdentifier, *result, rootFrameIdentifier, WTFMove(callback));
     });
 }
+
 #endif // PLATFORM(COCOA)
 
 void WebPageProxy::getPDFFirstPageSize(WebCore::FrameIdentifier frameID, CompletionHandler<void(WebCore::FloatSize)>&& completionHandler)
@@ -16687,9 +16689,9 @@ void WebPageProxy::documentURLForConsoleLog(WebCore::FrameIdentifier frameID, Co
     completionHandler({ });
 }
 
-void WebPageProxy::paintRemoteFrameContents(FrameIdentifier frameID, const IntRect& rect, SnapshotIdentifier snapshotIdentifier, CompletionHandler<void(bool)>&& completionHandler)
+void WebPageProxy::drawFrameToSnapshot(FrameIdentifier frameID, const IntRect& rect, RemoteSnapshotIdentifier snapshotIdentifier, CompletionHandler<void(bool)>&& completionHandler)
 {
-    sendWithAsyncReplyToProcessContainingFrame(frameID, Messages::WebPage::PaintFrameContents(frameID, rect, snapshotIdentifier), WTFMove(completionHandler));
+    sendWithAsyncReplyToProcessContainingFrame(frameID, Messages::WebPage::DrawFrameToSnapshot(frameID, rect, snapshotIdentifier), WTFMove(completionHandler));
 }
 
 void WebPageProxy::resetVisibilityAdjustmentsForTargetedElements(const Vector<Ref<API::TargetedElementInfo>>& elements, CompletionHandler<void(bool)>&& completion)

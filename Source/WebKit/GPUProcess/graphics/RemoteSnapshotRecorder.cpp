@@ -24,41 +24,65 @@
  */
 
 #include "config.h"
-#include "RemoteDisplayListRecorder.h"
 
 #if ENABLE(GPU_PROCESS)
+#include "RemoteSnapshotRecorder.h"
 
 #include "RemoteGraphicsContextMessages.h"
+#include "RemoteSnapshot.h"
+#include "RemoteSnapshotRecorderMessages.h"
+
+#define MESSAGE_CHECK(assertion) MESSAGE_CHECK_BASE(assertion, m_renderingBackend->streamConnection());
 
 namespace WebKit {
 using namespace WebCore;
 
-Ref<RemoteDisplayListRecorder> RemoteDisplayListRecorder::create(RemoteDisplayListRecorderIdentifier identifier, RemoteRenderingBackend& renderingBackend)
+Ref<RemoteSnapshotRecorder> RemoteSnapshotRecorder::create(RemoteSnapshotRecorderIdentifier identifier, RemoteSnapshot& snapshot, RemoteRenderingBackend& renderingBackend)
 {
-    Ref instance = adoptRef(*new RemoteDisplayListRecorder(makeUniqueRef<DisplayList::RecorderImpl>(FloatSize { }), identifier, renderingBackend));
+    Ref instance = adoptRef(*new RemoteSnapshotRecorder(makeUniqueRef<DisplayList::RecorderImpl>(FloatSize { }), identifier, snapshot, renderingBackend));
     instance->startListeningForIPC();
     return instance;
 }
 
-RemoteDisplayListRecorder::RemoteDisplayListRecorder(UniqueRef<DisplayList::RecorderImpl>&& recorder, RemoteDisplayListRecorderIdentifier identifier, RemoteRenderingBackend& renderingBackend)
+RemoteSnapshotRecorder::RemoteSnapshotRecorder(UniqueRef<DisplayList::RecorderImpl>&& recorder, RemoteSnapshotRecorderIdentifier identifier, RemoteSnapshot& snapshot, RemoteRenderingBackend& renderingBackend)
     : RemoteGraphicsContext(recorder, renderingBackend)
+    , m_snapshot(snapshot)
     , m_recorder(WTFMove(recorder))
     , m_identifier(identifier)
 {
 }
 
-RemoteDisplayListRecorder::~RemoteDisplayListRecorder() = default;
+RemoteSnapshotRecorder::~RemoteSnapshotRecorder() = default;
 
-void RemoteDisplayListRecorder::startListeningForIPC()
+void RemoteSnapshotRecorder::startListeningForIPC()
 {
     m_renderingBackend->streamConnection().startReceivingMessages(*this, Messages::RemoteGraphicsContext::messageReceiverName(), m_identifier.toUInt64());
+    m_renderingBackend->streamConnection().startReceivingMessages(*this, Messages::RemoteSnapshotRecorder::messageReceiverName(), m_identifier.toUInt64());
 }
 
-void RemoteDisplayListRecorder::stopListeningForIPC()
+void RemoteSnapshotRecorder::stopListeningForIPC()
 {
     m_renderingBackend->streamConnection().stopReceivingMessages(Messages::RemoteGraphicsContext::messageReceiverName(), m_identifier.toUInt64());
+    m_renderingBackend->streamConnection().stopReceivingMessages(Messages::RemoteSnapshotRecorder::messageReceiverName(), m_identifier.toUInt64());
 }
 
-} // namespace WebKit
+Ref<RemoteSnapshot> RemoteSnapshotRecorder::snapshot() const
+{
+    return m_snapshot;
+}
 
-#endif // ENABLE(GPU_PROCESS)
+void RemoteSnapshotRecorder::drawSnapshotFrame(FrameIdentifier frameIdentifier)
+{
+    bool result = m_snapshot->addFrameReference(frameIdentifier);
+    MESSAGE_CHECK(result);
+    m_recorder->drawPlaceholder([snapshot = m_snapshot, frameIdentifier] (GraphicsContext& context) {
+        bool result = snapshot->applyFrame(frameIdentifier, context);
+        ASSERT_UNUSED(result, result); // Programming error, consistency checked with isComplete().
+    });
+}
+
+}
+
+#undef MESSAGE_CHECK
+
+#endif

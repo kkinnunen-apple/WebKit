@@ -24,20 +24,27 @@
  */
 
 #include "config.h"
-#include "RemoteDisplayListRecorderProxy.h"
+#include "RemoteSnapshotRecorderProxy.h"
 
 #if ENABLE(GPU_PROCESS)
 
+#include "RemoteSnapshotRecorderMessages.h"
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebKit {
 using namespace WebCore;
 
-WTF_MAKE_TZONE_ALLOCATED_IMPL(RemoteDisplayListRecorderProxy);
+WTF_MAKE_TZONE_ALLOCATED_IMPL(RemoteSnapshotRecorderProxy);
 
-RemoteDisplayListRecorderProxy::RemoteDisplayListRecorderProxy(RemoteRenderingBackendProxy& renderingBackend)
+RemoteSnapshotRecorderProxy::RemoteSnapshotRecorderProxy(RemoteRenderingBackendProxy& renderingBackend)
     : RemoteGraphicsContextProxy(DestinationColorSpace::SRGB(), std::nullopt, RenderingMode::Accelerated, { }, { }, DrawGlyphsMode::Normal, RemoteGraphicsContextIdentifier::generate(), renderingBackend)
 {
+}
+
+void RemoteSnapshotRecorderProxy::drawSnapshotFrame(FrameIdentifier frameIdentifier)
+{
+    appendStateChangeItemIfNecessary();
+    send(Messages::RemoteSnapshotRecorder::DrawSnapshotFrame(frameIdentifier));
 }
 
 }

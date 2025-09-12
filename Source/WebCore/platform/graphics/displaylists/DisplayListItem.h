@@ -59,6 +59,7 @@ class DrawFocusRingPath;
 class DrawFocusRingRects;
 class DrawGlyphs;
 class DrawDisplayList;
+class DrawPlaceholder;
 class DrawImageBuffer;
 class DrawLine;
 class DrawLinesForText;
@@ -67,7 +68,6 @@ class DrawPath;
 class DrawPatternNativeImage;
 class DrawPatternImageBuffer;
 class DrawRect;
-class DrawRemoteFrame;
 class DrawSystemImage;
 class EndTransparencyLayer;
 class FillCompositedRect;
@@ -125,6 +125,7 @@ using Item = Variant
     , DrawFocusRingRects
     , DrawGlyphs
     , DrawDisplayList
+    , DrawPlaceholder
     , DrawImageBuffer
     , DrawLine
     , DrawLinesForText
@@ -133,7 +134,6 @@ using Item = Variant
     , DrawPatternNativeImage
     , DrawPatternImageBuffer
     , DrawRect
-    , DrawRemoteFrame
     , DrawSystemImage
     , EndTransparencyLayer
     , FillCompositedRect

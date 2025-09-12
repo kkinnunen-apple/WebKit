@@ -81,15 +81,7 @@ void WebRemoteFrameClient::paintContents(GraphicsContext& context, const IntRect
     RefPtr page = m_frame->page();
     if (!page)
         return;
-
-    if (!page->currentSnapshot() || page->currentSnapshot()->recorder.ptr() != &context)
-        return;
-
-    page->sendWithAsyncReply(Messages::WebPageProxy::PaintRemoteFrameContents(m_frame->frameID(), rect, page->currentSnapshot()->identifier), [snapshotCallback = page->currentSnapshot()->callback](bool success) {
-        if (!success)
-            snapshotCallback->failed();
-    });
-    page->currentSnapshot()->recorder->drawRemoteFrame(m_frame->frameID());
+    page->paintRemoteFrameContents(m_frame->frameID(), rect, context);
 }
 
 void WebRemoteFrameClient::postMessageToRemote(FrameIdentifier source, const String& sourceOrigin, FrameIdentifier target, std::optional<SecurityOriginData> targetOrigin, const MessageWithMessagePorts& message)

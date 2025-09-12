@@ -919,6 +919,11 @@ void GPUProcessProxy::unregisterMemoryAttributionID(const String& attributionID,
 #endif
 #endif
 
+void GPUProcessProxy::releaseSnapshot(RemoteSnapshotIdentifier identifier)
+{
+    send(Messages::GPUProcess::ReleaseSnapshot(identifier), 0);
+}
+
 } // namespace WebKit
 
 #endif // ENABLE(GPU_PROCESS)

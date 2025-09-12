@@ -656,13 +656,6 @@ ImageBufferBackendSharing* ImageBuffer::toBackendSharing()
     return nullptr;
 }
 
-ImageBufferDisplayListBackend* ImageBuffer::toDisplayListBackend()
-{
-    if (auto* backend = ensureBackend())
-        return backend->toDisplayListBackend();
-    return nullptr;
-}
-
 #if ENABLE(RE_DYNAMIC_CONTENT_SCALING)
 std::optional<DynamicContentScalingDisplayList> ImageBuffer::dynamicContentScalingDisplayList()
 {

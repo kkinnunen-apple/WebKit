@@ -188,7 +188,7 @@ RemoteAudioMediaStreamTrackRendererInternalUnitManagerUnit::RemoteAudioMediaStre
     : m_identifier(identifier)
     , m_connection(connection)
     , m_localUnit(WebCore::AudioMediaStreamTrackRendererInternalUnit::create(deviceID, *this))
-    , m_canUseCaptureUnit(deviceID == AudioMediaStreamTrackRenderer::defaultDeviceID())
+    , m_canUseCaptureUnit(deviceID == WebCore::AudioMediaStreamTrackRenderer::defaultDeviceID())
 {
     WebCore::AudioSession::singleton().addInterruptionObserver(*this);
     protectedLocalUnit()->retrieveFormatDescription([weakThis = WeakPtr { *this }, this, callback = WTFMove(callback)](auto&& description) mutable {

@@ -103,9 +103,7 @@ private:
     std::tuple<In...> m_defaultArgs;
 };
 
-// Eagerly resolves the callback with 'false' if failed) is called, otherwise
-// behaves like CallbackAgregator, and resolves the callback (with true) when all
-// references have been released.
+// Waits for all bool completions and resolves to true only if all succeed.
 template <DestructionThread destructionThread>
 class SuccessCallbackAggregatorOnThread : public ThreadSafeRefCounted<SuccessCallbackAggregatorOnThread<destructionThread>, destructionThread> {
 public:
@@ -114,16 +112,20 @@ public:
     ~SuccessCallbackAggregatorOnThread()
     {
         ASSERT(m_wasConstructedOnMainThread == isMainThread());
-        if (m_callback)
-            m_callback(true);
+        m_callback(m_result);
     }
 
     void failed()
     {
-        if (m_callback) {
-            auto callback = std::exchange(m_callback, CompletionHandler<void(bool)>());
-            callback(false);
-        }
+        m_result = false;
+    }
+
+    CompletionHandler<void(bool)> chain()
+    {
+        return [aggregator = Ref { *this }] (bool success) {
+            if (!success)
+                aggregator->failed();
+        };
     }
 
 private:
@@ -139,6 +141,7 @@ private:
 #if ASSERT_ENABLED
     bool m_wasConstructedOnMainThread;
 #endif
+    bool m_result { true };
 };
 
 

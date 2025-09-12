@@ -2954,7 +2954,6 @@
 		72C37C1D2967747E007E8F53 /* SwitchTrackPart.h in Headers */ = {isa = PBXBuildFile; fileRef = 72C37C1A2967747D007E8F53 /* SwitchTrackPart.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		72C37C1F2967747E007E8F52 /* SliderThumbPart.h in Headers */ = {isa = PBXBuildFile; fileRef = 72C37C1C2967747E007E8F52 /* SliderThumbPart.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		72C37C1F2967747E007E8F53 /* SwitchThumbPart.h in Headers */ = {isa = PBXBuildFile; fileRef = 72C37C1C2967747E007E8F53 /* SwitchThumbPart.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		72C908602D10E9D500D17EBB /* SnapshotIdentifier.h in Headers */ = {isa = PBXBuildFile; fileRef = 72C9085F2D10E9A400D17EBB /* SnapshotIdentifier.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		72D3F66D2A37FE9700F3A82B /* RotationDirection.h in Headers */ = {isa = PBXBuildFile; fileRef = 72D3F66C2A37F48E00F3A82B /* RotationDirection.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		72D73644278461A000398663 /* FilterResults.h in Headers */ = {isa = PBXBuildFile; fileRef = 7211B5D6276536820076FEF8 /* FilterResults.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		72E5023129B669EE00E5B8E7 /* RenderingResource.h in Headers */ = {isa = PBXBuildFile; fileRef = 72E5023029B669ED00E5B8E7 /* RenderingResource.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -13836,7 +13835,6 @@
 		72C37C1B2967747E007E8F52 /* SliderTrackPart.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SliderTrackPart.cpp; sourceTree = "<group>"; };
 		72C37C1C2967747E007E8F52 /* SliderThumbPart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SliderThumbPart.h; sourceTree = "<group>"; };
 		72C37C1C2967747E007E8F53 /* SwitchThumbPart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchThumbPart.h; sourceTree = "<group>"; };
-		72C9085F2D10E9A400D17EBB /* SnapshotIdentifier.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SnapshotIdentifier.h; sourceTree = "<group>"; };
 		72CE4EA32970FF8800A2AD95 /* ImageControlsButtonMac.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ImageControlsButtonMac.mm; sourceTree = "<group>"; };
 		72CE4EA42970FF8800A2AD95 /* ImageControlsButtonMac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageControlsButtonMac.h; sourceTree = "<group>"; };
 		72CE4EA5297102B800A2AD95 /* ImageControlsButtonPart.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageControlsButtonPart.h; sourceTree = "<group>"; };
@@ -34913,7 +34911,6 @@
 				46C963C52B6C9CAE002F46D1 /* ShareableBitmapHandle.cpp */,
 				46C963C42B6C9CAE002F46D1 /* ShareableBitmapHandle.h */,
 				1C4DB02427339E5E007B0AD1 /* ShouldLocalizeAxisNames.h */,
-				72C9085F2D10E9A400D17EBB /* SnapshotIdentifier.h */,
 				72FD30A927E3217A0023CDAC /* SourceBrush.cpp */,
 				72FD30AA27E3217B0023CDAC /* SourceBrush.h */,
 				46E6F1922AFAB7EC002807E2 /* SourceBrushLogicalGradient.h */,
@@ -45692,7 +45689,6 @@
 				4B6FA6F40C39E48C00087011 /* SmartReplace.h in Headers */,
 				E4AFD00C0DAF335400F5F55C /* SMILTime.h in Headers */,
 				E4AFD00E0DAF335500F5F55C /* SMILTimeContainer.h in Headers */,
-				72C908602D10E9D500D17EBB /* SnapshotIdentifier.h in Headers */,
 				5C7C88D81D0F1F4A009D2F6D /* SocketProvider.h in Headers */,
 				510D4A34103165EE0049EA54 /* SocketStreamError.h in Headers */,
 				84A81F3E0FC7DFF000955300 /* SourceAlpha.h in Headers */,

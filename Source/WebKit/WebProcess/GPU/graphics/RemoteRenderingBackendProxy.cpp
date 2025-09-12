@@ -43,6 +43,7 @@
 #include "RemoteRenderingBackendMessages.h"
 #include "RemoteRenderingBackendProxyMessages.h"
 #include "RemoteSharedResourceCacheProxy.h"
+#include "RemoteSnapshotRecorderProxy.h"
 #include "SwapBuffersDisplayRequirement.h"
 #include "WebPage.h"
 #include "WebProcess.h"
@@ -334,24 +335,17 @@ Ref<RemoteImageBufferProxy> RemoteRenderingBackendProxy::moveToImageBuffer(Remot
     return result;
 }
 
-UniqueRef<RemoteDisplayListRecorderProxy> RemoteRenderingBackendProxy::createDisplayListRecorder()
+UniqueRef<RemoteSnapshotRecorderProxy> RemoteRenderingBackendProxy::createSnapshotRecorder(RemoteSnapshotIdentifier snapshotIdentifier)
 {
-    auto recorder = makeUniqueRef<RemoteDisplayListRecorderProxy>(*this);
-    send(Messages::RemoteRenderingBackend::CreateDisplayListRecorder(recorder->identifier()));
+    auto recorder = makeUniqueRef<RemoteSnapshotRecorderProxy>(*this);
+    send(Messages::RemoteRenderingBackend::CreateSnapshotRecorder(recorder->identifier(), snapshotIdentifier));
     return recorder;
 }
 
-#if PLATFORM(COCOA)
-void RemoteRenderingBackendProxy::sinkDisplayListRecorderIntoSnapshot(UniqueRef<RemoteDisplayListRecorderProxy>&& recorder, const WebCore::FloatSize& size, SnapshotIdentifier snapshotIdentifier, CompletionHandler<void(bool)>&& completionHandler)
+void RemoteRenderingBackendProxy::sinkSnapshotRecorderIntoSnapshotFrame(UniqueRef<RemoteSnapshotRecorderProxy>&& recorder, FrameIdentifier frameIdentifier, CompletionHandler<void(bool)>&& completionHandler)
 {
-    sendWithAsyncReply(Messages::RemoteRenderingBackend::SinkDisplayListRecorderIntoSnapshot(recorder->identifier(), size, snapshotIdentifier), WTFMove(completionHandler));
+    sendWithAsyncReply(Messages::RemoteRenderingBackend::SinkSnapshotRecorderIntoSnapshotFrame(recorder->identifier(), frameIdentifier), WTFMove(completionHandler));
 }
-
-void RemoteRenderingBackendProxy::sinkFrameDisplayListRecorderIntoSnapshot(FrameIdentifier frameID, UniqueRef<RemoteDisplayListRecorderProxy>&& recorder, SnapshotIdentifier snapshotIdentifier, CompletionHandler<void(bool)>&& completionHandler)
-{
-    sendWithAsyncReply(Messages::RemoteRenderingBackend::SinkFrameDisplayListRecorderIntoSnapshot(frameID, recorder->identifier(), snapshotIdentifier), WTFMove(completionHandler));
-}
-#endif
 
 bool RemoteRenderingBackendProxy::getPixelBufferForImageBuffer(RenderingResourceIdentifier imageBuffer, const PixelBufferFormat& destinationFormat, const IntRect& srcRect, std::span<uint8_t> result)
 {

@@ -386,7 +386,6 @@ using SandboxFlags = OptionSet<SandboxFlag>;
 using ScrollingNodeID = ProcessQualified<ObjectIdentifier<ScrollingNodeIDType>>;
 using ScrollPosition = IntPoint;
 using SleepDisablerIdentifier = ObjectIdentifier<SleepDisablerIdentifierType>;
-using SnapshotIdentifier = AtomicObjectIdentifier<SnapshotIdentifierType>;
 using UserMediaRequestIdentifier = ObjectIdentifier<UserMediaRequestIdentifierType>;
 
 } // namespace WebCore
@@ -573,6 +572,7 @@ struct PlatformPopupMenuData;
 struct PolicyDecision;
 struct PolicyDecisionConsoleMessage;
 struct PrintInfo;
+struct RemoteSnapshotIdentifierType;
 struct ResourceLoadInfo;
 struct RemotePageParameters;
 struct RunJavaScriptParameters;
@@ -656,6 +656,7 @@ using LayerHostingContextID = uint32_t;
 using NetworkResourceLoadIdentifier = ObjectIdentifier<NetworkResourceLoadIdentifierType>;
 using PDFPluginIdentifier = ObjectIdentifier<PDFPluginIdentifierType>;
 using PlaybackSessionContextIdentifier = WebCore::ProcessQualified<WebCore::HTMLMediaElementIdentifier>;
+using RemoteSnapshotIdentifier = AtomicObjectIdentifier<RemoteSnapshotIdentifierType>;
 using SnapshotOptions = OptionSet<SnapshotOption>;
 using SpeechRecognitionPermissionRequestCallback = CompletionHandler<void(std::optional<WebCore::SpeechRecognitionError>&&)>;
 using SpellDocumentTag = int64_t;
@@ -1825,8 +1826,7 @@ public:
 #if PLATFORM(COCOA)
     std::optional<IPC::AsyncReplyID> drawRectToImage(WebFrameProxy&, const PrintInfo&, const WebCore::IntRect&, const WebCore::IntSize&, CompletionHandler<void(std::optional<WebCore::ShareableBitmapHandle>&&)>&&);
     std::optional<IPC::AsyncReplyID> drawPagesToPDF(WebFrameProxy&, const PrintInfo&, uint32_t first, uint32_t count, CompletionHandler<void(API::Data*)>&&);
-    void drawToPDF(WebCore::FrameIdentifier, const std::optional<WebCore::FloatRect>&, bool allowTransparentBackground, CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&&);
-    void drawRemoteToPDF(WebCore::FrameIdentifier, const std::optional<WebCore::FloatRect>&, bool allowTransparentBackground, CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&&);
+    void drawToPDF(const std::optional<WebCore::FloatRect>&, bool allowTransparentBackground, CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&&);
 #if PLATFORM(IOS_FAMILY)
     size_t computePagesForPrintingiOS(WebCore::FrameIdentifier, const PrintInfo&);
     std::optional<IPC::AsyncReplyID> drawToImage(WebCore::FrameIdentifier, const PrintInfo&, CompletionHandler<void(std::optional<WebCore::ShareableBitmapHandle>&&)>&&);
@@ -3401,7 +3401,7 @@ private:
     void bindRemoteAccessibilityFrames(int processIdentifier, WebCore::FrameIdentifier, Vector<uint8_t>&& dataToken, CompletionHandler<void(Vector<uint8_t>, int)>&&);
     void updateRemoteFrameAccessibilityOffset(WebCore::FrameIdentifier, WebCore::IntPoint);
     void documentURLForConsoleLog(WebCore::FrameIdentifier, CompletionHandler<void(const URL&)>&&);
-    void paintRemoteFrameContents(WebCore::FrameIdentifier, const WebCore::IntRect&, WebCore::SnapshotIdentifier, CompletionHandler<void(bool)>&&);
+    void drawFrameToSnapshot(WebCore::FrameIdentifier, const WebCore::IntRect&, RemoteSnapshotIdentifier, CompletionHandler<void(bool)>&&);
 
     void setTextIndicatorFromFrame(WebCore::FrameIdentifier, const WebCore::TextIndicatorData&, WebCore::TextIndicatorLifetime);
     void updateTextIndicatorFromFrame(WebCore::FrameIdentifier, const WebCore::TextIndicatorData&);

@@ -48,6 +48,8 @@
 #include "RemoteRenderingBackendMessages.h"
 #include "RemoteRenderingBackendProxyMessages.h"
 #include "RemoteSharedResourceCache.h"
+#include "RemoteSnapshot.h"
+#include "RemoteSnapshotRecorder.h"
 #include "RemoteTextDetector.h"
 #include "RemoteTextDetectorMessages.h"
 #include "ShapeDetectionObjectHeap.h"
@@ -210,35 +212,30 @@ void RemoteRenderingBackend::moveToImageBuffer(RemoteSerializedImageBufferIdenti
     MESSAGE_CHECK(result.isNewEntry, "Duplicate ImageBuffer");
 }
 
-#if PLATFORM(COCOA)
-void RemoteRenderingBackend::sinkDisplayListRecorderIntoSnapshot(RemoteDisplayListRecorderIdentifier recorderIdentifier, const FloatSize& size, SnapshotIdentifier snapshotIdentifier, CompletionHandler<void(bool)>&& completionHandler)
+void RemoteRenderingBackend::createSnapshotRecorder(RemoteSnapshotRecorderIdentifier identifier, RemoteSnapshotIdentifier snapshotIdentifier)
 {
     assertIsCurrent(workQueue());
-    RefPtr recorder = m_remoteDisplayListRecorders.take(recorderIdentifier).get();
-    MESSAGE_CHECK(recorder, "Recorder sunk into display list before being cached");
-
-    Ref displayList = recorder->takeDisplayList();
-
-    callOnMainRunLoop([size, displayList = WTFMove(displayList), snapshotIdentifier, completionHandler = WTFMove(completionHandler)]() mutable {
-        GPUProcess::singleton().sinkDisplayListIntoSnapshot(WTFMove(displayList), size, snapshotIdentifier);
-        completionHandler(true);
-    });
+    // FIXME: using global identifiers (snapshotIdentifier) is not secure. Do not follow this pattern.
+    Ref snapshot = GPUProcess::singleton().getOrCreateSnapshot(snapshotIdentifier);
+    auto result = m_remoteSnapshotRecorders.add(identifier, RemoteSnapshotRecorder::create(identifier, snapshot, *this));
+    MESSAGE_CHECK(result.isNewEntry, "Recorder already created");
 }
 
-void RemoteRenderingBackend::sinkFrameDisplayListRecorderIntoSnapshot(FrameIdentifier frameID, RemoteDisplayListRecorderIdentifier recorderIdentifier, SnapshotIdentifier snapshotIdentifier, CompletionHandler<void(bool)>&& completionHandler)
+void RemoteRenderingBackend::sinkSnapshotRecorderIntoSnapshotFrame(RemoteSnapshotRecorderIdentifier identifier, FrameIdentifier frameIdentifier, CompletionHandler<void(bool)>&& completionHandler)
 {
     assertIsCurrent(workQueue());
-    RefPtr recorder = m_remoteDisplayListRecorders.take(recorderIdentifier).get();
-    MESSAGE_CHECK(recorder, "Recorder sunk into display list before being cached");
+    RefPtr recorder = m_remoteSnapshotRecorders.take(identifier).get();
+    MESSAGE_CHECK(recorder, "Recorder sunk into snapshot before being cached");
+    Ref snapshot = recorder->snapshot();
+    // FIXME: using global identifiers (frameIdentifier) is not secure. Do not follow this pattern.
+    bool success = snapshot->setFrame(frameIdentifier, recorder->takeDisplayList());
+    MESSAGE_CHECK(success, "Frame already present");
 
-    Ref displayList = recorder->takeDisplayList();
-
-    callOnMainRunLoop([frameID, displayList = WTFMove(displayList), snapshotIdentifier, completionHandler = WTFMove(completionHandler)]() mutable {
-        GPUProcess::singleton().sinkFrameDisplayListIntoSnapshot(frameID, WTFMove(displayList), snapshotIdentifier);
-        completionHandler(true);
-    });
+    // Note:
+    // Success completion handlers are used to ensure that getOrCreateSnapshot does not vivify already released snapshot identifier into a leaked object. Caller is expected to wait
+    // until completion of *all* handlers, failing or not, before consuming the snapshot, otherwise leaks occur.
+    completionHandler(true);
 }
-#endif
 
 template<typename ImageBufferType>
 static RefPtr<ImageBuffer> allocateImageBufferInternal(const FloatSize& logicalSize, RenderingMode renderingMode, RenderingPurpose purpose, float resolutionScale, const DestinationColorSpace& colorSpace, ImageBufferFormat bufferFormat, ImageBufferCreationContext& creationContext)

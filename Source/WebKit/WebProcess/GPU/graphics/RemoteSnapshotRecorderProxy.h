@@ -27,31 +27,24 @@
 
 #if ENABLE(GPU_PROCESS)
 
-#include "RemoteDisplayListIdentifier.h"
-#include "RemoteDisplayListRecorderIdentifier.h"
-#include "RemoteGraphicsContext.h"
-#include <WebCore/DisplayListRecorderImpl.h>
+#include "RemoteGraphicsContextProxy.h"
+#include "RemoteSnapshotRecorderIdentifier.h"
 
 namespace WebKit {
 
-// RemoteGraphicsContext playing back the IPC GraphicsContext drawing commands to a DisplayList::Recorder.
-// Used to create DisplayList instances.
-class RemoteDisplayListRecorder final : public RemoteGraphicsContext {
+// RemoteSnapshotRecorder is a display list recorder that can convert a snapshot subframe rendering into
+// its own draw item. In other words, RemoteSnapshotRecorder has the right to source snapshot subframe
+// renderings.
+class RemoteSnapshotRecorderProxy : public RemoteGraphicsContextProxy {
+    WTF_MAKE_TZONE_ALLOCATED(RemoteSnapshotRecorderProxy);
+
 public:
-    static Ref<RemoteDisplayListRecorder> create(RemoteDisplayListRecorderIdentifier, RemoteRenderingBackend&);
-    ~RemoteDisplayListRecorder();
-    void stopListeningForIPC();
+    RemoteSnapshotRecorderProxy(RemoteRenderingBackendProxy&);
+    RemoteSnapshotRecorderIdentifier identifier() const { return RemoteSnapshotRecorderIdentifier { RemoteGraphicsContextProxy::identifier().toUInt64() }; }
 
-    Ref<const WebCore::DisplayList::DisplayList> takeDisplayList() { return m_recorder->takeDisplayList(); }
-
-private:
-    RemoteDisplayListRecorder(UniqueRef<WebCore::DisplayList::RecorderImpl>&&, RemoteDisplayListRecorderIdentifier, RemoteRenderingBackend&);
-    void startListeningForIPC();
-
-    UniqueRef<WebCore::DisplayList::RecorderImpl> m_recorder;
-    const RemoteDisplayListRecorderIdentifier m_identifier;
+    void drawSnapshotFrame(WebCore::FrameIdentifier);
 };
 
-} // namespace WebKit
+}
 
-#endif // ENABLE(GPU_PROCESS)
+#endif

@@ -40,6 +40,7 @@
 #include <WebCore/SharedBuffer.h>
 #include <WebCore/SystemImage.h>
 #include <WebCore/TextFlags.h>
+#include <wtf/Box.h>
 #include <wtf/TypeCasts.h>
 
 namespace WTF {
@@ -396,7 +397,7 @@ public:
     ImageBuffer& imageBuffer() const { return m_imageBuffer; }
     FloatRect destinationRect() const { return m_destinationRect; }
 
-    WEBCORE_EXPORT void apply(GraphicsContext&) const;
+    void apply(GraphicsContext&) const;
     void dump(TextStream&, OptionSet<AsTextFlag>) const;
 
 private:
@@ -481,7 +482,7 @@ public:
     FloatRect sourceImageRect() const { return m_sourceImageRect; }
     Filter& filter() const { return m_filter; }
 
-    WEBCORE_EXPORT void apply(GraphicsContext&) const;
+    void apply(GraphicsContext&) const;
     void dump(TextStream&, OptionSet<AsTextFlag>) const;
 
 private:
@@ -526,15 +527,30 @@ public:
     static constexpr char name[] = "draw-display-list";
 
     DrawDisplayList(Ref<const DisplayList>&&);
-    WEBCORE_EXPORT ~DrawDisplayList();
+    ~DrawDisplayList();
 
     Ref<const DisplayList> displayList() const;
 
-    WEBCORE_EXPORT void apply(GraphicsContext&) const;
+    void apply(GraphicsContext&) const;
     void dump(TextStream&, OptionSet<AsTextFlag>) const;
 
 private:
     Ref<const DisplayList> m_displayList;
+};
+
+class DrawPlaceholder {
+public:
+    static constexpr char name[] = "draw-placeholder";
+
+    DrawPlaceholder(Function<void(GraphicsContext&)>&&);
+    ~DrawPlaceholder();
+
+    void apply(GraphicsContext&) const;
+    void dump(TextStream&, OptionSet<AsTextFlag>) const;
+
+private:
+    using FunctionHolder = Box<Function<void(GraphicsContext&)>>;
+    FunctionHolder m_function;
 };
 
 class DrawImageBuffer {
@@ -554,7 +570,7 @@ public:
     FloatRect destinationRect() const { return m_destinationRect; }
     ImagePaintingOptions options() const { return m_options; }
 
-    WEBCORE_EXPORT void apply(GraphicsContext&) const;
+    void apply(GraphicsContext&) const;
     void dump(TextStream&, OptionSet<AsTextFlag>) const;
 
 private:
@@ -581,7 +597,7 @@ public:
     const FloatRect& source() const { return m_srcRect; }
     ImagePaintingOptions options() const { return m_options; }
 
-    WEBCORE_EXPORT void apply(GraphicsContext&) const;
+    void apply(GraphicsContext&) const;
     void dump(TextStream&, OptionSet<AsTextFlag>) const;
 
 private:
@@ -589,24 +605,6 @@ private:
     FloatRect m_destinationRect;
     FloatRect m_srcRect;
     ImagePaintingOptions m_options;
-};
-
-class DrawRemoteFrame {
-public:
-    static constexpr char name[] = "draw-remote-frame";
-
-    DrawRemoteFrame(FrameIdentifier frameIdentifier)
-        : m_frameIdentifier(frameIdentifier)
-    {
-    }
-
-    FrameIdentifier frameIdentifier() const { return m_frameIdentifier; }
-
-    [[noreturn]] void apply(GraphicsContext&) const;
-    void dump(TextStream&, OptionSet<AsTextFlag>) const;
-
-private:
-    FrameIdentifier m_frameIdentifier;
 };
 
 class DrawSystemImage {
@@ -622,7 +620,7 @@ public:
     const SystemImage& systemImage() const { return m_systemImage; }
     const FloatRect& destinationRect() const { return m_destinationRect; }
 
-    WEBCORE_EXPORT void apply(GraphicsContext&) const;
+    void apply(GraphicsContext&) const;
     void dump(TextStream&, OptionSet<AsTextFlag>) const;
 
 private:
@@ -652,7 +650,7 @@ public:
     FloatSize spacing() const { return m_spacing; }
     ImagePaintingOptions options() const { return m_options; }
 
-    WEBCORE_EXPORT void apply(GraphicsContext&) const;
+    void apply(GraphicsContext&) const;
     void dump(TextStream&, OptionSet<AsTextFlag>) const;
 
 private:
@@ -687,7 +685,7 @@ public:
     FloatSize spacing() const { return m_spacing; }
     ImagePaintingOptions options() const { return m_options; }
 
-    WEBCORE_EXPORT void apply(GraphicsContext&) const;
+    void apply(GraphicsContext&) const;
     void dump(TextStream&, OptionSet<AsTextFlag>) const;
 
 private:

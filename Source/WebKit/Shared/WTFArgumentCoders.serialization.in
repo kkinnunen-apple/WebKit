@@ -206,6 +206,8 @@ template: struct WebKit::RemoteGraphicsContextIdentifierType
 template: struct WebKit::RemoteDisplayListIdentifierType
 template: struct WebKit::RemoteDisplayListRecorderIdentifierType
 template: struct WebKit::RemoteSerializedImageBufferIdentifierType
+template: struct WebKit::RemoteSnapshotIdentifierType
+template: struct WebKit::RemoteSnapshotRecorderIdentifierType
 template: struct WebKit::RemoteVideoFrameIdentifierType
 template: struct WebKit::VideoDecoderIdentifierType
 template: struct WebKit::VideoEncoderIdentifierType

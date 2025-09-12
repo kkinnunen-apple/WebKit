@@ -70,7 +70,7 @@ namespace WebKit {
 
 class ImageBufferSetClient;
 class WebPage;
-class RemoteDisplayListRecorderProxy;
+class RemoteSnapshotRecorderProxy;
 class RemoteImageBufferProxy;
 class RemoteSerializedImageBufferProxy;
 class RemoteSharedResourceCacheProxy;
@@ -100,10 +100,6 @@ public:
     std::unique_ptr<RemoteSerializedImageBufferProxy> moveToSerializedBuffer(RemoteImageBufferProxy&);
     Ref<RemoteImageBufferProxy> moveToImageBuffer(RemoteSerializedImageBufferProxy&);
 
-#if PLATFORM(COCOA)
-    void sinkDisplayListRecorderIntoSnapshot(UniqueRef<RemoteDisplayListRecorderProxy>&&, const WebCore::FloatSize&, WebCore::SnapshotIdentifier, CompletionHandler<void(bool)>&&);
-    void sinkFrameDisplayListRecorderIntoSnapshot(WebCore::FrameIdentifier, UniqueRef<RemoteDisplayListRecorderProxy>&&, WebCore::SnapshotIdentifier, CompletionHandler<void(bool)>&&);
-#endif
     bool isCached(const WebCore::ImageBuffer&) const;
 
     RefPtr<RemoteImageBufferProxy> createImageBuffer(const WebCore::FloatSize&, WebCore::RenderingMode, WebCore::RenderingPurpose, float resolutionScale, const WebCore::DestinationColorSpace&, WebCore::ImageBufferFormat);
@@ -129,7 +125,8 @@ public:
     void releaseImageBufferSet(RemoteImageBufferSetProxy&);
     void getImageBufferResourceLimitsForTesting(CompletionHandler<void(WebCore::ImageBufferResourceLimits)>&&);
 
-    UniqueRef<RemoteDisplayListRecorderProxy> createDisplayListRecorder();
+    UniqueRef<RemoteSnapshotRecorderProxy> createSnapshotRecorder(RemoteSnapshotIdentifier);
+    void sinkSnapshotRecorderIntoSnapshotFrame(UniqueRef<RemoteSnapshotRecorderProxy>&&, WebCore::FrameIdentifier, CompletionHandler<void(bool)>&&);
 
 #if USE(GRAPHICS_LAYER_WC)
     Function<bool()> flushImageBuffers();

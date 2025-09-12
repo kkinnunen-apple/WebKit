@@ -310,6 +310,22 @@ void DrawDisplayList::dump(TextStream& ts, OptionSet<AsTextFlag>) const
     ts.dumpProperty("display-list"_s, displayList);
 }
 
+DrawPlaceholder::DrawPlaceholder(Function<void(GraphicsContext&)>&& function)
+    : m_function(FunctionHolder::create(WTFMove(function)))
+{
+}
+
+DrawPlaceholder::~DrawPlaceholder() = default;
+
+void DrawPlaceholder::apply(GraphicsContext& context) const
+{
+    return (*m_function)(context);
+}
+
+void DrawPlaceholder::dump(TextStream&, OptionSet<AsTextFlag>) const
+{
+}
+
 void DrawImageBuffer::apply(GraphicsContext& context) const
 {
     context.drawImageBuffer(m_imageBuffer, m_destinationRect, m_srcRect, m_options);
@@ -334,16 +350,6 @@ void DrawNativeImage::dump(TextStream& ts, OptionSet<AsTextFlag> flags) const
         ts.dumpProperty("image-identifier"_s, m_image->renderingResourceIdentifier());
     ts.dumpProperty("source-rect"_s, source());
     ts.dumpProperty("dest-rect"_s, destinationRect());
-}
-
-[[noreturn]] void DrawRemoteFrame::apply(GraphicsContext&) const
-{
-    RELEASE_ASSERT_NOT_REACHED();
-}
-
-void DrawRemoteFrame::dump(TextStream& ts, OptionSet<AsTextFlag>) const
-{
-    ts.dumpProperty("frame-identifier", frameIdentifier());
 }
 
 void DrawSystemImage::apply(GraphicsContext& context) const

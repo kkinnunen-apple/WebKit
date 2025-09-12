@@ -67,7 +67,6 @@ class GraphicsContextGL;
 class IOSurfacePool;
 #endif
 class Image;
-class ImageBufferDisplayListBackend;
 class NativeImage;
 class PixelBuffer;
 class PixelBufferSourceView;
@@ -166,7 +165,6 @@ public:
     virtual void ensureNativeImagesHaveCopiedBackingStore() { }
 
     virtual ImageBufferBackendSharing* toBackendSharing() { return nullptr; }
-    virtual ImageBufferDisplayListBackend* toDisplayListBackend() { return nullptr; }
 
     virtual RefPtr<GraphicsLayerContentsDisplayDelegate> layerContentsDisplayDelegate() const { return nullptr; }
 

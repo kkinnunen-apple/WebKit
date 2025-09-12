@@ -29,8 +29,8 @@
 
 #include "AuxiliaryProcess.h"
 #include "GPUProcessPreferences.h"
+#include "RemoteSnapshotIdentifier.h"
 #include "SandboxExtension.h"
-#include "ThreadSafeObjectHeap.h"
 #include "WebPageProxyIdentifier.h"
 #include <WebCore/FrameIdentifier.h>
 #include <WebCore/ImageBuffer.h>
@@ -39,10 +39,10 @@
 #include <WebCore/PageIdentifier.h>
 #include <WebCore/ProcessIdentity.h>
 #include <WebCore/ShareableBitmap.h>
-#include <WebCore/SnapshotIdentifier.h>
 #include <WebCore/Timer.h>
 #include <pal/SessionID.h>
 #include <wtf/Function.h>
+#include <wtf/Lock.h>
 #include <wtf/MemoryPressureHandler.h>
 #include <wtf/MonotonicTime.h>
 #include <wtf/WeakPtr.h>
@@ -84,6 +84,7 @@ namespace WebKit {
 
 class GPUConnectionToWebProcess;
 class RemoteAudioSessionProxyManager;
+class RemoteSnapshot;
 struct CoreIPCAuditToken;
 struct GPUProcessConnectionParameters;
 struct GPUProcessCreationParameters;
@@ -164,12 +165,8 @@ public:
     void setPresentingApplicationAuditToken(WebCore::ProcessIdentifier, WebCore::PageIdentifier, std::optional<CoreIPCAuditToken>&&);
 #endif
 
-#if PLATFORM(COCOA)
-    void sinkDisplayListIntoSnapshot(Ref<const WebCore::DisplayList::DisplayList>&&, const WebCore::FloatSize&, WebCore::SnapshotIdentifier);
-    void sinkFrameDisplayListIntoSnapshot(WebCore::FrameIdentifier, Ref<const WebCore::DisplayList::DisplayList>&&, WebCore::SnapshotIdentifier);
-
-    void retrievePDFSnapshot(WebCore::SnapshotIdentifier snapshotIdentifier, bool valid, CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&&);
-#endif
+    Ref<RemoteSnapshot> getOrCreateSnapshot(RemoteSnapshotIdentifier);
+    RefPtr<RemoteSnapshot> snapshot(RemoteSnapshotIdentifier);
 
 #if PLATFORM(VISION) && ENABLE(MODEL_PROCESS)
     void requestSharedSimulationConnection(CoreIPCAuditToken&&, CompletionHandler<void(std::optional<IPC::SharedFileHandle>)>&&);
@@ -185,31 +182,6 @@ public:
 #endif
 
     void terminateWebProcess(WebCore::ProcessIdentifier);
-
-#if PLATFORM(COCOA)
-    struct SnapshotCompositor {
-        WTF_MAKE_TZONE_ALLOCATED(SnapshotCompositor);
-    public:
-        void setRootDisplayList(const WebCore::FloatSize&, Ref<const WebCore::DisplayList::DisplayList>&& displayList);
-        void addFrameDisplayList(WebCore::FrameIdentifier, Ref<const WebCore::DisplayList::DisplayList>&& displayList);
-
-        bool isComplete() const
-        {
-            return m_rootDisplayList && m_pendingFrameDisplayLists.isEmpty();
-        }
-
-        RefPtr<WebCore::SharedBuffer> resolveToPDF();
-    private:
-        void processDisplayListDependencies(const WebCore::DisplayList::DisplayList&);
-        void drawDisplayListResolvingRemoteFrames(WebCore::GraphicsContext& context, const WebCore::DisplayList::DisplayList& displayList);
-
-        WebCore::FloatSize m_size;
-        RefPtr<const WebCore::DisplayList::DisplayList> m_rootDisplayList;
-        HashMap<WebCore::FrameIdentifier, Ref<const WebCore::DisplayList::DisplayList>> m_frameDisplayLists;
-        HashSet<WebCore::FrameIdentifier> m_pendingFrameDisplayLists;
-    };
-#endif
-
 private:
     void lowMemoryHandler(Critical, Synchronous);
 
@@ -262,6 +234,10 @@ private:
     void setScreenProperties(const WebCore::ScreenProperties&);
     void updateProcessName();
 #endif
+#if PLATFORM(COCOA)
+    void sinkCompletedSnapshotToPDF(RemoteSnapshotIdentifier, WebCore::IntSize, WebCore::FrameIdentifier, CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&&);
+#endif
+    void releaseSnapshot(RemoteSnapshotIdentifier);
 
 #if USE(OS_STATE)
     RetainPtr<NSDictionary> additionalStateForDiagnosticReport() const final;
@@ -308,9 +284,11 @@ private:
     WCSharedSceneContextHolder m_sharedSceneContext;
 #endif
 
-#if PLATFORM(COCOA)
-    HashMap<WebCore::SnapshotIdentifier, std::unique_ptr<SnapshotCompositor>> m_snapshots;
-#endif
+    // FIXME: This is a sign that we lack local id exchange protocol. The outcome is that
+    // the protocols are insecure and prone to id guessing and content stuffing.
+    // Do not add more globally shared resources.
+    Lock m_globalResourceLocker;
+    HashMap<RemoteSnapshotIdentifier, Ref<RemoteSnapshot>> m_snapshots WTF_GUARDED_BY_LOCK(m_globalResourceLocker);
 
     struct GPUSession {
         String mediaCacheDirectory;
