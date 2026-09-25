@@ -40,10 +40,12 @@
 #ifdef __cplusplus
 
 #include <cstdint>
+#include <optional>
 #include <wtf/Forward.h>
 #include <wtf/OptionSet.h>
 #include <wtf/SwiftBridging.h>
 #include <wtf/ThreadSafeWeakPtr.h>
+#include <wtf/text/WTFString.h>
 
 namespace WebGPU {
 
@@ -536,6 +538,30 @@ struct Limits {
     uint32_t maxStorageTexturesInFragmentStage { 0 };
     uint32_t maxStorageBuffersInVertexStage { 0 };
     uint32_t maxStorageTexturesInVertexStage { 0 };
+};
+
+// Descriptors are call parameters only. Implementations must not store them.
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpuquerysetdescriptor
+struct QuerySetDescriptor {
+    String label;
+    QueryType type { QueryType::Occlusion };
+    uint32_t count { 0 };
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpusamplerdescriptor
+struct SamplerDescriptor {
+    String label;
+    AddressMode addressModeU { AddressMode::ClampToEdge };
+    AddressMode addressModeV { AddressMode::ClampToEdge };
+    AddressMode addressModeW { AddressMode::ClampToEdge };
+    FilterMode magFilter { FilterMode::Nearest };
+    FilterMode minFilter { FilterMode::Nearest };
+    MipmapFilterMode mipmapFilter { MipmapFilterMode::Nearest };
+    float lodMinClamp { 0 };
+    float lodMaxClamp { 32 };
+    std::optional<CompareFunction> compare; // std::nullopt: not a comparison sampler.
+    uint16_t maxAnisotropy { 1 };
 };
 
 class Adapter;

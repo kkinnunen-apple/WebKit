@@ -1298,7 +1298,12 @@ WGPUPipelineLayout wgpuDeviceCreatePipelineLayout(WGPUDevice device, const WGPUP
 
 WGPUQuerySet wgpuDeviceCreateQuerySet(WGPUDevice device, const WGPUQuerySetDescriptor* descriptor)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createQuerySet(*descriptor));
+    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
+    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor);
+    // An unknown query type makes an invalid query set without a validation error.
+    if (!apiDescriptor)
+        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::QuerySet::createInvalid(protectedDevice));
+    return WebGPU::Metal::releaseToAPI(protectedDevice->createQuerySet(*apiDescriptor));
 }
 
 WGPURenderBundleEncoder wgpuDeviceCreateRenderBundleEncoder(WGPUDevice device, const WGPURenderBundleEncoderDescriptor* descriptor)
@@ -1335,7 +1340,13 @@ void wgpuDeviceCreateRenderPipelineAsyncWithBlock(WGPUDevice device, WGPURenderP
 
 WGPUSampler wgpuDeviceCreateSampler(WGPUDevice device, const WGPUSamplerDescriptor* descriptor)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createSampler(*descriptor));
+    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
+    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor);
+    if (!apiDescriptor) {
+        protectedDevice->generateAValidationError("GPUSamplerDescriptor has an invalid enum value"_s);
+        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::Sampler::createInvalid(protectedDevice));
+    }
+    return WebGPU::Metal::releaseToAPI(protectedDevice->createSampler(*apiDescriptor));
 }
 
 WGPUExternalTexture wgpuDeviceImportExternalTexture(WGPUDevice device, const WGPUExternalTextureDescriptor* descriptor)
