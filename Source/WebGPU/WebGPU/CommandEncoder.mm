@@ -855,10 +855,10 @@ NSString* CommandEncoder::errorValidatingCopyBufferToBuffer(const Buffer& source
     if (!destination.isDestroyed() && !isValidToUseWith(destination, *this))
         return ERROR_STRING(@"destination buffer is not valid");
 
-    if (!(source.usage() & WGPUBufferUsage_CopySrc))
+    if (!source.usage().contains(WebGPU::BufferUsage::CopySource))
         return ERROR_STRING(@"source usage does not have COPY_SRC");
 
-    if (!(destination.usage() & WGPUBufferUsage_CopyDst))
+    if (!destination.usage().contains(WebGPU::BufferUsage::CopyDestination))
         return ERROR_STRING(@"destination usage does not have COPY_DST");
 
     if (destination.state() == Buffer::State::MappingPending || source.state() == Buffer::State::MappingPending)
@@ -979,7 +979,7 @@ NSString* CommandEncoder::errorValidatingCopyBufferToTexture(const WGPUTexelCopy
     if (NSString* error = errorValidatingImageCopyBuffer(source))
         return ERROR_STRING(error);
 
-    if (!(sourceBuffer->usage() & WGPUBufferUsage_CopySrc))
+    if (!sourceBuffer->usage().contains(WebGPU::BufferUsage::CopySource))
         return ERROR_STRING(@"source usage does not contain CopySrc");
 
     if (!isValidToUseWith(destinationTexture, *this))
@@ -1317,7 +1317,7 @@ NSString* CommandEncoder::errorValidatingCopyTextureToBuffer(const WGPUTexelCopy
     if (NSString* error = errorValidatingImageCopyBuffer(destination))
         return ERROR_STRING(error);
 
-    if (!(fromAPI(destination.buffer).usage() & WGPUBufferUsage_CopyDst))
+    if (!fromAPI(destination.buffer).usage().contains(WebGPU::BufferUsage::CopyDestination))
         return ERROR_STRING(@"destination buffer usage does not contain CopyDst");
 
     if (NSString* error = Texture::errorValidatingTextureCopyRange(source, copySize))
@@ -2067,7 +2067,7 @@ bool CommandEncoder::validateClearBuffer(const Buffer& buffer, uint64_t offset, 
     if (!isValidToUseWith(buffer, *this))
         return false;
 
-    if (!(buffer.usage() & WGPUBufferUsage_CopyDst))
+    if (!buffer.usage().contains(WebGPU::BufferUsage::CopyDestination))
         return false;
 
     if (size % 4)
@@ -2267,7 +2267,7 @@ static bool NODELETE validateResolveQuerySet(const QuerySet& querySet, uint32_t 
         return false;
     if (!destination.isDestroyed() && !destination.isValid())
         return false;
-    if (!(destination.usage() & WGPUBufferUsage_QueryResolve))
+    if (!destination.usage().contains(WebGPU::BufferUsage::QueryResolve))
         return false;
 
     if (firstQuery >= querySet.count())

@@ -632,11 +632,11 @@ extension WebGPU.Metal.CommandEncoder {
             return errorString("destination buffer is not valid")
         }
 
-        if source.usage() & WGPUBufferUsage_CopySrc == 0 {
+        if !source.usage().contains(WebGPU.BufferUsage.CopySource) {
             return errorString("source usage does not have COPY_SRC")
         }
 
-        if destination.usage() & WGPUBufferUsage_CopyDst == 0 {
+        if !destination.usage().contains(WebGPU.BufferUsage.CopyDestination) {
             return errorString("destination usage does not have COPY_DST")
         }
 
@@ -845,7 +845,7 @@ extension WebGPU.Metal.CommandEncoder {
             return errorString(error)
         }
 
-        if WebGPU.Metal.fromAPI(destination.buffer).usage() & WGPUBufferUsage_CopyDst == 0 {
+        if !WebGPU.Metal.fromAPI(destination.buffer).usage().contains(WebGPU.BufferUsage.CopyDestination) {
             return errorString("destination buffer usage does not contain CopyDst")
         }
 
@@ -906,7 +906,7 @@ extension WebGPU.Metal.CommandEncoder {
             return errorString(error)
         }
 
-        if sourceBuffer.usage() & WGPUBufferUsage_CopySrc == 0 {
+        if !sourceBuffer.usage().contains(WebGPU.BufferUsage.CopySource) {
             return errorString("source usage does not contain CopySrc")
         }
 
@@ -2375,7 +2375,7 @@ extension WebGPU.Metal.CommandEncoder {
         if !destination.isDestroyed() && !destination.isValid() {
             return false
         }
-        if (destination.usage() & WGPUBufferUsage_QueryResolve) == 0 {
+        if !destination.usage().contains(WebGPU.BufferUsage.QueryResolve) {
             return false
         }
 

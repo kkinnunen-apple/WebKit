@@ -547,7 +547,7 @@ bool Queue::validateWriteBuffer(const Buffer& buffer, uint64_t bufferOffset, siz
     if (bufferState != Buffer::State::Unmapped)
         return false;
 
-    if (!(buffer.usage() & WGPUBufferUsage_CopyDst))
+    if (!buffer.usage().contains(WebGPU::BufferUsage::CopyDestination))
         return false;
 
     if (size % 4)
@@ -664,7 +664,7 @@ void Queue::writeBuffer(Buffer& buffer, uint64_t bufferOffset, std::span<uint8_t
     // we could detect whether this specific resource is idle, if we tracked every resource.
     bool needsInvalidation = true;
 
-    if (dataSize < 16*KB && (buffer.usage() & WGPUBufferUsage_Index) && !(buffer.usage() & WGPUBufferUsage_Indirect)) {
+    if (dataSize < 16*KB && buffer.usage().contains(WebGPU::BufferUsage::Index) && !buffer.usage().contains(WebGPU::BufferUsage::Indirect)) {
         auto maxUnsignedUshortValue = maxIndexValue(data);
         if (!buffer.needsIndexValidation(maxUnsignedUshortValue.first, maxUnsignedUshortValue.second)) {
             needsInvalidation = false;
