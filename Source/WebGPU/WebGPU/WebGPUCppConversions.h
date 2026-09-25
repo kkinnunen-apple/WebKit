@@ -1809,6 +1809,29 @@ constexpr WGPUTextureUsage toAPI(OptionSet<WebGPU::TextureUsage> value)
     return result;
 }
 
+inline std::optional<WebGPU::BufferDescriptor> fromAPI(const WGPUBufferDescriptor& descriptor)
+{
+    auto usage = bufferUsageFromAPI(descriptor.usage);
+    if (!usage)
+        return std::nullopt;
+
+    return WebGPU::BufferDescriptor {
+        .label = fromAPI(descriptor.label),
+        .usage = *usage,
+        .size = descriptor.size,
+        .mappedAtCreation = !!descriptor.mappedAtCreation,
+    };
+}
+
+// The size argument of wgpuBufferMapAsync() and wgpuBufferGetMappedRange(). WGPU_WHOLE_MAP_SIZE
+// means the rest of the buffer after the offset.
+constexpr std::optional<uint64_t> mapSizeFromAPI(size_t size)
+{
+    if (size == WGPU_WHOLE_MAP_SIZE)
+        return std::nullopt;
+    return size;
+}
+
 inline std::optional<WebGPU::QuerySetDescriptor> fromAPI(const WGPUQuerySetDescriptor& descriptor)
 {
     auto type = fromAPI(descriptor.type);

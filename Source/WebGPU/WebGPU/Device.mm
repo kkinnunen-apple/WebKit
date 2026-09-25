@@ -1251,7 +1251,13 @@ WGPUXRBinding wgpuDeviceCreateXRBinding(WGPUDevice device)
 
 WGPUBuffer wgpuDeviceCreateBuffer(WGPUDevice device, const WGPUBufferDescriptor* descriptor)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createBuffer(*descriptor));
+    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
+    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor);
+    if (!apiDescriptor) {
+        protectedDevice->generateAValidationError("GPUBufferDescriptor.usage has unknown bits"_s);
+        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::Buffer::createInvalid(protectedDevice));
+    }
+    return WebGPU::Metal::releaseToAPI(protectedDevice->createBuffer(*apiDescriptor));
 }
 
 WGPUCommandEncoder wgpuDeviceCreateCommandEncoder(WGPUDevice device, const WGPUCommandEncoderDescriptor* descriptor)

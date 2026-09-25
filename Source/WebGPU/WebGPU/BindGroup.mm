@@ -737,14 +737,14 @@ Device::ExternalTextureData Device::createExternalTextureFromPixelBuffer(CVPixel
 #endif
 }
 
-static bool NODELETE hasProperUsageFlags(WGPUBufferBindingType bufferType, WGPUBufferUsage usage)
+static bool NODELETE hasProperUsageFlags(WGPUBufferBindingType bufferType, OptionSet<WebGPU::BufferUsage> usage)
 {
     switch (bufferType) {
     case WGPUBufferBindingType_Uniform:
-        return usage & WGPUBufferUsage_Uniform;
+        return usage.contains(WebGPU::BufferUsage::Uniform);
     case WGPUBufferBindingType_Storage:
     case WGPUBufferBindingType_ReadOnlyStorage:
-        return usage & WGPUBufferUsage_Storage;
+        return usage.contains(WebGPU::BufferUsage::Storage);
     case WGPUBufferBindingType_Undefined:
     case WGPUBufferBindingType_Force32:
         ASSERT_NOT_REACHED();
@@ -1374,7 +1374,7 @@ Ref<BindGroup> Device::createBindGroup(const WGPUBindGroupDescriptor& descriptor
                     }
 
                     if (!hasProperUsageFlags(layoutBinding->type, apiBuffer->usage())) {
-                        VALIDATION_ERROR([NSString stringWithFormat:@"Unexpected type(%u), buffer.usage(%llu)", layoutBinding->type, apiBuffer->usage()]);
+                        VALIDATION_ERROR([NSString stringWithFormat:@"Unexpected type(%u), buffer.usage(%llu)", layoutBinding->type, toAPI(apiBuffer->usage())]);
                         return BindGroup::createInvalid(*this);
                     }
 

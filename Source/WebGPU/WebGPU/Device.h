@@ -117,7 +117,7 @@ public:
     Ref<XRBinding> createXRBinding();
     Ref<XRSubImage> createXRSubImage();
     Ref<XRView> createXRView();
-    Ref<Buffer> createBuffer(const WGPUBufferDescriptor&);
+    Ref<Buffer> createBuffer(const WebGPU::BufferDescriptor&);
     Ref<CommandEncoder> createCommandEncoder(const WGPUCommandEncoderDescriptor&);
     std::pair<Ref<ComputePipeline>, NSString*> createComputePipeline(const WGPUComputePipelineDescriptor&, bool isAsync = false, const ComputePipeline* pipelineToReplace = nullptr);
     void createComputePipelineAsync(const WGPUComputePipelineDescriptor&, CompletionHandler<void(WGPUCreatePipelineAsyncStatus, Ref<ComputePipeline>&&, String&& message)>&& callback);

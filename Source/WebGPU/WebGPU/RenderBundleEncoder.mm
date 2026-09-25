@@ -815,7 +815,7 @@ RenderBundleEncoder::FinalizeRenderCommand RenderBundleEncoder::drawIndexedIndir
             return finalizeRenderCommand();
         }
 
-        if (!(indirectBuffer.usage() & WGPUBufferUsage_Indirect) || (indirectOffset % 4)) {
+        if (!indirectBuffer.usage().contains(WebGPU::BufferUsage::Indirect) || (indirectOffset % 4)) {
             makeInvalid(@"drawIndexedIndirect: validation failed");
             return finalizeRenderCommand();
         }
@@ -882,7 +882,7 @@ RenderBundleEncoder::FinalizeRenderCommand RenderBundleEncoder::drawIndirect(Buf
             return finalizeRenderCommand();
         }
 
-        if (!(indirectBuffer.usage() & WGPUBufferUsage_Indirect) || (indirectOffset % 4)) {
+        if (!indirectBuffer.usage().contains(WebGPU::BufferUsage::Indirect) || (indirectOffset % 4)) {
             makeInvalid(@"drawIndirect: validation failed");
             return finalizeRenderCommand();
         }
@@ -1266,7 +1266,7 @@ void RenderBundleEncoder::setIndexBuffer(Buffer& buffer, WGPUIndexFormat format,
         }
 
         auto indexSizeInBytes = (format == WGPUIndexFormat_Uint16 ? sizeof(uint16_t) : sizeof(uint32_t));
-        if (!(buffer.usage() & WGPUBufferUsage_Index) || (offset % indexSizeInBytes)) {
+        if (!buffer.usage().contains(WebGPU::BufferUsage::Index) || (offset % indexSizeInBytes)) {
             makeInvalid(@"setIndexBuffer: validation failed");
             return;
         }
@@ -1461,7 +1461,7 @@ void RenderBundleEncoder::setVertexBuffer(uint32_t slot, Buffer* optionalBuffer,
                 makeInvalid(@"setVertexBuffer: size overflowed");
                 return;
             }
-            if (slot >= m_device->limits().maxVertexBuffers || !(buffer.usage() & WGPUBufferUsage_Vertex) || (offset % 4)) {
+            if (slot >= m_device->limits().maxVertexBuffers || !buffer.usage().contains(WebGPU::BufferUsage::Vertex) || (offset % 4)) {
                 makeInvalid(@"setVertexBuffer: validation failed");
                 return;
             }

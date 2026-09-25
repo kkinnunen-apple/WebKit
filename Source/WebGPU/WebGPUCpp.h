@@ -542,6 +542,14 @@ struct Limits {
 
 // Descriptors are call parameters only. Implementations must not store them.
 
+// https://gpuweb.github.io/gpuweb/#dictdef-gpubufferdescriptor
+struct BufferDescriptor {
+    String label;
+    OptionSet<BufferUsage> usage;
+    uint64_t size { 0 };
+    bool mappedAtCreation { false };
+};
+
 // https://gpuweb.github.io/gpuweb/#dictdef-gpuquerysetdescriptor
 struct QuerySetDescriptor {
     String label;
