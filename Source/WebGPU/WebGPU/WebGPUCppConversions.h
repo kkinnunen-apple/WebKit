@@ -30,12 +30,25 @@
 #import <WebGPU/WebGPUExt.h>
 #import <optional>
 #import <wtf/OptionSet.h>
+#import <wtf/StdLibExtras.h>
+#import <wtf/text/WTFString.h>
 
-// Conversions between the enums and flags of the WebGPU C API (webgpu.h) and the WebGPU C++ API.
-// fromAPI() returns std::nullopt for C API values that have no C++ API equivalent, such as the
-// _Undefined values and unknown bits.
+// Conversions between the WebGPU C API (webgpu.h) and the WebGPU C++ API: enums, flags, strings and
+// descriptors. fromAPI() returns std::nullopt for C API values that have no C++ API equivalent, such
+// as the _Undefined values and unknown bits, and for descriptors that contain such a value.
+// The descriptor conversions are the conversions of the C API entry points, so they do not depend
+// on the implementation.
 
 namespace WebGPU::Metal {
+
+inline String fromAPI(WGPUStringView string)
+{
+    if (!string.data)
+        return { };
+    if (string.length == WGPU_STRLEN)
+        return String::fromUTF8(string.data);
+    return String::fromUTF8(unsafeMakeSpan(string.data, string.length));
+}
 
 constexpr std::optional<WebGPU::AddressMode> fromAPI(WGPUAddressMode value)
 {
@@ -1794,6 +1807,53 @@ constexpr WGPUTextureUsage toAPI(OptionSet<WebGPU::TextureUsage> value)
     if (value.contains(WebGPU::TextureUsage::Invalid))
         result |= WGPUTextureUsage_Invalid;
     return result;
+}
+
+inline std::optional<WebGPU::QuerySetDescriptor> fromAPI(const WGPUQuerySetDescriptor& descriptor)
+{
+    auto type = fromAPI(descriptor.type);
+    if (!type)
+        return std::nullopt;
+
+    return WebGPU::QuerySetDescriptor {
+        .label = fromAPI(descriptor.label),
+        .type = *type,
+        .count = descriptor.count,
+    };
+}
+
+inline std::optional<WebGPU::SamplerDescriptor> fromAPI(const WGPUSamplerDescriptor& descriptor)
+{
+    auto addressModeU = fromAPI(descriptor.addressModeU);
+    auto addressModeV = fromAPI(descriptor.addressModeV);
+    auto addressModeW = fromAPI(descriptor.addressModeW);
+    auto magFilter = fromAPI(descriptor.magFilter);
+    auto minFilter = fromAPI(descriptor.minFilter);
+    auto mipmapFilter = fromAPI(descriptor.mipmapFilter);
+    if (!addressModeU || !addressModeV || !addressModeW || !magFilter || !minFilter || !mipmapFilter)
+        return std::nullopt;
+
+    // WGPUCompareFunction_Undefined means that the sampler is not a comparison sampler.
+    std::optional<WebGPU::CompareFunction> compare;
+    if (descriptor.compare != WGPUCompareFunction_Undefined) {
+        compare = fromAPI(descriptor.compare);
+        if (!compare)
+            return std::nullopt;
+    }
+
+    return WebGPU::SamplerDescriptor {
+        .label = fromAPI(descriptor.label),
+        .addressModeU = *addressModeU,
+        .addressModeV = *addressModeV,
+        .addressModeW = *addressModeW,
+        .magFilter = *magFilter,
+        .minFilter = *minFilter,
+        .mipmapFilter = *mipmapFilter,
+        .lodMinClamp = descriptor.lodMinClamp,
+        .lodMaxClamp = descriptor.lodMaxClamp,
+        .compare = compare,
+        .maxAnisotropy = descriptor.maxAnisotropy,
+    };
 }
 
 } // namespace WebGPU::Metal
