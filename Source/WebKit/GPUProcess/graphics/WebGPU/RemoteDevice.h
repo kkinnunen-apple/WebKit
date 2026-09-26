@@ -39,6 +39,7 @@
 #include "WebGPUQuerySetDescriptor.h"
 #include "WebGPUSamplerDescriptor.h"
 #include <WebCore/MediaPlayerIdentifier.h>
+#include <WebCore/WebGPUDevice.h>
 #include <WebCore/WebGPUDeviceLostReason.h>
 #include <WebCore/WebGPUErrorFilter.h>
 #include <wtf/CompletionHandler.h>
@@ -53,10 +54,6 @@
 #endif
 
 typedef struct __CVBuffer* CVPixelBufferRef;
-
-namespace WebCore::WebGPU {
-class Device;
-}
 
 namespace IPC {
 class Connection;

@@ -338,6 +338,7 @@ enum class ::WebGPU::ColorWrite : uint8_t {
     Green,
     Blue,
     Alpha,
+    Invalid,
 };
 
 header: <WebCore/WebGPUColorWrite.h>

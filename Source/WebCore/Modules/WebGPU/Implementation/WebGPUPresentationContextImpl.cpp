@@ -31,7 +31,7 @@
 #include "NativeImage.h"
 #include "WebGPUCanvasConfiguration.h"
 #include "WebGPUConvertToBackingContext.h"
-#include "WebGPUDeviceImpl.h"
+#include "WebGPUDevice.h"
 #include "WebGPUTexture.h"
 #include <WebGPU/WebGPUCppBridge.h>
 #include <WebGPU/WebGPUExt.h>

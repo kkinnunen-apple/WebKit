@@ -71,6 +71,7 @@
 #include "JSDOMPromiseDeferred.h"
 #include "JSGPUComputePipeline.h"
 #include "JSGPUDeviceLostInfo.h"
+#include "JSGPUFeatureName.h"
 #include "JSGPUInternalError.h"
 #include "JSGPUOutOfMemoryError.h"
 #include "JSGPUPipelineError.h"
@@ -79,6 +80,10 @@
 #include "JSGPUValidationError.h"
 #include "RequestAnimationFrameCallback.h"
 #include "SecurityOrigin.h"
+#include "WebGPUColorWrite.h"
+#include "WebGPUComputePipelineDescriptor.h"
+#include "WebGPURenderPipelineDescriptor.h"
+#include "WebGPUShaderModuleDescriptor.h"
 #include "WebGPUXRBinding.h"
 #include "XRGPUBinding.h"
 #include <wtf/CheckedArithmetic.h>
@@ -111,6 +116,13 @@ Ref<GPUDevice> GPUDevice::create(ScriptExecutionContext* scriptExecutionContext,
     return device;
 }
 
+static Ref<WebGPU::SupportedFeatures> supportedFeatures(const Vector<::WebGPU::FeatureName>& features)
+{
+    return WebGPU::SupportedFeatures::create(features.map([](auto feature) -> String {
+        return convertEnumerationToString(convertFromBacking(feature));
+    }));
+}
+
 GPUDevice::GPUDevice(ScriptExecutionContext* scriptExecutionContext, Ref<WebGPU::Device>&& backing, Ref<WebGPU::GPU>&& gpu, String&& queueLabel, GPUAdapterInfo& adapterInfo)
     : ActiveDOMObject { scriptExecutionContext }
     , m_lostPromise(makeUniqueRef<LostPromise>())
@@ -118,11 +130,23 @@ GPUDevice::GPUDevice(ScriptExecutionContext* scriptExecutionContext, Ref<WebGPU:
     , m_backing(WTF::move(backing))
     , m_queue(GPUQueue::create(m_backing->queue(), m_gpu.copyRef(), *this))
     , m_autoPipelineLayout(createAutoPipelineLayout())
-    , m_features(GPUSupportedFeatures::create(m_backing->features()))
-    , m_limits(GPUSupportedLimits::create(m_backing->limits()))
+    , m_features(GPUSupportedFeatures::create(supportedFeatures(m_backing->features())))
+    , m_limits(GPUSupportedLimits::create(WebGPU::SupportedLimits::create(m_backing->limits())))
     , m_adapterInfo(adapterInfo)
     , m_owningThreadUID(currentThreadID())
 {
+    m_backing->pauseAllErrorReporting(true);
+    m_invalidCommandEncoder = m_backing->createCommandEncoder({ });
+    m_invalidRenderPassEncoder = m_invalidCommandEncoder->beginRenderPass(WebGPU::RenderPassDescriptor { });
+    m_invalidComputePassEncoder = m_invalidCommandEncoder->beginComputePass(std::nullopt);
+    m_invalidCommandBuffer = m_invalidCommandEncoder->finish({ });
+    m_emptyBindGroupLayout = m_backing->createBindGroupLayout({ });
+    RELEASE_ASSERT(m_invalidCommandEncoder && m_invalidRenderPassEncoder && m_invalidComputePassEncoder && m_invalidCommandBuffer && m_emptyBindGroupLayout);
+    m_invalidRenderPassEncoder->end();
+    m_invalidComputePassEncoder->end();
+    m_queue->backing().submit({ Ref { *m_invalidCommandBuffer } });
+    m_backing->pauseAllErrorReporting(false);
+
     m_queue->setLabel(WTF::move(queueLabel));
 
     Locker locker { instancesLock() };
@@ -151,11 +175,12 @@ void GPUDevice::contextDestroyed()
 
 String GPUDevice::label() const
 {
-    return m_backing->label();
+    return m_label;
 }
 
 void GPUDevice::setLabel(String&& label)
 {
+    m_label = label;
     m_backing->setLabel(WTF::move(label));
 }
 
@@ -247,11 +272,11 @@ GPUDevice::LostPromise& GPUDevice::lost()
         return m_lostPromise;
 
     m_waitingForDeviceLostPromise = true;
-    m_backing->resolveDeviceLostPromise([weakThis = WeakPtr { *this }](WebCore::WebGPU::DeviceLostReason reason) {
+    m_backing->resolveDeviceLostPromise([weakThis = WeakPtr { *this }](WebCore::WebGPU::DeviceLostReason reason, String&& message) {
         if (!weakThis)
             return;
 
-        auto ref = GPUDeviceLostInfo::create(WebCore::WebGPU::DeviceLostInfo::create(reason, ""_s));
+        auto ref = GPUDeviceLostInfo::create(WebCore::WebGPU::DeviceLostInfo::create(reason, WTF::move(message)));
         weakThis->m_lostPromise->resolve(WTF::move(ref));
     });
 
@@ -296,7 +321,7 @@ static std::optional<String> validateFeature(const auto& featureContainer, const
 
 std::optional<String> GPUDevice::errorValidatingSupportedFormat(GPUTextureFormat format) const
 {
-    const auto& featureContainer = m_backing->features().features();
+    const auto& featureContainer = m_features->backing().features();
     switch (format) {
     case GPUTextureFormat::Depth32floatStencil8:
         return validateFeature(featureContainer, "depth32float-stencil8"_s, convertToString(format));
@@ -599,7 +624,7 @@ RefPtr<GPUPipelineLayout> GPUDevice::createAutoPipelineLayout()
 ExceptionOr<Ref<GPUPipelineLayout>> GPUDevice::createPipelineLayout(GPUPipelineLayoutDescriptor&& pipelineLayoutDescriptor)
 {
     Vector<Ref<WebGPU::BindGroupLayout>> bindGroupLayouts;
-    auto backingDescriptor = pipelineLayoutDescriptor.convertToBacking(m_backing, bindGroupLayouts);
+    auto backingDescriptor = pipelineLayoutDescriptor.convertToBacking(*this, bindGroupLayouts);
     RefPtr pipelineLayout = m_backing->createPipelineLayout(backingDescriptor);
     if (!pipelineLayout)
         return Exception { ExceptionCode::InvalidStateError, "GPUDevice.createPipelineLayout: Unable to make pipeline layout."_s };
@@ -648,7 +673,7 @@ ExceptionOr<Ref<GPUShaderModule>> GPUDevice::createShaderModule(GPUShaderModuleD
     if (auto context = scriptExecutionContext(); context && context->url().string().contains("toji.github.io/webgpu-metaballs"_s))
         backingDescriptor.code = makeStringByReplacingAll(descriptor.code, "fma(depthSample"_s, "fma(min(depthSample, 0.95)"_s);
 #endif
-    RefPtr shaderModule = m_backing->createShaderModule(backingDescriptor);
+    RefPtr shaderModule = WebGPU::createShaderModule(m_backing, backingDescriptor);
     if (!shaderModule)
         return Exception { ExceptionCode::InvalidStateError, "GPUDevice.createShaderModule: Unable to make shader module."_s };
 
@@ -662,7 +687,7 @@ ExceptionOr<Ref<GPUComputePipeline>> GPUDevice::createComputePipeline(UniquelyAn
     if (!m_autoPipelineLayout)
         return Exception { ExceptionCode::InvalidStateError, "GPUDevice.createComputePipeline: Unable to make pipeline."_s };
     auto descriptor = computePipelineDescriptor->convertToBacking(*m_autoPipelineLayout);
-    RefPtr pipeline = m_backing->createComputePipeline(descriptor);
+    RefPtr pipeline = WebGPU::createComputePipeline(m_backing, descriptor);
     if (!pipeline)
         return Exception { ExceptionCode::InvalidStateError, "GPUDevice.createComputePipeline: Unable to make pipeline."_s };
 
@@ -688,7 +713,7 @@ ExceptionOr<Ref<GPURenderPipeline>> GPUDevice::createRenderPipeline(UniquelyAnno
     if (!m_autoPipelineLayout)
         return Exception { ExceptionCode::InvalidStateError, "GPUDevice.createRenderPipeline: Unable to make pipeline."_s };
     auto descriptor = renderPipelineDescriptor->convertToBacking(*m_autoPipelineLayout);
-    RefPtr renderPipeline = m_backing->createRenderPipeline(descriptor);
+    RefPtr renderPipeline = WebGPU::createRenderPipeline(m_backing, descriptor);
     if (!renderPipeline)
         return Exception { ExceptionCode::InvalidStateError, "GPUDevice.createRenderPipeline: Unable to make pipeline."_s };
 
@@ -711,13 +736,13 @@ void GPUDevice::createComputePipelineAsync(UniquelyAnnotatedDescriptor<GPUComput
     }
     auto descriptor = computePipelineDescriptor->convertToBacking(*m_autoPipelineLayout);
     auto shaderModuleDescriptor = computePipelineDescriptor->compute.module->descriptor();
-    m_backing->createComputePipelineAsync(descriptor, [promise = WTF::move(promise), weakThis = WeakPtr { *this }, descriptor, shaderModuleDescriptor = WTF::move(shaderModuleDescriptor), autogeneratedId = computePipelineDescriptor.uniqueAutogeneratedId()](RefPtr<WebGPU::ComputePipeline>&& computePipeline, String&& error) mutable {
+    WebGPU::createComputePipelineAsync(m_backing, descriptor, [promise = WTF::move(promise), weakThis = WeakPtr { *this }, descriptor, shaderModuleDescriptor = WTF::move(shaderModuleDescriptor), autogeneratedId = computePipelineDescriptor.uniqueAutogeneratedId()](Expected<Ref<WebGPU::ComputePipeline>, ::WebGPU::PipelineError>&& computePipeline) mutable {
         if (computePipeline) {
             RefPtr device { weakThis };
-            Ref result = GPUComputePipeline::create(computePipeline.releaseNonNull(), autogeneratedId, device.get(), WTF::move(descriptor), shaderModuleDescriptor);
+            Ref result = GPUComputePipeline::create(WTF::move(*computePipeline), autogeneratedId, device.get(), WTF::move(descriptor), shaderModuleDescriptor);
             promise.resolve(WTF::move(result));
         } else
-            promise.rejectType<IDLInterface<GPUPipelineError>>(GPUPipelineError::create(WTF::move(error), { GPUPipelineErrorReason::Validation }));
+            promise.rejectType<IDLInterface<GPUPipelineError>>(GPUPipelineError::create(WTF::move(computePipeline.error().message), { GPUPipelineErrorReason::Validation }));
     });
 }
 
@@ -748,13 +773,13 @@ ExceptionOr<void> GPUDevice::createRenderPipelineAsync(UniquelyAnnotatedDescript
         sharesVertexFragmentShader = renderPipelineDescriptor->vertex.module.ptr() == fragment->module.ptr();
     }
 
-    m_backing->createRenderPipelineAsync(descriptor, [promise = WTF::move(promise), weakThis = WeakPtr { *this }, descriptor, vertexShaderModuleDescriptor = WTF::move(vertexShaderModuleDescriptor), fragmentShaderModuleDescriptor = WTF::move(fragmentShaderModuleDescriptor), sharesVertexFragmentShader, autogeneratedId = renderPipelineDescriptor.uniqueAutogeneratedId()](RefPtr<WebGPU::RenderPipeline>&& renderPipeline, String&& error) mutable {
+    WebGPU::createRenderPipelineAsync(m_backing, descriptor, [promise = WTF::move(promise), weakThis = WeakPtr { *this }, descriptor, vertexShaderModuleDescriptor = WTF::move(vertexShaderModuleDescriptor), fragmentShaderModuleDescriptor = WTF::move(fragmentShaderModuleDescriptor), sharesVertexFragmentShader, autogeneratedId = renderPipelineDescriptor.uniqueAutogeneratedId()](Expected<Ref<WebGPU::RenderPipeline>, ::WebGPU::PipelineError>&& renderPipeline) mutable {
         if (renderPipeline) {
             RefPtr device { weakThis };
-            Ref result = GPURenderPipeline::create(renderPipeline.releaseNonNull(), autogeneratedId, device.get(), WTF::move(descriptor), vertexShaderModuleDescriptor, WTF::move(fragmentShaderModuleDescriptor), sharesVertexFragmentShader);
+            Ref result = GPURenderPipeline::create(WTF::move(*renderPipeline), autogeneratedId, device.get(), WTF::move(descriptor), vertexShaderModuleDescriptor, WTF::move(fragmentShaderModuleDescriptor), sharesVertexFragmentShader);
             promise.resolve(WTF::move(result));
         } else
-            promise.rejectType<IDLInterface<GPUPipelineError>>(GPUPipelineError::create(WTF::move(error), { GPUPipelineErrorReason::Validation }));
+            promise.rejectType<IDLInterface<GPUPipelineError>>(GPUPipelineError::create(WTF::move(renderPipeline.error().message), { GPUPipelineErrorReason::Validation }));
     });
     return { };
 }
@@ -789,7 +814,15 @@ ExceptionOr<Ref<GPURenderBundleEncoder>> GPUDevice::createRenderBundleEncoder(GP
             return Exception { ExceptionCode::TypeError, makeString("GPUDevice.createRenderBundleEncoder: Unsupported texture format for depth format."_s, *error) };
     }
 
-    RefPtr encoder = m_backing->createRenderBundleEncoder(renderBundleEncoderDescriptor.convertToBacking());
+    auto backingDescriptor = renderBundleEncoderDescriptor.convertToBacking();
+    RefPtr encoder = m_backing->createRenderBundleEncoder({
+        .label = backingDescriptor.label,
+        .colorFormats = backingDescriptor.colorFormats.span(),
+        .depthStencilFormat = backingDescriptor.depthStencilFormat,
+        .sampleCount = backingDescriptor.sampleCount,
+        .depthReadOnly = backingDescriptor.depthReadOnly,
+        .stencilReadOnly = backingDescriptor.stencilReadOnly,
+    });
     if (!encoder)
         return Exception { ExceptionCode::InvalidStateError, "GPUDevice.createRenderBundleEncoder: Unable to make encoder."_s };
     return GPURenderBundleEncoder::create(encoder.releaseNonNull(), String { renderBundleEncoderDescriptor.label }, *this);
@@ -798,7 +831,7 @@ ExceptionOr<Ref<GPURenderBundleEncoder>> GPUDevice::createRenderBundleEncoder(GP
 ExceptionOr<Ref<GPUQuerySet>> GPUDevice::createQuerySet(GPUQuerySetDescriptor&& querySetDescriptor)
 {
     if (querySetDescriptor.type == GPUQueryType::Timestamp) {
-        if (!m_backing->features().features().contains("timestamp-query"_s))
+        if (!m_features->backing().features().contains("timestamp-query"_s))
             return Exception { ExceptionCode::TypeError, "Timestamp queries are not supported."_s };
     }
 
@@ -814,24 +847,22 @@ void GPUDevice::pushErrorScope(GPUErrorFilter errorFilter)
     m_backing->pushErrorScope(convertToBacking(errorFilter));
 }
 
-static Ref<GPUError> createGPUErrorFromWebGPUError(auto& webGPUError)
+static Ref<GPUError> createGPUErrorFromWebGPUError(::WebGPU::Error&& error)
 {
-    return WTF::switchOn(WTF::move(*webGPUError),
-        [](Ref<WebGPU::OutOfMemoryError>&& outOfMemoryError) -> Ref<GPUError> {
-            return GPUOutOfMemoryError::create(WTF::move(outOfMemoryError));
-        },
-        [](Ref<WebGPU::ValidationError>&& validationError) -> Ref<GPUError> {
-            return GPUValidationError::create(WTF::move(validationError));
-        },
-        [](Ref<WebGPU::InternalError>&& internalError) -> Ref<GPUError> {
-            return GPUInternalError::create(WTF::move(internalError));
-        }
-    );
+    switch (error.type) {
+    case ::WebGPU::ErrorType::Validation:
+        return GPUValidationError::create(WebGPU::ValidationError::create(WTF::move(error.message)));
+    case ::WebGPU::ErrorType::OutOfMemory:
+        return GPUOutOfMemoryError::create(WebGPU::OutOfMemoryError::create());
+    case ::WebGPU::ErrorType::Internal:
+        return GPUInternalError::create(WebGPU::InternalError::create(WTF::move(error.message)));
+    }
+    RELEASE_ASSERT_NOT_REACHED();
 }
 
 void GPUDevice::popErrorScope(ErrorScopePromise&& errorScopePromise)
 {
-    m_backing->popErrorScope([promise = WTF::move(errorScopePromise)](bool success, std::optional<WebGPU::Error>&& error) mutable {
+    m_backing->popErrorScope([promise = WTF::move(errorScopePromise)](bool success, std::optional<::WebGPU::Error>&& error) mutable {
         if (!error) {
             if (success)
                 promise.resolve(nullptr);
@@ -839,7 +870,7 @@ void GPUDevice::popErrorScope(ErrorScopePromise&& errorScopePromise)
                 promise.reject(Exception { ExceptionCode::OperationError, "popErrorScope failed"_s });
             return;
         }
-        Ref gpuError = createGPUErrorFromWebGPUError(error);
+        Ref gpuError = createGPUErrorFromWebGPUError(WTF::move(*error));
         promise.resolve(gpuError.ptr());
     });
 }
@@ -860,7 +891,7 @@ void GPUDevice::listenForUncapturedErrors()
         return;
 #if PLATFORM(COCOA)
     m_listeningForUncapturedErrors = true;
-    m_backing->resolveUncapturedErrorEvent([pendingActivity = makePendingActivity(*this), weakThis = WeakPtr { *this }](bool hasUncapturedError, std::optional<WebGPU::Error>&& error) {
+    m_backing->resolveUncapturedErrorEvent([pendingActivity = makePendingActivity(*this), weakThis = WeakPtr { *this }](bool hasUncapturedError, std::optional<::WebGPU::Error>&& error) {
         RefPtr protectedThis { weakThis };
         if (!protectedThis || !hasUncapturedError)
             return;
@@ -871,7 +902,7 @@ void GPUDevice::listenForUncapturedErrors()
         if (!context)
             return;
 
-        queueTaskToDispatchEvent(*protectedThis, TaskSource::WebGPU, GPUUncapturedErrorEvent::create(WebCore::eventNames().uncapturederrorEvent, GPUUncapturedErrorEventInit { .error = createGPUErrorFromWebGPUError(error) }));
+        queueTaskToDispatchEvent(*protectedThis, TaskSource::WebGPU, GPUUncapturedErrorEvent::create(WebCore::eventNames().uncapturederrorEvent, GPUUncapturedErrorEventInit { .error = createGPUErrorFromWebGPUError(WTF::move(*error)) }));
         protectedThis->listenForUncapturedErrors();
     });
 #endif
@@ -888,5 +919,167 @@ Ref<GPUAdapterInfo> GPUDevice::adapterInfo() const
 {
     return m_adapterInfo;
 }
+
+
+namespace WebGPU {
+
+static OptionSet<::WebGPU::ColorWrite> convertToAPI(ColorWriteFlags writeMask)
+{
+    auto result = OptionSet<::WebGPU::ColorWrite>::fromRaw(writeMask & ColorWriteFlags_All);
+    if (writeMask & ~ColorWriteFlags_All)
+        result.add(::WebGPU::ColorWrite::Invalid);
+    return result;
+}
+
+static ::WebGPU::ProgrammableStage convertToAPI(const ProgrammableStage& stage, Vector<::WebGPU::ConstantEntry>& constantsStorage)
+{
+    constantsStorage = stage.constants.map([](auto& constant) {
+        return ::WebGPU::ConstantEntry { .key = constant.key, .value = constant.value };
+    });
+    return {
+        .module = stage.module,
+        .entryPoint = stage.entryPoint,
+        .constants = constantsStorage.span(),
+    };
+}
+
+// Calls the function with the WebGPU::ShaderModuleDescriptor, which borrows its arrays from the stack.
+template<typename Function>
+static decltype(auto) withAPIDescriptor(const ShaderModuleDescriptor& descriptor, NOESCAPE Function&& function)
+{
+    auto hints = descriptor.hints.map([](auto& hint) {
+        return ::WebGPU::ShaderModuleCompilationHint { .entryPoint = hint.key, .layout = hint.value.pipelineLayout };
+    });
+    return function(::WebGPU::ShaderModuleDescriptor {
+        .label = descriptor.label,
+        .code = descriptor.code,
+        .hints = hints.span(),
+    });
+}
+
+template<typename Function>
+static decltype(auto) withAPIDescriptor(const ComputePipelineDescriptor& descriptor, NOESCAPE Function&& function)
+{
+    Vector<::WebGPU::ConstantEntry> constants;
+    return function(::WebGPU::ComputePipelineDescriptor {
+        .label = descriptor.label,
+        .layout = descriptor.layout,
+        .compute = convertToAPI(descriptor.compute, constants),
+    });
+}
+
+template<typename Function>
+static decltype(auto) withAPIDescriptor(const RenderPipelineDescriptor& descriptor, NOESCAPE Function&& function)
+{
+    Vector<::WebGPU::ConstantEntry> vertexConstants;
+    auto vertexBuffers = descriptor.vertex.buffers.map([](auto& buffer) -> std::optional<::WebGPU::VertexBufferLayout> {
+        if (!buffer)
+            return std::nullopt;
+        return ::WebGPU::VertexBufferLayout {
+            .arrayStride = buffer->arrayStride,
+            .stepMode = buffer->stepMode,
+            .attributes = buffer->attributes.span(),
+        };
+    });
+
+    std::optional<::WebGPU::DepthStencilState> depthStencil;
+    if (auto& state = descriptor.depthStencil) {
+        depthStencil = ::WebGPU::DepthStencilState {
+            .format = state->format,
+            .depthWriteEnabled = state->depthWriteEnabled,
+            .depthCompare = state->depthCompare,
+            .stencilFront = state->stencilFront,
+            .stencilBack = state->stencilBack,
+            .stencilReadMask = state->stencilReadMask.value_or(0),
+            .stencilWriteMask = state->stencilWriteMask.value_or(0),
+            .depthBias = state->depthBias,
+            .depthBiasSlopeScale = state->depthBiasSlopeScale,
+            .depthBiasClamp = state->depthBiasClamp,
+        };
+    }
+
+    Vector<::WebGPU::ConstantEntry> fragmentConstants;
+    Vector<std::optional<::WebGPU::ColorTargetState>> fragmentTargets;
+    std::optional<::WebGPU::FragmentState> fragment;
+    if (descriptor.fragment) {
+        fragmentTargets = descriptor.fragment->targets.map([](auto& target) -> std::optional<::WebGPU::ColorTargetState> {
+            if (!target)
+                return std::nullopt;
+            return ::WebGPU::ColorTargetState {
+                .format = target->format,
+                .blend = target->blend,
+                .writeMask = convertToAPI(target->writeMask),
+            };
+        });
+        fragment = ::WebGPU::FragmentState {
+            .stage = convertToAPI(*descriptor.fragment, fragmentConstants),
+            .targets = fragmentTargets.span(),
+        };
+    }
+
+    return function(::WebGPU::RenderPipelineDescriptor {
+        .label = descriptor.label,
+        .layout = descriptor.layout,
+        .vertex = {
+            .stage = convertToAPI(descriptor.vertex, vertexConstants),
+            .buffers = vertexBuffers.span(),
+        },
+        .primitive = descriptor.primitive.value_or(::WebGPU::PrimitiveState { }),
+        .depthStencil = depthStencil,
+        .multisample = descriptor.multisample.value_or(::WebGPU::MultisampleState { }),
+        .fragment = fragment,
+    });
+}
+
+RefPtr<ShaderModule> createShaderModule(Device& device, const ShaderModuleDescriptor& descriptor)
+{
+    return withAPIDescriptor(descriptor, [&](const auto& apiDescriptor) {
+        return device.createShaderModule(apiDescriptor);
+    });
+}
+
+RefPtr<ComputePipeline> createComputePipeline(Device& device, const ComputePipelineDescriptor& descriptor)
+{
+    return withAPIDescriptor(descriptor, [&](const auto& apiDescriptor) {
+        return device.createComputePipeline(apiDescriptor);
+    });
+}
+
+RefPtr<RenderPipeline> createRenderPipeline(Device& device, const RenderPipelineDescriptor& descriptor)
+{
+    return withAPIDescriptor(descriptor, [&](const auto& apiDescriptor) {
+        return device.createRenderPipeline(apiDescriptor);
+    });
+}
+
+void createComputePipelineAsync(Device& device, const ComputePipelineDescriptor& descriptor, CompletionHandler<void(Expected<Ref<ComputePipeline>, ::WebGPU::PipelineError>&&)>&& callback)
+{
+    withAPIDescriptor(descriptor, [&](const auto& apiDescriptor) {
+        device.createComputePipelineAsync(apiDescriptor, WTF::move(callback));
+    });
+}
+
+void createRenderPipelineAsync(Device& device, const RenderPipelineDescriptor& descriptor, CompletionHandler<void(Expected<Ref<RenderPipeline>, ::WebGPU::PipelineError>&&)>&& callback)
+{
+    withAPIDescriptor(descriptor, [&](const auto& apiDescriptor) {
+        device.createRenderPipelineAsync(apiDescriptor, WTF::move(callback));
+    });
+}
+
+void createComputePipelineWithPipelineLayoutFromPipelineAsync(Device& device, const ComputePipelineDescriptor& descriptor, const ComputePipeline& pipelineToReplace, CompletionHandler<void(Expected<Ref<ComputePipeline>, ::WebGPU::PipelineError>&&)>&& callback)
+{
+    withAPIDescriptor(descriptor, [&](const auto& apiDescriptor) {
+        device.createComputePipelineWithPipelineLayoutFromPipelineAsync(apiDescriptor, pipelineToReplace, WTF::move(callback));
+    });
+}
+
+void createRenderPipelineWithPipelineLayoutFromPipelineAsync(Device& device, const RenderPipelineDescriptor& descriptor, const RenderPipeline& pipelineToReplace, CompletionHandler<void(Expected<Ref<RenderPipeline>, ::WebGPU::PipelineError>&&)>&& callback)
+{
+    withAPIDescriptor(descriptor, [&](const auto& apiDescriptor) {
+        device.createRenderPipelineWithPipelineLayoutFromPipelineAsync(apiDescriptor, pipelineToReplace, WTF::move(callback));
+    });
+}
+
+} // namespace WebGPU
 
 }

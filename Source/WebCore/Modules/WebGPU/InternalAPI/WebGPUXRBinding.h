@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <WebCore/WebGPUDevice.h>
 #include <WebCore/WebGPUXREye.h>
 #include <WebCore/WebGPUXRProjectionLayer.h>
 #include <WebCore/WebGPUXRSubImage.h>
@@ -39,7 +40,6 @@ class WebXRFrame;
 
 namespace WebCore::WebGPU {
 
-class Device;
 class XRGPUSubImage;
 class XRProjectionLayer;
 class XRView;

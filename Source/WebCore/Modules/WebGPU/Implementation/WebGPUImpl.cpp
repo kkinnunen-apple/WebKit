@@ -30,12 +30,12 @@
 
 #include "WebGPUAdapterImpl.h"
 #include "WebGPUCompositorIntegrationImpl.h"
-#include "WebGPUDeviceImpl.h"
 #include "WebGPUExternalTextureDescriptor.h"
 #include "WebGPUImageCopyExternalImage.h"
 #include "WebGPUImageCopyTextureTagged.h"
 #include "WebGPUPresentationContextDescriptor.h"
 #include "WebGPUPresentationContextImpl.h"
+#include "WebGPUXRBindingImpl.h"
 #include <WebCore/ColorSpace.h>
 #include <WebCore/GraphicsContext.h>
 #include <WebCore/IOSurface.h>
@@ -280,7 +280,16 @@ RefPtr<WebCore::NativeImage> GPUImpl::nativeImage(Queue&, WebCore::VideoFrame&)
 
 RefPtr<ExternalTexture> GPUImpl::importExternalTexture(Device& device, const ExternalTextureDescriptor& descriptor)
 {
-    return downcast<DeviceImpl>(device).importExternalTexture(descriptor);
+    auto* pixelBuffer = std::get_if<RetainPtr<CVPixelBufferRef>>(&descriptor.videoBacking);
+    return device.importExternalTexture({
+        .label = descriptor.label,
+        .pixelBuffer = pixelBuffer ? *pixelBuffer : nullptr,
+        .colorSpace = convertToAPI(descriptor.colorSpace),
+        .visibleSize = {
+            .width = static_cast<uint32_t>(std::max(0, descriptor.visibleSize.width())),
+            .height = static_cast<uint32_t>(std::max(0, descriptor.visibleSize.height())),
+        },
+    });
 }
 
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
@@ -293,7 +302,7 @@ void GPUImpl::updateExternalTexture(Device&, const ExternalTexture&, const WebCo
 
 RefPtr<XRBinding> GPUImpl::createXRBinding(Device& device)
 {
-    return downcast<DeviceImpl>(device).createXRBinding();
+    return XRBindingImpl::create(adoptWebGPU(wgpuDeviceCreateXRBinding(m_convertToBackingContext->convertToBacking(device))), m_convertToBackingContext);
 }
 
 void GPUImpl::paintToCanvas(WebCore::NativeImage& image, const WebCore::IntSize& canvasSize, WebCore::GraphicsContext& context)
@@ -353,8 +362,7 @@ bool GPUImpl::isValid(const ComputePipeline& computePipeline) const
 
 bool GPUImpl::isValid(const Device& device) const
 {
-    WGPUDevice wgpuDevice = m_convertToBackingContext.get().convertToBacking(device);
-    return wgpuDeviceIsValid(wgpuDevice);
+    return device.isValid();
 }
 
 bool GPUImpl::isValid(const ExternalTexture& externalTexture) const

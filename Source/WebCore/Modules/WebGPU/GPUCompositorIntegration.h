@@ -27,6 +27,7 @@
 
 #include "WebGPUCompositorIntegration.h"
 #include "WebGPUTextureFormat.h"
+#include "WebGPUDevice.h"
 #include <optional>
 #include <wtf/MachSendRight.h>
 #include <wtf/Ref.h>
@@ -34,10 +35,6 @@
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {
-namespace WebGPU {
-class Device;
-}
-
 class ColorSpace;
 class ImageBuffer;
 

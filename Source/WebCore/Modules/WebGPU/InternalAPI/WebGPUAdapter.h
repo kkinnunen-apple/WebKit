@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <WebCore/WebGPUDevice.h>
 #include <WebCore/WebGPUDeviceDescriptor.h>
 #include <WebCore/WebGPUSupportedFeatures.h>
 #include <WebCore/WebGPUSupportedLimits.h>
@@ -37,7 +38,6 @@
 
 namespace WebCore::WebGPU {
 
-class Device;
 
 class Adapter : public RefCountedAndCanMakeWeakPtr<Adapter> {
 public:

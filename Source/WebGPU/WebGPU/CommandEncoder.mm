@@ -103,7 +103,7 @@ static MTLStoreAction NODELETE storeAction(WGPUStoreOp storeOp, bool hasResolveT
     }
 }
 
-Ref<CommandEncoder> Device::createCommandEncoder(const WebGPU::CommandEncoderDescriptor& descriptor)
+RefPtr<WebGPU::CommandEncoder> Device::createCommandEncoder(const WebGPU::CommandEncoderDescriptor& descriptor)
 {
     if (!isValid())
         return CommandEncoder::createInvalid(*this);

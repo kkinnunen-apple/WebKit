@@ -202,7 +202,7 @@ ExceptionOr<Ref<GPUCommandBuffer>> GPUCommandEncoder::finish(const std::optional
     auto result = GPUCommandBuffer::create(buffer.releaseNonNull(), WTF::move(backingDescriptor.label), *this);
     if (RefPtr device = m_device) {
         m_overrideLabel = label();
-        m_backing = device->backing().invalidCommandEncoder();
+        m_backing = device->invalidCommandEncoder();
     }
     return result;
 }

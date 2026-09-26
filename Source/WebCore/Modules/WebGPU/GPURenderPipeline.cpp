@@ -169,7 +169,7 @@ void GPURenderPipeline::createPipelineForInspectorHighlight(unsigned canvasColor
         return;
     }
 
-    RefPtr vertexShaderModule = device->backing().createShaderModule(m_vertexShaderModuleDescriptor);
+    RefPtr vertexShaderModule = WebGPU::createShaderModule(device->backing(), m_vertexShaderModuleDescriptor);
     if (!vertexShaderModule) {
         completionHandler(nullptr);
         return;
@@ -179,7 +179,7 @@ void GPURenderPipeline::createPipelineForInspectorHighlight(unsigned canvasColor
     if (m_sharesVertexFragmentShader)
         fragmentShaderModule = vertexShaderModule;
     else
-        fragmentShaderModule = device->backing().createShaderModule(*m_fragmentShaderModuleDescriptor);
+        fragmentShaderModule = WebGPU::createShaderModule(device->backing(), *m_fragmentShaderModuleDescriptor);
     if (!fragmentShaderModule) {
         completionHandler(nullptr);
         return;
@@ -219,7 +219,9 @@ void GPURenderPipeline::createPipelineForInspectorHighlight(unsigned canvasColor
         return;
     }
 
-    device->backing().createRenderPipelineWithPipelineLayoutFromPipelineAsync(descriptor, m_backing, WTF::move(completionHandler));
+    WebGPU::createRenderPipelineWithPipelineLayoutFromPipelineAsync(device->backing(), descriptor, m_backing, [completionHandler = WTF::move(completionHandler)](Expected<Ref<WebGPU::RenderPipeline>, ::WebGPU::PipelineError>&& pipeline) mutable {
+        completionHandler(pipeline ? RefPtr { WTF::move(*pipeline) } : nullptr);
+    });
 }
 
 void GPURenderPipeline::updateShader(const String& source, bool updateVertexShader, CompletionHandler<void(bool)>&& completionHandler)
@@ -248,7 +250,7 @@ void GPURenderPipeline::updateShader(const String& source, bool updateVertexShad
     }
 
     device->backing().pauseAllErrorReporting(true);
-    RefPtr vertexShaderModule = device->backing().createShaderModule(vertexShaderModuleDescriptor);
+    RefPtr vertexShaderModule = WebGPU::createShaderModule(device->backing(), vertexShaderModuleDescriptor);
     if (!vertexShaderModule) {
         device->backing().pauseAllErrorReporting(false);
         completionHandler(false);
@@ -260,7 +262,7 @@ void GPURenderPipeline::updateShader(const String& source, bool updateVertexShad
         if (m_sharesVertexFragmentShader)
             fragmentShaderModule = vertexShaderModule;
         else
-            fragmentShaderModule = device->backing().createShaderModule(*fragmentShaderModuleDescriptor);
+            fragmentShaderModule = WebGPU::createShaderModule(device->backing(), *fragmentShaderModuleDescriptor);
         if (!fragmentShaderModule) {
             device->backing().pauseAllErrorReporting(false);
             completionHandler(false);
@@ -279,7 +281,7 @@ void GPURenderPipeline::updateShader(const String& source, bool updateVertexShad
         descriptor.fragment->module = *fragmentShaderModule;
     }
 
-    device->backing().createRenderPipelineWithPipelineLayoutFromPipelineAsync(descriptor, m_backing, [weakThis = WeakPtr { *this }, descriptor, vertexShaderModuleDescriptor = WTF::move(vertexShaderModuleDescriptor), fragmentShaderModuleDescriptor = WTF::move(fragmentShaderModuleDescriptor), completionHandler = WTF::move(completionHandler)](RefPtr<WebGPU::RenderPipeline>&& pipeline) mutable {
+    WebGPU::createRenderPipelineWithPipelineLayoutFromPipelineAsync(device->backing(), descriptor, m_backing, [weakThis = WeakPtr { *this }, descriptor, vertexShaderModuleDescriptor = WTF::move(vertexShaderModuleDescriptor), fragmentShaderModuleDescriptor = WTF::move(fragmentShaderModuleDescriptor), completionHandler = WTF::move(completionHandler)](Expected<Ref<WebGPU::RenderPipeline>, ::WebGPU::PipelineError>&& pipeline) mutable {
         RefPtr protectedThis { weakThis };
         if (!protectedThis) {
             completionHandler(false);
@@ -287,7 +289,7 @@ void GPURenderPipeline::updateShader(const String& source, bool updateVertexShad
         }
 
         if (pipeline)
-            protectedThis->m_backing = pipeline.releaseNonNull();
+            protectedThis->m_backing = WTF::move(*pipeline);
         protectedThis->m_descriptor = WTF::move(descriptor);
         protectedThis->m_vertexShaderModuleDescriptor = WTF::move(vertexShaderModuleDescriptor);
         protectedThis->m_fragmentShaderModuleDescriptor = WTF::move(fragmentShaderModuleDescriptor);

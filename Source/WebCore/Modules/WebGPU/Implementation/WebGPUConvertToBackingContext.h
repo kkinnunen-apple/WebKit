@@ -44,6 +44,7 @@
 #include "WebGPUComputePassEncoder.h"
 #include "WebGPUComputePipeline.h"
 #include "WebGPUCullMode.h"
+#include "WebGPUDevice.h"
 #include "WebGPUErrorFilter.h"
 #include "WebGPUExtent3D.h"
 #include "WebGPUExternalTexture.h"
@@ -127,7 +128,6 @@ inline WGPUStringView toBackingStringView(ASCIILiteral literal)
 class Adapter;
 class CompositorIntegration;
 class CompositorIntegrationImpl;
-class Device;
 class GPU;
 class PresentationContext;
 class XRBinding;

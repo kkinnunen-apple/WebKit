@@ -56,7 +56,7 @@ RemoteCompositorIntegrationProxy::~RemoteCompositorIntegrationProxy()
 #if PLATFORM(COCOA)
 Vector<MachSendRight> RemoteCompositorIntegrationProxy::recreateRenderBuffers(int width, int height, WebCore::ColorSpace&& destinationColorSpace, WebCore::AlphaPremultiplication alphaMode, WebCore::WebGPU::TextureFormat textureFormat, unsigned bufferCount, WebCore::WebGPU::Device& device)
 {
-    RemoteDeviceProxy& proxyDevice = downcast<RemoteDeviceProxy>(device);
+    auto& proxyDevice = static_cast<RemoteDeviceProxy&>(device);
     auto sendResult = sendSync(Messages::RemoteCompositorIntegration::RecreateRenderBuffers(width, height, WTF::move(destinationColorSpace), alphaMode, textureFormat, bufferCount, proxyDevice.backing()));
     if (!sendResult.succeeded())
         return { };

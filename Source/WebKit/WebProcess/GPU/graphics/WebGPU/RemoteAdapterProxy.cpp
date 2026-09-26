@@ -66,51 +66,50 @@ void RemoteAdapterProxy::requestDevice(const WebCore::WebGPU::DeviceDescriptor& 
     if (!sendResult.succeeded())
         return callback(nullptr);
 
-    auto [supportedFeatures, supportedLimits] = sendResult.takeReply();
+    auto [features, supportedLimits] = sendResult.takeReply();
     if (!supportedLimits.maxTextureDimension2D) {
         callback(nullptr);
         return;
     }
 
-    auto resultSupportedFeatures = WebCore::WebGPU::SupportedFeatures::create(WTF::move(supportedFeatures.features));
-    auto resultSupportedLimits = WebCore::WebGPU::SupportedLimits::create(
-        supportedLimits.maxTextureDimension1D,
-        supportedLimits.maxTextureDimension2D,
-        supportedLimits.maxTextureDimension3D,
-        supportedLimits.maxTextureArrayLayers,
-        supportedLimits.maxBindGroups,
-        supportedLimits.maxBindGroupsPlusVertexBuffers,
-        supportedLimits.maxBindingsPerBindGroup,
-        supportedLimits.maxDynamicUniformBuffersPerPipelineLayout,
-        supportedLimits.maxDynamicStorageBuffersPerPipelineLayout,
-        supportedLimits.maxSampledTexturesPerShaderStage,
-        supportedLimits.maxSamplersPerShaderStage,
-        supportedLimits.maxStorageBuffersPerShaderStage,
-        supportedLimits.maxStorageTexturesPerShaderStage,
-        supportedLimits.maxUniformBuffersPerShaderStage,
-        supportedLimits.maxUniformBufferBindingSize,
-        supportedLimits.maxStorageBufferBindingSize,
-        supportedLimits.minUniformBufferOffsetAlignment,
-        supportedLimits.minStorageBufferOffsetAlignment,
-        supportedLimits.maxVertexBuffers,
-        supportedLimits.maxBufferSize,
-        supportedLimits.maxVertexAttributes,
-        supportedLimits.maxVertexBufferArrayStride,
-        supportedLimits.maxInterStageShaderVariables,
-        supportedLimits.maxColorAttachments,
-        supportedLimits.maxColorAttachmentBytesPerSample,
-        supportedLimits.maxComputeWorkgroupStorageSize,
-        supportedLimits.maxComputeInvocationsPerWorkgroup,
-        supportedLimits.maxComputeWorkgroupSizeX,
-        supportedLimits.maxComputeWorkgroupSizeY,
-        supportedLimits.maxComputeWorkgroupSizeZ,
-        supportedLimits.maxComputeWorkgroupsPerDimension,
-        supportedLimits.maxStorageBuffersInFragmentStage,
-        supportedLimits.maxStorageTexturesInFragmentStage,
-        supportedLimits.maxStorageBuffersInVertexStage,
-        supportedLimits.maxStorageTexturesInVertexStage
-    );
-    auto result = RemoteDeviceProxy::create(WTF::move(resultSupportedFeatures), WTF::move(resultSupportedLimits), *this, convertToBackingContext, identifier, queueIdentifier);
+    ::WebGPU::Limits limits {
+        .maxTextureDimension1D = supportedLimits.maxTextureDimension1D,
+        .maxTextureDimension2D = supportedLimits.maxTextureDimension2D,
+        .maxTextureDimension3D = supportedLimits.maxTextureDimension3D,
+        .maxTextureArrayLayers = supportedLimits.maxTextureArrayLayers,
+        .maxBindGroups = supportedLimits.maxBindGroups,
+        .maxBindGroupsPlusVertexBuffers = supportedLimits.maxBindGroupsPlusVertexBuffers,
+        .maxBindingsPerBindGroup = supportedLimits.maxBindingsPerBindGroup,
+        .maxDynamicUniformBuffersPerPipelineLayout = supportedLimits.maxDynamicUniformBuffersPerPipelineLayout,
+        .maxDynamicStorageBuffersPerPipelineLayout = supportedLimits.maxDynamicStorageBuffersPerPipelineLayout,
+        .maxSampledTexturesPerShaderStage = supportedLimits.maxSampledTexturesPerShaderStage,
+        .maxSamplersPerShaderStage = supportedLimits.maxSamplersPerShaderStage,
+        .maxStorageBuffersPerShaderStage = supportedLimits.maxStorageBuffersPerShaderStage,
+        .maxStorageTexturesPerShaderStage = supportedLimits.maxStorageTexturesPerShaderStage,
+        .maxUniformBuffersPerShaderStage = supportedLimits.maxUniformBuffersPerShaderStage,
+        .maxUniformBufferBindingSize = supportedLimits.maxUniformBufferBindingSize,
+        .maxStorageBufferBindingSize = supportedLimits.maxStorageBufferBindingSize,
+        .minUniformBufferOffsetAlignment = supportedLimits.minUniformBufferOffsetAlignment,
+        .minStorageBufferOffsetAlignment = supportedLimits.minStorageBufferOffsetAlignment,
+        .maxVertexBuffers = supportedLimits.maxVertexBuffers,
+        .maxBufferSize = supportedLimits.maxBufferSize,
+        .maxVertexAttributes = supportedLimits.maxVertexAttributes,
+        .maxVertexBufferArrayStride = supportedLimits.maxVertexBufferArrayStride,
+        .maxInterStageShaderVariables = supportedLimits.maxInterStageShaderVariables,
+        .maxColorAttachments = supportedLimits.maxColorAttachments,
+        .maxColorAttachmentBytesPerSample = supportedLimits.maxColorAttachmentBytesPerSample,
+        .maxComputeWorkgroupStorageSize = supportedLimits.maxComputeWorkgroupStorageSize,
+        .maxComputeInvocationsPerWorkgroup = supportedLimits.maxComputeInvocationsPerWorkgroup,
+        .maxComputeWorkgroupSizeX = supportedLimits.maxComputeWorkgroupSizeX,
+        .maxComputeWorkgroupSizeY = supportedLimits.maxComputeWorkgroupSizeY,
+        .maxComputeWorkgroupSizeZ = supportedLimits.maxComputeWorkgroupSizeZ,
+        .maxComputeWorkgroupsPerDimension = supportedLimits.maxComputeWorkgroupsPerDimension,
+        .maxStorageBuffersInFragmentStage = supportedLimits.maxStorageBuffersInFragmentStage,
+        .maxStorageTexturesInFragmentStage = supportedLimits.maxStorageTexturesInFragmentStage,
+        .maxStorageBuffersInVertexStage = supportedLimits.maxStorageBuffersInVertexStage,
+        .maxStorageTexturesInVertexStage = supportedLimits.maxStorageTexturesInVertexStage,
+    };
+    auto result = RemoteDeviceProxy::create(WTF::move(features), limits, *this, convertToBackingContext, identifier, queueIdentifier);
     result->setLabel(WTF::move(convertedDescriptor->label));
     callback(WTF::move(result));
 }

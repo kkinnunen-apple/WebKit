@@ -1253,7 +1253,7 @@ static std::optional<Ref<BindGroup>> validateTextureOrBindGroup(WebGPU::Metal::D
     return std::nullopt;
 }
 
-Ref<BindGroup> Device::createBindGroup(const WebGPU::BindGroupDescriptor& descriptor)
+RefPtr<WebGPU::BindGroup> Device::createBindGroup(const WebGPU::BindGroupDescriptor& descriptor)
 {
 #define INTERNAL_ERROR_STRING(x) [NSString stringWithFormat:@"GPUDevice.createBindGroup: %@", x]
 #define VALIDATION_ERROR(...) generateAValidationError(INTERNAL_ERROR_STRING((__VA_ARGS__)))
@@ -1425,11 +1425,11 @@ Ref<BindGroup> Device::createBindGroup(const WebGPU::BindGroupDescriptor& descri
                 if (textureViewResource) {
                     Ref apiTextureView = metal(textureViewResource->get());
                     if (auto result = validateTextureOrBindGroup(*this, apiTextureView, argumentBuffer, argumentEncoder, argumentIndices, bindGroupLayout, entry, externalTextureEntry, index, resourceUsage, stage, stageResourceUsages, stageResources, storageTextureEntry, textureEntry))
-                        return *result;
+                        return WTF::move(*result);
                 } else {
                     Ref apiTexture = metal(textureResource->get());
                     if (auto result = validateTextureOrBindGroup(*this, apiTexture, argumentBuffer, argumentEncoder, argumentIndices, bindGroupLayout, entry, externalTextureEntry, index, resourceUsage, stage, stageResourceUsages, stageResources, storageTextureEntry, textureEntry))
-                        return *result;
+                        return WTF::move(*result);
                 }
 
             } else if (externalTextureResource) {

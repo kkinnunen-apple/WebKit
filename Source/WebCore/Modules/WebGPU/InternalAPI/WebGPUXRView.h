@@ -25,13 +25,13 @@
 
 #pragma once
 
+#include <WebCore/WebGPUDevice.h>
 #include <wtf/Ref.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/WeakPtr.h>
 
 namespace WebCore::WebGPU {
 
-class Device;
 class GPUTexture;
 
 class XRView : public RefCountedAndCanMakeWeakPtr<XRView> {

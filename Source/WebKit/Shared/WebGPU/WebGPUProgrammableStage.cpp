@@ -35,20 +35,25 @@
 
 namespace WebKit::WebGPU {
 
-std::optional<ProgrammableStage> ConvertToBackingContext::convertToBacking(const WebCore::WebGPU::ProgrammableStage& programmableStage)
+std::optional<ProgrammableStage> ConvertToBackingContext::convertToBacking(const ::WebGPU::ProgrammableStage& programmableStage)
 {
     auto module = convertToBacking(protect(programmableStage.module).get());
-
-    return { { module, programmableStage.entryPoint, programmableStage.constants } };
+    auto constants = WTF::map(programmableStage.constants, [](auto& constant) {
+        return makeKeyValuePair(constant.key, constant.value);
+    });
+    return { { module, programmableStage.entryPoint, WTF::move(constants) } };
 }
 
-std::optional<WebCore::WebGPU::ProgrammableStage> ConvertFromBackingContext::convertFromBacking(const ProgrammableStage& programmableStage)
+std::optional<::WebGPU::ProgrammableStage> ConvertFromBackingContext::convertFromBacking(const ProgrammableStage& programmableStage, Vector<::WebGPU::ConstantEntry>& constantsStorage)
 {
     RefPtr shaderModule = convertShaderModuleFromBacking(programmableStage.module);
     if (!shaderModule)
         return std::nullopt;
 
-    return { { *shaderModule, programmableStage.entryPoint, programmableStage.constants } };
+    constantsStorage = programmableStage.constants.map([](auto& constant) {
+        return ::WebGPU::ConstantEntry { .key = constant.key, .value = constant.value };
+    });
+    return { { shaderModule.releaseNonNull(), programmableStage.entryPoint, constantsStorage.span() } };
 }
 
 } // namespace WebKit

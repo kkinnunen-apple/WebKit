@@ -134,7 +134,7 @@ id<MTLBuffer> Device::safeCreateBuffer(NSUInteger length, bool skipAttribution) 
     return safeCreateBuffer(length, MTLStorageModeShared, skipAttribution);
 }
 
-Ref<Buffer> Device::createBuffer(const WebGPU::BufferDescriptor& descriptor)
+RefPtr<WebGPU::Buffer> Device::createBuffer(const WebGPU::BufferDescriptor& descriptor)
 {
     if (!isValid())
         return Buffer::createInvalid(*this);

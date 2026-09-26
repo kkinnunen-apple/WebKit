@@ -31,14 +31,12 @@
 #include "RemotePresentationContextProxy.h"
 #include "WebGPUIdentifier.h"
 #include <WebCore/WebGPUCompositorIntegration.h>
+#include <WebCore/WebGPUDevice.h>
 #include <wtf/TZoneMalloc.h>
 
 namespace WebCore {
 class ImageBuffer;
 class NativeImage;
-namespace WebGPU {
-class Device;
-}
 }
 
 namespace WebKit::WebGPU {

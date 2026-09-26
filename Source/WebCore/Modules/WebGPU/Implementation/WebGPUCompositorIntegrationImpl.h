@@ -28,6 +28,7 @@
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
 #include "WebGPUCompositorIntegration.h"
+#include "WebGPUDevice.h"
 
 #include "WebGPUPresentationContextImpl.h"
 #include <WebCore/IOSurface.h>
@@ -44,7 +45,6 @@
 #endif
 
 namespace WebCore {
-class Device;
 class NativeImage;
 }
 
@@ -107,7 +107,7 @@ private:
 
     const RefPtr<PresentationContextImpl> m_presentationContext;
     const Ref<ConvertToBackingContext> m_convertToBackingContext;
-    WeakPtr<Device> m_device;
+    ThreadSafeWeakPtr<Device> m_device;
 };
 
 } // namespace WebCore::WebGPU

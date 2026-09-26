@@ -26,8 +26,8 @@
 #pragma once
 
 #include "GPUBindGroupLayout.h"
+#include "GPUDevice.h"
 #include "GPUObjectDescriptorBase.h"
-#include "WebGPUDevice.h"
 #include "WebGPUPipelineLayoutDescriptor.h"
 #include <wtf/Vector.h>
 
@@ -35,7 +35,7 @@ namespace WebCore {
 
 struct GPUPipelineLayoutDescriptor : public GPUObjectDescriptorBase {
     // The descriptor borrows the bind group layouts from bindGroupLayoutsStorage.
-    WebGPU::PipelineLayoutDescriptor convertToBacking(WebGPU::Device& device, Vector<Ref<WebGPU::BindGroupLayout>>& bindGroupLayoutsStorage) const
+    WebGPU::PipelineLayoutDescriptor convertToBacking(const GPUDevice& device, Vector<Ref<WebGPU::BindGroupLayout>>& bindGroupLayoutsStorage) const
     {
         bindGroupLayoutsStorage = bindGroupLayouts.map([&](const auto& bindGroupLayout) -> Ref<WebGPU::BindGroupLayout> {
             return bindGroupLayout ? protect(bindGroupLayout->backing()) : device.emptyBindGroupLayout();

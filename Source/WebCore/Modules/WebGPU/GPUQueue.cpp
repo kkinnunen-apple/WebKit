@@ -104,7 +104,7 @@ void GPUQueue::submit(Vector<Ref<GPUCommandBuffer>>&& commandBuffers)
     if (RefPtr device = m_device) {
         for (Ref commandBuffer : commandBuffers) {
             commandBuffer->setOverrideLabel(commandBuffer->label());
-            commandBuffer->setBacking(device->backing().invalidCommandEncoder(), device->backing().invalidCommandBuffer());
+            commandBuffer->setBacking(device->invalidCommandEncoder(), device->invalidCommandBuffer());
         }
     }
 }

@@ -73,7 +73,7 @@ static std::pair<Ref<ComputePipeline>, NSString*> returnInvalidComputePipeline(W
     return std::make_pair(ComputePipeline::createInvalid(object), error);
 }
 
-Ref<ComputePipeline> Device::createComputePipeline(const WebGPU::ComputePipelineDescriptor& descriptor)
+RefPtr<WebGPU::ComputePipeline> Device::createComputePipeline(const WebGPU::ComputePipelineDescriptor& descriptor)
 {
     std::optional<std::pair<Ref<ComputePipeline>, NSString*>> result;
     createComputePipeline(descriptor, false, nullptr, LibraryCompilation::Synchronous, [&](std::pair<Ref<ComputePipeline>, NSString*>&& pipelineAndError) {
@@ -179,13 +179,13 @@ void Device::createComputePipeline(const WebGPU::ComputePipelineDescriptor& desc
     compileLibrary(compileRequest, libraryCompilation, WTF::move(finishCreation));
 }
 
-static CompletionHandler<void(std::pair<Ref<ComputePipeline>, NSString*>&&)> asyncComputePipelineCompletion(Device& device, CompletionHandler<void(Expected<Ref<ComputePipeline>, WebGPU::PipelineError>&&)>&& callback)
+static CompletionHandler<void(std::pair<Ref<ComputePipeline>, NSString*>&&)> asyncComputePipelineCompletion(Device& device, CompletionHandler<void(Expected<Ref<WebGPU::ComputePipeline>, WebGPU::PipelineError>&&)>&& callback)
 {
     return [protectedDevice = protect(device), callback = WTF::move(callback)](std::pair<Ref<ComputePipeline>, NSString*>&& pipelineAndError) mutable {
         auto reportResult = [protectedDevice, callback = WTF::move(callback), pipeline = WTF::move(pipelineAndError.first), message = String { pipelineAndError.second }]() mutable {
             // A lost device makes invalid objects without errors.
             if (pipeline->isValid() || protectedDevice->isDestroyed())
-                return callback(WTF::move(pipeline));
+                return callback(Ref<WebGPU::ComputePipeline> { WTF::move(pipeline) });
             callback(makeUnexpected(WebGPU::PipelineError { .reason = WebGPU::PipelineErrorReason::Validation, .message = WTF::move(message) }));
         };
 
@@ -198,15 +198,15 @@ static CompletionHandler<void(std::pair<Ref<ComputePipeline>, NSString*>&&)> asy
     };
 }
 
-void Device::createComputePipelineAsync(const WebGPU::ComputePipelineDescriptor& descriptor, CompletionHandler<void(Expected<Ref<ComputePipeline>, WebGPU::PipelineError>&&)>&& callback)
+void Device::createComputePipelineAsync(const WebGPU::ComputePipelineDescriptor& descriptor, CompletionHandler<void(Expected<Ref<WebGPU::ComputePipeline>, WebGPU::PipelineError>&&)>&& callback)
 {
     createComputePipeline(descriptor, true, nullptr, asynchronousIfPossible(), asyncComputePipelineCompletion(*this, WTF::move(callback)));
 }
 
-void Device::createComputePipelineWithPipelineLayoutFromPipelineAsync(const WebGPU::ComputePipelineDescriptor& descriptor, const ComputePipeline& pipelineToReplace, CompletionHandler<void(Expected<Ref<ComputePipeline>, WebGPU::PipelineError>&&)>&& callback)
+void Device::createComputePipelineWithPipelineLayoutFromPipelineAsync(const WebGPU::ComputePipelineDescriptor& descriptor, const WebGPU::ComputePipeline& pipelineToReplace, CompletionHandler<void(Expected<Ref<WebGPU::ComputePipeline>, WebGPU::PipelineError>&&)>&& callback)
 {
     bool wasErrorReportingPaused = pauseErrorReporting(true);
-    createComputePipeline(descriptor, true, &pipelineToReplace, asynchronousIfPossible(), asyncComputePipelineCompletion(*this, WTF::move(callback)));
+    createComputePipeline(descriptor, true, &static_cast<const ComputePipeline&>(pipelineToReplace), asynchronousIfPossible(), asyncComputePipelineCompletion(*this, WTF::move(callback)));
     pauseErrorReporting(wasErrorReportingPaused);
 }
 

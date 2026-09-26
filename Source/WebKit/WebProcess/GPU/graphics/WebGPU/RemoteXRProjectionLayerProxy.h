@@ -30,14 +30,12 @@
 #include "RemoteGPUProxy.h"
 #include "WebGPUIdentifier.h"
 #include <WebCore/PlatformXR.h>
+#include <WebCore/WebGPUDevice.h>
 #include <WebCore/WebGPUXRProjectionLayer.h>
 
 namespace WebCore {
 class ImageBuffer;
 class NativeImage;
-namespace WebGPU {
-class Device;
-}
 }
 
 namespace WebKit::WebGPU {
