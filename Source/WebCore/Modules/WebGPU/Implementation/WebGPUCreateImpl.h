@@ -40,7 +40,7 @@ namespace WebCore::WebGPU {
 
 using WorkItem = Function<void()>;
 using ScheduleWorkFunction = Function<void(WorkItem&&)>;
-WEBCORE_EXPORT RefPtr<GPU> create(ScheduleWorkFunction&&, const WebCore::ProcessIdentity*);
+WEBCORE_EXPORT RefPtr<WebGPUIntegration> create(ScheduleWorkFunction&&, const WebCore::ProcessIdentity*);
 
 } // namespace WebCore::WebGPU
 

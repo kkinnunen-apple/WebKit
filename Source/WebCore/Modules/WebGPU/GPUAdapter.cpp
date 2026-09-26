@@ -43,7 +43,7 @@ String GPUAdapter::name() const
     return m_adapterInfo.name;
 }
 
-GPUAdapter::GPUAdapter(Ref<WebGPU::Adapter>&& backing, Ref<WebGPU::GPU>&& gpu)
+GPUAdapter::GPUAdapter(Ref<WebGPU::Adapter>&& backing, Ref<WebGPUIntegration>&& gpu)
     : m_backing(WTF::move(backing))
     , m_gpu(WTF::move(gpu))
     , m_adapterInfo(m_backing->info())

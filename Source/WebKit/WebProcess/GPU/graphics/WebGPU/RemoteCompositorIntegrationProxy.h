@@ -43,7 +43,7 @@ namespace WebKit::WebGPU {
 
 class ConvertToBackingContext;
 
-class RemoteCompositorIntegrationProxy final : public WebCore::WebGPU::CompositorIntegration {
+class RemoteCompositorIntegrationProxy final : public WebCore::WebGPUCompositorIntegration {
     WTF_MAKE_TZONE_ALLOCATED(RemoteCompositorIntegrationProxy);
 public:
     static Ref<RemoteCompositorIntegrationProxy> create(RemoteGPUProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)
@@ -109,7 +109,7 @@ private:
 } // namespace WebKit::WebGPU
 
 SPECIALIZE_TYPE_TRAITS_BEGIN(WebKit::WebGPU::RemoteCompositorIntegrationProxy)
-    static bool isType(const WebCore::WebGPU::CompositorIntegration& integration) { return integration.isRemoteCompositorIntegrationProxy(); }
+    static bool isType(const WebCore::WebGPUCompositorIntegration& integration) { return integration.isRemoteCompositorIntegrationProxy(); }
 SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // ENABLE(GPU_PROCESS)

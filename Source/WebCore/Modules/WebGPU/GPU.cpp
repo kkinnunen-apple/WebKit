@@ -38,7 +38,7 @@
 
 namespace WebCore {
 
-GPU::GPU(Ref<WebGPU::GPU>&& backing)
+GPU::GPU(Ref<WebGPUIntegration>&& backing)
     : m_backing(WTF::move(backing))
     , m_wgslLanguageFeatures(WGSLLanguageFeatures::create())
 {

@@ -106,7 +106,7 @@ Lock& GPUDevice::instancesLock()
     return s_instancesLock;
 }
 
-Ref<GPUDevice> GPUDevice::create(ScriptExecutionContext* scriptExecutionContext, Ref<WebGPU::Device>&& backing, Ref<WebGPU::GPU>&& gpu, String&& queueLabel, GPUAdapterInfo& adapterInfo)
+Ref<GPUDevice> GPUDevice::create(ScriptExecutionContext* scriptExecutionContext, Ref<WebGPU::Device>&& backing, Ref<WebGPUIntegration>&& gpu, String&& queueLabel, GPUAdapterInfo& adapterInfo)
 {
     Ref device = adoptRef(*new GPUDevice(scriptExecutionContext, WTF::move(backing), WTF::move(gpu), WTF::move(queueLabel), adapterInfo));
 
@@ -115,7 +115,7 @@ Ref<GPUDevice> GPUDevice::create(ScriptExecutionContext* scriptExecutionContext,
     return device;
 }
 
-GPUDevice::GPUDevice(ScriptExecutionContext* scriptExecutionContext, Ref<WebGPU::Device>&& backing, Ref<WebGPU::GPU>&& gpu, String&& queueLabel, GPUAdapterInfo& adapterInfo)
+GPUDevice::GPUDevice(ScriptExecutionContext* scriptExecutionContext, Ref<WebGPU::Device>&& backing, Ref<WebGPUIntegration>&& gpu, String&& queueLabel, GPUAdapterInfo& adapterInfo)
     : ActiveDOMObject { scriptExecutionContext }
     , m_lostPromise(makeUniqueRef<LostPromise>())
     , m_gpu(WTF::move(gpu))

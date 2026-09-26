@@ -34,12 +34,12 @@
 
 namespace WebKit::WebGPU {
 
-std::optional<ImageCopyExternalImage> ConvertToBackingContext::convertToBacking(const WebCore::WebGPU::ImageCopyExternalImage& imageCopyExternalImage)
+std::optional<ImageCopyExternalImage> ConvertToBackingContext::convertToBacking(const WebCore::WebGPUExternalImageSource& imageCopyExternalImage)
 {
     return { { imageCopyExternalImage.origin, imageCopyExternalImage.flipY, imageCopyExternalImage.imageBuffer ? std::optional { imageCopyExternalImage.imageBuffer->renderingResourceIdentifier() } : std::nullopt, imageCopyExternalImage.premultipliedAlpha } };
 }
 
-std::optional<WebCore::WebGPU::ImageCopyExternalImage> ConvertFromBackingContext::convertFromBacking(const ImageCopyExternalImage& imageCopyExternalImage)
+std::optional<WebCore::WebGPUExternalImageSource> ConvertFromBackingContext::convertFromBacking(const ImageCopyExternalImage& imageCopyExternalImage)
 {
     // The source ImageBuffer cannot be resolved here; RemoteQueue looks it up through RemoteGPU
     // and fills it in, because only RemoteGPU can reach the RemoteRenderingBackend.
@@ -47,7 +47,7 @@ std::optional<WebCore::WebGPU::ImageCopyExternalImage> ConvertFromBackingContext
 }
 
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
-std::optional<ImageCopyExternalImageVideoSource> ConvertToBackingContext::convertToBackingVideoSource(const WebCore::WebGPU::ImageCopyExternalImage& imageCopyExternalImage)
+std::optional<ImageCopyExternalImageVideoSource> ConvertToBackingContext::convertToBackingVideoSource(const WebCore::WebGPUExternalImageSource& imageCopyExternalImage)
 {
     ASSERT(imageCopyExternalImage.videoSource);
     if (!imageCopyExternalImage.videoSource)
@@ -62,7 +62,7 @@ std::optional<ImageCopyExternalImageVideoSource> ConvertToBackingContext::conver
     return { { imageCopyExternalImage.origin, imageCopyExternalImage.flipY, mediaIdentifier, std::nullopt } };
 }
 
-std::optional<WebCore::WebGPU::ImageCopyExternalImage> ConvertFromBackingContext::convertFromBacking(const ImageCopyExternalImageVideoSource& imageCopyExternalImage, ConvertFromBackingContext::PixelBufferType pixelBuffer, WebCore::VideoFrameRotation rotation, bool isMirrored)
+std::optional<WebCore::WebGPUExternalImageSource> ConvertFromBackingContext::convertFromBacking(const ImageCopyExternalImageVideoSource& imageCopyExternalImage, ConvertFromBackingContext::PixelBufferType pixelBuffer, WebCore::VideoFrameRotation rotation, bool isMirrored)
 {
     // RemoteQueue has already resolved the media player identifier, or read the shared frame, into
     // the pixel buffer the backing queue wraps, and read the display transform off the frame the

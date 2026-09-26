@@ -51,16 +51,16 @@
 
 namespace WebCore::WebGPU {
 
-WTF_MAKE_TZONE_ALLOCATED_IMPL(GPUImpl);
+WTF_MAKE_TZONE_ALLOCATED_IMPL(WebGPUIntegrationImpl);
 
-GPUImpl::GPUImpl(Ref<::WebGPU::Instance>&& instance)
+WebGPUIntegrationImpl::WebGPUIntegrationImpl(Ref<::WebGPU::Instance>&& instance)
     : m_backing(WTF::move(instance))
 {
 }
 
-GPUImpl::~GPUImpl() = default;
+WebGPUIntegrationImpl::~WebGPUIntegrationImpl() = default;
 
-void GPUImpl::requestAdapter(const RequestAdapterOptions& options, CompletionHandler<void(RefPtr<Adapter>&&)>&& callback)
+void WebGPUIntegrationImpl::requestAdapter(const RequestAdapterOptions& options, CompletionHandler<void(RefPtr<Adapter>&&)>&& callback)
 {
     auto backingOptions = options;
 #if CPU(X86_64)
@@ -69,10 +69,10 @@ void GPUImpl::requestAdapter(const RequestAdapterOptions& options, CompletionHan
     m_backing->requestAdapter(backingOptions, WTF::move(callback));
 }
 
-RefPtr<PresentationContext> GPUImpl::createPresentationContext(const PresentationContextDescriptor& presentationContextDescriptor)
+RefPtr<PresentationContext> WebGPUIntegrationImpl::createPresentationContext(const WebGPUPresentationContextDescriptor& presentationContextDescriptor)
 {
-    // Every WebCore::WebGPU::CompositorIntegration that GPUImpl creates is a CompositorIntegrationImpl.
-    Ref compositorIntegration = static_cast<CompositorIntegrationImpl&>(presentationContextDescriptor.compositorIntegration.get());
+    // Every WebCore::WebGPUCompositorIntegration that WebGPUIntegrationImpl creates is a WebGPUCompositorIntegrationImpl.
+    Ref compositorIntegration = static_cast<WebGPUCompositorIntegrationImpl&>(presentationContextDescriptor.compositorIntegration.get());
 
     RefPtr result = m_backing->createPresentationContext({
         .registerCompositorIntegration = [&](auto&& renderBuffersWereRecreated, auto&& onSubmittedWorkScheduled) {
@@ -84,9 +84,9 @@ RefPtr<PresentationContext> GPUImpl::createPresentationContext(const Presentatio
     return result;
 }
 
-RefPtr<CompositorIntegration> GPUImpl::createCompositorIntegration()
+RefPtr<WebGPUCompositorIntegration> WebGPUIntegrationImpl::createCompositorIntegration()
 {
-    return CompositorIntegrationImpl::create();
+    return WebGPUCompositorIntegrationImpl::create();
 }
 
 #if ENABLE(VIDEO)
@@ -153,7 +153,7 @@ static std::optional<SourceTextureFormat> NODELETE sourceTextureFormat(PixelForm
     return std::nullopt;
 }
 
-void GPUImpl::copyExternalImageToTexture(Queue& queue, const ImageCopyExternalImage& source, const ImageCopyTextureTagged& destination, const Extent3D& copySize)
+void WebGPUIntegrationImpl::copyExternalImageToTexture(Queue& queue, const WebGPUExternalImageSource& source, const ImageCopyTextureTagged& destination, const Extent3D& copySize)
 {
     ::WebGPU::ImageCopyExternalImage backingSource {
         .origin = source.origin.value_or(Origin2D { }),
@@ -217,13 +217,13 @@ void GPUImpl::copyExternalImageToTexture(Queue& queue, const ImageCopyExternalIm
     }, copySize);
 }
 
-RefPtr<WebCore::NativeImage> GPUImpl::nativeImage(Queue&, WebCore::VideoFrame&)
+RefPtr<WebCore::NativeImage> WebGPUIntegrationImpl::nativeImage(Queue&, WebCore::VideoFrame&)
 {
     // Only RemoteGPUProxy resolves a video frame to an image, through its video frame object heap.
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-RefPtr<ExternalTexture> GPUImpl::importExternalTexture(Device& device, const ExternalTextureDescriptor& descriptor)
+RefPtr<ExternalTexture> WebGPUIntegrationImpl::importExternalTexture(Device& device, const ExternalTextureDescriptor& descriptor)
 {
     auto* pixelBuffer = std::get_if<RetainPtr<CVPixelBufferRef>>(&descriptor.videoBacking);
     return device.importExternalTexture({
@@ -238,14 +238,14 @@ RefPtr<ExternalTexture> GPUImpl::importExternalTexture(Device& device, const Ext
 }
 
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
-void GPUImpl::updateExternalTexture(Device&, const ExternalTexture&, const WebCore::MediaPlayerIdentifier&)
+void WebGPUIntegrationImpl::updateExternalTexture(Device&, const ExternalTexture&, const WebCore::MediaPlayerIdentifier&)
 {
     // Only RemoteGPUProxy names a media player; the GPU process resolves it to a pixel buffer.
     RELEASE_ASSERT_NOT_REACHED();
 }
 #endif
 
-void GPUImpl::paintToCanvas(WebCore::NativeImage& image, const WebCore::IntSize& canvasSize, WebCore::GraphicsContext& context)
+void WebGPUIntegrationImpl::paintToCanvas(WebCore::NativeImage& image, const WebCore::IntSize& canvasSize, WebCore::GraphicsContext& context)
 {
     auto imageSize = image.size();
     FloatRect canvasRect(FloatPoint(), canvasSize);
@@ -254,137 +254,137 @@ void GPUImpl::paintToCanvas(WebCore::NativeImage& image, const WebCore::IntSize&
     context.drawNativeImage(image, canvasRect, FloatRect(FloatPoint(), imageSize), { CompositeOperator::Copy });
 }
 
-bool GPUImpl::isValid(const CompositorIntegration&) const
+bool WebGPUIntegrationImpl::isValid(const WebGPUCompositorIntegration&) const
 {
     return true;
 }
 
-bool GPUImpl::isValid(const Buffer& buffer) const
+bool WebGPUIntegrationImpl::isValid(const Buffer& buffer) const
 {
     return buffer.isValid();
 }
 
-bool GPUImpl::isValid(const Adapter& adapter) const
+bool WebGPUIntegrationImpl::isValid(const Adapter& adapter) const
 {
     return adapter.isValid();
 }
 
-bool GPUImpl::isValid(const BindGroup& bindGroup) const
+bool WebGPUIntegrationImpl::isValid(const BindGroup& bindGroup) const
 {
     return bindGroup.isValid();
 }
 
-bool GPUImpl::isValid(const BindGroupLayout& bindGroupLayout) const
+bool WebGPUIntegrationImpl::isValid(const BindGroupLayout& bindGroupLayout) const
 {
     return bindGroupLayout.isValid();
 }
 
-bool GPUImpl::isValid(const CommandBuffer& commandBuffer) const
+bool WebGPUIntegrationImpl::isValid(const CommandBuffer& commandBuffer) const
 {
     return commandBuffer.isValid();
 }
 
-bool GPUImpl::isValid(const CommandEncoder& commandEncoder) const
+bool WebGPUIntegrationImpl::isValid(const CommandEncoder& commandEncoder) const
 {
     return commandEncoder.isValid();
 }
 
-bool GPUImpl::isValid(const ComputePassEncoder& computePassEncoder) const
+bool WebGPUIntegrationImpl::isValid(const ComputePassEncoder& computePassEncoder) const
 {
     return computePassEncoder.isValid();
 }
 
-bool GPUImpl::isValid(const ComputePipeline& computePipeline) const
+bool WebGPUIntegrationImpl::isValid(const ComputePipeline& computePipeline) const
 {
     return computePipeline.isValid();
 }
 
-bool GPUImpl::isValid(const Device& device) const
+bool WebGPUIntegrationImpl::isValid(const Device& device) const
 {
     return device.isValid();
 }
 
-bool GPUImpl::isValid(const ExternalTexture& externalTexture) const
+bool WebGPUIntegrationImpl::isValid(const ExternalTexture& externalTexture) const
 {
     return externalTexture.isValid();
 }
 
-bool GPUImpl::isValid(const PipelineLayout& pipelineLayout) const
+bool WebGPUIntegrationImpl::isValid(const PipelineLayout& pipelineLayout) const
 {
     return pipelineLayout.isValid();
 }
 
-bool GPUImpl::isValid(const PresentationContext& presentationContext) const
+bool WebGPUIntegrationImpl::isValid(const PresentationContext& presentationContext) const
 {
     return presentationContext.isValid();
 }
 
-bool GPUImpl::isValid(const QuerySet& querySet) const
+bool WebGPUIntegrationImpl::isValid(const QuerySet& querySet) const
 {
     return querySet.isValid();
 }
 
-bool GPUImpl::isValid(const Queue& queue) const
+bool WebGPUIntegrationImpl::isValid(const Queue& queue) const
 {
     return queue.isValid();
 }
 
-bool GPUImpl::isValid(const RenderBundleEncoder& renderBundleEncoder) const
+bool WebGPUIntegrationImpl::isValid(const RenderBundleEncoder& renderBundleEncoder) const
 {
     return renderBundleEncoder.isValid();
 }
 
-bool GPUImpl::isValid(const RenderBundle& renderBundle) const
+bool WebGPUIntegrationImpl::isValid(const RenderBundle& renderBundle) const
 {
     return renderBundle.isValid();
 }
 
-bool GPUImpl::isValid(const RenderPassEncoder& renderPassEncoder) const
+bool WebGPUIntegrationImpl::isValid(const RenderPassEncoder& renderPassEncoder) const
 {
     return renderPassEncoder.isValid();
 }
 
-bool GPUImpl::isValid(const RenderPipeline& renderPipeline) const
+bool WebGPUIntegrationImpl::isValid(const RenderPipeline& renderPipeline) const
 {
     return renderPipeline.isValid();
 }
 
-bool GPUImpl::isValid(const Sampler& sampler) const
+bool WebGPUIntegrationImpl::isValid(const Sampler& sampler) const
 {
     return sampler.isValid();
 }
 
-bool GPUImpl::isValid(const ShaderModule& shaderModule) const
+bool WebGPUIntegrationImpl::isValid(const ShaderModule& shaderModule) const
 {
     return shaderModule.isValid();
 }
 
-bool GPUImpl::isValid(const Texture& texture) const
+bool WebGPUIntegrationImpl::isValid(const Texture& texture) const
 {
     return texture.isValid();
 }
 
-bool GPUImpl::isValid(const TextureView& textureView) const
+bool WebGPUIntegrationImpl::isValid(const TextureView& textureView) const
 {
     return textureView.isValid();
 }
 
-bool GPUImpl::isValid(const XRBinding& binding) const
+bool WebGPUIntegrationImpl::isValid(const XRBinding& binding) const
 {
     return binding.isValid();
 }
 
-bool GPUImpl::isValid(const XRSubImage& subImage) const
+bool WebGPUIntegrationImpl::isValid(const XRSubImage& subImage) const
 {
     return subImage.isValid();
 }
 
-bool GPUImpl::isValid(const XRProjectionLayer& layer) const
+bool WebGPUIntegrationImpl::isValid(const XRProjectionLayer& layer) const
 {
     return layer.isValid();
 }
 
-bool GPUImpl::isValid(const XRView& view) const
+bool WebGPUIntegrationImpl::isValid(const XRView& view) const
 {
     return view.isValid();
 }

@@ -68,23 +68,22 @@ class NativeImage;
 
 namespace WebCore::WebGPU {
 
-class CompositorIntegration;
 
-class GPUImpl final : public GPU, public RefCounted<GPUImpl> {
-    WTF_MAKE_TZONE_ALLOCATED(GPUImpl);
+class WebGPUIntegrationImpl final : public WebGPUIntegration, public RefCounted<WebGPUIntegrationImpl> {
+    WTF_MAKE_TZONE_ALLOCATED(WebGPUIntegrationImpl);
 public:
     void ref() const final { RefCounted::ref(); }
     void deref() const final { RefCounted::deref(); }
 
-    static Ref<GPUImpl> create(Ref<::WebGPU::Instance>&& instance)
+    static Ref<WebGPUIntegrationImpl> create(Ref<::WebGPU::Instance>&& instance)
     {
-        return adoptRef(*new GPUImpl(WTF::move(instance)));
+        return adoptRef(*new WebGPUIntegrationImpl(WTF::move(instance)));
     }
 
-    virtual ~GPUImpl();
+    virtual ~WebGPUIntegrationImpl();
 
     void paintToCanvas(WebCore::NativeImage&, const WebCore::IntSize&, WebCore::GraphicsContext&) final;
-    void copyExternalImageToTexture(Queue&, const ImageCopyExternalImage& source, const ImageCopyTextureTagged& destination, const Extent3D& copySize) final;
+    void copyExternalImageToTexture(Queue&, const WebGPUExternalImageSource& source, const ImageCopyTextureTagged& destination, const Extent3D& copySize) final;
     RefPtr<WebCore::NativeImage> nativeImage(Queue&, WebCore::VideoFrame&) final;
     RefPtr<ExternalTexture> importExternalTexture(Device&, const ExternalTextureDescriptor&) final;
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
@@ -93,21 +92,21 @@ public:
 
 private:
 
-    explicit GPUImpl(Ref<::WebGPU::Instance>&&);
+    explicit WebGPUIntegrationImpl(Ref<::WebGPU::Instance>&&);
 
-    GPUImpl(const GPUImpl&) = delete;
-    GPUImpl(GPUImpl&&) = delete;
-    GPUImpl& operator=(const GPUImpl&) = delete;
-    GPUImpl& operator=(GPUImpl&&) = delete;
+    WebGPUIntegrationImpl(const WebGPUIntegrationImpl&) = delete;
+    WebGPUIntegrationImpl(WebGPUIntegrationImpl&&) = delete;
+    WebGPUIntegrationImpl& operator=(const WebGPUIntegrationImpl&) = delete;
+    WebGPUIntegrationImpl& operator=(WebGPUIntegrationImpl&&) = delete;
 
-    bool isGPUImpl() const final { return true; }
+    bool isWebGPUIntegrationImpl() const final { return true; }
 
     void requestAdapter(const RequestAdapterOptions&, CompletionHandler<void(RefPtr<Adapter>&&)>&&) final;
 
-    RefPtr<PresentationContext> createPresentationContext(const PresentationContextDescriptor&) final;
+    RefPtr<PresentationContext> createPresentationContext(const WebGPUPresentationContextDescriptor&) final;
 
-    RefPtr<CompositorIntegration> createCompositorIntegration() final;
-    bool NODELETE isValid(const CompositorIntegration&) const final;
+    RefPtr<WebGPUCompositorIntegration> createCompositorIntegration() final;
+    bool NODELETE isValid(const WebGPUCompositorIntegration&) const final;
     bool isValid(const Buffer&) const final;
     bool isValid(const Adapter&) const final;
     bool isValid(const BindGroup&) const final;
@@ -140,8 +139,8 @@ private:
 
 } // namespace WebCore::WebGPU
 
-SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::WebGPU::GPUImpl)
-    static bool isType(const WebCore::WebGPU::GPU& gpu) { return gpu.isGPUImpl(); }
+SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::WebGPU::WebGPUIntegrationImpl)
+    static bool isType(const WebCore::WebGPUIntegration& gpu) { return gpu.isWebGPUIntegrationImpl(); }
 SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // HAVE(WEBGPU_IMPLEMENTATION)

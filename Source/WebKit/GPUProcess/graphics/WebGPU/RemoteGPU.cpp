@@ -118,7 +118,7 @@ void RemoteGPU::workQueueInitialize()
         protectedThis->m_workQueue->dispatch(WTF::move(workItem));
     }, gpuProcessConnection ? &gpuProcessConnection->webProcessIdentity() : nullptr);
 #else
-    RefPtr<WebCore::WebGPU::GPU> backing;
+    RefPtr<WebCore::WebGPUIntegration> backing;
 #endif
     if (backing) {
         m_backing = backing.releaseNonNull();
@@ -232,7 +232,7 @@ void RemoteGPU::paintNativeImageToImageBuffer(WebCore::NativeImage& nativeImage,
     semaphore.wait();
 }
 
-RefPtr<WebCore::WebGPU::GPU> RemoteGPU::backing()
+RefPtr<WebCore::WebGPUIntegration> RemoteGPU::backing()
 {
     assertIsCurrent(workQueue());
     return m_backing;
@@ -356,7 +356,7 @@ void RemoteGPU::createModelBacking(unsigned width, unsigned height, WebModel::Im
 void RemoteGPU::isValid(WebGPUIdentifier identifier, CompletionHandler<void(bool, bool)>&& completionHandler)
 {
     assertIsCurrent(workQueue());
-    RefPtr gpu = static_cast<WebCore::WebGPU::GPU*>(m_backing.get());
+    RefPtr gpu = static_cast<WebCore::WebGPUIntegration*>(m_backing.get());
     if (!gpu) {
         completionHandler(false, false);
         return;

@@ -48,13 +48,13 @@ public:
     WebGPUIdentifier convertToBacking(const WebCore::WebGPU::Buffer&) final;
     WebGPUIdentifier convertToBacking(const WebCore::WebGPU::CommandBuffer&) final;
     WebGPUIdentifier convertToBacking(const WebCore::WebGPU::CommandEncoder&) final;
-    const RemoteCompositorIntegrationProxy& convertToRawBacking(const WebCore::WebGPU::CompositorIntegration&) final;
-    WebGPUIdentifier convertToBacking(const WebCore::WebGPU::CompositorIntegration&) final;
+    const RemoteCompositorIntegrationProxy& convertToRawBacking(const WebCore::WebGPUCompositorIntegration&) final;
+    WebGPUIdentifier convertToBacking(const WebCore::WebGPUCompositorIntegration&) final;
     WebGPUIdentifier convertToBacking(const WebCore::WebGPU::ComputePassEncoder&) final;
     WebGPUIdentifier convertToBacking(const WebCore::WebGPU::ComputePipeline&) final;
     WebGPUIdentifier convertToBacking(const WebCore::WebGPU::Device&) final;
     WebGPUIdentifier convertToBacking(const WebCore::WebGPU::ExternalTexture&) final;
-    WebGPUIdentifier convertToBacking(const WebCore::WebGPU::GPU&) final;
+    WebGPUIdentifier convertToBacking(const WebCore::WebGPUIntegration&) final;
     WebGPUIdentifier convertToBacking(const WebCore::WebGPU::PipelineLayout&) final;
     WebGPUIdentifier convertToBacking(const WebCore::WebGPU::PresentationContext&) final;
     WebGPUIdentifier convertToBacking(const WebCore::WebGPU::QuerySet&) final;

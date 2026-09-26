@@ -217,7 +217,7 @@ RefPtr<WebKit::Mesh> RemoteGPUProxy::createModelBacking(unsigned width, unsigned
 #endif
 }
 
-RefPtr<WebCore::WebGPU::PresentationContext> RemoteGPUProxy::createPresentationContext(const WebCore::WebGPU::PresentationContextDescriptor& descriptor)
+RefPtr<WebCore::WebGPU::PresentationContext> RemoteGPUProxy::createPresentationContext(const WebCore::WebGPUPresentationContextDescriptor& descriptor)
 {
     // FIXME: Should we be consulting m_lost?
 
@@ -239,7 +239,7 @@ RefPtr<WebCore::WebGPU::PresentationContext> RemoteGPUProxy::createPresentationC
     return result;
 }
 
-RefPtr<WebCore::WebGPU::CompositorIntegration> RemoteGPUProxy::createCompositorIntegration()
+RefPtr<WebCore::WebGPUCompositorIntegration> RemoteGPUProxy::createCompositorIntegration()
 {
     // FIXME: Should we be consulting m_lost?
 
@@ -251,7 +251,7 @@ RefPtr<WebCore::WebGPU::CompositorIntegration> RemoteGPUProxy::createCompositorI
     return WebGPU::RemoteCompositorIntegrationProxy::create(*this, m_convertToBackingContext, identifier);
 }
 
-void RemoteGPUProxy::copyExternalImageToTexture(WebCore::WebGPU::Queue& queue, const WebCore::WebGPU::ImageCopyExternalImage& source, const WebCore::WebGPU::ImageCopyTextureTagged& destination, const WebCore::WebGPU::Extent3D& copySize)
+void RemoteGPUProxy::copyExternalImageToTexture(WebCore::WebGPU::Queue& queue, const WebCore::WebGPUExternalImageSource& source, const WebCore::WebGPU::ImageCopyTextureTagged& destination, const WebCore::WebGPU::Extent3D& copySize)
 {
     // Every WebCore::WebGPU::Queue in the Web Process is a RemoteQueueProxy.
     static_cast<WebGPU::RemoteQueueProxy&>(queue).copyExternalImageToTexture(source, destination, copySize);
@@ -280,7 +280,7 @@ void RemoteGPUProxy::paintToCanvas(WebCore::NativeImage&, const WebCore::IntSize
     ASSERT_NOT_REACHED();
 }
 
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::CompositorIntegration&) const
+bool RemoteGPUProxy::isValid(const WebCore::WebGPUCompositorIntegration&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }

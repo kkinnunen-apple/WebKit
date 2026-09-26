@@ -92,12 +92,12 @@ WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore
     return static_cast<const RemoteCommandEncoderProxy&>(commandEncoder).backing();
 }
 
-const RemoteCompositorIntegrationProxy& DowncastConvertToBackingContext::convertToRawBacking(const WebCore::WebGPU::CompositorIntegration& compositorIntegration)
+const RemoteCompositorIntegrationProxy& DowncastConvertToBackingContext::convertToRawBacking(const WebCore::WebGPUCompositorIntegration& compositorIntegration)
 {
     return downcast<RemoteCompositorIntegrationProxy>(compositorIntegration);
 }
 
-WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::CompositorIntegration& compositorIntegration)
+WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPUCompositorIntegration& compositorIntegration)
 {
     return downcast<RemoteCompositorIntegrationProxy>(compositorIntegration).backing();
 }
@@ -122,7 +122,7 @@ WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore
     return static_cast<const RemoteExternalTextureProxy&>(externalTexture).backing();
 }
 
-WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::GPU& gpu)
+WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPUIntegration& gpu)
 {
     return downcast<RemoteGPUProxy>(gpu).backing();
 }
