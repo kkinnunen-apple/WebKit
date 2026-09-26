@@ -30,6 +30,7 @@
 #include "WebGPUIntegralTypes.h"
 #include "WebGPUPresentationContext.h"
 #include "WebGPUPtr.h"
+#include "WebGPUTexture.h"
 #include "WebGPUTextureFormat.h"
 #include <IOSurface/IOSurfaceRef.h>
 #include <WebGPU/WebGPU.h>
@@ -39,7 +40,6 @@
 namespace WebCore::WebGPU {
 
 class ConvertToBackingContext;
-class TextureImpl;
 
 class PresentationContextImpl final : public PresentationContext {
     WTF_MAKE_TZONE_ALLOCATED(PresentationContextImpl);
@@ -83,7 +83,7 @@ private:
     WebGPUPtr<WGPUSurface> m_backing;
     WebGPUPtr<WGPUSwapChain> m_swapChain;
     const Ref<ConvertToBackingContext> m_convertToBackingContext;
-    RefPtr<TextureImpl> m_currentTexture;
+    RefPtr<Texture> m_currentTexture;
 };
 
 } // namespace WebCore::WebGPU

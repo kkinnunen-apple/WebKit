@@ -25,23 +25,15 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUExtent3D.h>
 #include <WebCore/WebGPUIntegralTypes.h>
-#include <WebCore/WebGPUObjectDescriptorBase.h>
 #include <WebCore/WebGPUTextureDimension.h>
 #include <WebCore/WebGPUTextureFormat.h>
 #include <WebCore/WebGPUTextureUsage.h>
 
 namespace WebCore::WebGPU {
 
-struct TextureDescriptor : public ObjectDescriptorBase {
-    Extent3D size;
-    IntegerCoordinate mipLevelCount { 1 };
-    Size32 sampleCount { 1 };
-    TextureDimension dimension { TextureDimension::_2d };
-    TextureFormat format { TextureFormat::R8unorm };
-    TextureUsageFlags usage;
-    Vector<TextureFormat> viewFormats;
-};
+using TextureDescriptor = ::WebGPU::TextureDescriptor;
 
 } // namespace WebCore::WebGPU

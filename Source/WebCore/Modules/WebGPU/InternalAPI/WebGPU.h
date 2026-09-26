@@ -29,6 +29,8 @@
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURequestAdapterOptions.h>
 #include <WebCore/WebGPUSampler.h>
+#include <WebCore/WebGPUTexture.h>
+#include <WebCore/WebGPUTextureView.h>
 #include <optional>
 #include <wtf/AbstractRefCounted.h>
 #include <wtf/CompletionHandler.h>
@@ -63,8 +65,6 @@ class RenderBundle;
 class RenderPassEncoder;
 class RenderPipeline;
 class ShaderModule;
-class Texture;
-class TextureView;
 class XRBinding;
 class XRProjectionLayer;
 class XRSubImage;

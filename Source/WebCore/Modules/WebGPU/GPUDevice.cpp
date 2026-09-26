@@ -382,7 +382,8 @@ ExceptionOr<Ref<GPUTexture>> GPUDevice::createTexture(GPUTextureDescriptor&& tex
     if (auto error = errorValidatingSupportedFormat(textureDescriptor.format))
         return Exception { ExceptionCode::TypeError, makeString("GPUDevice.createTexture: Unsupported texture format: "_s, *error) };
 
-    RefPtr texture = m_backing->createTexture(textureDescriptor.convertToBacking());
+    Vector<WebGPU::TextureFormat> viewFormats;
+    RefPtr texture = m_backing->createTexture(textureDescriptor.convertToBacking(viewFormats));
     if (!texture)
         return Exception { ExceptionCode::InvalidStateError, "GPUDevice.createTexture: Unable to create texture."_s };
 

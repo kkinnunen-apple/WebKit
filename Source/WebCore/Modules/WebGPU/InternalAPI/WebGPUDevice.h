@@ -38,6 +38,8 @@
 #include <WebCore/WebGPUSamplerDescriptor.h>
 #include <WebCore/WebGPUSupportedFeatures.h>
 #include <WebCore/WebGPUSupportedLimits.h>
+#include <WebCore/WebGPUTexture.h>
+#include <WebCore/WebGPUTextureDescriptor.h>
 #include <optional>
 #include <wtf/CompletionHandler.h>
 #include <wtf/HashSet.h>
@@ -83,8 +85,6 @@ struct RenderPipelineDescriptor;
 class ShaderModule;
 struct ShaderModuleDescriptor;
 class Surface;
-class Texture;
-struct TextureDescriptor;
 class XRBinding;
 
 class Device : public RefCountedAndCanMakeWeakPtr<Device> {

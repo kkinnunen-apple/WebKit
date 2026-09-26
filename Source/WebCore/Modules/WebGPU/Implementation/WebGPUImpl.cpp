@@ -251,14 +251,12 @@ bool GPUImpl::isValid(const ShaderModule& shaderModule) const
 
 bool GPUImpl::isValid(const Texture& texture) const
 {
-    WGPUTexture wgpuTexture = m_convertToBackingContext.get().convertToBacking(texture);
-    return wgpuTextureIsValid(wgpuTexture);
+    return texture.isValid();
 }
 
 bool GPUImpl::isValid(const TextureView& textureView) const
 {
-    WGPUTextureView wgpuTextureView = m_convertToBackingContext.get().convertToBacking(textureView);
-    return wgpuTextureViewIsValid(wgpuTextureView);
+    return textureView.isValid();
 }
 
 bool GPUImpl::isValid(const XRBinding& binding) const

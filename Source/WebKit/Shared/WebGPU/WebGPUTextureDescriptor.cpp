@@ -36,20 +36,22 @@ namespace WebKit::WebGPU {
 
 std::optional<TextureDescriptor> ConvertToBackingContext::convertToBacking(const WebCore::WebGPU::TextureDescriptor& textureDescriptor)
 {
-    auto base = convertToBacking(static_cast<const WebCore::WebGPU::ObjectDescriptorBase&>(textureDescriptor));
-    if (!base)
-        return std::nullopt;
-
-    return { { WTF::move(*base), textureDescriptor.size, textureDescriptor.mipLevelCount, textureDescriptor.sampleCount, textureDescriptor.dimension, textureDescriptor.format, textureDescriptor.usage, textureDescriptor.viewFormats } };
+    return { { { textureDescriptor.label }, textureDescriptor.size, textureDescriptor.mipLevelCount, textureDescriptor.sampleCount, textureDescriptor.dimension, textureDescriptor.format, textureDescriptor.usage, Vector(textureDescriptor.viewFormats) } };
 }
 
+// The descriptor borrows the view formats from textureDescriptor.
 std::optional<WebCore::WebGPU::TextureDescriptor> ConvertFromBackingContext::convertFromBacking(const TextureDescriptor& textureDescriptor)
 {
-    auto base = convertFromBacking(static_cast<const ObjectDescriptorBase&>(textureDescriptor));
-    if (!base)
-        return std::nullopt;
-
-    return { { WTF::move(*base), textureDescriptor.size, textureDescriptor.mipLevelCount, textureDescriptor.sampleCount, textureDescriptor.dimension, textureDescriptor.format, textureDescriptor.usage, textureDescriptor.viewFormats } };
+    return WebCore::WebGPU::TextureDescriptor {
+        .label = textureDescriptor.label,
+        .usage = textureDescriptor.usage,
+        .dimension = textureDescriptor.dimension,
+        .size = textureDescriptor.size,
+        .format = textureDescriptor.format,
+        .mipLevelCount = textureDescriptor.mipLevelCount,
+        .sampleCount = textureDescriptor.sampleCount,
+        .viewFormats = textureDescriptor.viewFormats.span(),
+    };
 }
 
 } // namespace WebKit

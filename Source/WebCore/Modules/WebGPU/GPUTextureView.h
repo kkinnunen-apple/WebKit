@@ -39,9 +39,9 @@ class GPUTexture;
 
 class GPUTextureView : public RefCountedAndCanMakeWeakPtr<GPUTextureView> {
 public:
-    static Ref<GPUTextureView> create(Ref<WebGPU::TextureView>&& backing, const GPUTexture& texture)
+    static Ref<GPUTextureView> create(Ref<WebGPU::TextureView>&& backing, String&& label, const GPUTexture& texture)
     {
-        return adoptRef(*new GPUTextureView(WTF::move(backing), texture));
+        return adoptRef(*new GPUTextureView(WTF::move(backing), WTF::move(label), texture));
     }
 
     String NODELETE label() const;
@@ -56,9 +56,10 @@ public:
     bool hasActiveInspectorCanvasCallTracer() const;
 
 private:
-    GPUTextureView(Ref<WebGPU::TextureView>&&, const GPUTexture&);
+    GPUTextureView(Ref<WebGPU::TextureView>&&, String&& label, const GPUTexture&);
 
     const Ref<WebGPU::TextureView> m_backing;
+    String m_label;
     WeakPtr<GPUDevice, WeakPtrImplWithEventTargetData> m_device;
     const bool m_isCanvasBacking;
 };

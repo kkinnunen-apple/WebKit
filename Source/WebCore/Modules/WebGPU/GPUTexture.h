@@ -97,6 +97,7 @@ private:
     GPUTexture& operator=(GPUTexture&&) = delete;
 
     const Ref<WebGPU::Texture> m_backing;
+    String m_label;
     const GPUTextureFormat m_format;
     const GPUIntegerCoordinateOut m_width;
     const GPUIntegerCoordinateOut m_height;

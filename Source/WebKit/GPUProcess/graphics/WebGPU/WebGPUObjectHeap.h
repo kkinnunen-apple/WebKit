@@ -33,6 +33,7 @@
 #include <WebCore/WebGPUBuffer.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPUSampler.h>
+#include <WebCore/WebGPUTexture.h>
 #include <functional>
 #include <wtf/HashMap.h>
 #include <wtf/Ref.h>
@@ -59,8 +60,6 @@ class RenderBundle;
 class RenderPassEncoder;
 class RenderPipeline;
 class ShaderModule;
-class Texture;
-class TextureView;
 class XRBinding;
 class XRProjectionLayer;
 class XRSubImage;
@@ -162,8 +161,8 @@ public:
     WeakPtr<WebCore::WebGPU::RenderPipeline> convertRenderPipelineFromBacking(WebGPUIdentifier) final;
     RefPtr<WebCore::WebGPU::Sampler> convertSamplerFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::ShaderModule> convertShaderModuleFromBacking(WebGPUIdentifier) final;
-    WeakPtr<WebCore::WebGPU::Texture> convertTextureFromBacking(WebGPUIdentifier) final;
-    WeakPtr<WebCore::WebGPU::TextureView> convertTextureViewFromBacking(WebGPUIdentifier) final;
+    RefPtr<WebCore::WebGPU::Texture> convertTextureFromBacking(WebGPUIdentifier) final;
+    RefPtr<WebCore::WebGPU::TextureView> convertTextureViewFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::XRBinding> convertXRBindingFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::XRSubImage> convertXRSubImageFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::XRProjectionLayer> convertXRProjectionLayerFromBacking(WebGPUIdentifier) final;

@@ -51,6 +51,12 @@ public:
     virtual ~RemoteTextureProxy();
 
     RemoteGPUProxy& root() const { return m_root; }
+
+    RefPtr<WebCore::WebGPU::TextureView> createView(const std::optional<WebCore::WebGPU::TextureViewDescriptor>&) final;
+
+    void destroy() final;
+    void setLabel(String&&) final;
+    bool isValid() const final;
     void undestroy() final;
 
 private:
@@ -63,8 +69,6 @@ private:
     RemoteTextureProxy& operator=(const RemoteTextureProxy&) = delete;
     RemoteTextureProxy& operator=(RemoteTextureProxy&&) = delete;
 
-    bool isRemoteTextureProxy() const final { return true; }
-
     WebGPUIdentifier backing() const { return m_backing; }
     
     template<typename T>
@@ -72,11 +76,6 @@ private:
     {
         return protect(root().streamClientConnection())->send(std::forward<T>(message), backing());
     }
-
-    RefPtr<WebCore::WebGPU::TextureView> createView(const std::optional<WebCore::WebGPU::TextureViewDescriptor>&) final;
-
-    void destroy() final;
-    void setLabelInternal(const String&) final;
 
     WebGPUIdentifier m_backing;
     const Ref<ConvertToBackingContext> m_convertToBackingContext;
@@ -88,9 +87,5 @@ private:
 };
 
 } // namespace WebKit::WebGPU
-
-SPECIALIZE_TYPE_TRAITS_BEGIN(WebKit::WebGPU::RemoteTextureProxy)
-    static bool isType(const WebCore::WebGPU::Texture& texture) { return texture.isRemoteTextureProxy(); }
-SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // ENABLE(GPU_PROCESS)

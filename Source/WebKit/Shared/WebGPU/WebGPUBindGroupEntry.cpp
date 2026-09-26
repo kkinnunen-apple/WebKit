@@ -74,13 +74,13 @@ std::optional<WebCore::WebGPU::BindGroupEntry> ConvertFromBackingContext::conver
         return { { bindGroupEntry.binding, { *sampler } } };
     }
     case BindingResourceType::Texture: {
-        WeakPtr texture = convertTextureFromBacking(bindGroupEntry.identifier);
+        RefPtr texture = convertTextureFromBacking(bindGroupEntry.identifier);
         if (!texture)
             return std::nullopt;
         return { { bindGroupEntry.binding, { *texture } } };
     }
     case BindingResourceType::TextureView: {
-        WeakPtr textureView = convertTextureViewFromBacking(bindGroupEntry.identifier);
+        RefPtr textureView = convertTextureViewFromBacking(bindGroupEntry.identifier);
         if (!textureView)
             return std::nullopt;
         return { { bindGroupEntry.binding, { *textureView } } };

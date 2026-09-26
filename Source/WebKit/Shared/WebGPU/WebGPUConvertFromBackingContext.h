@@ -35,6 +35,7 @@
 #include "WebGPUOrigin2D.h"
 #include "WebGPUOrigin3D.h"
 #include "WebGPURenderPassTimestampWrites.h"
+#include "WebGPUTextureViewDescriptor.h"
 #include <WebCore/WebGPUBlendComponent.h>
 #include <WebCore/WebGPUBlendState.h>
 #include <WebCore/WebGPUBuffer.h>
@@ -55,7 +56,9 @@
 #include <WebCore/WebGPUSamplerBindingLayout.h>
 #include <WebCore/WebGPUStencilFaceState.h>
 #include <WebCore/WebGPUStorageTextureBindingLayout.h>
+#include <WebCore/WebGPUTexture.h>
 #include <WebCore/WebGPUTextureBindingLayout.h>
+#include <WebCore/WebGPUTextureDescriptor.h>
 #include <WebCore/WebGPUVertexAttribute.h>
 #include <optional>
 #include <wtf/RefCounted.h>
@@ -131,10 +134,6 @@ struct ShaderModuleCompilationHint;
 struct ShaderModuleDescriptor;
 class SupportedFeatures;
 class SupportedLimits;
-class Texture;
-struct TextureDescriptor;
-class TextureView;
-struct TextureViewDescriptor;
 class ValidationError;
 struct VertexBufferLayout;
 struct VertexState;
@@ -203,7 +202,6 @@ struct SupportedFeatures;
 struct SupportedLimits;
 struct TextureBindingLayout;
 struct TextureDescriptor;
-struct TextureViewDescriptor;
 struct ValidationError;
 struct VertexAttribute;
 struct VertexBufferLayout;
@@ -276,7 +274,6 @@ public:
     RefPtr<WebCore::WebGPU::SupportedLimits> convertFromBacking(const SupportedLimits&);
     std::optional<WebCore::WebGPU::TextureBindingLayout> NODELETE convertFromBacking(const TextureBindingLayout&);
     std::optional<WebCore::WebGPU::TextureDescriptor> convertFromBacking(const TextureDescriptor&);
-    std::optional<WebCore::WebGPU::TextureViewDescriptor> convertFromBacking(const TextureViewDescriptor&);
     RefPtr<WebCore::WebGPU::ValidationError> convertFromBacking(const ValidationError&);
     std::optional<WebCore::WebGPU::VertexAttribute> NODELETE convertFromBacking(const VertexAttribute&);
     std::optional<WebCore::WebGPU::VertexBufferLayout> convertFromBacking(const VertexBufferLayout&);
@@ -303,8 +300,8 @@ public:
     virtual RefPtr<WebCore::WebGPU::Sampler> convertSamplerFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::ShaderModule> convertShaderModuleFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::PresentationContext> convertPresentationContextFromBacking(WebGPUIdentifier) = 0;
-    virtual WeakPtr<WebCore::WebGPU::Texture> convertTextureFromBacking(WebGPUIdentifier) = 0;
-    virtual WeakPtr<WebCore::WebGPU::TextureView> convertTextureViewFromBacking(WebGPUIdentifier) = 0;
+    virtual RefPtr<WebCore::WebGPU::Texture> convertTextureFromBacking(WebGPUIdentifier) = 0;
+    virtual RefPtr<WebCore::WebGPU::TextureView> convertTextureViewFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::XRBinding> convertXRBindingFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::XRProjectionLayer> convertXRProjectionLayerFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::XRSubImage> convertXRSubImageFromBacking(WebGPUIdentifier) = 0;

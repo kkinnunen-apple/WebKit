@@ -34,8 +34,8 @@
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUQuerySet.h"
 #include "WebGPURenderPassEncoderImpl.h"
-#include "WebGPUTextureImpl.h"
-#include "WebGPUTextureViewImpl.h"
+#include "WebGPUTexture.h"
+#include "WebGPUTextureView.h"
 #include <WebGPU/WebGPUExt.h>
 #include <wtf/TZoneMalloc.h>
 

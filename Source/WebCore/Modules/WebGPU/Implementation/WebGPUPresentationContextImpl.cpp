@@ -32,7 +32,8 @@
 #include "WebGPUCanvasConfiguration.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUDeviceImpl.h"
-#include "WebGPUTextureImpl.h"
+#include "WebGPUTexture.h"
+#include <WebGPU/WebGPUCppBridge.h>
 #include <WebGPU/WebGPUExt.h>
 
 #if PLATFORM(COCOA)
@@ -134,7 +135,7 @@ RefPtr<Texture> PresentationContextImpl::getCurrentTexture(uint32_t frameIndex)
         if (!texturePtr)
             return nullptr;
 
-        m_currentTexture = TextureImpl::create(WebGPUPtr<WGPUTexture> { texturePtr }, m_format, TextureDimension::_2d, m_convertToBackingContext);
+        m_currentTexture = &::WebGPU::fromAPI(texturePtr);
     }
     return m_currentTexture;
 }
