@@ -25,40 +25,10 @@
 
 #pragma once
 
-#include <wtf/Ref.h>
-#include <wtf/RefCountedAndCanMakeWeakPtr.h>
-#include <wtf/WeakPtr.h>
-#include <wtf/text/WTFString.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-class Sampler : public RefCountedAndCanMakeWeakPtr<Sampler> {
-public:
-    virtual ~Sampler() = default;
-
-    String label() const { return m_label; }
-
-    void setLabel(String&& label)
-    {
-        m_label = WTF::move(label);
-        setLabelInternal(m_label);
-    }
-
-    virtual bool isRemoteSamplerProxy() const { return false; }
-    virtual bool isSamplerImpl() const { return false; }
-
-protected:
-    Sampler() = default;
-
-private:
-    Sampler(const Sampler&) = delete;
-    Sampler(Sampler&&) = delete;
-    Sampler& operator=(const Sampler&) = delete;
-    Sampler& operator=(Sampler&&) = delete;
-
-    virtual void setLabelInternal(const String&) = 0;
-
-    String m_label;
-};
+using Sampler = ::WebGPU::Sampler;
 
 } // namespace WebCore::WebGPU

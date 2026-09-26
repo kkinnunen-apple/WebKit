@@ -51,6 +51,7 @@
 #include "WebGPUPredefinedColorSpace.h"
 #include "WebGPUPrimitiveTopology.h"
 #include "WebGPUQueryType.h"
+#include "WebGPUSampler.h"
 #include "WebGPUSamplerBindingType.h"
 #include "WebGPUShaderStage.h"
 #include "WebGPUStencilOperation.h"
@@ -126,7 +127,6 @@ class RenderBundleEncoder;
 class RenderBundle;
 class RenderPassEncoder;
 class RenderPipeline;
-class Sampler;
 class ShaderModule;
 class Texture;
 class TextureView;

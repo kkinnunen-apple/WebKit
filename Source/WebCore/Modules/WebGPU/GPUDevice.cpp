@@ -414,10 +414,11 @@ static WebGPU::SamplerDescriptor NODELETE convertToBacking(const std::optional<G
 
 ExceptionOr<Ref<GPUSampler>> GPUDevice::createSampler(std::optional<GPUSamplerDescriptor>&& samplerDescriptor)
 {
-    RefPtr sampler = m_backing->createSampler(convertToBacking(samplerDescriptor));
+    auto backingDescriptor = convertToBacking(samplerDescriptor);
+    RefPtr sampler = m_backing->createSampler(backingDescriptor);
     if (!sampler)
         return Exception { ExceptionCode::InvalidStateError, "GPUDevice.createSampler: Unable to create sampler."_s };
-    return GPUSampler::create(sampler.releaseNonNull(), *this);
+    return GPUSampler::create(sampler.releaseNonNull(), WTF::move(backingDescriptor.label), *this);
 }
 
 ScriptExecutionContext* GPUDevice::scriptExecutionContext() const

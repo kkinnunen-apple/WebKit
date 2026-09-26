@@ -159,17 +159,13 @@ RefPtr<WebCore::WebGPU::Texture> RemoteDeviceProxy::createTexture(const WebCore:
 
 RefPtr<WebCore::WebGPU::Sampler> RemoteDeviceProxy::createSampler(const WebCore::WebGPU::SamplerDescriptor& descriptor)
 {
-    auto convertedDescriptor = m_convertToBackingContext->convertToBacking(descriptor);
-    if (!convertedDescriptor)
-        return nullptr;
-
     auto identifier = WebGPUIdentifier::generate();
-    auto sendResult = send(Messages::RemoteDevice::CreateSampler(*convertedDescriptor, identifier));
+    auto sendResult = send(Messages::RemoteDevice::CreateSampler(descriptor, identifier));
     if (sendResult != IPC::Error::NoError)
         return nullptr;
 
     auto result = RemoteSamplerProxy::create(*this, m_convertToBackingContext, identifier);
-    result->setLabel(WTF::move(convertedDescriptor->label));
+    result->setLabel(String { descriptor.label });
     return result;
 }
 

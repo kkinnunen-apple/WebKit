@@ -26,6 +26,7 @@
 #pragma once
 
 #include <WebCore/WebGPURequestAdapterOptions.h>
+#include <WebCore/WebGPUSampler.h>
 #include <optional>
 #include <wtf/AbstractRefCounted.h>
 #include <wtf/CompletionHandler.h>
@@ -61,7 +62,6 @@ class RenderBundleEncoder;
 class RenderBundle;
 class RenderPassEncoder;
 class RenderPipeline;
-class Sampler;
 class ShaderModule;
 class Texture;
 class TextureView;

@@ -53,8 +53,8 @@
 #include "WebGPURenderBundleEncoderImpl.h"
 #include "WebGPURenderPipelineDescriptor.h"
 #include "WebGPURenderPipelineImpl.h"
+#include "WebGPUSampler.h"
 #include "WebGPUSamplerDescriptor.h"
-#include "WebGPUSamplerImpl.h"
 #include "WebGPUShaderModuleDescriptor.h"
 #include "WebGPUShaderModuleImpl.h"
 #include "WebGPUTextureDescriptor.h"
@@ -63,6 +63,7 @@
 #include "WebGPUValidationError.h"
 #include "WebGPUXRBindingImpl.h"
 #include <CoreGraphics/CGColorSpace.h>
+#include <WebGPU/WebGPUCppBridge.h>
 #include <WebGPU/WebGPUExt.h>
 #include <wtf/BlockPtr.h>
 #include <wtf/SegmentedVector.h>
@@ -183,7 +184,7 @@ RefPtr<Sampler> DeviceImpl::createSampler(const SamplerDescriptor& descriptor)
         .maxAnisotropy = descriptor.maxAnisotropy,
     };
 
-    return SamplerImpl::create(adoptWebGPU(wgpuDeviceCreateSampler(m_backing.get(), &backingDescriptor)), convertToBackingContext);
+    return adoptRef(::WebGPU::fromAPI(wgpuDeviceCreateSampler(m_backing.get(), &backingDescriptor)));
 }
 
 void DeviceImpl::updateExternalTexture(const WebCore::WebGPU::ExternalTexture&, const WebCore::MediaPlayerIdentifier&)

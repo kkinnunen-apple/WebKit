@@ -130,7 +130,6 @@ Modules/WebGPU/Implementation/WebGPURenderBundleEncoderImpl.cpp
 Modules/WebGPU/Implementation/WebGPURenderBundleImpl.cpp
 Modules/WebGPU/Implementation/WebGPURenderPassEncoderImpl.cpp
 Modules/WebGPU/Implementation/WebGPURenderPipelineImpl.cpp
-Modules/WebGPU/Implementation/WebGPUSamplerImpl.cpp
 Modules/WebGPU/Implementation/WebGPUShaderModuleImpl.cpp
 Modules/WebGPU/Implementation/WebGPUTextureImpl.cpp
 Modules/WebGPU/Implementation/WebGPUTextureViewImpl.cpp

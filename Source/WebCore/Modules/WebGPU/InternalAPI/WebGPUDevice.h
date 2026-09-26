@@ -30,6 +30,8 @@
 #include <WebCore/WebGPUError.h>
 #include <WebCore/WebGPUErrorFilter.h>
 #include <WebCore/WebGPURenderPipeline.h>
+#include <WebCore/WebGPUSampler.h>
+#include <WebCore/WebGPUSamplerDescriptor.h>
 #include <WebCore/WebGPUSupportedFeatures.h>
 #include <WebCore/WebGPUSupportedLimits.h>
 #include <optional>
@@ -78,8 +80,6 @@ struct RenderBundleEncoderDescriptor;
 class RenderPassEncoder;
 class RenderPipeline;
 struct RenderPipelineDescriptor;
-class Sampler;
-struct SamplerDescriptor;
 class ShaderModule;
 struct ShaderModuleDescriptor;
 class Surface;

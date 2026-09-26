@@ -49,6 +49,7 @@
 #include <WebCore/WebGPUOrigin3D.h>
 #include <WebCore/WebGPUPrimitiveState.h>
 #include <WebCore/WebGPURenderPassTimestampWrites.h>
+#include <WebCore/WebGPUSampler.h>
 #include <WebCore/WebGPUSamplerBindingLayout.h>
 #include <WebCore/WebGPUStencilFaceState.h>
 #include <WebCore/WebGPUStorageTextureBindingLayout.h>
@@ -127,8 +128,6 @@ struct RenderPassLayout;
 class RenderPipeline;
 struct RenderPipelineDescriptor;
 struct RequestAdapterOptions;
-class Sampler;
-struct SamplerDescriptor;
 class ShaderModule;
 struct ShaderModuleCompilationHint;
 struct ShaderModuleDescriptor;
@@ -200,7 +199,6 @@ struct RenderPassLayout;
 struct RenderPipelineDescriptor;
 struct RequestAdapterOptions;
 struct SamplerBindingLayout;
-struct SamplerDescriptor;
 struct ShaderModuleCompilationHint;
 struct ShaderModuleDescriptor;
 struct StencilFaceState;
@@ -276,7 +274,6 @@ public:
     std::optional<WebCore::WebGPU::RenderPipelineDescriptor> convertFromBacking(const RenderPipelineDescriptor&, bool allowMissingPipelineLayout = false);
     std::optional<WebCore::WebGPU::RequestAdapterOptions> NODELETE convertFromBacking(const RequestAdapterOptions&);
     std::optional<WebCore::WebGPU::SamplerBindingLayout> NODELETE convertFromBacking(const SamplerBindingLayout&);
-    std::optional<WebCore::WebGPU::SamplerDescriptor> convertFromBacking(const SamplerDescriptor&);
     std::optional<WebCore::WebGPU::ShaderModuleCompilationHint> convertFromBacking(const ShaderModuleCompilationHint&);
     std::optional<WebCore::WebGPU::ShaderModuleDescriptor> convertFromBacking(const ShaderModuleDescriptor&);
     std::optional<WebCore::WebGPU::StencilFaceState> NODELETE convertFromBacking(const StencilFaceState&);
@@ -309,7 +306,7 @@ public:
     virtual WeakPtr<WebCore::WebGPU::RenderBundle> convertRenderBundleFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::RenderPassEncoder> convertRenderPassEncoderFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::RenderPipeline> convertRenderPipelineFromBacking(WebGPUIdentifier) = 0;
-    virtual WeakPtr<WebCore::WebGPU::Sampler> convertSamplerFromBacking(WebGPUIdentifier) = 0;
+    virtual RefPtr<WebCore::WebGPU::Sampler> convertSamplerFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::ShaderModule> convertShaderModuleFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::PresentationContext> convertPresentationContextFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::Texture> convertTextureFromBacking(WebGPUIdentifier) = 0;

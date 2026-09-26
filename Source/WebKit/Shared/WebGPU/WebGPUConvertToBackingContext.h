@@ -49,6 +49,7 @@
 #include <WebCore/WebGPUOrigin3D.h>
 #include <WebCore/WebGPUPrimitiveState.h>
 #include <WebCore/WebGPURenderPassTimestampWrites.h>
+#include <WebCore/WebGPUSampler.h>
 #include <WebCore/WebGPUSamplerBindingLayout.h>
 #include <WebCore/WebGPUStencilFaceState.h>
 #include <WebCore/WebGPUStorageTextureBindingLayout.h>
@@ -117,8 +118,6 @@ struct RenderPassLayout;
 class RenderPipeline;
 struct RenderPipelineDescriptor;
 struct RequestAdapterOptions;
-class Sampler;
-struct SamplerDescriptor;
 class ShaderModule;
 struct ShaderModuleCompilationHint;
 struct ShaderModuleDescriptor;
@@ -191,7 +190,6 @@ struct RenderPassLayout;
 struct RenderPipelineDescriptor;
 struct RequestAdapterOptions;
 struct SamplerBindingLayout;
-struct SamplerDescriptor;
 struct ShaderModuleCompilationHint;
 struct ShaderModuleDescriptor;
 struct StencilFaceState;
@@ -262,7 +260,6 @@ public:
     std::optional<RenderPipelineDescriptor> convertToBacking(const WebCore::WebGPU::RenderPipelineDescriptor&);
     std::optional<RequestAdapterOptions> NODELETE convertToBacking(const WebCore::WebGPU::RequestAdapterOptions&);
     std::optional<SamplerBindingLayout> NODELETE convertToBacking(const WebCore::WebGPU::SamplerBindingLayout&);
-    std::optional<SamplerDescriptor> convertToBacking(const WebCore::WebGPU::SamplerDescriptor&);
     std::optional<ShaderModuleCompilationHint> convertToBacking(const WebCore::WebGPU::ShaderModuleCompilationHint&);
     std::optional<ShaderModuleDescriptor> convertToBacking(const WebCore::WebGPU::ShaderModuleDescriptor&);
     std::optional<StencilFaceState> NODELETE convertToBacking(const WebCore::WebGPU::StencilFaceState&);
