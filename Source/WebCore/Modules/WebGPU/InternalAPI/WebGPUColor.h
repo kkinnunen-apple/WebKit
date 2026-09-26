@@ -25,18 +25,12 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/Vector.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore::WebGPU {
 
-struct ColorDict {
-    double r { 0 };
-    double g { 0 };
-    double b { 0 };
-    double a { 0 };
-};
-
-using Color = Variant<Vector<double>, ColorDict>;
+using Color = ::WebGPU::Color;
 
 } // namespace WebCore::WebGPU

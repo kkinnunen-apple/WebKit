@@ -25,16 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class TextureSampleType : uint8_t {
-    Float,
-    UnfilterableFloat,
-    Depth,
-    Sint,
-    Uint,
-};
+using TextureSampleType = ::WebGPU::TextureSampleType;
 
 } // namespace WebCore::WebGPU

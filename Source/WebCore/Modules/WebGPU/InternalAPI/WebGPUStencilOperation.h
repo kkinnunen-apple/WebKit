@@ -25,19 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class StencilOperation : uint8_t {
-    Keep,
-    Zero,
-    Replace,
-    Invert,
-    IncrementClamp,
-    DecrementClamp,
-    IncrementWrap,
-    DecrementWrap,
-};
+using StencilOperation = ::WebGPU::StencilOperation;
 
 } // namespace WebCore::WebGPU

@@ -26,15 +26,11 @@
 #pragma once
 
 #include <WebCore/WebGPUCompareFunction.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUStencilOperation.h>
 
 namespace WebCore::WebGPU {
 
-struct StencilFaceState {
-    CompareFunction compare { CompareFunction::Always };
-    StencilOperation failOp { StencilOperation::Keep };
-    StencilOperation depthFailOp { StencilOperation::Keep };
-    StencilOperation passOp { StencilOperation::Keep };
-};
+using StencilFaceState = ::WebGPU::StencilFaceState;
 
 } // namespace WebCore::WebGPU

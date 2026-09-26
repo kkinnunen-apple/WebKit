@@ -25,16 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class PrimitiveTopology : uint8_t {
-    PointList,
-    LineList,
-    LineStrip,
-    TriangleList,
-    TriangleStrip,
-};
+using PrimitiveTopology = ::WebGPU::PrimitiveTopology;
 
 } // namespace WebCore::WebGPU

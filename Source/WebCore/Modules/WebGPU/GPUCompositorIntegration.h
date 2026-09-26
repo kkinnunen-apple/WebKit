@@ -26,6 +26,7 @@
 #pragma once
 
 #include "WebGPUCompositorIntegration.h"
+#include "WebGPUTextureFormat.h"
 #include <optional>
 #include <wtf/MachSendRight.h>
 #include <wtf/Ref.h>
@@ -35,8 +36,6 @@
 namespace WebCore {
 namespace WebGPU {
 class Device;
-
-enum class TextureFormat : uint8_t;
 }
 
 class ColorSpace;

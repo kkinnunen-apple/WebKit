@@ -25,13 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class IndexFormat : uint8_t {
-    Uint16,
-    Uint32,
-};
+using IndexFormat = ::WebGPU::IndexFormat;
 
 } // namespace WebCore::WebGPU

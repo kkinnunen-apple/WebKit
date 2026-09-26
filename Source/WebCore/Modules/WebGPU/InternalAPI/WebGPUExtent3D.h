@@ -25,17 +25,12 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <wtf/Vector.h>
 
 namespace WebCore::WebGPU {
 
-struct Extent3DDict {
-    IntegerCoordinate width { 0 };
-    IntegerCoordinate height { 0 };
-    IntegerCoordinate depthOrArrayLayers { 0 };
-};
-
-using Extent3D = Variant<Vector<IntegerCoordinate>, Extent3DDict>;
+using Extent3D = ::WebGPU::Extent3D;
 
 } // namespace WebCore::WebGPU

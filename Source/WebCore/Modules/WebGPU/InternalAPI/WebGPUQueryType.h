@@ -25,13 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class QueryType : uint8_t {
-    Occlusion,
-    Timestamp,
-};
+using QueryType = ::WebGPU::QueryType;
 
 } // namespace WebCore::WebGPU

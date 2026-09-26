@@ -35,6 +35,7 @@
 #include <WebCore/ExceptionData.h>
 #include <WebCore/PlatformXR.h>
 #include <WebCore/SecurityOriginData.h>
+#include <WebCore/WebGPUTextureFormat.h>
 #include <wtf/RefCounted.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Variant.h>
@@ -43,9 +44,6 @@ namespace WebCore {
 class SecurityOriginData;
 struct XRCanvasConfiguration;
 
-namespace WebGPU {
-enum class TextureFormat : uint8_t;
-}
 }
 
 namespace WebKit {

@@ -35,13 +35,25 @@
 #include "WebGPUOrigin2D.h"
 #include "WebGPUOrigin3D.h"
 #include "WebGPURenderPassTimestampWrites.h"
+#include <WebCore/WebGPUBlendComponent.h>
+#include <WebCore/WebGPUBlendState.h>
+#include <WebCore/WebGPUBufferBindingLayout.h>
 #include <WebCore/WebGPUColor.h>
 #include <WebCore/WebGPUComputePassTimestampWrites.h>
 #include <WebCore/WebGPUError.h>
 #include <WebCore/WebGPUExtent3D.h>
+#include <WebCore/WebGPUExternalTextureBindingLayout.h>
+#include <WebCore/WebGPUImageDataLayout.h>
+#include <WebCore/WebGPUMultisampleState.h>
 #include <WebCore/WebGPUOrigin2D.h>
 #include <WebCore/WebGPUOrigin3D.h>
+#include <WebCore/WebGPUPrimitiveState.h>
 #include <WebCore/WebGPURenderPassTimestampWrites.h>
+#include <WebCore/WebGPUSamplerBindingLayout.h>
+#include <WebCore/WebGPUStencilFaceState.h>
+#include <WebCore/WebGPUStorageTextureBindingLayout.h>
+#include <WebCore/WebGPUTextureBindingLayout.h>
+#include <WebCore/WebGPUVertexAttribute.h>
 #include <wtf/RefCounted.h>
 
 namespace WebCore::WebGPU {
@@ -53,11 +65,8 @@ struct BindGroupEntry;
 class BindGroupLayout;
 struct BindGroupLayoutDescriptor;
 struct BindGroupLayoutEntry;
-struct BlendComponent;
-struct BlendState;
 class Buffer;
 struct BufferBinding;
-struct BufferBindingLayout;
 struct BufferDescriptor;
 struct CanvasConfiguration;
 struct ColorTargetState;
@@ -75,7 +84,6 @@ struct DepthStencilState;
 class Device;
 struct DeviceDescriptor;
 class ExternalTexture;
-struct ExternalTextureBindingLayout;
 struct ExternalTextureDescriptor;
 struct FragmentState;
 class GPU;
@@ -84,9 +92,7 @@ struct ImageCopyBuffer;
 struct ImageCopyExternalImage;
 struct ImageCopyTexture;
 struct ImageCopyTextureTagged;
-struct ImageDataLayout;
 class InternalError;
-struct MultisampleState;
 struct ObjectDescriptorBase;
 class OutOfMemoryError;
 struct PipelineDescriptorBase;
@@ -95,7 +101,6 @@ struct PipelineLayoutDescriptor;
 struct CanvasConfiguration;
 class PresentationContext;
 struct PresentationContextDescriptor;
-struct PrimitiveState;
 struct ProgrammableStage;
 class QuerySet;
 struct QuerySetDescriptor;
@@ -113,22 +118,17 @@ class RenderPipeline;
 struct RenderPipelineDescriptor;
 struct RequestAdapterOptions;
 class Sampler;
-struct SamplerBindingLayout;
 struct SamplerDescriptor;
 class ShaderModule;
 struct ShaderModuleCompilationHint;
 struct ShaderModuleDescriptor;
-struct StencilFaceState;
-struct StorageTextureBindingLayout;
 class SupportedFeatures;
 class SupportedLimits;
 class Texture;
-struct TextureBindingLayout;
 struct TextureDescriptor;
 class TextureView;
 struct TextureViewDescriptor;
 class ValidationError;
-struct VertexAttribute;
 struct VertexBufferLayout;
 struct VertexState;
 class XRBinding;
@@ -220,8 +220,6 @@ public:
     std::optional<BufferBindingLayout> NODELETE convertToBacking(const WebCore::WebGPU::BufferBindingLayout&);
     std::optional<BufferDescriptor> convertToBacking(const WebCore::WebGPU::BufferDescriptor&);
     std::optional<CanvasConfiguration> convertToBacking(const WebCore::WebGPU::CanvasConfiguration&);
-    std::optional<Color> convertToBacking(const WebCore::WebGPU::Color&);
-    std::optional<ColorDict> NODELETE convertToBacking(const WebCore::WebGPU::ColorDict&);
     std::optional<ColorTargetState> convertToBacking(const WebCore::WebGPU::ColorTargetState&);
     std::optional<CommandBufferDescriptor> convertToBacking(const WebCore::WebGPU::CommandBufferDescriptor&);
     std::optional<CommandEncoderDescriptor> convertToBacking(const WebCore::WebGPU::CommandEncoderDescriptor&);
@@ -232,8 +230,6 @@ public:
     std::optional<DepthStencilState> convertToBacking(const WebCore::WebGPU::DepthStencilState&);
     std::optional<DeviceDescriptor> convertToBacking(const WebCore::WebGPU::DeviceDescriptor&);
     std::optional<Error> convertToBacking(const WebCore::WebGPU::Error&);
-    std::optional<Extent3D> convertToBacking(const WebCore::WebGPU::Extent3D&);
-    std::optional<Extent3DDict> NODELETE convertToBacking(const WebCore::WebGPU::Extent3DDict&);
     std::optional<ExternalTextureBindingLayout> NODELETE convertToBacking(const WebCore::WebGPU::ExternalTextureBindingLayout&);
     std::optional<ExternalTextureDescriptor> convertToBacking(const WebCore::WebGPU::ExternalTextureDescriptor&);
     std::optional<FragmentState> convertToBacking(const WebCore::WebGPU::FragmentState&);
@@ -249,10 +245,6 @@ public:
     std::optional<InternalError> NODELETE convertToBacking(const WebCore::WebGPU::InternalError&);
     std::optional<MultisampleState> NODELETE convertToBacking(const WebCore::WebGPU::MultisampleState&);
     std::optional<ObjectDescriptorBase> NODELETE convertToBacking(const WebCore::WebGPU::ObjectDescriptorBase&);
-    std::optional<Origin2D> convertToBacking(const WebCore::WebGPU::Origin2D&);
-    std::optional<Origin2DDict> NODELETE convertToBacking(const WebCore::WebGPU::Origin2DDict&);
-    std::optional<Origin3D> convertToBacking(const WebCore::WebGPU::Origin3D&);
-    std::optional<Origin3DDict> NODELETE convertToBacking(const WebCore::WebGPU::Origin3DDict&);
     std::optional<OutOfMemoryError> NODELETE convertToBacking(const WebCore::WebGPU::OutOfMemoryError&);
     std::optional<PipelineDescriptorBase> convertToBacking(const WebCore::WebGPU::PipelineDescriptorBase&);
     std::optional<PipelineLayoutDescriptor> convertToBacking(const WebCore::WebGPU::PipelineLayoutDescriptor&);

@@ -25,13 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class DeviceLostReason : uint8_t {
-    Destroyed,
-    Unknown,
-};
+using DeviceLostReason = ::WebGPU::DeviceLostReason;
 
 } // namespace WebCore::WebGPU

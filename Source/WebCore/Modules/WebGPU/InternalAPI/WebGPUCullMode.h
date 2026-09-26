@@ -25,14 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class CullMode : uint8_t {
-    None,
-    Front,
-    Back,
-};
+using CullMode = ::WebGPU::CullMode;
 
 } // namespace WebCore::WebGPU

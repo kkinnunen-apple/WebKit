@@ -25,14 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class BufferBindingType : uint8_t {
-    Uniform,
-    Storage,
-    ReadOnlyStorage,
-};
+using BufferBindingType = ::WebGPU::BufferBindingType;
 
 } // namespace WebCore::WebGPU

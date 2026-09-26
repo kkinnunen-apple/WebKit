@@ -810,6 +810,7 @@
 		1CFAE3C12A4D8A140004AE37 /* WebGPUPresentationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE2A62A4D79C40004AE37 /* WebGPUPresentationContext.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1CFAE3C22A4D8A140004AE37 /* WebGPUDeviceLostReason.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE29B2A4D79C00004AE37 /* WebGPUDeviceLostReason.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1CFAE3C32A4D8A140004AE37 /* WebGPUSamplerBindingType.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE2942A4D79BE0004AE37 /* WebGPUSamplerBindingType.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		D06CAE9DF46877FAB7C3BEFD /* WebGPUCppAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = 72B881B87CB910EED0F54578 /* WebGPUCppAPI.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1CFAE3C42A4D8A140004AE37 /* WebGPUIntegralTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE2962A4D79BE0004AE37 /* WebGPUIntegralTypes.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1CFAE3C52A4D8A140004AE37 /* WebGPUPrimitiveState.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE2582A4D79A80004AE37 /* WebGPUPrimitiveState.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1CFAE3C62A4D8A140004AE37 /* WebGPUComputePipeline.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE2742A4D79B20004AE37 /* WebGPUComputePipeline.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -10053,6 +10054,7 @@
 		1CFAE2932A4D79BD0004AE37 /* WebGPUBindGroup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUBindGroup.h; sourceTree = "<group>"; };
 		1CFAE2942A4D79BE0004AE37 /* WebGPUSamplerBindingType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUSamplerBindingType.h; sourceTree = "<group>"; };
 		1CFAE2952A4D79BE0004AE37 /* WebGPURenderBundleEncoderDescriptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPURenderBundleEncoderDescriptor.h; sourceTree = "<group>"; };
+		72B881B87CB910EED0F54578 /* WebGPUCppAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUCppAPI.h; sourceTree = "<group>"; };
 		1CFAE2962A4D79BE0004AE37 /* WebGPUIntegralTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUIntegralTypes.h; sourceTree = "<group>"; };
 		1CFAE2972A4D79BE0004AE37 /* WebGPUVertexState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUVertexState.h; sourceTree = "<group>"; };
 		1CFAE2982A4D79BF0004AE37 /* WebGPUComputePassTimestampWrites.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUComputePassTimestampWrites.h; sourceTree = "<group>"; };
@@ -26734,6 +26736,7 @@
 				1CFAE2982A4D79BF0004AE37 /* WebGPUComputePassTimestampWrites.h */,
 				1CFAE2742A4D79B20004AE37 /* WebGPUComputePipeline.h */,
 				1CFAE2552A4D79A70004AE37 /* WebGPUComputePipelineDescriptor.h */,
+				72B881B87CB910EED0F54578 /* WebGPUCppAPI.h */,
 				1CFAE2AB2A4D79C60004AE37 /* WebGPUCullMode.h */,
 				1CFAE29D2A4D79C10004AE37 /* WebGPUDepthStencilState.h */,
 				1CFAE24B2A4D79A40004AE37 /* WebGPUDevice.h */,
@@ -50533,6 +50536,7 @@
 				1CFAE3F62A4D8A140004AE37 /* WebGPUComputePassTimestampWrites.h in Headers */,
 				1CFAE3C62A4D8A140004AE37 /* WebGPUComputePipeline.h in Headers */,
 				1CFAE3E52A4D8A140004AE37 /* WebGPUComputePipelineDescriptor.h in Headers */,
+				D06CAE9DF46877FAB7C3BEFD /* WebGPUCppAPI.h in Headers */,
 				1CFAE31F2A4D86CD0004AE37 /* WebGPUCreateImpl.h in Headers */,
 				1CFAE3D22A4D8A140004AE37 /* WebGPUCullMode.h in Headers */,
 				1CFAE3AD2A4D8A130004AE37 /* WebGPUDepthStencilState.h in Headers */,

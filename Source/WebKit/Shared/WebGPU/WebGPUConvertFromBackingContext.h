@@ -35,13 +35,25 @@
 #include "WebGPUOrigin2D.h"
 #include "WebGPUOrigin3D.h"
 #include "WebGPURenderPassTimestampWrites.h"
+#include <WebCore/WebGPUBlendComponent.h>
+#include <WebCore/WebGPUBlendState.h>
+#include <WebCore/WebGPUBufferBindingLayout.h>
 #include <WebCore/WebGPUColor.h>
 #include <WebCore/WebGPUComputePassTimestampWrites.h>
 #include <WebCore/WebGPUError.h>
 #include <WebCore/WebGPUExtent3D.h>
+#include <WebCore/WebGPUExternalTextureBindingLayout.h>
+#include <WebCore/WebGPUImageDataLayout.h>
+#include <WebCore/WebGPUMultisampleState.h>
 #include <WebCore/WebGPUOrigin2D.h>
 #include <WebCore/WebGPUOrigin3D.h>
+#include <WebCore/WebGPUPrimitiveState.h>
 #include <WebCore/WebGPURenderPassTimestampWrites.h>
+#include <WebCore/WebGPUSamplerBindingLayout.h>
+#include <WebCore/WebGPUStencilFaceState.h>
+#include <WebCore/WebGPUStorageTextureBindingLayout.h>
+#include <WebCore/WebGPUTextureBindingLayout.h>
+#include <WebCore/WebGPUVertexAttribute.h>
 #include <optional>
 #include <wtf/RefCounted.h>
 #include <wtf/ThreadSafeWeakPtr.h>
@@ -63,11 +75,8 @@ struct BindGroupEntry;
 class BindGroupLayout;
 struct BindGroupLayoutDescriptor;
 struct BindGroupLayoutEntry;
-struct BlendComponent;
-struct BlendState;
 class Buffer;
 struct BufferBinding;
-struct BufferBindingLayout;
 struct BufferDescriptor;
 struct CanvasConfiguration;
 struct ColorTargetState;
@@ -84,7 +93,6 @@ struct ComputePipelineDescriptor;
 struct DepthStencilState;
 class Device;
 struct DeviceDescriptor;
-struct ExternalTextureBindingLayout;
 struct ExternalTextureDescriptor;
 class ExternalTexture;
 struct FragmentState;
@@ -94,9 +102,7 @@ struct ImageCopyBuffer;
 struct ImageCopyExternalImage;
 struct ImageCopyTexture;
 struct ImageCopyTextureTagged;
-struct ImageDataLayout;
 class InternalError;
-struct MultisampleState;
 struct ObjectDescriptorBase;
 class OutOfMemoryError;
 struct PipelineDescriptorBase;
@@ -105,7 +111,6 @@ struct PipelineLayoutDescriptor;
 struct CanvasConfiguration;
 class PresentationContext;
 struct PresentationContextDescriptor;
-struct PrimitiveState;
 struct ProgrammableStage;
 class QuerySet;
 struct QuerySetDescriptor;
@@ -123,22 +128,17 @@ class RenderPipeline;
 struct RenderPipelineDescriptor;
 struct RequestAdapterOptions;
 class Sampler;
-struct SamplerBindingLayout;
 struct SamplerDescriptor;
 class ShaderModule;
 struct ShaderModuleCompilationHint;
 struct ShaderModuleDescriptor;
-struct StencilFaceState;
-struct StorageTextureBindingLayout;
 class SupportedFeatures;
 class SupportedLimits;
 class Texture;
-struct TextureBindingLayout;
 struct TextureDescriptor;
 class TextureView;
 struct TextureViewDescriptor;
 class ValidationError;
-struct VertexAttribute;
 struct VertexBufferLayout;
 struct VertexState;
 class XRBinding;
@@ -229,8 +229,6 @@ public:
     std::optional<WebCore::WebGPU::BufferBindingLayout> NODELETE convertFromBacking(const BufferBindingLayout&);
     std::optional<WebCore::WebGPU::BufferDescriptor> convertFromBacking(const BufferDescriptor&);
     std::optional<WebCore::WebGPU::CanvasConfiguration> convertFromBacking(const CanvasConfiguration&);
-    std::optional<WebCore::WebGPU::Color> convertFromBacking(const Color&);
-    std::optional<WebCore::WebGPU::ColorDict> NODELETE convertFromBacking(const ColorDict&);
     std::optional<WebCore::WebGPU::ColorTargetState> convertFromBacking(const ColorTargetState&);
     std::optional<WebCore::WebGPU::CommandBufferDescriptor> convertFromBacking(const CommandBufferDescriptor&);
     std::optional<WebCore::WebGPU::CommandEncoderDescriptor> convertFromBacking(const CommandEncoderDescriptor&);
@@ -241,8 +239,6 @@ public:
     std::optional<WebCore::WebGPU::DepthStencilState> convertFromBacking(const DepthStencilState&);
     std::optional<WebCore::WebGPU::DeviceDescriptor> convertFromBacking(const DeviceDescriptor&);
     std::optional<WebCore::WebGPU::Error> convertFromBacking(const Error&);
-    std::optional<WebCore::WebGPU::Extent3D> convertFromBacking(const Extent3D&);
-    std::optional<WebCore::WebGPU::Extent3DDict> NODELETE convertFromBacking(const Extent3DDict&);
     std::optional<WebCore::WebGPU::ExternalTextureBindingLayout> NODELETE convertFromBacking(const ExternalTextureBindingLayout&);
 #if ENABLE(VIDEO) && PLATFORM(COCOA)
     using PixelBufferType = RetainPtr<CVPixelBufferRef>;
@@ -263,10 +259,6 @@ public:
     RefPtr<WebCore::WebGPU::InternalError> convertFromBacking(const InternalError&);
     std::optional<WebCore::WebGPU::MultisampleState> NODELETE convertFromBacking(const MultisampleState&);
     std::optional<WebCore::WebGPU::ObjectDescriptorBase> NODELETE convertFromBacking(const ObjectDescriptorBase&);
-    std::optional<WebCore::WebGPU::Origin2D> convertFromBacking(const Origin2D&);
-    std::optional<WebCore::WebGPU::Origin2DDict> NODELETE convertFromBacking(const Origin2DDict&);
-    std::optional<WebCore::WebGPU::Origin3D> convertFromBacking(const Origin3D&);
-    std::optional<WebCore::WebGPU::Origin3DDict> NODELETE convertFromBacking(const Origin3DDict&);
     RefPtr<WebCore::WebGPU::OutOfMemoryError> convertFromBacking(const OutOfMemoryError&);
     std::optional<WebCore::WebGPU::PipelineDescriptorBase> convertFromBacking(const PipelineDescriptorBase&, bool allowMissingPipelineLayout = false);
     std::optional<WebCore::WebGPU::PipelineLayoutDescriptor> convertFromBacking(const PipelineLayoutDescriptor&);

@@ -57,14 +57,7 @@ std::optional<RenderPassColorAttachment> ConvertToBackingContext::convertToBacki
             return std::nullopt;
     }
 
-    std::optional<Color> clearValue;
-    if (renderPassColorAttachment.clearValue) {
-        clearValue = convertToBacking(*renderPassColorAttachment.clearValue);
-        if (!clearValue)
-            return std::nullopt;
-    }
-
-    return { { identifier, renderPassColorAttachment.depthSlice, resolveTarget, WTF::move(clearValue), renderPassColorAttachment.loadOp, renderPassColorAttachment.storeOp } };
+    return { { identifier, renderPassColorAttachment.depthSlice, resolveTarget, renderPassColorAttachment.clearValue, renderPassColorAttachment.loadOp, renderPassColorAttachment.storeOp } };
 }
 
 std::optional<WebCore::WebGPU::RenderPassColorAttachment> ConvertFromBackingContext::convertFromBacking(const RenderPassColorAttachment& renderPassColorAttachment)
@@ -87,20 +80,13 @@ std::optional<WebCore::WebGPU::RenderPassColorAttachment> ConvertFromBackingCont
             resolveTarget = view;
     }
 
-    std::optional<WebCore::WebGPU::Color> clearValue;
-    if (renderPassColorAttachment.clearValue) {
-        clearValue = convertFromBacking(*renderPassColorAttachment.clearValue);
-        if (!clearValue)
-            return std::nullopt;
-    }
-
     WebCore::WebGPU::RenderPassColorAttachmentView viewTextureVariant = [&] -> WebCore::WebGPU::RenderPassColorAttachmentView {
         if (view)
             return *view;
 
         return *texture;
     }();
-    return { { viewTextureVariant, renderPassColorAttachment.depthSlice, resolveTarget, WTF::move(clearValue), renderPassColorAttachment.loadOp, renderPassColorAttachment.storeOp } };
+    return { { viewTextureVariant, renderPassColorAttachment.depthSlice, resolveTarget, renderPassColorAttachment.clearValue, renderPassColorAttachment.loadOp, renderPassColorAttachment.storeOp } };
 }
 
 } // namespace WebKit

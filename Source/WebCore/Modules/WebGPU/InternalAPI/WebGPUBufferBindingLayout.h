@@ -26,14 +26,11 @@
 #pragma once
 
 #include <WebCore/WebGPUBufferBindingType.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 
 namespace WebCore::WebGPU {
 
-struct BufferBindingLayout {
-    BufferBindingType type { BufferBindingType::Uniform };
-    bool hasDynamicOffset { false };
-    Size64 minBindingSize { 0 };
-};
+using BufferBindingLayout = ::WebGPU::BufferBindingLayout;
 
 } // namespace WebCore::WebGPU

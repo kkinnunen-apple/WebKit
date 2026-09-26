@@ -33,7 +33,7 @@
 namespace WebCore {
 
 struct GPUColorDict {
-    WebGPU::ColorDict convertToBacking() const
+    WebGPU::Color convertToBacking() const
     {
         return {
             r,
@@ -56,7 +56,12 @@ using GPUColor = Variant<Vector<double>, GPUColorDict>;
 inline WebGPU::Color convertToBacking(const GPUColor& color)
 {
     return WTF::switchOn(color, [](const Vector<double>& vector) -> WebGPU::Color {
-        return vector;
+        return {
+            vector.size() > 0 ? vector[0] : 0,
+            vector.size() > 1 ? vector[1] : 0,
+            vector.size() > 2 ? vector[2] : 0,
+            vector.size() > 3 ? vector[3] : 0,
+        };
     }, [](const GPUColorDict& color) -> WebGPU::Color {
         return color.convertToBacking();
     });

@@ -25,12 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUSamplerBindingType.h>
 
 namespace WebCore::WebGPU {
 
-struct SamplerBindingLayout {
-    SamplerBindingType type { SamplerBindingType::Filtering };
-};
+using SamplerBindingLayout = ::WebGPU::SamplerBindingLayout;
 
 } // namespace WebCore::WebGPU

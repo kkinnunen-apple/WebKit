@@ -25,16 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class BlendOperation : uint8_t {
-    Add,
-    Subtract,
-    ReverseSubtract,
-    Min,
-    Max,
-};
+using BlendOperation = ::WebGPU::BlendOperation;
 
 } // namespace WebCore::WebGPU

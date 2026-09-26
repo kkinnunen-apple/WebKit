@@ -25,14 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class CompilationMessageType : uint8_t {
-    Error,
-    Warning,
-    Info,
-};
+using CompilationMessageType = ::WebGPU::CompilationMessageType;
 
 } // namespace WebCore::WebGPU

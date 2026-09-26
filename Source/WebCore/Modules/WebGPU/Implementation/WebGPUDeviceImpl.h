@@ -28,6 +28,7 @@
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
 #include "WebGPUDevice.h"
+#include "WebGPUDeviceLostReason.h"
 #include "WebGPUPtr.h"
 #include "WebGPUQueueImpl.h"
 #include <WebCore/MediaPlayerIdentifier.h>
@@ -38,7 +39,6 @@
 namespace WebCore::WebGPU {
 
 class ConvertToBackingContext;
-enum class DeviceLostReason : uint8_t;
 
 class DeviceImpl final : public Device {
     WTF_MAKE_TZONE_ALLOCATED(DeviceImpl);

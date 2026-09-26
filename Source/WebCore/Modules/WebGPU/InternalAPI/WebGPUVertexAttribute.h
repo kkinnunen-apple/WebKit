@@ -25,16 +25,12 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <WebCore/WebGPUVertexFormat.h>
 
 namespace WebCore::WebGPU {
 
-struct VertexAttribute {
-    VertexFormat format { VertexFormat::Uint8x2 };
-    Size64 offset { 0 };
-
-    Index32 shaderLocation { 0 };
-};
+using VertexAttribute = ::WebGPU::VertexAttribute;
 
 } // namespace WebCore::WebGPU

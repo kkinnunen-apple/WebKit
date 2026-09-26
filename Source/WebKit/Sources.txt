@@ -340,7 +340,6 @@ Shared/WebGPU/WebGPUBufferBinding.cpp
 Shared/WebGPU/WebGPUBufferBindingLayout.cpp
 Shared/WebGPU/WebGPUBufferDescriptor.cpp
 Shared/WebGPU/WebGPUCanvasConfiguration.cpp
-Shared/WebGPU/WebGPUColor.cpp
 Shared/WebGPU/WebGPUColorTargetState.cpp
 Shared/WebGPU/WebGPUCommandBufferDescriptor.cpp
 Shared/WebGPU/WebGPUCommandEncoderDescriptor.cpp
@@ -351,7 +350,6 @@ Shared/WebGPU/WebGPUComputePipelineDescriptor.cpp
 Shared/WebGPU/WebGPUDepthStencilState.cpp
 Shared/WebGPU/WebGPUDeviceDescriptor.cpp
 Shared/WebGPU/WebGPUError.cpp
-Shared/WebGPU/WebGPUExtent3D.cpp
 Shared/WebGPU/WebGPUExternalTextureBindingLayout.cpp
 Shared/WebGPU/WebGPUExternalTextureDescriptor.cpp
 Shared/WebGPU/WebGPUFragmentState.cpp
@@ -363,8 +361,6 @@ Shared/WebGPU/WebGPUImageDataLayout.cpp
 Shared/WebGPU/WebGPUInternalError.cpp
 Shared/WebGPU/WebGPUMultisampleState.cpp
 Shared/WebGPU/WebGPUObjectDescriptorBase.cpp
-Shared/WebGPU/WebGPUOrigin2D.cpp
-Shared/WebGPU/WebGPUOrigin3D.cpp
 Shared/WebGPU/WebGPUOutOfMemoryError.cpp
 Shared/WebGPU/WebGPUPipelineDescriptorBase.cpp
 Shared/WebGPU/WebGPUPipelineLayoutDescriptor.cpp

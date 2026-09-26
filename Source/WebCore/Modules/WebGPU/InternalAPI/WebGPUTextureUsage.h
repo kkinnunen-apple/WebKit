@@ -25,23 +25,14 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <cstdint>
 #include <wtf/OptionSet.h>
 
 namespace WebCore::WebGPU {
 
-enum class TextureUsage : uint8_t {
-    CopySource       = 1 << 0,
-    CopyDestination  = 1 << 1,
-    TextureBinding   = 1 << 2,
-    StorageBinding   = 1 << 3,
-    RenderAttachment = 1 << 4,
-    Transient        = 1 << 5,
-    // Set when the caller passed a bit that is not one of the above, so that the usage can be
-    // rejected instead of being silently narrowed to the bits we do recognize.
-    Invalid          = 1 << 6,
-};
+using TextureUsage = ::WebGPU::TextureUsage;
 using TextureUsageFlags = OptionSet<TextureUsage>;
 
 } // namespace WebCore::WebGPU

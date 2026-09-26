@@ -26,12 +26,10 @@
 #pragma once
 
 #include <WebCore/WebGPUBlendComponent.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-struct BlendState {
-    BlendComponent color;
-    BlendComponent alpha;
-};
+using BlendState = ::WebGPU::BlendState;
 
 } // namespace WebCore::WebGPU

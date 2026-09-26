@@ -171,12 +171,7 @@ void RemoteRenderPassEncoderProxy::setScissorRect(WebCore::WebGPU::IntegerCoordi
 
 void RemoteRenderPassEncoderProxy::setBlendConstant(WebCore::WebGPU::Color color)
 {
-    auto convertedColor = m_convertToBackingContext->convertToBacking(color);
-    ASSERT(convertedColor);
-    if (!convertedColor)
-        return;
-
-    auto sendResult = send(Messages::RemoteRenderPassEncoder::SetBlendConstant(*convertedColor));
+    auto sendResult = send(Messages::RemoteRenderPassEncoder::SetBlendConstant(color));
     UNUSED_VARIABLE(sendResult);
 }
 

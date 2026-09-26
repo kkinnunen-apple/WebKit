@@ -868,72 +868,22 @@ uint32_t ConvertToBackingContext::convertDepthSliceToBacking(std::optional<Integ
 
 WGPUColor ConvertToBackingContext::convertToBacking(const Color& color)
 {
-    return WTF::switchOn(color, [](const Vector<double>& vector) {
-        return WGPUColor {
-            vector.size() > 0 ? vector[0] : 0,
-            vector.size() > 1 ? vector[1] : 0,
-            vector.size() > 2 ? vector[2] : 0,
-            vector.size() > 3 ? vector[3] : 0,
-        };
-    }, [](const ColorDict& color) {
-        return WGPUColor {
-            color.r,
-            color.g,
-            color.b,
-            color.a,
-        };
-    });
+    return WGPUColor { color.r, color.g, color.b, color.a };
 }
 
 WGPUExtent3D ConvertToBackingContext::convertToBacking(const Extent3D& extent3D)
 {
-    return WTF::switchOn(extent3D, [](const Vector<IntegerCoordinate>& vector) {
-        return WGPUExtent3D {
-            vector.size() > 0 ? vector[0] : 1,
-            vector.size() > 1 ? vector[1] : 1,
-            vector.size() > 2 ? vector[2] : 1,
-        };
-    }, [](const Extent3DDict& extent) {
-        return WGPUExtent3D {
-            extent.width,
-            extent.height,
-            extent.depthOrArrayLayers,
-        };
-    });
+    return WGPUExtent3D { extent3D.width, extent3D.height, extent3D.depthOrArrayLayers };
 }
 
 WGPUOrigin3D ConvertToBackingContext::convertToBacking(const Origin2D& origin2D)
 {
-    return WTF::switchOn(origin2D, [](const Vector<IntegerCoordinate>& vector) {
-        return WGPUOrigin3D {
-            vector.size() > 0 ? vector[0] : 0,
-            vector.size() > 1 ? vector[1] : 0,
-            0,
-        };
-    }, [](const Origin2DDict& origin) {
-        return WGPUOrigin3D {
-            origin.x,
-            origin.y,
-            0,
-        };
-    });
+    return WGPUOrigin3D { origin2D.x, origin2D.y, 0 };
 }
 
 WGPUOrigin3D ConvertToBackingContext::convertToBacking(const Origin3D& origin3D)
 {
-    return WTF::switchOn(origin3D, [](const Vector<IntegerCoordinate>& vector) {
-        return WGPUOrigin3D {
-            vector.size() > 0 ? vector[0] : 0,
-            vector.size() > 1 ? vector[1] : 0,
-            vector.size() > 2 ? vector[2] : 0,
-        };
-    }, [](const Origin3DDict& origin) {
-        return WGPUOrigin3D {
-            origin.x,
-            origin.y,
-            origin.z,
-        };
-    });
+    return WGPUOrigin3D { origin3D.x, origin3D.y, origin3D.z };
 }
 
 } // namespace WebCore::WebGPU

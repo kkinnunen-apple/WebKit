@@ -405,25 +405,20 @@ static void getImageBytesFromImageBuffer(const RefPtr<ImageBuffer>& imageBuffer,
 #if PLATFORM(COCOA) && ENABLE(VIDEO) && ENABLE(WEB_CODECS)
 static void clampDimension(WebGPU::Extent3D& extent3D, size_t dimension, WebGPU::IntegerCoordinate minValue)
 {
-    return WTF::switchOn(extent3D, [&](Vector<WebGPU::IntegerCoordinate>& vector) {
-        if (dimension < vector.size())
-            vector[dimension] = std::min<WebGPU::IntegerCoordinate>(minValue, vector[dimension]);
-    }, [&](WebGPU::Extent3DDict& extent3D) {
-        switch (dimension) {
-        case 0:
-            extent3D.width = std::min<WebGPU::IntegerCoordinate>(minValue, extent3D.width);
-            break;
-        case 1:
-            extent3D.height = std::min<WebGPU::IntegerCoordinate>(minValue, extent3D.height);
-            break;
-        case 2:
-            extent3D.depthOrArrayLayers = std::min<WebGPU::IntegerCoordinate>(minValue, extent3D.depthOrArrayLayers);
-            break;
-        default:
-            ASSERT_NOT_REACHED();
-            break;
-        }
-    });
+    switch (dimension) {
+    case 0:
+        extent3D.width = std::min<WebGPU::IntegerCoordinate>(minValue, extent3D.width);
+        break;
+    case 1:
+        extent3D.height = std::min<WebGPU::IntegerCoordinate>(minValue, extent3D.height);
+        break;
+    case 2:
+        extent3D.depthOrArrayLayers = std::min<WebGPU::IntegerCoordinate>(minValue, extent3D.depthOrArrayLayers);
+        break;
+    default:
+        ASSERT_NOT_REACHED();
+        break;
+    }
 }
 
 static void getImageBytesFromVideoFrame(WebGPU::Queue& backing, const RefPtr<VideoFrame>& videoFrame, WebGPU::Extent3D& backingCopySize, NOESCAPE const ImageDataCallback& callback)

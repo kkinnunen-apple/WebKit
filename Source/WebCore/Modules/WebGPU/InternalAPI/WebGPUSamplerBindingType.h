@@ -25,14 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class SamplerBindingType : uint8_t {
-    Filtering,
-    NonFiltering,
-    Comparison,
-};
+using SamplerBindingType = ::WebGPU::SamplerBindingType;
 
 } // namespace WebCore::WebGPU

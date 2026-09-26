@@ -25,13 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class VertexStepMode : uint8_t {
-    Vertex,
-    Instance,
-};
+using VertexStepMode = ::WebGPU::VertexStepMode;
 
 } // namespace WebCore::WebGPU
