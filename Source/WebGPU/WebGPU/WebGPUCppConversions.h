@@ -2644,4 +2644,148 @@ inline std::optional<WebGPU::RenderBundleEncoderDescriptor> fromAPI(const WGPURe
     };
 }
 
+constexpr WebGPU::Limits fromAPI(const WGPULimits& limits)
+{
+    return {
+        .maxTextureDimension1D = limits.maxTextureDimension1D,
+        .maxTextureDimension2D = limits.maxTextureDimension2D,
+        .maxTextureDimension3D = limits.maxTextureDimension3D,
+        .maxTextureArrayLayers = limits.maxTextureArrayLayers,
+        .maxBindGroups = limits.maxBindGroups,
+        .maxBindGroupsPlusVertexBuffers = limits.maxBindGroupsPlusVertexBuffers,
+        .maxBindingsPerBindGroup = limits.maxBindingsPerBindGroup,
+        .maxDynamicUniformBuffersPerPipelineLayout = limits.maxDynamicUniformBuffersPerPipelineLayout,
+        .maxDynamicStorageBuffersPerPipelineLayout = limits.maxDynamicStorageBuffersPerPipelineLayout,
+        .maxSampledTexturesPerShaderStage = limits.maxSampledTexturesPerShaderStage,
+        .maxSamplersPerShaderStage = limits.maxSamplersPerShaderStage,
+        .maxStorageBuffersPerShaderStage = limits.maxStorageBuffersPerShaderStage,
+        .maxStorageTexturesPerShaderStage = limits.maxStorageTexturesPerShaderStage,
+        .maxUniformBuffersPerShaderStage = limits.maxUniformBuffersPerShaderStage,
+        .maxUniformBufferBindingSize = limits.maxUniformBufferBindingSize,
+        .maxStorageBufferBindingSize = limits.maxStorageBufferBindingSize,
+        .minUniformBufferOffsetAlignment = limits.minUniformBufferOffsetAlignment,
+        .minStorageBufferOffsetAlignment = limits.minStorageBufferOffsetAlignment,
+        .maxVertexBuffers = limits.maxVertexBuffers,
+        .maxBufferSize = limits.maxBufferSize,
+        .maxVertexAttributes = limits.maxVertexAttributes,
+        .maxVertexBufferArrayStride = limits.maxVertexBufferArrayStride,
+        .maxInterStageShaderVariables = limits.maxInterStageShaderVariables,
+        .maxColorAttachments = limits.maxColorAttachments,
+        .maxColorAttachmentBytesPerSample = limits.maxColorAttachmentBytesPerSample,
+        .maxComputeWorkgroupStorageSize = limits.maxComputeWorkgroupStorageSize,
+        .maxComputeInvocationsPerWorkgroup = limits.maxComputeInvocationsPerWorkgroup,
+        .maxComputeWorkgroupSizeX = limits.maxComputeWorkgroupSizeX,
+        .maxComputeWorkgroupSizeY = limits.maxComputeWorkgroupSizeY,
+        .maxComputeWorkgroupSizeZ = limits.maxComputeWorkgroupSizeZ,
+        .maxComputeWorkgroupsPerDimension = limits.maxComputeWorkgroupsPerDimension,
+        .maxStorageBuffersInFragmentStage = limits.maxStorageBuffersInFragmentStage,
+        .maxStorageTexturesInFragmentStage = limits.maxStorageTexturesInFragmentStage,
+        .maxStorageBuffersInVertexStage = limits.maxStorageBuffersInVertexStage,
+        .maxStorageTexturesInVertexStage = limits.maxStorageTexturesInVertexStage,
+    };
+}
+
+constexpr WGPULimits toAPI(const WebGPU::Limits& limits)
+{
+    return {
+        .maxTextureDimension1D = limits.maxTextureDimension1D,
+        .maxTextureDimension2D = limits.maxTextureDimension2D,
+        .maxTextureDimension3D = limits.maxTextureDimension3D,
+        .maxTextureArrayLayers = limits.maxTextureArrayLayers,
+        .maxBindGroups = limits.maxBindGroups,
+        .maxBindGroupsPlusVertexBuffers = limits.maxBindGroupsPlusVertexBuffers,
+        .maxBindingsPerBindGroup = limits.maxBindingsPerBindGroup,
+        .maxDynamicUniformBuffersPerPipelineLayout = limits.maxDynamicUniformBuffersPerPipelineLayout,
+        .maxDynamicStorageBuffersPerPipelineLayout = limits.maxDynamicStorageBuffersPerPipelineLayout,
+        .maxSampledTexturesPerShaderStage = limits.maxSampledTexturesPerShaderStage,
+        .maxSamplersPerShaderStage = limits.maxSamplersPerShaderStage,
+        .maxStorageBuffersPerShaderStage = limits.maxStorageBuffersPerShaderStage,
+        .maxStorageTexturesPerShaderStage = limits.maxStorageTexturesPerShaderStage,
+        .maxUniformBuffersPerShaderStage = limits.maxUniformBuffersPerShaderStage,
+        .maxUniformBufferBindingSize = limits.maxUniformBufferBindingSize,
+        .maxStorageBufferBindingSize = limits.maxStorageBufferBindingSize,
+        .minUniformBufferOffsetAlignment = limits.minUniformBufferOffsetAlignment,
+        .minStorageBufferOffsetAlignment = limits.minStorageBufferOffsetAlignment,
+        .maxVertexBuffers = limits.maxVertexBuffers,
+        .maxBufferSize = limits.maxBufferSize,
+        .maxVertexAttributes = limits.maxVertexAttributes,
+        .maxVertexBufferArrayStride = limits.maxVertexBufferArrayStride,
+        .maxInterStageShaderVariables = limits.maxInterStageShaderVariables,
+        .maxColorAttachments = limits.maxColorAttachments,
+        .maxColorAttachmentBytesPerSample = limits.maxColorAttachmentBytesPerSample,
+        .maxComputeWorkgroupStorageSize = limits.maxComputeWorkgroupStorageSize,
+        .maxComputeInvocationsPerWorkgroup = limits.maxComputeInvocationsPerWorkgroup,
+        .maxComputeWorkgroupSizeX = limits.maxComputeWorkgroupSizeX,
+        .maxComputeWorkgroupSizeY = limits.maxComputeWorkgroupSizeY,
+        .maxComputeWorkgroupSizeZ = limits.maxComputeWorkgroupSizeZ,
+        .maxComputeWorkgroupsPerDimension = limits.maxComputeWorkgroupsPerDimension,
+        .maxStorageBuffersInFragmentStage = limits.maxStorageBuffersInFragmentStage,
+        .maxStorageTexturesInFragmentStage = limits.maxStorageTexturesInFragmentStage,
+        .maxStorageBuffersInVertexStage = limits.maxStorageBuffersInVertexStage,
+        .maxStorageTexturesInVertexStage = limits.maxStorageTexturesInVertexStage,
+    };
+}
+
+// WGPUPowerPreference_Undefined is std::nullopt.
+inline std::optional<WebGPU::RequestAdapterOptions> fromAPI(const WGPURequestAdapterOptions& options)
+{
+    std::optional<WebGPU::PowerPreference> powerPreference;
+    if (options.powerPreference != WGPUPowerPreference_Undefined) {
+        powerPreference = fromAPI(options.powerPreference);
+        if (!powerPreference)
+            return std::nullopt;
+    }
+    return WebGPU::RequestAdapterOptions {
+        .powerPreference = powerPreference,
+        .forceFallbackAdapter = !!options.forceFallbackAdapter,
+        .xrCompatible = !!options.xrCompatible,
+    };
+}
+
+struct DeviceDescriptorStorage {
+    Vector<WebGPU::FeatureName> requiredFeatures;
+};
+
+inline std::optional<WebGPU::DeviceDescriptor> fromAPI(const WGPUDeviceDescriptor& descriptor, DeviceDescriptorStorage& storage LIFETIME_BOUND)
+{
+    storage.requiredFeatures.clear();
+    for (auto feature : unsafeMakeSpan(descriptor.requiredFeatures, descriptor.requiredFeatureCount)) {
+        auto apiFeature = fromAPI(feature);
+        if (!apiFeature)
+            return std::nullopt;
+        storage.requiredFeatures.append(*apiFeature);
+    }
+    return WebGPU::DeviceDescriptor {
+        .label = fromAPI(descriptor.label),
+        .requiredFeatures = storage.requiredFeatures.span(),
+        .requiredLimits = descriptor.requiredLimits ? std::optional { fromAPI(descriptor.requiredLimits->limits) } : std::nullopt,
+    };
+}
+
+// The features of the C API that have a C++ API equivalent.
+inline Vector<WebGPU::FeatureName> featuresFromAPI(std::span<const WGPUFeatureName> features)
+{
+    Vector<WebGPU::FeatureName> result;
+    for (auto feature : features) {
+        if (auto apiFeature = fromAPI(feature))
+            result.append(*apiFeature);
+    }
+    return result;
+}
+
+inline WGPUErrorType toAPI(const std::optional<WebGPU::Error>& error)
+{
+    if (!error)
+        return WGPUErrorType_NoError;
+    switch (error->type) {
+    case WebGPU::ErrorType::Validation:
+        return WGPUErrorType_Validation;
+    case WebGPU::ErrorType::OutOfMemory:
+        return WGPUErrorType_OutOfMemory;
+    case WebGPU::ErrorType::Internal:
+        return WGPUErrorType_Internal;
+    }
+    RELEASE_ASSERT_NOT_REACHED();
+}
+
 } // namespace WebGPU::Metal

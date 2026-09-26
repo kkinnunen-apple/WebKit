@@ -281,11 +281,6 @@ inline WGPUStringView toAPI(ASCIILiteral literal)
     return { literal.characters(), literal.length() };
 }
 
-inline std::span<const WGPUFeatureName> requiredFeaturesSpan(const WGPUDeviceDescriptor& descriptor)
-{
-    return unsafeMakeSpan(descriptor.requiredFeatures, descriptor.requiredFeatureCount);
-}
-
 template<typename R, typename... Args>
 inline BlockPtr<R (Args...)> fromAPI(R (^ __strong &&block)(Args...))
 {

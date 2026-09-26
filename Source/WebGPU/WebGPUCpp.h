@@ -153,6 +153,12 @@ enum class ErrorFilter : uint8_t {
     Internal,
 };
 
+enum class ErrorType : uint8_t {
+    Validation,
+    OutOfMemory,
+    Internal,
+};
+
 enum class FeatureName : uint8_t {
     DepthClipControl,
     Depth32floatStencil8,
@@ -716,6 +722,34 @@ struct RenderPassDescriptor {
 
     size_t colorAttachmentCount() const { return colorAttachments.size(); }
 } SWIFT_NONCOPYABLE SWIFT_NONESCAPABLE;
+
+// https://gpuweb.github.io/gpuweb/#gpuerror
+struct Error {
+    ErrorType type { ErrorType::Validation };
+    String message;
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpurequestadapteroptions
+struct RequestAdapterOptions {
+    std::optional<PowerPreference> powerPreference;
+    bool forceFallbackAdapter { false };
+    bool xrCompatible { false };
+};
+
+// https://gpuweb.github.io/gpuweb/#gpuadapterinfo
+struct AdapterInfo {
+    String name;
+    bool isFallbackAdapter { false };
+    uint32_t subgroupMinSize { 0 };
+    uint32_t subgroupMaxSize { 0 };
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpudevicedescriptor
+struct DeviceDescriptor {
+    String label;
+    std::span<const FeatureName> requiredFeatures; // Borrowed for the duration of the call.
+    std::optional<Limits> requiredLimits; // std::nullopt: the default limits.
+} SWIFT_NONESCAPABLE;
 
 // https://gpuweb.github.io/gpuweb/#dictdef-gpurenderbundleencoderdescriptor
 struct RenderBundleEncoderDescriptor {
