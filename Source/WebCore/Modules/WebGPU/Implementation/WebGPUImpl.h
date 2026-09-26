@@ -36,12 +36,10 @@
 #include "WebGPUCommandEncoder.h"
 #include "WebGPUComputePassEncoder.h"
 #include "WebGPUComputePipeline.h"
-#include "WebGPUConvertToBackingContext.h"
 #include "WebGPUDevice.h"
 #include "WebGPUExternalTexture.h"
 #include "WebGPUPipelineLayout.h"
 #include "WebGPUPresentationContext.h"
-#include "WebGPUPtr.h"
 #include "WebGPUQuerySet.h"
 #include "WebGPUQueue.h"
 #include "WebGPURenderBundle.h"
@@ -71,7 +69,6 @@ class NativeImage;
 namespace WebCore::WebGPU {
 
 class CompositorIntegration;
-class ConvertToBackingContext;
 
 class GPUImpl final : public GPU, public RefCounted<GPUImpl> {
     WTF_MAKE_TZONE_ALLOCATED(GPUImpl);
@@ -79,9 +76,9 @@ public:
     void ref() const final { RefCounted::ref(); }
     void deref() const final { RefCounted::deref(); }
 
-    static Ref<GPUImpl> create(Ref<::WebGPU::Instance>&& instance, ConvertToBackingContext& convertToBackingContext)
+    static Ref<GPUImpl> create(Ref<::WebGPU::Instance>&& instance)
     {
-        return adoptRef(*new GPUImpl(WTF::move(instance), convertToBackingContext));
+        return adoptRef(*new GPUImpl(WTF::move(instance)));
     }
 
     virtual ~GPUImpl();
@@ -95,9 +92,8 @@ public:
 #endif
 
 private:
-    friend class DowncastConvertToBackingContext;
 
-    GPUImpl(Ref<::WebGPU::Instance>&&, ConvertToBackingContext&);
+    explicit GPUImpl(Ref<::WebGPU::Instance>&&);
 
     GPUImpl(const GPUImpl&) = delete;
     GPUImpl(GPUImpl&&) = delete;
@@ -140,7 +136,6 @@ private:
     bool isValid(const XRView&) const final;
 
     const Ref<::WebGPU::Instance> m_backing;
-    const Ref<ConvertToBackingContext> m_convertToBackingContext;
 };
 
 } // namespace WebCore::WebGPU

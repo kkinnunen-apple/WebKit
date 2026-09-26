@@ -29,7 +29,6 @@
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
 #include "ProcessIdentity.h"
-#include "WebGPUDowncastConvertToBackingContext.h"
 #include "WebGPUImpl.h"
 #include <WebCore/WebGPUCppAPI.h>
 
@@ -60,8 +59,7 @@ RefPtr<GPU> create(ScheduleWorkFunction&& scheduleWorkFunction, const WebCore::P
     RefPtr instance = ::WebGPU::createInstance(WTF::move(descriptor));
     if (!instance)
         return nullptr;
-    auto convertToBackingContext = DowncastConvertToBackingContext::create();
-    return GPUImpl::create(instance.releaseNonNull(), convertToBackingContext);
+    return GPUImpl::create(instance.releaseNonNull());
 }
 
 } // namespace WebCore::WebGPU
