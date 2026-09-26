@@ -134,8 +134,7 @@ bool GPUImpl::isValid(const CompositorIntegration&) const
 
 bool GPUImpl::isValid(const Buffer& buffer) const
 {
-    WGPUBuffer wgpuBuffer = m_convertToBackingContext.get().convertToBacking(buffer);
-    return wgpuBufferIsValid(wgpuBuffer);
+    return buffer.isValid();
 }
 
 bool GPUImpl::isValid(const Adapter& adapter) const

@@ -139,10 +139,7 @@ void RemoteDevice::createXRBinding(WebGPUIdentifier identifier)
 void RemoteDevice::createBuffer(const WebGPU::BufferDescriptor& descriptor, WebGPUIdentifier identifier)
 {
     Ref objectHeap = m_objectHeap.get();
-    auto convertedDescriptor = objectHeap->convertFromBacking(descriptor);
-    MESSAGE_CHECK(convertedDescriptor);
-
-    auto buffer = m_backing->createBuffer(*convertedDescriptor);
+    auto buffer = m_backing->createBuffer(descriptor);
     MESSAGE_CHECK(buffer);
     auto remoteBuffer = RemoteBuffer::create(*buffer, objectHeap, protect(m_streamConnection), protect(m_gpu), descriptor.mappedAtCreation, identifier);
     objectHeap->addObject(identifier, remoteBuffer);

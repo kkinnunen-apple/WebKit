@@ -37,6 +37,7 @@
 #include "WebGPURenderPassTimestampWrites.h"
 #include <WebCore/WebGPUBlendComponent.h>
 #include <WebCore/WebGPUBlendState.h>
+#include <WebCore/WebGPUBuffer.h>
 #include <WebCore/WebGPUBufferBindingLayout.h>
 #include <WebCore/WebGPUColor.h>
 #include <WebCore/WebGPUComputePassTimestampWrites.h>
@@ -67,9 +68,7 @@ struct BindGroupEntry;
 class BindGroupLayout;
 struct BindGroupLayoutDescriptor;
 struct BindGroupLayoutEntry;
-class Buffer;
 struct BufferBinding;
-struct BufferDescriptor;
 struct CanvasConfiguration;
 struct ColorTargetState;
 class CommandBuffer;
@@ -146,7 +145,6 @@ struct BlendComponent;
 struct BlendState;
 struct BufferBinding;
 struct BufferBindingLayout;
-struct BufferDescriptor;
 struct CanvasConfiguration;
 struct ColorTargetState;
 struct CommandBufferDescriptor;
@@ -214,7 +212,6 @@ public:
     std::optional<BlendState> NODELETE convertToBacking(const WebCore::WebGPU::BlendState&);
     std::optional<BufferBinding> convertToBacking(const WebCore::WebGPU::BufferBinding&);
     std::optional<BufferBindingLayout> NODELETE convertToBacking(const WebCore::WebGPU::BufferBindingLayout&);
-    std::optional<BufferDescriptor> convertToBacking(const WebCore::WebGPU::BufferDescriptor&);
     std::optional<CanvasConfiguration> convertToBacking(const WebCore::WebGPU::CanvasConfiguration&);
     std::optional<ColorTargetState> convertToBacking(const WebCore::WebGPU::ColorTargetState&);
     std::optional<CommandBufferDescriptor> convertToBacking(const WebCore::WebGPU::CommandBufferDescriptor&);

@@ -107,6 +107,9 @@ enum class BufferUsage : uint16_t {
     Storage         = 1 << 7,
     Indirect        = 1 << 8,
     QueryResolve    = 1 << 9,
+    // Set when the caller passed a bit that is not one of the above, so that the usage can be
+    // rejected instead of being silently narrowed to the bits we do recognize.
+    Invalid         = 1 << 10,
 };
 
 enum class CanvasAlphaMode : uint8_t {
@@ -1202,6 +1205,17 @@ class Buffer : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<Buffer> {
 public:
     virtual ~Buffer() = default;
 
+    // A std::nullopt size is the rest of the buffer after the offset, in the size the buffer
+    // was created with.
+    virtual void mapAsync(OptionSet<MapMode>, uint64_t offset, std::optional<uint64_t> size, CompletionHandler<void(bool)>&&) = 0;
+    virtual void getMappedRange(uint64_t offset, std::optional<uint64_t> size, NOESCAPE const Function<void(std::span<uint8_t>)>&) = 0;
+    virtual void unmap() = 0;
+    virtual void destroy() = 0;
+    // Generates the validation error of mapping a buffer that is not unmapped.
+    virtual void generateAValidationError() = 0;
+    // The whole contents, where the implementation can reach them. Only the GPU Process can.
+    virtual std::span<uint8_t> getBufferContents() = 0;
+    virtual void copyFrom(std::span<const uint8_t>, size_t offset) = 0;
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 

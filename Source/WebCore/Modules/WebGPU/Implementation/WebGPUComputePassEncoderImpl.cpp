@@ -29,7 +29,7 @@
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
 #include "WebGPUBindGroupImpl.h"
-#include "WebGPUBufferImpl.h"
+#include "WebGPUBuffer.h"
 #include "WebGPUComputePipelineImpl.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUQuerySet.h"

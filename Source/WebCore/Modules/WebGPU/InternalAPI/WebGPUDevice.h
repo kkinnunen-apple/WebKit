@@ -25,6 +25,8 @@
 
 #pragma once
 
+#include <WebCore/WebGPUBuffer.h>
+#include <WebCore/WebGPUBufferDescriptor.h>
 #include <WebCore/WebGPUComputePipeline.h>
 #include <WebCore/WebGPUDeviceLostInfo.h>
 #include <WebCore/WebGPUError.h>
@@ -59,8 +61,6 @@ class BindGroup;
 struct BindGroupDescriptor;
 class BindGroupLayout;
 struct BindGroupLayoutDescriptor;
-class Buffer;
-struct BufferDescriptor;
 class CommandBuffer;
 class CommandEncoder;
 struct CommandEncoderDescriptor;

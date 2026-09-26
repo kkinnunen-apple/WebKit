@@ -26,15 +26,10 @@
 #pragma once
 
 #include <WebCore/WebGPUBufferUsage.h>
-#include <WebCore/WebGPUIntegralTypes.h>
-#include <WebCore/WebGPUObjectDescriptorBase.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-struct BufferDescriptor : public ObjectDescriptorBase {
-    Size64 size { 0 };
-    BufferUsageFlags usage;
-    bool mappedAtCreation { false };
-};
+using BufferDescriptor = ::WebGPU::BufferDescriptor;
 
 } // namespace WebCore::WebGPU

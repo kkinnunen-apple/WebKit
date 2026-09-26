@@ -86,7 +86,7 @@ void RemoteRenderPassEncoder::setIndexBuffer(WebGPUIdentifier buffer, WebCore::W
 
 void RemoteRenderPassEncoder::setVertexBuffer(WebCore::WebGPU::Index32 slot, WebGPUIdentifier buffer, WebCore::WebGPU::Size64 offset, std::optional<WebCore::WebGPU::Size64> size)
 {
-    RefPtr convertedBuffer = protect(m_objectHeap)->convertBufferFromBacking(buffer).get();
+    RefPtr convertedBuffer = protect(m_objectHeap)->convertBufferFromBacking(buffer);
     ASSERT(convertedBuffer);
     if (!convertedBuffer)
         return;

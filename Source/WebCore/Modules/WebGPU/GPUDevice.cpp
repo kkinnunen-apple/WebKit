@@ -274,11 +274,12 @@ ExceptionOr<Ref<GPUBuffer>> GPUDevice::createBuffer(GPUBufferDescriptor&& buffer
 
     auto usage = bufferDescriptor.usage;
     auto mappedAtCreation = bufferDescriptor.mappedAtCreation;
-    RefPtr buffer = m_backing->createBuffer(bufferDescriptor.convertToBacking());
+    auto backingDescriptor = bufferDescriptor.convertToBacking();
+    RefPtr buffer = m_backing->createBuffer(backingDescriptor);
     if (!buffer)
         return Exception { ExceptionCode::InvalidStateError, "GPUDevice.createBuffer: Unable to create buffer."_s };
 
-    Ref result = GPUBuffer::create(buffer.releaseNonNull(), bufferSize, usage, mappedAtCreation, *this);
+    Ref result = GPUBuffer::create(buffer.releaseNonNull(), bufferSize, usage, mappedAtCreation, WTF::move(backingDescriptor.label), *this);
     m_buffers.add(result);
     didChangeBufferMemoryCost(result);
     return result;

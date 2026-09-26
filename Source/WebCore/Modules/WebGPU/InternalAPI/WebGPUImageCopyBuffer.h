@@ -32,10 +32,9 @@
 
 namespace WebCore::WebGPU {
 
-class Buffer;
 
 struct ImageCopyBuffer : public ImageDataLayout {
-    WeakRef<Buffer> buffer;
+    Ref<Buffer> buffer;
 };
 
 } // namespace WebCore::WebGPU

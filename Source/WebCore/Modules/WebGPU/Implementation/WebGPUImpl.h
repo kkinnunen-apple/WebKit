@@ -28,6 +28,7 @@
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
 #include "WebGPU.h"
+#include "WebGPUBuffer.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUPtr.h"
 #include "WebGPUQuerySet.h"
@@ -48,7 +49,6 @@ class NativeImage;
 namespace WebCore::WebGPU {
 
 class Adapter;
-class Buffer;
 class BindGroup;
 class BindGroupLayout;
 class CompositorIntegration;

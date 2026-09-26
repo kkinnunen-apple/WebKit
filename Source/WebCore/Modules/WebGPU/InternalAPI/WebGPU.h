@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <WebCore/WebGPUBuffer.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURequestAdapterOptions.h>
 #include <WebCore/WebGPUSampler.h>
@@ -45,7 +46,6 @@ namespace WebCore::WebGPU {
 class Adapter;
 class BindGroup;
 class BindGroupLayout;
-class Buffer;
 class CommandBuffer;
 class CommandEncoder;
 class CompositorIntegration;

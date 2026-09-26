@@ -32,8 +32,8 @@
 #include "WebGPUBindGroupImpl.h"
 #include "WebGPUBindGroupLayoutDescriptor.h"
 #include "WebGPUBindGroupLayoutImpl.h"
+#include "WebGPUBuffer.h"
 #include "WebGPUBufferDescriptor.h"
-#include "WebGPUBufferImpl.h"
 #include "WebGPUCommandEncoderDescriptor.h"
 #include "WebGPUCommandEncoderImpl.h"
 #include "WebGPUComputePipelineDescriptor.h"
@@ -137,7 +137,7 @@ RefPtr<Buffer> DeviceImpl::createBuffer(const BufferDescriptor& descriptor)
         .mappedAtCreation = descriptor.mappedAtCreation,
     };
 
-    return BufferImpl::create(adoptWebGPU(wgpuDeviceCreateBuffer(m_backing.get(), &backingDescriptor)), convertToBackingContext);
+    return adoptRef(::WebGPU::fromAPI(wgpuDeviceCreateBuffer(m_backing.get(), &backingDescriptor)));
 }
 
 RefPtr<Texture> DeviceImpl::createTexture(const TextureDescriptor& descriptor)

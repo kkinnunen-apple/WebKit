@@ -44,7 +44,7 @@ std::optional<BufferBinding> ConvertToBackingContext::convertToBacking(const Web
 
 std::optional<WebCore::WebGPU::BufferBinding> ConvertFromBackingContext::convertFromBacking(const BufferBinding& bufferBinding)
 {
-    WeakPtr buffer = convertBufferFromBacking(bufferBinding.buffer);
+    RefPtr buffer = convertBufferFromBacking(bufferBinding.buffer);
     if (!buffer)
         return std::nullopt;
 

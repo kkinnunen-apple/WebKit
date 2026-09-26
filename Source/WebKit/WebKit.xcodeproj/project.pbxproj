@@ -4590,7 +4590,6 @@
 		1C98C0A62746267A002CCB78 /* WebGPUBlendState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUBlendState.cpp; sourceTree = "<group>"; };
 		1C98C0A72746267A002CCB78 /* WebGPURenderPassDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPURenderPassDescriptor.cpp; sourceTree = "<group>"; };
 		1C98C0A82746267A002CCB78 /* WebGPURenderBundleEncoderDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPURenderBundleEncoderDescriptor.cpp; sourceTree = "<group>"; };
-		1C98C0A92746267B002CCB78 /* WebGPUBufferDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUBufferDescriptor.cpp; sourceTree = "<group>"; };
 		1C98C0AA2746267B002CCB78 /* WebGPUSupportedLimits.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUSupportedLimits.cpp; sourceTree = "<group>"; };
 		1C98C0AB2746267B002CCB78 /* WebGPUBufferBinding.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUBufferBinding.cpp; sourceTree = "<group>"; };
 		1C98C0AC2746267B002CCB78 /* WebGPUVertexBufferLayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUVertexBufferLayout.cpp; sourceTree = "<group>"; };
@@ -11676,7 +11675,6 @@
 				1C98C0A52746267A002CCB78 /* WebGPUBufferBindingLayout.cpp */,
 				1CB7469327439CB900F19874 /* WebGPUBufferBindingLayout.h */,
 				02789EF628D3FC3200F77E40 /* WebGPUBufferBindingLayout.serialization.in */,
-				1C98C0A92746267B002CCB78 /* WebGPUBufferDescriptor.cpp */,
 				1CB7466627439CAE00F19874 /* WebGPUBufferDescriptor.h */,
 				5CBA4AD129020A4200F70CCD /* WebGPUBufferDescriptor.serialization.in */,
 				1C98C09A27462678002CCB78 /* WebGPUCanvasConfiguration.cpp */,

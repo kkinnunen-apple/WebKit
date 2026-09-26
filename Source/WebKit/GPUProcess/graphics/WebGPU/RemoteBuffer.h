@@ -44,10 +44,6 @@ namespace WebCore {
 class SharedMemoryHandle;
 }
 
-namespace WebCore::WebGPU {
-class Buffer;
-}
-
 namespace IPC {
 class StreamServerConnection;
 }
