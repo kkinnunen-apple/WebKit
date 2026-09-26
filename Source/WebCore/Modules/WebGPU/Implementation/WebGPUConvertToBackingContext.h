@@ -28,6 +28,7 @@
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
 #include "WebGPUAddressMode.h"
+#include "WebGPUBindGroup.h"
 #include "WebGPUBindGroupLayout.h"
 #include "WebGPUBlendFactor.h"
 #include "WebGPUBlendOperation.h"
@@ -115,7 +116,6 @@ inline WGPUStringView toBackingStringView(ASCIILiteral literal)
 }
 
 class Adapter;
-class BindGroup;
 class CommandBuffer;
 class CommandEncoder;
 class CompositorIntegration;

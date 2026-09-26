@@ -39,15 +39,15 @@ namespace WebKit::WebGPU {
 
 std::optional<BindGroupEntry> ConvertToBackingContext::convertToBacking(const WebCore::WebGPU::BindGroupEntry& bindGroupEntry)
 {
-    return WTF::switchOn(bindGroupEntry.resource, [&] (std::reference_wrapper<WebCore::WebGPU::Sampler> sampler) -> std::optional<BindGroupEntry> {
+    return WTF::switchOn(bindGroupEntry.resource, [&] (const Ref<WebCore::WebGPU::Sampler>& sampler) -> std::optional<BindGroupEntry> {
         auto identifier = convertToBacking(protect(sampler.get()).get());
 
         return { { bindGroupEntry.binding, { identifier }, identifier, BindingResourceType::Sampler } };
-    }, [&] (std::reference_wrapper<WebCore::WebGPU::Texture> texture) -> std::optional<BindGroupEntry> {
+    }, [&] (const Ref<WebCore::WebGPU::Texture>& texture) -> std::optional<BindGroupEntry> {
         auto identifier = convertToBacking(protect(texture.get()).get());
 
         return { { bindGroupEntry.binding, { identifier }, identifier, BindingResourceType::Texture } };
-    }, [&] (std::reference_wrapper<WebCore::WebGPU::TextureView> textureView) -> std::optional<BindGroupEntry> {
+    }, [&] (const Ref<WebCore::WebGPU::TextureView>& textureView) -> std::optional<BindGroupEntry> {
         auto identifier = convertToBacking(protect(textureView.get()).get());
 
         return { { bindGroupEntry.binding, { identifier }, identifier, BindingResourceType::TextureView } };
@@ -57,7 +57,7 @@ std::optional<BindGroupEntry> ConvertToBackingContext::convertToBacking(const We
             return std::nullopt;
 
         return { { bindGroupEntry.binding, WTF::move(*convertedBufferBinding), convertedBufferBinding->buffer, BindingResourceType::BufferBinding } };
-    }, [&] (std::reference_wrapper<WebCore::WebGPU::ExternalTexture> externalTexture) -> std::optional<BindGroupEntry> {
+    }, [&] (const Ref<WebCore::WebGPU::ExternalTexture>& externalTexture) -> std::optional<BindGroupEntry> {
         auto identifier = convertToBacking(protect(externalTexture.get()).get());
 
         return { { bindGroupEntry.binding, { identifier }, identifier, BindingResourceType::ExternalTexture } };

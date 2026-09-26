@@ -1183,6 +1183,9 @@ class BindGroup : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<BindGro
 public:
     virtual ~BindGroup() = default;
 
+    // Rebinds the current frame of an external texture that the bind group binds. Returns false
+    // when the bind group has to be recreated instead.
+    virtual bool updateExternalTextures(ExternalTexture&) = 0;
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 

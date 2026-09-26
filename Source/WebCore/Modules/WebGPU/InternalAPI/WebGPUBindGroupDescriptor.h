@@ -27,16 +27,10 @@
 
 #include <WebCore/WebGPUBindGroupEntry.h>
 #include <WebCore/WebGPUBindGroupLayout.h>
-#include <WebCore/WebGPUObjectDescriptorBase.h>
-#include <wtf/Vector.h>
-#include <wtf/WeakRef.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-
-struct BindGroupDescriptor : public ObjectDescriptorBase {
-    Ref<BindGroupLayout> layout;
-    Vector<BindGroupEntry> entries;
-};
+using BindGroupDescriptor = ::WebGPU::BindGroupDescriptor;
 
 } // namespace WebCore::WebGPU

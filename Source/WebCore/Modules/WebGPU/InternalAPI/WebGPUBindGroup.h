@@ -25,43 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUExternalTexture.h>
-#include <wtf/Ref.h>
-#include <wtf/RefCountedAndCanMakeWeakPtr.h>
-#include <wtf/WeakPtr.h>
-#include <wtf/text/WTFString.h>
 
 namespace WebCore::WebGPU {
 
-
-class BindGroup : public RefCountedAndCanMakeWeakPtr<BindGroup> {
-public:
-    virtual ~BindGroup() = default;
-
-    String label() const { return m_label; }
-    virtual bool updateExternalTextures(ExternalTexture&) = 0;
-
-    void setLabel(String&& label)
-    {
-        m_label = WTF::move(label);
-        setLabelInternal(m_label);
-    }
-
-    virtual bool isRemoteBindGroupProxy() const { return false; }
-    virtual bool isBindGroupImpl() const { return false; }
-
-protected:
-    BindGroup() = default;
-
-private:
-    BindGroup(const BindGroup&) = delete;
-    BindGroup(BindGroup&&) = delete;
-    BindGroup& operator=(const BindGroup&) = delete;
-    BindGroup& operator=(BindGroup&&) = delete;
-
-    virtual void setLabelInternal(const String&) = 0;
-
-    String m_label;
-};
+using BindGroup = ::WebGPU::BindGroup;
 
 } // namespace WebCore::WebGPU

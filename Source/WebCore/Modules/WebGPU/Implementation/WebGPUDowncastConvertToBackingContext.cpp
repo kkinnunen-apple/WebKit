@@ -29,7 +29,7 @@
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
 #include "WebGPUAdapterImpl.h"
-#include "WebGPUBindGroupImpl.h"
+#include "WebGPUBindGroup.h"
 #include "WebGPUBindGroupLayout.h"
 #include "WebGPUBuffer.h"
 #include "WebGPUCommandBufferImpl.h"
@@ -70,7 +70,7 @@ WGPUAdapter DowncastConvertToBackingContext::convertToBacking(const Adapter& ada
 
 WGPUBindGroup DowncastConvertToBackingContext::convertToBacking(const BindGroup& bindGroup)
 {
-    return downcast<BindGroupImpl>(bindGroup).backing();
+    return ::WebGPU::toAPI(const_cast<BindGroup&>(bindGroup));
 }
 
 WGPUBindGroupLayout DowncastConvertToBackingContext::convertToBacking(const BindGroupLayout& bindGroupLayout)

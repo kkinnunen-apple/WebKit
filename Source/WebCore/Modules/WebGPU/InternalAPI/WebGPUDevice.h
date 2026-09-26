@@ -25,6 +25,8 @@
 
 #pragma once
 
+#include <WebCore/WebGPUBindGroup.h>
+#include <WebCore/WebGPUBindGroupDescriptor.h>
 #include <WebCore/WebGPUBindGroupLayout.h>
 #include <WebCore/WebGPUBindGroupLayoutDescriptor.h>
 #include <WebCore/WebGPUBuffer.h>
@@ -65,8 +67,6 @@
 
 namespace WebCore::WebGPU {
 
-class BindGroup;
-struct BindGroupDescriptor;
 class CommandBuffer;
 class CommandEncoder;
 struct CommandEncoderDescriptor;

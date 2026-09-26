@@ -37,10 +37,6 @@ namespace WebKit::WebGPU {
 
 std::optional<BindGroupDescriptor> ConvertToBackingContext::convertToBacking(const WebCore::WebGPU::BindGroupDescriptor& bindGroupDescriptor)
 {
-    auto base = convertToBacking(static_cast<const WebCore::WebGPU::ObjectDescriptorBase&>(bindGroupDescriptor));
-    if (!base)
-        return std::nullopt;
-
     auto identifier = convertToBacking(protect(bindGroupDescriptor.layout).get());
 
     Vector<BindGroupEntry> entries;
@@ -52,20 +48,16 @@ std::optional<BindGroupDescriptor> ConvertToBackingContext::convertToBacking(con
         entries.append(WTF::move(*convertedEntry));
     }
 
-    return { { WTF::move(*base), identifier, WTF::move(entries) } };
+    return { { { bindGroupDescriptor.label }, identifier, WTF::move(entries) } };
 }
 
-std::optional<WebCore::WebGPU::BindGroupDescriptor> ConvertFromBackingContext::convertFromBacking(const BindGroupDescriptor& bindGroupDescriptor)
+// The descriptor borrows the entries from entries.
+std::optional<WebCore::WebGPU::BindGroupDescriptor> ConvertFromBackingContext::convertFromBacking(const BindGroupDescriptor& bindGroupDescriptor, Vector<WebCore::WebGPU::BindGroupEntry>& entries)
 {
-    auto base = convertFromBacking(static_cast<const ObjectDescriptorBase&>(bindGroupDescriptor));
-    if (!base)
-        return std::nullopt;
-
     RefPtr bindGroupLayout = convertBindGroupLayoutFromBacking(bindGroupDescriptor.bindGroupLayout);
     if (!bindGroupLayout)
         return std::nullopt;
 
-    Vector<WebCore::WebGPU::BindGroupEntry> entries;
     entries.reserveInitialCapacity(bindGroupDescriptor.entries.size());
     for (const auto& backingEntry : bindGroupDescriptor.entries) {
         auto entry = convertFromBacking(backingEntry);
@@ -74,7 +66,7 @@ std::optional<WebCore::WebGPU::BindGroupDescriptor> ConvertFromBackingContext::c
         entries.append(WTF::move(*entry));
     }
 
-    return { { WTF::move(*base), *bindGroupLayout, WTF::move(entries) } };
+    return WebCore::WebGPU::BindGroupDescriptor { .label = bindGroupDescriptor.label, .layout = bindGroupLayout.releaseNonNull(), .entries = entries.span() };
 }
 
 } // namespace WebKit

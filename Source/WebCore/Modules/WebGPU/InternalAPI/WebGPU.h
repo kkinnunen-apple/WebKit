@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <WebCore/WebGPUBindGroup.h>
 #include <WebCore/WebGPUBindGroupLayout.h>
 #include <WebCore/WebGPUBuffer.h>
 #include <WebCore/WebGPUExternalTexture.h>
@@ -50,7 +51,6 @@ class GraphicsContext;
 namespace WebCore::WebGPU {
 
 class Adapter;
-class BindGroup;
 class CommandBuffer;
 class CommandEncoder;
 class CompositorIntegration;

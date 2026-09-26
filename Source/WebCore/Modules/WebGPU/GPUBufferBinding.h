@@ -37,9 +37,9 @@ struct GPUBufferBinding {
     WebGPU::BufferBinding convertToBacking() const
     {
         return {
-            buffer->backing(),
-            offset,
-            size,
+            .buffer = buffer->backing(),
+            .offset = offset,
+            .size = size,
         };
     }
 

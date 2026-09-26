@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <WebCore/WebGPUBindGroup.h>
 #include <WebCore/WebGPUBuffer.h>
 #include <WebCore/WebGPUIndexFormat.h>
 #include <WebCore/WebGPUIntegralTypes.h>
@@ -39,7 +40,6 @@
 
 namespace WebCore::WebGPU {
 
-class BindGroup;
 class RenderBundle;
 class RenderPipeline;
 
