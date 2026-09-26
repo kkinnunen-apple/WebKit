@@ -133,7 +133,7 @@ public:
     void createRenderPipelineAsync(const WGPURenderPipelineDescriptor&, CompletionHandler<void(WGPUCreatePipelineAsyncStatus, Ref<RenderPipeline>&&, String&& message)>&& callback);
     void createRenderPipelineWithPipelineLayoutFromPipelineAsync(const WGPURenderPipelineDescriptor&, const RenderPipeline&, CompletionHandler<void(WGPUCreatePipelineAsyncStatus, Ref<RenderPipeline>&&, String&& message)>&& callback);
     Ref<Sampler> createSampler(const WebGPU::SamplerDescriptor&);
-    Ref<ShaderModule> createShaderModule(const WGPUShaderModuleDescriptor&);
+    Ref<ShaderModule> createShaderModule(const WebGPU::ShaderModuleDescriptor&);
     Ref<PresentationContext> createSwapChain(PresentationContext&, const WGPUSwapChainDescriptor&);
     Ref<Texture> createTexture(const WebGPU::TextureDescriptor&);
     void destroy();

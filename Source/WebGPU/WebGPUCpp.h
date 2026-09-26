@@ -48,6 +48,7 @@
 #include <wtf/SwiftBridging.h>
 #include <wtf/ThreadSafeWeakPtr.h>
 #include <wtf/Variant.h>
+#include <wtf/Vector.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebGPU {
@@ -628,6 +629,34 @@ struct TextureViewDescriptor {
     std::optional<uint32_t> arrayLayerCount;
     TextureAspect aspect { TextureAspect::All };
     OptionSet<TextureUsage> usage; // Empty: the usage of the texture.
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpushadermodulecompilationhint
+struct ShaderModuleCompilationHint {
+    String entryPoint;
+    Ref<PipelineLayout> layout;
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpushadermoduledescriptor
+struct ShaderModuleDescriptor {
+    String label;
+    String code; // WGSL.
+    std::span<const ShaderModuleCompilationHint> hints; // Borrowed for the duration of the call.
+} SWIFT_NONESCAPABLE;
+
+// https://gpuweb.github.io/gpuweb/#gpucompilationmessage
+struct CompilationMessage {
+    String message;
+    CompilationMessageType type { CompilationMessageType::Error };
+    uint64_t lineNum { 0 };
+    uint64_t linePos { 0 };
+    uint64_t offset { 0 };
+    uint64_t length { 0 };
+};
+
+// https://gpuweb.github.io/gpuweb/#gpucompilationinfo
+struct CompilationInfo {
+    Vector<CompilationMessage> messages;
 };
 
 // https://gpuweb.github.io/gpuweb/#dictdef-gpubufferbindinglayout
