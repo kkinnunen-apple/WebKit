@@ -187,11 +187,6 @@ RefPtr<Sampler> DeviceImpl::createSampler(const SamplerDescriptor& descriptor)
     return adoptRef(::WebGPU::fromAPI(wgpuDeviceCreateSampler(m_backing.get(), &backingDescriptor)));
 }
 
-void DeviceImpl::updateExternalTexture(const WebCore::WebGPU::ExternalTexture&, const WebCore::MediaPlayerIdentifier&)
-{
-    RELEASE_ASSERT_NOT_REACHED();
-}
-
 RefPtr<ExternalTexture> DeviceImpl::importExternalTexture(const ExternalTextureDescriptor& descriptor)
 {
     auto label = toBackingStringView(descriptor.label);

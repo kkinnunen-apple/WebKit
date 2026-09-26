@@ -260,7 +260,7 @@ GPUDevice::LostPromise& GPUDevice::lost()
 
 RefPtr<WebGPU::XRBinding> GPUDevice::createXRBinding(const WebXRSession&)
 {
-    return m_backing->createXRBinding();
+    return m_gpu->createXRBinding(m_backing);
 }
 
 ExceptionOr<Ref<GPUBuffer>> GPUDevice::createBuffer(GPUBufferDescriptor&& bufferDescriptor)
@@ -524,14 +524,14 @@ ExceptionOr<Ref<GPUExternalTexture>> GPUDevice::importExternalTexture(GPUExterna
         if (auto optionalMediaIdentifier = externalTextureDescriptor.mediaIdentifier()) {
             externalTexture->undestroy();
             m_videoElementToExternalTextureMap.remove(videoElementRef);
-            m_backing->updateExternalTexture(externalTexture->backing(), *optionalMediaIdentifier);
+            m_gpu->updateExternalTexture(m_backing, externalTexture->backing(), *optionalMediaIdentifier);
             return externalTexture.releaseNonNull();
         }
     }
 #endif
 
     auto backingDescriptor = externalTextureDescriptor.convertToBacking();
-    RefPtr texture = m_backing->importExternalTexture(backingDescriptor);
+    RefPtr texture = m_gpu->importExternalTexture(m_backing, backingDescriptor);
     if (!texture)
         return Exception { ExceptionCode::InvalidStateError, "GPUDevice.importExternalTexture: Unable to import texture."_s };
 

@@ -131,7 +131,11 @@ void RemoteDevice::destruct()
 void RemoteDevice::createXRBinding(WebGPUIdentifier identifier)
 {
     Ref objectHeap = m_objectHeap.get();
-    auto binding = m_backing->createXRBinding();
+    RefPtr gpu = protect(m_gpu)->backing();
+    if (!gpu)
+        return;
+    auto binding = gpu->createXRBinding(m_backing);
+    MESSAGE_CHECK(binding);
     auto remoteBinding = RemoteXRBinding::create(*m_gpuConnectionToWebProcess.get(), *binding, objectHeap, protect(m_gpu), protect(m_streamConnection), identifier);
     objectHeap->addObject(identifier, remoteBinding);
 }
@@ -204,7 +208,10 @@ void RemoteDevice::importExternalTextureFromVideoFrame(const WebGPU::ExternalTex
     auto convertedDescriptor = objectHeap->convertFromBacking(descriptor, pixelBuffer);
     MESSAGE_CHECK(convertedDescriptor);
 
-    auto externalTexture = m_backing->importExternalTexture(*convertedDescriptor);
+    RefPtr gpu = protect(m_gpu)->backing();
+    if (!gpu)
+        return;
+    auto externalTexture = gpu->importExternalTexture(m_backing, *convertedDescriptor);
     MESSAGE_CHECK(externalTexture);
     auto remoteExternalTexture = RemoteExternalTexture::create(*externalTexture, objectHeap, protect(m_streamConnection), protect(m_gpu), identifier);
     objectHeap->addObject(identifier, remoteExternalTexture);
