@@ -30,14 +30,11 @@
 #include "RemoteGPU.h"
 #include "StreamMessageReceiver.h"
 #include "WebGPUIdentifier.h"
+#include <WebCore/WebGPURenderPipeline.h>
 #include <wtf/Ref.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakRef.h>
 #include <wtf/text/WTFString.h>
-
-namespace WebCore::WebGPU {
-class RenderPipeline;
-}
 
 namespace IPC {
 class StreamServerConnection;

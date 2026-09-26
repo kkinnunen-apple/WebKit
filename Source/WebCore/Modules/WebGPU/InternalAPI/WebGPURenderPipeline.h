@@ -26,44 +26,10 @@
 #pragma once
 
 #include <WebCore/WebGPUBindGroupLayout.h>
-#include <cstdint>
-#include <wtf/Ref.h>
-#include <wtf/RefCountedAndCanMakeWeakPtr.h>
-#include <wtf/WeakPtr.h>
-#include <wtf/text/WTFString.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-
-class RenderPipeline : public RefCountedAndCanMakeWeakPtr<RenderPipeline> {
-public:
-    virtual ~RenderPipeline() = default;
-
-    String label() const { return m_label; }
-
-    void setLabel(String&& label)
-    {
-        m_label = WTF::move(label);
-        setLabelInternal(m_label);
-    }
-
-    // "A new GPUBindGroupLayout wrapper is returned each time"
-    virtual Ref<BindGroupLayout> getBindGroupLayout(uint32_t index) = 0;
-    virtual bool isRemoteRenderPipelineProxy() const { return false; }
-    virtual bool isRenderPipelineImpl() const { return false; }
-
-protected:
-    RenderPipeline() = default;
-
-private:
-    RenderPipeline(const RenderPipeline&) = delete;
-    RenderPipeline(RenderPipeline&&) = delete;
-    RenderPipeline& operator=(const RenderPipeline&) = delete;
-    RenderPipeline& operator=(RenderPipeline&&) = delete;
-
-    virtual void setLabelInternal(const String&) = 0;
-
-    String m_label;
-};
+using RenderPipeline = ::WebGPU::RenderPipeline;
 
 } // namespace WebCore::WebGPU

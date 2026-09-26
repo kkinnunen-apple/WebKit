@@ -109,7 +109,7 @@ GPUDevice* GPURenderPipeline::device() const
 
 String GPURenderPipeline::label() const
 {
-    return m_backing->label();
+    return m_descriptor.label;
 }
 
 void GPURenderPipeline::setLabel(String&& label)

@@ -1958,7 +1958,7 @@ RenderPipeline::RenderPipeline(Device& device)
 
 RenderPipeline::~RenderPipeline() = default;
 
-Ref<BindGroupLayout> RenderPipeline::getBindGroupLayout(uint32_t groupIndex)
+Ref<WebGPU::BindGroupLayout> RenderPipeline::getBindGroupLayout(uint32_t groupIndex)
 {
     auto pipelineLayout = m_pipelineLayout;
     auto device = m_device;
@@ -2161,7 +2161,9 @@ void wgpuRenderPipelineRelease(WGPURenderPipeline renderPipeline)
 
 WGPUBindGroupLayout wgpuRenderPipelineGetBindGroupLayout(WGPURenderPipeline renderPipeline, uint32_t groupIndex)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(renderPipeline))->getBindGroupLayout(groupIndex));
+    // Every WebGPU::BindGroupLayout that a WebGPU::Metal::RenderPipeline returns is a WebGPU::Metal::BindGroupLayout.
+    Ref bindGroupLayout = static_cast<WebGPU::Metal::BindGroupLayout&>(protect(WebGPU::Metal::fromAPI(renderPipeline))->getBindGroupLayout(groupIndex).get());
+    return WebGPU::Metal::releaseToAPI(WTF::move(bindGroupLayout));
 }
 
 void wgpuRenderPipelineSetLabel(WGPURenderPipeline renderPipeline, WGPUStringView label)

@@ -164,7 +164,7 @@ WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::RenderPipeline& renderPipeline)
 {
-    return downcast<RemoteRenderPipelineProxy>(renderPipeline).backing();
+    return static_cast<const RemoteRenderPipelineProxy&>(renderPipeline).backing();
 }
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::Sampler& sampler)

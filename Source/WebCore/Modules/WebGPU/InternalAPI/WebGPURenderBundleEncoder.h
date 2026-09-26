@@ -31,6 +31,7 @@
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <WebCore/WebGPURenderBundle.h>
 #include <WebCore/WebGPURenderBundleDescriptor.h>
+#include <WebCore/WebGPURenderPipeline.h>
 #include <cstdint>
 #include <optional>
 #include <wtf/Ref.h>
@@ -41,7 +42,6 @@
 
 namespace WebCore::WebGPU {
 
-class RenderPipeline;
 
 class RenderBundleEncoder : public RefCountedAndCanMakeWeakPtr<RenderBundleEncoder> {
 public:
