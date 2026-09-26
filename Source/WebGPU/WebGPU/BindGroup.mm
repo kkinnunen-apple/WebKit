@@ -1158,8 +1158,8 @@ static std::optional<Ref<BindGroup>> validateTextureOrBindGroup(WebGPU::Metal::D
             return BindGroup::createInvalid(object);
         }
         auto textureUsage = apiTextureView->usage();
-        if ((textureEntry && !(textureUsage & WGPUTextureUsage_TextureBinding)) || (storageTextureEntry && !(textureUsage & WGPUTextureUsage_StorageBinding))) {
-            VALIDATION_ERROR([NSString stringWithFormat:@"Storage texture usage(%llu) did not have storage usage or storage texture entry did not have storage binding", textureUsage]);
+        if ((textureEntry && !textureUsage.contains(WebGPU::TextureUsage::TextureBinding)) || (storageTextureEntry && !textureUsage.contains(WebGPU::TextureUsage::StorageBinding))) {
+            VALIDATION_ERROR([NSString stringWithFormat:@"Storage texture usage(%llu) did not have storage usage or storage texture entry did not have storage binding", toAPI(textureUsage)]);
             return BindGroup::createInvalid(object);
         }
         if (textureEntry && (3 * (textureEntry->multisampled ? 1 : 0) + 1 != apiTextureView->sampleCount())) {
@@ -1188,7 +1188,7 @@ static std::optional<Ref<BindGroup>> validateTextureOrBindGroup(WebGPU::Metal::D
             return BindGroup::createInvalid(object);
         }
         if (externalTextureEntry) {
-            if (!(textureUsage & WGPUTextureUsage_TextureBinding)) {
+            if (!textureUsage.contains(WebGPU::TextureUsage::TextureBinding)) {
                 VALIDATION_ERROR(@"Can not create bind group with a texture view set to an external texture slot which does not have usage containing texture binding.");
                 return BindGroup::createInvalid(object);
             }

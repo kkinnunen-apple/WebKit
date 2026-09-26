@@ -107,7 +107,7 @@ static bool isAllowableTextureView(const auto& texture, WGPULoadOp loadOp, WGPUS
 {
     // A view can narrow the usages it allows, but it cannot make a memoryless texture behave like a
     // regular one, so the transient rule follows the texture the view is a view of.
-    if (texture.apiParentTexture().usage() & WGPUTextureUsage_Transient) {
+    if (texture.apiParentTexture().usage().contains(WebGPU::TextureUsage::Transient)) {
         if (loadOp != WGPULoadOp_Clear || storeOp != WGPUStoreOp_Discard)
             return false;
     }
@@ -127,7 +127,7 @@ static bool isAllowableDepthStencilTextureView(const auto& texture, bool hasDept
 
 static bool hasRenderableTextureViewProperties(const auto& texture)
 {
-    return (texture.usage() & WGPUTextureUsage_RenderAttachment) && (texture.is2DTexture() || texture.is2DArrayTexture() || texture.is3DTexture()) && texture.mipLevelCount() == 1 && texture.arrayLayerCount() <= 1;
+    return texture.usage().contains(WebGPU::TextureUsage::RenderAttachment) && (texture.is2DTexture() || texture.is2DArrayTexture() || texture.is3DTexture()) && texture.mipLevelCount() == 1 && texture.arrayLayerCount() <= 1;
 }
 
 static bool isRenderableTextureView(const auto& texture, WGPULoadOp loadOp, WGPUStoreOp storeOp)

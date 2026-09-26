@@ -135,7 +135,7 @@ public:
     Ref<Sampler> createSampler(const WebGPU::SamplerDescriptor&);
     Ref<ShaderModule> createShaderModule(const WGPUShaderModuleDescriptor&);
     Ref<PresentationContext> createSwapChain(PresentationContext&, const WGPUSwapChainDescriptor&);
-    Ref<Texture> createTexture(const WGPUTextureDescriptor&);
+    Ref<Texture> createTexture(const WebGPU::TextureDescriptor&);
     void destroy();
     size_t enumerateFeatures(WGPUFeatureName* features);
     bool NODELETE getLimits(WGPUSupportedLimits&);
@@ -196,7 +196,7 @@ public:
 
     id<MTLTexture> NODELETE placeholderTexture(WGPUTextureFormat) const;
     bool NODELETE isDestroyed() const;
-    NSString *errorValidatingTextureCreation(const WGPUTextureDescriptor&, const Vector<WGPUTextureFormat>& viewFormats);
+    NSString *errorValidatingTextureCreation(const WebGPU::TextureDescriptor&);
     id<MTLBuffer> _Nullable dispatchCallBuffer();
     id<MTLComputePipelineState> _Nullable dispatchCallPipelineState(id<MTLFunction>);
     id<MTLRenderPipelineState> _Nullable indexBufferClampPipeline(MTLIndexType, NSUInteger rasterSampleCount);
@@ -290,7 +290,6 @@ private:
     struct ErrorScope;
     ErrorScope* NODELETE currentErrorScope(WGPUErrorFilter);
     std::optional<WGPUErrorType> NODELETE validatePopErrorScope() const;
-    bool validateCreateIOSurfaceBackedTexture(const WGPUTextureDescriptor&, const Vector<WGPUTextureFormat>& viewFormats, IOSurfaceRef backing);
 
     bool NODELETE validateRenderPipeline(const WGPURenderPipelineDescriptor&);
 

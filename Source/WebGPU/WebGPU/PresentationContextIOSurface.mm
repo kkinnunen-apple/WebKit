@@ -265,8 +265,15 @@ void PresentationContextIOSurface::configure(Device& device, const WGPUSwapChain
     m_colorSpace = descriptor.colorSpace;
     m_toneMappingMode = descriptor.toneMappingMode;
     m_alphaMode = descriptor.compositeAlphaMode;
+    TextureDescriptorStorage textureDescriptorStorage;
+    auto apiTextureDescriptor = fromAPI(wgpuTextureDescriptor, textureDescriptorStorage);
+    if (!apiTextureDescriptor) {
+        generateAValidationError(device, @"Requested texture usage or view format is not valid", reportValidationErrors);
+        return;
+    }
+
     MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:Texture::pixelFormat(effectiveFormat) width:width height:height mipmapped:NO];
-    textureDescriptor.usage = Texture::usage(descriptor.usage, effectiveFormat);
+    textureDescriptor.usage = Texture::usage(apiTextureDescriptor->usage, effectiveFormat);
 #if PLATFORM(MAC) || PLATFORM(MACCATALYST)
     ALLOW_DEPRECATED_DECLARATIONS_BEGIN
 #if ENABLE(WEBGPU_BY_DEFAULT)
@@ -305,13 +312,17 @@ void PresentationContextIOSurface::configure(Device& device, const WGPUSwapChain
         }
     }
 
-    Vector viewFormats(viewFormatsSpan(wgpuTextureDescriptor));
-    if (NSString *error = device.errorValidatingTextureCreation(wgpuTextureDescriptor, viewFormats)) {
+    if (NSString *error = device.errorValidatingTextureCreation(*apiTextureDescriptor)) {
         generateAValidationError(device, error, reportValidationErrors);
         return;
     }
 
-    if (descriptor.format == WGPUTextureFormat_BGRA8Unorm && (descriptor.usage & WGPUTextureUsage_StorageBinding) && !device.hasFeature(WGPUFeatureName_BGRA8UnormStorage)) {
+    // The textures allow views only in the formats that the swap chain descriptor lists.
+    Vector<WebGPU::TextureFormat> textureViewFormats;
+    if (!descriptor.viewFormats.isEmpty())
+        textureViewFormats = apiTextureDescriptor->viewFormats;
+
+    if (descriptor.format == WGPUTextureFormat_BGRA8Unorm && apiTextureDescriptor->usage.contains(WebGPU::TextureUsage::StorageBinding) && !device.hasFeature(WGPUFeatureName_BGRA8UnormStorage)) {
         generateAValidationError(device, @"Requested storage format but BGRA8UnormStorage is not enabled", reportValidationErrors);
         return;
     }
@@ -326,24 +337,24 @@ void PresentationContextIOSurface::configure(Device& device, const WGPUSwapChain
         MTLTextureDescriptor* luminanceClampDescriptor = nil;
         if (needsLuminanceClampFunction) {
             textureDescriptor.pixelFormat = MTLPixelFormatRGBA16Float;
-            wgpuTextureDescriptor.format = WGPUTextureFormat_RGBA16Float;
+            apiTextureDescriptor->format = WebGPU::TextureFormat::Rgba16float;
             textureDescriptor.usage = existingUsage;
             textureDescriptor.usage |= MTLTextureUsageShaderRead;
             luminanceClampDescriptor = textureDescriptor;
             id<MTLTexture> luminanceClampTexture = device.newTextureWithDescriptor(textureDescriptor);
             luminanceClampTexture.label = fromAPI(descriptor.label).createNSString().get();
-            auto viewFormats = descriptor.viewFormats;
-            parentLuminanceClampTexture = Texture::create(luminanceClampTexture, wgpuTextureDescriptor, WTF::move(viewFormats), device);
+            auto viewFormats = textureViewFormats;
+            parentLuminanceClampTexture = Texture::create(luminanceClampTexture, *apiTextureDescriptor, WTF::move(viewFormats), device);
             parentLuminanceClampTexture->makeCanvasBacking();
             textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
-            wgpuTextureDescriptor.format = WGPUTextureFormat_BGRA8Unorm;
+            apiTextureDescriptor->format = WebGPU::TextureFormat::Bgra8unorm;
             textureDescriptor.usage = existingUsage | MTLTextureUsageShaderWrite;
         }
 
         id<MTLTexture> texture = device.newTextureWithDescriptor(textureDescriptor, bridge_cast(iosurface));
         texture.label = fromAPI(descriptor.label).createNSString().get();
-        auto viewFormats = descriptor.viewFormats;
-        auto parentTexture = Texture::create(texture, wgpuTextureDescriptor, WTF::move(viewFormats), device);
+        auto viewFormats = textureViewFormats;
+        auto parentTexture = Texture::create(texture, *apiTextureDescriptor, WTF::move(viewFormats), device);
         parentTexture->makeCanvasBacking();
         m_renderBuffers.append({ parentTexture, parentLuminanceClampTexture });
         if (m_existingRenderBuffers.size() >= m_renderBuffers.size()) {

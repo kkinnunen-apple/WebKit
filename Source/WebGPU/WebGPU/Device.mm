@@ -1372,7 +1372,14 @@ WGPUSwapChain wgpuDeviceCreateSwapChain(WGPUDevice device, WGPUSurface surface, 
 
 WGPUTexture wgpuDeviceCreateTexture(WGPUDevice device, const WGPUTextureDescriptor* descriptor)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createTexture(*descriptor));
+    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
+    WebGPU::Metal::TextureDescriptorStorage storage;
+    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor, storage);
+    if (!apiDescriptor) {
+        protectedDevice->generateAValidationError("GPUTextureDescriptor has an invalid enum value or usage bit"_s);
+        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::Texture::createInvalid(protectedDevice));
+    }
+    return WebGPU::Metal::releaseToAPI(protectedDevice->createTexture(*apiDescriptor));
 }
 
 void wgpuDeviceDestroy(WGPUDevice device)

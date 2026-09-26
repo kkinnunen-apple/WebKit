@@ -842,7 +842,7 @@ NSString* Queue::errorValidatingWriteTexture(const WGPUTexelCopyTextureInfo& des
     if (NSString* error = Texture::errorValidatingImageCopyTexture(destination, size))
         return ERROR_STRING(error);
 
-    if (!(texture.usage() & WGPUTextureUsage_CopyDst))
+    if (!texture.usage().contains(WebGPU::TextureUsage::CopyDestination))
         return ERROR_STRING(@"texture usage does not contain CopyDst");
 
     if (texture.sampleCount() != 1)
@@ -1843,12 +1843,12 @@ NSString* Queue::errorValidatingCopyExternalImageToTexture(const WGPUImageCopyTe
     if (texture.sampleCount() != 1)
         return ERROR_STRING(@"destination texture sampleCount is not 1");
 
-    if (!(texture.usage() & WGPUTextureUsage_CopyDst))
+    if (!texture.usage().contains(WebGPU::TextureUsage::CopyDestination))
         return ERROR_STRING(@"destination texture usage does not contain CopyDst");
 
     // The copy is performed by rendering into the destination, which is why the spec asks for this on
     // top of CopyDst.
-    if (!(texture.usage() & WGPUTextureUsage_RenderAttachment))
+    if (!texture.usage().contains(WebGPU::TextureUsage::RenderAttachment))
         return ERROR_STRING(@"destination texture usage does not contain RenderAttachment");
 
     if (!isValidCopyExternalImageDestinationFormat(texture.format(), device))
