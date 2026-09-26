@@ -30,7 +30,7 @@
 
 #include "WebGPUBuffer.h"
 #include "WebGPUCommandBuffer.h"
-#include "WebGPUComputePassEncoderImpl.h"
+#include "WebGPUComputePassEncoder.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUQuerySet.h"
 #include "WebGPURenderPassEncoderImpl.h"
@@ -140,7 +140,7 @@ RefPtr<ComputePassEncoder> CommandEncoderImpl::beginComputePass(const std::optio
         .timestampWrites = timestampWrites.querySet ? &timestampWrites : nullptr
     };
 
-    return ComputePassEncoderImpl::create(adoptWebGPU(wgpuCommandEncoderBeginComputePass(m_backing.get(), &backingDescriptor)), m_convertToBackingContext);
+    return adoptRef(::WebGPU::fromAPI(wgpuCommandEncoderBeginComputePass(m_backing.get(), &backingDescriptor)));
 }
 
 void CommandEncoderImpl::copyBufferToBuffer(

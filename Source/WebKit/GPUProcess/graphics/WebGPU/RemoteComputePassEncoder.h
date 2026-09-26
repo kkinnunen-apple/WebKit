@@ -30,15 +30,12 @@
 #include "RemoteGPU.h"
 #include "StreamMessageReceiver.h"
 #include "WebGPUIdentifier.h"
+#include <WebCore/WebGPUComputePassEncoder.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <wtf/Ref.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakRef.h>
 #include <wtf/text/WTFString.h>
-
-namespace WebCore::WebGPU {
-class ComputePassEncoder;
-}
 
 namespace IPC {
 class StreamServerConnection;

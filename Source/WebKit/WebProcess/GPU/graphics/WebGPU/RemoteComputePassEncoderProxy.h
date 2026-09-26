@@ -48,6 +48,18 @@ public:
 
     RemoteGPUProxy& root() const { return m_root; }
 
+    void setPipeline(const WebCore::WebGPU::ComputePipeline&) final;
+    void dispatch(WebCore::WebGPU::Size32 workgroupCountX, WebCore::WebGPU::Size32 workgroupCountY = 1, WebCore::WebGPU::Size32 workgroupCountZ = 1) final;
+    void dispatchIndirect(const WebCore::WebGPU::Buffer& indirectBuffer, WebCore::WebGPU::Size64 indirectOffset) final;
+    void end() final;
+    void setBindGroup(uint32_t, const WebCore::WebGPU::BindGroup*, std::optional<std::span<const uint32_t>> dynamicOffsets) final;
+    void pushDebugGroup(String&& groupLabel) final;
+    void popDebugGroup() final;
+    void insertDebugMarker(String&& markerLabel) final;
+
+    void setLabel(String&&) final;
+    bool isValid() const final;
+
 private:
     friend class DowncastConvertToBackingContext;
 
@@ -58,8 +70,6 @@ private:
     RemoteComputePassEncoderProxy& operator=(const RemoteComputePassEncoderProxy&) = delete;
     RemoteComputePassEncoderProxy& operator=(RemoteComputePassEncoderProxy&&) = delete;
 
-    bool isRemoteComputePassEncoderProxy() const final { return true; }
-
     WebGPUIdentifier backing() const { return m_backing; }
     
     template<typename T>
@@ -68,35 +78,11 @@ private:
         return protect(root().streamClientConnection())->send(std::forward<T>(message), backing());
     }
 
-    void setPipeline(const WebCore::WebGPU::ComputePipeline&) final;
-    void dispatch(WebCore::WebGPU::Size32 workgroupCountX, WebCore::WebGPU::Size32 workgroupCountY = 1, WebCore::WebGPU::Size32 workgroupCountZ = 1) final;
-    void dispatchIndirect(const WebCore::WebGPU::Buffer& indirectBuffer, WebCore::WebGPU::Size64 indirectOffset) final;
-
-    void end() final;
-
-    void setBindGroup(WebCore::WebGPU::Index32, const WebCore::WebGPU::BindGroup*,
-        std::optional<Vector<WebCore::WebGPU::BufferDynamicOffset>>&&) final;
-
-    void setBindGroup(WebCore::WebGPU::Index32, const WebCore::WebGPU::BindGroup*,
-        std::span<const uint32_t> dynamicOffsetsArrayBuffer,
-        WebCore::WebGPU::Size64 dynamicOffsetsDataStart,
-        WebCore::WebGPU::Size32 dynamicOffsetsDataLength) final;
-
-    void pushDebugGroup(String&& groupLabel) final;
-    void popDebugGroup() final;
-    void insertDebugMarker(String&& markerLabel) final;
-
-    void setLabelInternal(const String&) final;
-
     WebGPUIdentifier m_backing;
     const Ref<ConvertToBackingContext> m_convertToBackingContext;
     const Ref<RemoteGPUProxy> m_root;
 };
 
 } // namespace WebKit::WebGPU
-
-SPECIALIZE_TYPE_TRAITS_BEGIN(WebKit::WebGPU::RemoteComputePassEncoderProxy)
-    static bool isType(const WebCore::WebGPU::ComputePassEncoder& encoder) { return encoder.isRemoteComputePassEncoderProxy(); }
-SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // ENABLE(GPU_PROCESS)

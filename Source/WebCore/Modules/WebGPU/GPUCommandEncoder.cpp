@@ -98,7 +98,7 @@ ExceptionOr<Ref<GPUComputePassEncoder>> GPUCommandEncoder::beginComputePass(cons
     RefPtr computePass = protect(backing())->beginComputePass(computePassDescriptor ? std::optional { computePassDescriptor->convertToBacking() } : std::nullopt);
     if (!computePass)
         return Exception { ExceptionCode::InvalidStateError, "GPUCommandEncoder.beginComputePass: Unable to begin compute pass."_s };
-    return GPUComputePassEncoder::create(computePass.releaseNonNull(), *this);
+    return GPUComputePassEncoder::create(computePass.releaseNonNull(), computePassDescriptor ? String { computePassDescriptor->label } : String { }, *this);
 }
 
 void GPUCommandEncoder::copyBufferToBuffer(

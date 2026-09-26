@@ -28,63 +28,12 @@
 #include <WebCore/WebGPUBindGroup.h>
 #include <WebCore/WebGPUBuffer.h>
 #include <WebCore/WebGPUComputePipeline.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <WebCore/WebGPUQuerySet.h>
-#include <cstdint>
-#include <optional>
-#include <wtf/Ref.h>
-#include <wtf/RefCountedAndCanMakeWeakPtr.h>
-#include <wtf/Vector.h>
-#include <wtf/WeakPtr.h>
-#include <wtf/text/WTFString.h>
 
 namespace WebCore::WebGPU {
 
-
-class ComputePassEncoder : public RefCountedAndCanMakeWeakPtr<ComputePassEncoder> {
-public:
-    virtual ~ComputePassEncoder() = default;
-
-    String label() const { return m_label; }
-
-    void setLabel(String&& label)
-    {
-        m_label = WTF::move(label);
-        setLabelInternal(m_label);
-    }
-
-    virtual void setPipeline(const ComputePipeline&) = 0;
-    virtual void dispatch(Size32 workgroupCountX, Size32 workgroupCountY = 1, Size32 workgroupCountZ = 1) = 0;
-    virtual void dispatchIndirect(const Buffer& indirectBuffer, Size64 indirectOffset) = 0;
-
-    virtual void end() = 0;
-
-    virtual void setBindGroup(Index32, const BindGroup*,
-        std::optional<Vector<BufferDynamicOffset>>&&) = 0;
-
-    virtual void setBindGroup(Index32, const BindGroup*,
-        std::span<const uint32_t> dynamicOffsetsArrayBuffer,
-        Size64 dynamicOffsetsDataStart,
-        Size32 dynamicOffsetsDataLength) = 0;
-
-    virtual void pushDebugGroup(String&& groupLabel) = 0;
-    virtual void popDebugGroup() = 0;
-    virtual void insertDebugMarker(String&& markerLabel) = 0;
-    virtual bool isRemoteComputePassEncoderProxy() const { return false; }
-    virtual bool isComputePassEncoderImpl() const { return false; }
-
-protected:
-    ComputePassEncoder() = default;
-
-private:
-    ComputePassEncoder(const ComputePassEncoder&) = delete;
-    ComputePassEncoder(ComputePassEncoder&&) = delete;
-    ComputePassEncoder& operator=(const ComputePassEncoder&) = delete;
-    ComputePassEncoder& operator=(ComputePassEncoder&&) = delete;
-
-    virtual void setLabelInternal(const String&) = 0;
-
-    String m_label;
-};
+using ComputePassEncoder = ::WebGPU::ComputePassEncoder;
 
 } // namespace WebCore::WebGPU

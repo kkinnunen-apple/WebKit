@@ -48,9 +48,9 @@ template<typename> class ExceptionOr;
 
 class GPUComputePassEncoder : public RefCountedAndCanMakeWeakPtr<GPUComputePassEncoder> {
 public:
-    static Ref<GPUComputePassEncoder> create(Ref<WebGPU::ComputePassEncoder>&& backing, GPUCommandEncoder& commandEncoder)
+    static Ref<GPUComputePassEncoder> create(Ref<WebGPU::ComputePassEncoder>&& backing, String&& label, GPUCommandEncoder& commandEncoder)
     {
-        return adoptRef(*new GPUComputePassEncoder(WTF::move(backing), commandEncoder));
+        return adoptRef(*new GPUComputePassEncoder(WTF::move(backing), WTF::move(label), commandEncoder));
     }
 
     String NODELETE label() const;
@@ -82,9 +82,10 @@ public:
     bool hasActiveInspectorCanvasCallTracer() const;
 
 private:
-    GPUComputePassEncoder(Ref<WebGPU::ComputePassEncoder>&&, GPUCommandEncoder&);
+    GPUComputePassEncoder(Ref<WebGPU::ComputePassEncoder>&&, String&& label, GPUCommandEncoder&);
 
     Ref<WebGPU::ComputePassEncoder> m_backing;
+    String m_label;
     WeakPtr<GPUDevice, WeakPtrImplWithEventTargetData> m_device;
     std::optional<String> m_overrideLabel;
 };
