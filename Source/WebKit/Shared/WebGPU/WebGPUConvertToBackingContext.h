@@ -63,6 +63,7 @@
 #include <WebCore/WebGPUPrimitiveState.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURenderBundle.h>
+#include <WebCore/WebGPURenderBundleEncoder.h>
 #include <WebCore/WebGPURenderPassEncoder.h>
 #include <WebCore/WebGPURenderPassTimestampWrites.h>
 #include <WebCore/WebGPURenderPipeline.h>
@@ -107,7 +108,6 @@ class PresentationContext;
 struct PresentationContextDescriptor;
 struct ProgrammableStage;
 class Queue;
-class RenderBundleEncoder;
 struct RenderBundleEncoderDescriptor;
 struct RenderPassColorAttachment;
 struct RenderPassDepthStencilAttachment;

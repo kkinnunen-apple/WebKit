@@ -790,7 +790,7 @@ ExceptionOr<Ref<GPURenderBundleEncoder>> GPUDevice::createRenderBundleEncoder(GP
     RefPtr encoder = m_backing->createRenderBundleEncoder(renderBundleEncoderDescriptor.convertToBacking());
     if (!encoder)
         return Exception { ExceptionCode::InvalidStateError, "GPUDevice.createRenderBundleEncoder: Unable to make encoder."_s };
-    return GPURenderBundleEncoder::create(encoder.releaseNonNull(), *this);
+    return GPURenderBundleEncoder::create(encoder.releaseNonNull(), String { renderBundleEncoderDescriptor.label }, *this);
 }
 
 ExceptionOr<Ref<GPUQuerySet>> GPUDevice::createQuerySet(GPUQuerySetDescriptor&& querySetDescriptor)

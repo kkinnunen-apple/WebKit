@@ -1380,6 +1380,21 @@ class RenderBundleEncoder : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakP
 public:
     virtual ~RenderBundleEncoder() = default;
 
+    virtual void setPipeline(const RenderPipeline&) = 0;
+    // A std::nullopt size is the rest of the buffer after the offset.
+    virtual void setIndexBuffer(const Buffer&, IndexFormat, uint64_t offset, std::optional<uint64_t> size) = 0;
+    virtual void setVertexBuffer(uint32_t slot, const Buffer*, uint64_t offset, std::optional<uint64_t> size) = 0;
+    virtual void draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) = 0;
+    virtual void drawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t baseVertex, uint32_t firstInstance) = 0;
+    virtual void drawIndirect(const Buffer& indirectBuffer, uint64_t indirectOffset) = 0;
+    virtual void drawIndexedIndirect(const Buffer& indirectBuffer, uint64_t indirectOffset) = 0;
+    // The dynamic offsets are borrowed for the call. std::nullopt skips the check of their
+    // count against the layout.
+    virtual void setBindGroup(uint32_t index, const BindGroup*, std::optional<std::span<const uint32_t>> dynamicOffsets) = 0;
+    virtual void pushDebugGroup(String&& groupLabel) = 0;
+    virtual void popDebugGroup() = 0;
+    virtual void insertDebugMarker(String&& markerLabel) = 0;
+    virtual RefPtr<RenderBundle> finish(const RenderBundleDescriptor&) = 0;
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 

@@ -49,8 +49,8 @@
 #include "WebGPUPresentationContextImpl.h"
 #include "WebGPUQuerySet.h"
 #include "WebGPUQuerySetDescriptor.h"
+#include "WebGPURenderBundleEncoder.h"
 #include "WebGPURenderBundleEncoderDescriptor.h"
-#include "WebGPURenderBundleEncoderImpl.h"
 #include "WebGPURenderPipeline.h"
 #include "WebGPURenderPipelineDescriptor.h"
 #include "WebGPUSampler.h"
@@ -652,7 +652,7 @@ RefPtr<RenderBundleEncoder> DeviceImpl::createRenderBundleEncoder(const RenderBu
         .stencilReadOnly = descriptor.stencilReadOnly,
     };
 
-    return RenderBundleEncoderImpl::create(adoptWebGPU(wgpuDeviceCreateRenderBundleEncoder(m_backing.get(), &backingDescriptor)), convertToBackingContext);
+    return adoptRef(::WebGPU::fromAPI(wgpuDeviceCreateRenderBundleEncoder(m_backing.get(), &backingDescriptor)));
 }
 
 RefPtr<QuerySet> DeviceImpl::createQuerySet(const QuerySetDescriptor& descriptor)

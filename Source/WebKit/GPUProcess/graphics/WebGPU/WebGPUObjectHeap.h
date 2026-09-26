@@ -40,6 +40,7 @@
 #include <WebCore/WebGPUPipelineLayout.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURenderBundle.h>
+#include <WebCore/WebGPURenderBundleEncoder.h>
 #include <WebCore/WebGPURenderPassEncoder.h>
 #include <WebCore/WebGPURenderPipeline.h>
 #include <WebCore/WebGPUSampler.h>
@@ -59,7 +60,6 @@ class Device;
 class GPU;
 class PresentationContext;
 class Queue;
-class RenderBundleEncoder;
 class XRBinding;
 class XRProjectionLayer;
 class XRSubImage;
@@ -155,7 +155,7 @@ public:
     WeakPtr<WebCore::WebGPU::PresentationContext> convertPresentationContextFromBacking(WebGPUIdentifier) final;
     RefPtr<WebCore::WebGPU::QuerySet> convertQuerySetFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::Queue> convertQueueFromBacking(WebGPUIdentifier) final;
-    WeakPtr<WebCore::WebGPU::RenderBundleEncoder> convertRenderBundleEncoderFromBacking(WebGPUIdentifier) final;
+    RefPtr<WebCore::WebGPU::RenderBundleEncoder> convertRenderBundleEncoderFromBacking(WebGPUIdentifier) final;
     RefPtr<WebCore::WebGPU::RenderBundle> convertRenderBundleFromBacking(WebGPUIdentifier) final;
     RefPtr<WebCore::WebGPU::RenderPassEncoder> convertRenderPassEncoderFromBacking(WebGPUIdentifier) final;
     RefPtr<WebCore::WebGPU::RenderPipeline> convertRenderPipelineFromBacking(WebGPUIdentifier) final;

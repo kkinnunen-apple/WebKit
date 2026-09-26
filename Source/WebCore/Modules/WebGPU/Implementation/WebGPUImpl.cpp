@@ -209,8 +209,7 @@ bool GPUImpl::isValid(const Queue& queue) const
 
 bool GPUImpl::isValid(const RenderBundleEncoder& renderBundleEncoder) const
 {
-    WGPURenderBundleEncoder wgpuRenderBundleEncoder = m_convertToBackingContext.get().convertToBacking(renderBundleEncoder);
-    return wgpuRenderBundleEncoderIsValid(wgpuRenderBundleEncoder);
+    return renderBundleEncoder.isValid();
 }
 
 bool GPUImpl::isValid(const RenderBundle& renderBundle) const

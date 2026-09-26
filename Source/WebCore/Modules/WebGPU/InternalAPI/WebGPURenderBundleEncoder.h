@@ -27,77 +27,15 @@
 
 #include <WebCore/WebGPUBindGroup.h>
 #include <WebCore/WebGPUBuffer.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUIndexFormat.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <WebCore/WebGPURenderBundle.h>
 #include <WebCore/WebGPURenderBundleDescriptor.h>
 #include <WebCore/WebGPURenderPipeline.h>
-#include <cstdint>
-#include <optional>
-#include <wtf/Ref.h>
-#include <wtf/RefCountedAndCanMakeWeakPtr.h>
-#include <wtf/Vector.h>
-#include <wtf/WeakPtr.h>
-#include <wtf/text/WTFString.h>
 
 namespace WebCore::WebGPU {
 
-
-class RenderBundleEncoder : public RefCountedAndCanMakeWeakPtr<RenderBundleEncoder> {
-public:
-    virtual ~RenderBundleEncoder() = default;
-
-    String label() const { return m_label; }
-
-    void setLabel(String&& label)
-    {
-        m_label = WTF::move(label);
-        setLabelInternal(m_label);
-    }
-
-    virtual void setPipeline(const RenderPipeline&) = 0;
-
-    virtual void setIndexBuffer(const Buffer&, IndexFormat, Size64 offset, std::optional<Size64>) = 0;
-    virtual void setVertexBuffer(Index32 slot, const Buffer*, Size64 offset, std::optional<Size64>) = 0;
-
-    virtual void draw(Size32 vertexCount, Size32 instanceCount,
-        Size32 firstVertex, Size32 firstInstance) = 0;
-    virtual void drawIndexed(Size32 indexCount, Size32 instanceCount,
-        Size32 firstIndex,
-        SignedOffset32 baseVertex,
-        Size32 firstInstance) = 0;
-
-    virtual void drawIndirect(const Buffer& indirectBuffer, Size64 indirectOffset) = 0;
-    virtual void drawIndexedIndirect(const Buffer& indirectBuffer, Size64 indirectOffset) = 0;
-
-    virtual void setBindGroup(Index32, const BindGroup*,
-        std::optional<Vector<BufferDynamicOffset>>&& dynamicOffsets) = 0;
-
-    virtual void setBindGroup(Index32, const BindGroup*,
-        std::span<const uint32_t> dynamicOffsetsArrayBuffer,
-        Size64 dynamicOffsetsDataStart,
-        Size32 dynamicOffsetsDataLength) = 0;
-
-    virtual void pushDebugGroup(String&& groupLabel) = 0;
-    virtual void popDebugGroup() = 0;
-    virtual void insertDebugMarker(String&& markerLabel) = 0;
-
-    virtual RefPtr<RenderBundle> finish(const RenderBundleDescriptor&) = 0;
-    virtual bool isRemoteRenderBundleEncoderProxy() const { return false; }
-    virtual bool isRenderBundleEncoderImpl() const { return false; }
-
-protected:
-    RenderBundleEncoder() = default;
-
-private:
-    RenderBundleEncoder(const RenderBundleEncoder&) = delete;
-    RenderBundleEncoder(RenderBundleEncoder&&) = delete;
-    RenderBundleEncoder& operator=(const RenderBundleEncoder&) = delete;
-    RenderBundleEncoder& operator=(RenderBundleEncoder&&) = delete;
-
-    virtual void setLabelInternal(const String&) = 0;
-
-    String m_label;
-};
+using RenderBundleEncoder = ::WebGPU::RenderBundleEncoder;
 
 } // namespace WebCore::WebGPU

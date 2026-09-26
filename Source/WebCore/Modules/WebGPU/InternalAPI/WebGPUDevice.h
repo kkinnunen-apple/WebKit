@@ -42,6 +42,7 @@
 #include <WebCore/WebGPUPipelineLayoutDescriptor.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPUQuerySetDescriptor.h>
+#include <WebCore/WebGPURenderBundleEncoder.h>
 #include <WebCore/WebGPURenderPassEncoder.h>
 #include <WebCore/WebGPURenderPipeline.h>
 #include <WebCore/WebGPUSampler.h>
@@ -77,7 +78,6 @@ struct ExternalTextureDescriptor;
 struct RenderPipelineDescriptor;
 class PresentationContext;
 class Queue;
-class RenderBundleEncoder;
 struct RenderBundleEncoderDescriptor;
 struct RenderPipelineDescriptor;
 struct ShaderModuleDescriptor;
