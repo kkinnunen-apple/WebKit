@@ -227,8 +227,7 @@ bool GPUImpl::isValid(const RenderPassEncoder& renderPassEncoder) const
 
 bool GPUImpl::isValid(const RenderPipeline& renderPipeline) const
 {
-    WGPURenderPipeline wgpuRenderPipeline = m_convertToBackingContext.get().convertToBacking(renderPipeline);
-    return wgpuRenderPipelineIsValid(wgpuRenderPipeline);
+    return renderPipeline.isValid();
 }
 
 bool GPUImpl::isValid(const Sampler& sampler) const

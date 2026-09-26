@@ -47,7 +47,7 @@
 #include "WebGPURenderBundle.h"
 #include "WebGPURenderBundleEncoderImpl.h"
 #include "WebGPURenderPassEncoderImpl.h"
-#include "WebGPURenderPipelineImpl.h"
+#include "WebGPURenderPipeline.h"
 #include "WebGPUSampler.h"
 #include "WebGPUShaderModule.h"
 #include "WebGPUTexture.h"
@@ -155,7 +155,7 @@ WGPURenderPassEncoder DowncastConvertToBackingContext::convertToBacking(const Re
 
 WGPURenderPipeline DowncastConvertToBackingContext::convertToBacking(const RenderPipeline& renderPipeline)
 {
-    return downcast<RenderPipelineImpl>(renderPipeline).backing();
+    return ::WebGPU::toAPI(const_cast<RenderPipeline&>(renderPipeline));
 }
 
 WGPUSampler DowncastConvertToBackingContext::convertToBacking(const Sampler& sampler)

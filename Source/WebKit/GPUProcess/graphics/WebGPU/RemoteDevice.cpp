@@ -335,7 +335,7 @@ void RemoteDevice::createRenderPipelineWithPipelineLayoutFromPipeline(const WebG
     auto convertedDescriptor = objectHeap->convertFromBacking(descriptor, true);
     MESSAGE_CHECK_COMPLETION(convertedDescriptor, completionHandler(false));
 
-    WeakPtr<WebCore::WebGPU::RenderPipeline> pipelineToReplace = objectHeap->convertRenderPipelineFromBacking(pipelineToReplaceIdentifier);
+    RefPtr pipelineToReplace = objectHeap->convertRenderPipelineFromBacking(pipelineToReplaceIdentifier);
     MESSAGE_CHECK_COMPLETION(pipelineToReplace, completionHandler(false));
 
     m_backing->createRenderPipelineWithPipelineLayoutFromPipelineAsync(*convertedDescriptor, protect(*pipelineToReplace), [completionHandler = WTF::move(completionHandler), objectHeap, streamConnection = protect(m_streamConnection), gpu = protect(m_gpu), identifier](RefPtr<WebCore::WebGPU::RenderPipeline>&& renderPipeline) mutable {

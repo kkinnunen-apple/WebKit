@@ -34,6 +34,7 @@
 #include <WebCore/WebGPUPipelineLayout.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURenderBundle.h>
+#include <WebCore/WebGPURenderPipeline.h>
 #include <WebCore/WebGPURequestAdapterOptions.h>
 #include <WebCore/WebGPUSampler.h>
 #include <WebCore/WebGPUShaderModule.h>
@@ -64,7 +65,6 @@ class PresentationContext;
 class Queue;
 class RenderBundleEncoder;
 class RenderPassEncoder;
-class RenderPipeline;
 class XRBinding;
 class XRProjectionLayer;
 class XRSubImage;

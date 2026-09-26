@@ -31,6 +31,7 @@
 #include "InspectorCanvasProcessedArguments.h"
 #include "InspectorWebAgentBase.h"
 #include "Timer.h"
+#include "WebGPURenderPipeline.h"
 #include <JavaScriptCore/InspectorBackendDispatchers.h>
 #include <JavaScriptCore/InspectorFrontendDispatchers.h>
 #include <initializer_list>
@@ -60,10 +61,6 @@ class ScriptExecutionContext;
 class WebGLProgram;
 class WebGLRenderingContextBase;
 #endif // ENABLE(WEBGL)
-
-namespace WebGPU {
-class RenderPipeline;
-}
 
 class InspectorCanvasAgent : public InspectorAgentBase, public Inspector::CanvasBackendDispatcherHandler, public CanvasObserver, public CanMakeCheckedPtr<InspectorCanvasAgent> {
     WTF_MAKE_NONCOPYABLE(InspectorCanvasAgent);

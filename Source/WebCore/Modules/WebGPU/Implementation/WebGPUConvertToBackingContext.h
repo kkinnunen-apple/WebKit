@@ -60,6 +60,7 @@
 #include "WebGPUQuerySet.h"
 #include "WebGPUQueryType.h"
 #include "WebGPURenderBundle.h"
+#include "WebGPURenderPipeline.h"
 #include "WebGPUSampler.h"
 #include "WebGPUSamplerBindingType.h"
 #include "WebGPUShaderModule.h"
@@ -129,7 +130,6 @@ class PresentationContext;
 class Queue;
 class RenderBundleEncoder;
 class RenderPassEncoder;
-class RenderPipeline;
 class XRBinding;
 class XRProjectionLayer;
 class XRSubImage;

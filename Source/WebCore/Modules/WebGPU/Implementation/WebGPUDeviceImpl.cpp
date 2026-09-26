@@ -51,8 +51,8 @@
 #include "WebGPUQuerySetDescriptor.h"
 #include "WebGPURenderBundleEncoderDescriptor.h"
 #include "WebGPURenderBundleEncoderImpl.h"
+#include "WebGPURenderPipeline.h"
 #include "WebGPURenderPipelineDescriptor.h"
-#include "WebGPURenderPipelineImpl.h"
 #include "WebGPUSampler.h"
 #include "WebGPUSamplerDescriptor.h"
 #include "WebGPUShaderModule.h"
@@ -552,7 +552,7 @@ static auto convertToBacking(const RenderPipelineDescriptor& descriptor, Convert
 RefPtr<RenderPipeline> DeviceImpl::createRenderPipeline(const RenderPipelineDescriptor& descriptor)
 {
     return convertToBacking(descriptor, m_convertToBackingContext, [backing = m_backing.copyRef(), &convertToBackingContext = m_convertToBackingContext.get()](const WGPURenderPipelineDescriptor& backingDescriptor) {
-        return RenderPipelineImpl::create(adoptWebGPU(wgpuDeviceCreateRenderPipeline(backing.get(), &backingDescriptor)), convertToBackingContext);
+        return adoptRef(::WebGPU::fromAPI(wgpuDeviceCreateRenderPipeline(backing.get(), &backingDescriptor)));
     });
 }
 
@@ -588,7 +588,7 @@ void DeviceImpl::createRenderPipelineAsync(const RenderPipelineDescriptor& descr
     convertToBacking(descriptor, m_convertToBackingContext, [backing = m_backing.copyRef(), convertToBackingContext = m_convertToBackingContext.copyRef(), callback = WTF::move(callback)](const WGPURenderPipelineDescriptor& backingDescriptor) mutable {
         auto blockPtr = makeBlockPtr([convertToBackingContext = convertToBackingContext.copyRef(), callback = WTF::move(callback)](WGPUCreatePipelineAsyncStatus status, WGPURenderPipeline pipeline, String&& message) mutable {
             if (status == WGPUCreatePipelineAsyncStatus_Success)
-                callback(RenderPipelineImpl::create(adoptWebGPU(pipeline), convertToBackingContext), ""_s);
+                callback(adoptRef(::WebGPU::fromAPI(pipeline)), ""_s);
             else
                 callback(nullptr, WTF::move(message));
         });
@@ -614,7 +614,7 @@ void DeviceImpl::createRenderPipelineWithPipelineLayoutFromPipelineAsync(const R
     convertToBacking(descriptor, m_convertToBackingContext, [backing = m_backing.copyRef(), convertToBackingContext = m_convertToBackingContext.copyRef(), pipelineToReplace = m_convertToBackingContext->convertToBacking(pipelineToReplace), callback = WTF::move(callback)](const WGPURenderPipelineDescriptor& backingDescriptor) mutable {
         auto blockPtr = makeBlockPtr([convertToBackingContext = convertToBackingContext.copyRef(), callback = WTF::move(callback)](WGPUCreatePipelineAsyncStatus status, WGPURenderPipeline pipeline, String&&) mutable {
             if (status == WGPUCreatePipelineAsyncStatus_Success)
-                callback(RenderPipelineImpl::create(adoptWebGPU(pipeline), convertToBackingContext));
+                callback(adoptRef(::WebGPU::fromAPI(pipeline)));
             else
                 callback(nullptr);
         });
