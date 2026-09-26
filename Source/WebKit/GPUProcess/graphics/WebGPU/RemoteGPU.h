@@ -99,6 +99,8 @@ public:
 
     void paintNativeImageToImageBuffer(WebCore::NativeImage&, WebCore::RenderingResourceIdentifier);
     RefPtr<WebCore::ImageBuffer> imageBuffer(WebCore::RenderingResourceIdentifier);
+    // The root, which has the commands that take WebCore sources.
+    RefPtr<WebCore::WebGPU::GPU> backing();
     RefPtr<GPUConnectionToWebProcess> gpuConnectionToWebProcess() const;
 
     static Vector<UniqueRef<WebCore::IOSurface>> createRenderBuffers(unsigned width, unsigned height, const WebCore::ProcessIdentity&, bool standardDynamicRange = false);

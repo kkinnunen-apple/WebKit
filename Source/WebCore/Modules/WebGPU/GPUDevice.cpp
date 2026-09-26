@@ -102,20 +102,21 @@ Lock& GPUDevice::instancesLock()
     return s_instancesLock;
 }
 
-Ref<GPUDevice> GPUDevice::create(ScriptExecutionContext* scriptExecutionContext, Ref<WebGPU::Device>&& backing, String&& queueLabel, GPUAdapterInfo& adapterInfo)
+Ref<GPUDevice> GPUDevice::create(ScriptExecutionContext* scriptExecutionContext, Ref<WebGPU::Device>&& backing, Ref<WebGPU::GPU>&& gpu, String&& queueLabel, GPUAdapterInfo& adapterInfo)
 {
-    Ref device = adoptRef(*new GPUDevice(scriptExecutionContext, WTF::move(backing), WTF::move(queueLabel), adapterInfo));
+    Ref device = adoptRef(*new GPUDevice(scriptExecutionContext, WTF::move(backing), WTF::move(gpu), WTF::move(queueLabel), adapterInfo));
 
     InspectorInstrumentation::didCreateWebGPUDevice(device);
 
     return device;
 }
 
-GPUDevice::GPUDevice(ScriptExecutionContext* scriptExecutionContext, Ref<WebGPU::Device>&& backing, String&& queueLabel, GPUAdapterInfo& adapterInfo)
+GPUDevice::GPUDevice(ScriptExecutionContext* scriptExecutionContext, Ref<WebGPU::Device>&& backing, Ref<WebGPU::GPU>&& gpu, String&& queueLabel, GPUAdapterInfo& adapterInfo)
     : ActiveDOMObject { scriptExecutionContext }
     , m_lostPromise(makeUniqueRef<LostPromise>())
+    , m_gpu(WTF::move(gpu))
     , m_backing(WTF::move(backing))
-    , m_queue(GPUQueue::create(m_backing->queue(), *this))
+    , m_queue(GPUQueue::create(m_backing->queue(), m_gpu.copyRef(), *this))
     , m_autoPipelineLayout(createAutoPipelineLayout())
     , m_features(GPUSupportedFeatures::create(m_backing->features()))
     , m_limits(GPUSupportedLimits::create(m_backing->limits()))

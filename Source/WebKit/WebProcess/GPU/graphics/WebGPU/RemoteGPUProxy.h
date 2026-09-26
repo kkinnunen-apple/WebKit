@@ -76,6 +76,8 @@ public:
     void deref() const final { return ThreadSafeRefCounted<RemoteGPUProxy>::deref(); }
 
     void paintToCanvas(WebCore::NativeImage&, const WebCore::IntSize&, WebCore::GraphicsContext&) final;
+    void copyExternalImageToTexture(WebCore::WebGPU::Queue&, const WebCore::WebGPU::ImageCopyExternalImage& source, const WebCore::WebGPU::ImageCopyTextureTagged& destination, const WebCore::WebGPU::Extent3D& copySize) final;
+    RefPtr<WebCore::NativeImage> nativeImage(WebCore::WebGPU::Queue&, WebCore::VideoFrame&) final;
     WebGPUIdentifier backing() const { return m_backing; }
     RefPtr<WebKit::Mesh> NODELETE createModelBacking(unsigned width, unsigned height, WebModel::ImageAsset&& diffuseTexture, WebModel::ImageAsset&& specularTexture, bool standardDynamicRange, CompletionHandler<void(Vector<MachSendRight>&&)>&&);
 

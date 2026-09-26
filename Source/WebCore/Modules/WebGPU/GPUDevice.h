@@ -95,7 +95,7 @@ class XRBinding;
 class GPUDevice : public RefCounted<GPUDevice>, public ActiveDOMObject, public EventTarget {
     WTF_MAKE_TZONE_ALLOCATED(GPUDevice);
 public:
-    static Ref<GPUDevice> create(ScriptExecutionContext*, Ref<WebGPU::Device>&&, String&& queueLabel, GPUAdapterInfo&);
+    static Ref<GPUDevice> create(ScriptExecutionContext*, Ref<WebGPU::Device>&&, Ref<WebGPU::GPU>&&, String&& queueLabel, GPUAdapterInfo&);
 
     static HashSet<GPUDevice*>& NODELETE instances() WTF_REQUIRES_LOCK(instancesLock());
     static Lock& NODELETE instancesLock() WTF_RETURNS_LOCK(s_instancesLock);
@@ -176,7 +176,7 @@ private:
     friend class GPUBuffer;
     friend class GPUTexture;
 
-    GPUDevice(ScriptExecutionContext*, Ref<WebGPU::Device>&&, String&& queueLabel, GPUAdapterInfo&);
+    GPUDevice(ScriptExecutionContext*, Ref<WebGPU::Device>&&, Ref<WebGPU::GPU>&&, String&& queueLabel, GPUAdapterInfo&);
 
     void didChangeBufferMemoryCost(GPUBuffer&);
     void didChangeTextureMemoryCost(GPUTexture&);
@@ -195,6 +195,8 @@ private:
     static Lock s_instancesLock;
 
     const UniqueRef<LostPromise> m_lostPromise;
+    // The root, which has the commands that take WebCore sources.
+    const Ref<WebGPU::GPU> m_gpu;
     const Ref<WebGPU::Device> m_backing;
     const Ref<GPUQueue> m_queue;
     RefPtr<GPUPipelineLayout> m_autoPipelineLayout;

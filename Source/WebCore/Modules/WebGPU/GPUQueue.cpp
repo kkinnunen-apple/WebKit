@@ -65,8 +65,9 @@
 
 namespace WebCore {
 
-GPUQueue::GPUQueue(Ref<WebGPU::Queue>&& backing, GPUDevice& device)
+GPUQueue::GPUQueue(Ref<WebGPU::Queue>&& backing, Ref<WebGPU::GPU>&& gpu, GPUDevice& device)
     : m_backing(WTF::move(backing))
+    , m_gpu(WTF::move(gpu))
     , m_device(device)
 {
 }
@@ -421,12 +422,12 @@ static void clampDimension(WebGPU::Extent3D& extent3D, size_t dimension, WebGPU:
     }
 }
 
-static void getImageBytesFromVideoFrame(WebGPU::Queue& backing, const RefPtr<VideoFrame>& videoFrame, WebGPU::Extent3D& backingCopySize, NOESCAPE const ImageDataCallback& callback)
+static void getImageBytesFromVideoFrame(WebGPU::GPU& gpu, WebGPU::Queue& backing, const RefPtr<VideoFrame>& videoFrame, WebGPU::Extent3D& backingCopySize, NOESCAPE const ImageDataCallback& callback)
 {
     if (!videoFrame)
         return callback({ }, 0, 0);
 
-    RefPtr<NativeImage> nativeImage = backing.getNativeImage(*videoFrame);
+    RefPtr<NativeImage> nativeImage = gpu.nativeImage(backing, *videoFrame);
     if (!nativeImage)
         return callback({ }, 0, 0);
 
@@ -479,10 +480,11 @@ static void clipTo8bitsPerChannel(std::span<const uint8_t> data, size_t bitsPerC
 }
 #endif
 
-static void imageBytesForSource(WebGPU::Queue& backing, const GPUImageCopyExternalImage& sourceDescriptor, const GPUImageCopyTextureTagged& destination, bool& needsYFlip, bool& needsPremultipliedAlpha, WebGPU::Extent3D& backingCopySize, NOESCAPE const ImageDataCallback& callback)
+static void imageBytesForSource(WebGPU::GPU& gpu, WebGPU::Queue& backing, const GPUImageCopyExternalImage& sourceDescriptor, const GPUImageCopyTextureTagged& destination, bool& needsYFlip, bool& needsPremultipliedAlpha, WebGPU::Extent3D& backingCopySize, NOESCAPE const ImageDataCallback& callback)
 {
     UNUSED_PARAM(needsYFlip);
     UNUSED_PARAM(needsPremultipliedAlpha);
+    UNUSED_PARAM(gpu);
     UNUSED_PARAM(backing);
     UNUSED_PARAM(backingCopySize);
     UNUSED_PARAM(destination);
@@ -661,13 +663,13 @@ static void imageBytesForSource(WebGPU::Queue& backing, const GPUImageCopyExtern
         [&]([[maybe_unused]] const Ref<HTMLVideoElement>& videoElement) -> ResultType {
 #if PLATFORM(COCOA)
             if (RefPtr player = videoElement->player(); player && player->isVideoPlayer())
-                return getImageBytesFromVideoFrame(backing, player->videoFrameForCurrentTime(), backingCopySize, callback);
+                return getImageBytesFromVideoFrame(gpu, backing, player->videoFrameForCurrentTime(), backingCopySize, callback);
 #endif
             return callback({ }, 0, 0);
         },
         [&]([[maybe_unused]] const Ref<WebCodecsVideoFrame>& webCodecsFrame) -> ResultType {
 #if PLATFORM(COCOA)
-            return getImageBytesFromVideoFrame(backing, webCodecsFrame->internalFrame(), backingCopySize, callback);
+            return getImageBytesFromVideoFrame(gpu, backing, webCodecsFrame->internalFrame(), backingCopySize, callback);
 #else
             return callback({ }, 0, 0);
 #endif
@@ -1399,14 +1401,14 @@ ExceptionOr<void> GPUQueue::copyExternalImageToTexture(ScriptExecutionContext& c
         // call is what covers the in-process backing, which has no proxy to do it.
         if (RefPtr sourceImageBuffer = gpuResidentSource.imageBuffer)
             sourceImageBuffer->flushDrawingContext();
-        m_backing->copyExternalImageToTexture(source.convertToBacking(WTF::move(gpuResidentSource.imageBuffer), gpuResidentSource.premultipliedAlpha, WTF::move(gpuResidentSource.videoSource)), destination.convertToBacking(), backingCopySize);
+        m_gpu->copyExternalImageToTexture(m_backing, source.convertToBacking(WTF::move(gpuResidentSource.imageBuffer), gpuResidentSource.premultipliedAlpha, WTF::move(gpuResidentSource.videoSource)), destination.convertToBacking(), backingCopySize);
         return { };
     }
 
     bool callbackScopeIsSafe { true };
     bool needsYFlip = source.flipY;
     bool needsPremultipliedAlpha = destination.premultipliedAlpha;
-    imageBytesForSource(m_backing.get(), source, destination, needsYFlip, needsPremultipliedAlpha, backingCopySize, [&](std::span<const uint8_t> imageBytes, size_t columns, size_t rows) {
+    imageBytesForSource(m_gpu.get(), m_backing.get(), source, destination, needsYFlip, needsPremultipliedAlpha, backingCopySize, [&](std::span<const uint8_t> imageBytes, size_t columns, size_t rows) {
         RELEASE_ASSERT(callbackScopeIsSafe);
         auto destinationTexture = destination.texture;
         auto sizeInBytes = imageBytes.size();

@@ -225,7 +225,8 @@ void RemoteQueue::copyExternalImageToTexture(
         convertedSource->imageBuffer = WTF::move(sourceImageBuffer);
     }
 
-    protect(m_backing)->copyExternalImageToTexture(*convertedSource, *convertedDestination, copySize);
+    if (RefPtr gpu = protect(m_gpu)->backing())
+        gpu->copyExternalImageToTexture(protect(m_backing), *convertedSource, *convertedDestination, copySize);
 }
 
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
@@ -283,7 +284,8 @@ void RemoteQueue::copyExternalImageFromVideoFrameToTexture(
     if (!convertedSource || !convertedDestination)
         return;
 
-    protect(m_backing)->copyExternalImageToTexture(*convertedSource, *convertedDestination, copySize);
+    if (RefPtr gpu = protect(m_gpu)->backing())
+        gpu->copyExternalImageToTexture(protect(m_backing), *convertedSource, *convertedDestination, copySize);
 }
 #endif
 

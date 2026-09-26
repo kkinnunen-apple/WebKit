@@ -38,6 +38,7 @@
 #include "RemoteGPUProxyMessages.h"
 #include "RemoteMeshProxy.h"
 #include "RemotePresentationContextProxy.h"
+#include "RemoteQueueProxy.h"
 #include "RemoteRenderingBackendProxy.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebPage.h"
@@ -278,6 +279,17 @@ RefPtr<WebCore::WebGPU::CompositorIntegration> RemoteGPUProxy::createCompositorI
         return nullptr;
 
     return WebGPU::RemoteCompositorIntegrationProxy::create(*this, m_convertToBackingContext, identifier);
+}
+
+void RemoteGPUProxy::copyExternalImageToTexture(WebCore::WebGPU::Queue& queue, const WebCore::WebGPU::ImageCopyExternalImage& source, const WebCore::WebGPU::ImageCopyTextureTagged& destination, const WebCore::WebGPU::Extent3D& copySize)
+{
+    // Every WebCore::WebGPU::Queue in the Web Process is a RemoteQueueProxy.
+    static_cast<WebGPU::RemoteQueueProxy&>(queue).copyExternalImageToTexture(source, destination, copySize);
+}
+
+RefPtr<WebCore::NativeImage> RemoteGPUProxy::nativeImage(WebCore::WebGPU::Queue& queue, WebCore::VideoFrame& videoFrame)
+{
+    return static_cast<WebGPU::RemoteQueueProxy&>(queue).getNativeImage(videoFrame);
 }
 
 void RemoteGPUProxy::paintToCanvas(WebCore::NativeImage&, const WebCore::IntSize&, WebCore::GraphicsContext&)

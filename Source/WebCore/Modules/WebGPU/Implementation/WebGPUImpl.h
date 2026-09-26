@@ -87,6 +87,8 @@ public:
     virtual ~GPUImpl();
 
     void paintToCanvas(WebCore::NativeImage&, const WebCore::IntSize&, WebCore::GraphicsContext&) final;
+    void copyExternalImageToTexture(Queue&, const ImageCopyExternalImage& source, const ImageCopyTextureTagged& destination, const Extent3D& copySize) final;
+    RefPtr<WebCore::NativeImage> nativeImage(Queue&, WebCore::VideoFrame&) final;
 
 private:
     friend class DowncastConvertToBackingContext;
