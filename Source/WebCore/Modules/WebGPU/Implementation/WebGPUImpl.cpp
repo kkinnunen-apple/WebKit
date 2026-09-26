@@ -172,8 +172,7 @@ bool GPUImpl::isValid(const ComputePassEncoder& computePassEncoder) const
 
 bool GPUImpl::isValid(const ComputePipeline& computePipeline) const
 {
-    WGPUComputePipeline wgpuComputePipeline = m_convertToBackingContext.get().convertToBacking(computePipeline);
-    return wgpuComputePipelineIsValid(wgpuComputePipeline);
+    return computePipeline.isValid();
 }
 
 bool GPUImpl::isValid(const Device& device) const

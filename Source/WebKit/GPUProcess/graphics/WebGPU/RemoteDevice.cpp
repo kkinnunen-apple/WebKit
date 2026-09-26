@@ -302,7 +302,7 @@ void RemoteDevice::createComputePipelineWithPipelineLayoutFromPipeline(const Web
     auto convertedDescriptor = objectHeap->convertFromBacking(descriptor, true);
     MESSAGE_CHECK_COMPLETION(convertedDescriptor, completionHandler(false));
 
-    WeakPtr<WebCore::WebGPU::ComputePipeline> pipelineToReplace = objectHeap->convertComputePipelineFromBacking(pipelineToReplaceIdentifier);
+    RefPtr pipelineToReplace = objectHeap->convertComputePipelineFromBacking(pipelineToReplaceIdentifier);
     MESSAGE_CHECK_COMPLETION(pipelineToReplace, completionHandler(false));
 
     m_backing->createComputePipelineWithPipelineLayoutFromPipelineAsync(*convertedDescriptor, protect(*pipelineToReplace), [completionHandler = WTF::move(completionHandler), objectHeap, streamConnection = protect(m_streamConnection), gpu = protect(m_gpu), identifier](RefPtr<WebCore::WebGPU::ComputePipeline>&& computePipeline) mutable {

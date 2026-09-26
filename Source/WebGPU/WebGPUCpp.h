@@ -1263,6 +1263,7 @@ class ComputePipeline : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<C
 public:
     virtual ~ComputePipeline() = default;
 
+    virtual Ref<BindGroupLayout> getBindGroupLayout(uint32_t index) = 0;
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 

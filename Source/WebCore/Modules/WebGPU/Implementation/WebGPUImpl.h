@@ -32,6 +32,7 @@
 #include "WebGPUBindGroupLayout.h"
 #include "WebGPUBuffer.h"
 #include "WebGPUCommandBuffer.h"
+#include "WebGPUComputePipeline.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUExternalTexture.h"
 #include "WebGPUPipelineLayout.h"
@@ -61,7 +62,6 @@ class Adapter;
 class CompositorIntegration;
 class CommandEncoder;
 class ComputePassEncoder;
-class ComputePipeline;
 class ConvertToBackingContext;
 class Device;
 class PresentationContext;

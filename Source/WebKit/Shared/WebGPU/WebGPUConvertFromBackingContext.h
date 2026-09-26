@@ -48,6 +48,7 @@
 #include <WebCore/WebGPUColor.h>
 #include <WebCore/WebGPUCommandBuffer.h>
 #include <WebCore/WebGPUComputePassTimestampWrites.h>
+#include <WebCore/WebGPUComputePipeline.h>
 #include <WebCore/WebGPUError.h>
 #include <WebCore/WebGPUExtent3D.h>
 #include <WebCore/WebGPUExternalTexture.h>
@@ -93,7 +94,6 @@ struct CommandEncoderDescriptor;
 class CompositorIntegration;
 struct ComputePassDescriptor;
 class ComputePassEncoder;
-class ComputePipeline;
 struct ComputePipelineDescriptor;
 struct DepthStencilState;
 class Device;
@@ -276,7 +276,7 @@ public:
     virtual WeakPtr<WebCore::WebGPU::CommandEncoder> convertCommandEncoderFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::CompositorIntegration> convertCompositorIntegrationFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::ComputePassEncoder> convertComputePassEncoderFromBacking(WebGPUIdentifier) = 0;
-    virtual WeakPtr<WebCore::WebGPU::ComputePipeline> convertComputePipelineFromBacking(WebGPUIdentifier) = 0;
+    virtual RefPtr<WebCore::WebGPU::ComputePipeline> convertComputePipelineFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::Device> convertDeviceFromBacking(WebGPUIdentifier) = 0;
     virtual ThreadSafeWeakPtr<WebCore::WebGPU::ExternalTexture> convertExternalTextureFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::PipelineLayout> convertPipelineLayoutFromBacking(WebGPUIdentifier) = 0;

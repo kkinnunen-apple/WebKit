@@ -51,6 +51,10 @@ public:
     RemoteDeviceProxy& parent() const { return m_parent; }
     RemoteGPUProxy& root() { return m_parent->root(); }
 
+    Ref<WebCore::WebGPU::BindGroupLayout> getBindGroupLayout(uint32_t index) final;
+    void setLabel(String&&) final;
+    bool isValid() const final;
+
 private:
     friend class DowncastConvertToBackingContext;
 
@@ -61,8 +65,6 @@ private:
     RemoteComputePipelineProxy& operator=(const RemoteComputePipelineProxy&) = delete;
     RemoteComputePipelineProxy& operator=(RemoteComputePipelineProxy&&) = delete;
 
-    bool isRemoteComputePipelineProxy() const final { return true; }
-
     WebGPUIdentifier backing() const { return m_backing; }
     
     template<typename T>
@@ -71,19 +73,11 @@ private:
         return protect(root().streamClientConnection())->send(std::forward<T>(message), backing());
     }
 
-    Ref<WebCore::WebGPU::BindGroupLayout> getBindGroupLayout(uint32_t index) final;
-
-    void setLabelInternal(const String&) final;
-
     WebGPUIdentifier m_backing;
     const Ref<ConvertToBackingContext> m_convertToBackingContext;
     const Ref<RemoteDeviceProxy> m_parent;
 };
 
 } // namespace WebKit::WebGPU
-
-SPECIALIZE_TYPE_TRAITS_BEGIN(WebKit::WebGPU::RemoteComputePipelineProxy)
-    static bool isType(const WebCore::WebGPU::ComputePipeline& pipeline) { return pipeline.isRemoteComputePipelineProxy(); }
-SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // ENABLE(GPU_PROCESS)

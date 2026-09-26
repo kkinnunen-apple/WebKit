@@ -29,6 +29,7 @@
 #include <WebCore/WebGPUBindGroupLayout.h>
 #include <WebCore/WebGPUBuffer.h>
 #include <WebCore/WebGPUCommandBuffer.h>
+#include <WebCore/WebGPUComputePipeline.h>
 #include <WebCore/WebGPUExternalTexture.h>
 #include <WebCore/WebGPUPipelineLayout.h>
 #include <WebCore/WebGPUQuerySet.h>
@@ -56,7 +57,6 @@ class Adapter;
 class CommandEncoder;
 class CompositorIntegration;
 class ComputePassEncoder;
-class ComputePipeline;
 class Device;
 class GPU;
 class GPUImpl;

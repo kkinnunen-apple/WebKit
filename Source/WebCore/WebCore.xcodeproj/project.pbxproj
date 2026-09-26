@@ -10112,10 +10112,8 @@
 		1CFAE2D12A4D7A180004AE37 /* WebGPUComputePassEncoderImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUComputePassEncoderImpl.h; sourceTree = "<group>"; };
 		1CFAE2D22A4D7A190004AE37 /* WebGPUQueueImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUQueueImpl.cpp; sourceTree = "<group>"; };
 		1CFAE2D32A4D7A190004AE37 /* WebGPUQueueImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUQueueImpl.h; sourceTree = "<group>"; };
-		1CFAE2D42A4D7A190004AE37 /* WebGPUComputePipelineImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUComputePipelineImpl.cpp; sourceTree = "<group>"; };
 		1CFAE2D52A4D7A190004AE37 /* WebGPUCompositorIntegrationImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUCompositorIntegrationImpl.h; sourceTree = "<group>"; };
 		1CFAE2D62A4D7A1A0004AE37 /* WebGPUPtr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUPtr.h; sourceTree = "<group>"; };
-		1CFAE2D72A4D7A1A0004AE37 /* WebGPUComputePipelineImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUComputePipelineImpl.h; sourceTree = "<group>"; };
 		1CFAE2D82A4D7A1A0004AE37 /* WebGPUPresentationContextImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUPresentationContextImpl.h; sourceTree = "<group>"; };
 		1CFAE2D92A4D7A1B0004AE37 /* WebGPUDowncastConvertToBackingContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUDowncastConvertToBackingContext.h; sourceTree = "<group>"; };
 		1CFAE2DA2A4D7A1B0004AE37 /* WebGPURenderPassEncoderImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPURenderPassEncoderImpl.h; sourceTree = "<group>"; };
@@ -26827,8 +26825,6 @@
 				1CFAE2D52A4D7A190004AE37 /* WebGPUCompositorIntegrationImpl.h */,
 				1CFAE2CD2A4D7A170004AE37 /* WebGPUComputePassEncoderImpl.cpp */,
 				1CFAE2D12A4D7A180004AE37 /* WebGPUComputePassEncoderImpl.h */,
-				1CFAE2D42A4D7A190004AE37 /* WebGPUComputePipelineImpl.cpp */,
-				1CFAE2D72A4D7A1A0004AE37 /* WebGPUComputePipelineImpl.h */,
 				1CFAE2F22A4D7A220004AE37 /* WebGPUConvertToBackingContext.cpp */,
 				1CFAE3002A4D7A260004AE37 /* WebGPUConvertToBackingContext.h */,
 				1CFAE2FA2A4D7A240004AE37 /* WebGPUCreateImpl.cpp */,

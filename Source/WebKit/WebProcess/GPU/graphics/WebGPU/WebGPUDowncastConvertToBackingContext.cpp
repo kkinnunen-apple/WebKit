@@ -109,7 +109,7 @@ WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::ComputePipeline& computePipeline)
 {
-    return downcast<RemoteComputePipelineProxy>(computePipeline).backing();
+    return static_cast<const RemoteComputePipelineProxy&>(computePipeline).backing();
 }
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::Device& device)
