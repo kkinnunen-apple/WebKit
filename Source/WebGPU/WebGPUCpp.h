@@ -51,6 +51,13 @@
 #include <wtf/Vector.h>
 #include <wtf/text/WTFString.h>
 
+#if PLATFORM(COCOA)
+#include <wtf/RetainPtr.h>
+
+typedef struct __CVBuffer* CVPixelBufferRef;
+typedef struct __IOSurface* IOSurfaceRef;
+#endif
+
 namespace WebGPU {
 
 enum class AddressMode : uint8_t {
@@ -223,6 +230,13 @@ enum class PipelineErrorReason : uint8_t {
 enum class PowerPreference : bool {
     LowPower,
     HighPerformance,
+};
+
+enum class PredefinedColorSpace : uint8_t {
+    SRGB,
+    SRGBLinear,
+    DisplayP3,
+    DisplayP3Linear,
 };
 
 enum class PrimitiveTopology : uint8_t {
@@ -492,6 +506,14 @@ enum class VertexStepMode : uint8_t {
     Instance,
 };
 
+// The clockwise rotation that presents a video frame.
+enum class VideoFrameRotation : uint8_t {
+    None,
+    Right,
+    UpsideDown,
+    Left,
+};
+
 enum class XREye : uint8_t {
     None,
     Left,
@@ -502,6 +524,16 @@ struct Extent3D {
     uint32_t width { 0 };
     uint32_t height { 1 };
     uint32_t depthOrArrayLayers { 1 };
+};
+
+struct Extent2D {
+    uint32_t width { 0 };
+    uint32_t height { 0 };
+};
+
+struct Origin2D {
+    uint32_t x { 0 };
+    uint32_t y { 0 };
 };
 
 struct Origin3D {
@@ -750,6 +782,73 @@ struct DeviceDescriptor {
     std::span<const FeatureName> requiredFeatures; // Borrowed for the duration of the call.
     std::optional<Limits> requiredLimits; // std::nullopt: the default limits.
 } SWIFT_NONESCAPABLE;
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpucanvasconfiguration, with the size of the canvas, which
+// the canvas knows and the configuration does not.
+struct CanvasConfiguration {
+    Ref<Device> device;
+    TextureFormat format { TextureFormat::Bgra8unorm };
+    OptionSet<TextureUsage> usage { TextureUsage::RenderAttachment };
+    std::span<const TextureFormat> viewFormats; // Borrowed for the duration of the call.
+    PredefinedColorSpace colorSpace { PredefinedColorSpace::SRGB };
+    CanvasToneMappingMode toneMappingMode { CanvasToneMappingMode::Standard };
+    CanvasAlphaMode compositingAlphaMode { CanvasAlphaMode::Opaque };
+    bool reportValidationErrors { true };
+    uint32_t width { 0 };
+    uint32_t height { 0 };
+} SWIFT_NONESCAPABLE;
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpucopyexternalimagedestinfo
+struct ImageCopyTextureTagged {
+    Ref<Texture> texture;
+    uint32_t mipLevel { 0 };
+    Origin3D origin;
+    TextureAspect aspect { TextureAspect::All };
+    PredefinedColorSpace colorSpace { PredefinedColorSpace::SRGB };
+    bool premultipliedAlpha { false };
+};
+
+#if PLATFORM(COCOA)
+// https://gpuweb.github.io/gpuweb/#dictdef-gpuexternaltexturedescriptor, with the pixel buffer of the
+// video source.
+struct ExternalTextureDescriptor {
+    String label;
+    RetainPtr<CVPixelBufferRef> pixelBuffer;
+    PredefinedColorSpace colorSpace { PredefinedColorSpace::SRGB };
+    // The size the source presents the frame at, which the pixel buffer does not carry. Zero when
+    // the source could not say, and then the decoded size of the frame stands in for it.
+    Extent2D visibleSize;
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpucopyexternalimagesourceinfo, with the IOSurface of an
+// image or canvas, or the pixel buffer of a video frame, as the source. Exactly one of them is set.
+struct ImageCopyExternalImage {
+    RetainPtr<IOSurfaceRef> source;
+    // The format of the single plane of the IOSurface. An accelerated 2D canvas can be backed by it.
+    std::optional<TextureFormat> sourceFormat;
+    // The logical extent of the IOSurface, which may be larger.
+    Extent2D sourceSize;
+    // A video frame carries its own extent, crop and primaries, and it is treated as opaque.
+    RetainPtr<CVPixelBufferRef> pixelBuffer;
+    // The display transform of the frame: a horizontal mirror, then a clockwise rotation.
+    VideoFrameRotation pixelBufferRotation { VideoFrameRotation::None };
+    bool pixelBufferIsMirrored { false };
+    Origin2D origin;
+    bool flipY { false };
+    // False when the alpha channel of the source carries no data, as for an opaque canvas.
+    bool hasAlpha { true };
+    bool premultipliedAlpha { true };
+    PredefinedColorSpace colorSpace { PredefinedColorSpace::SRGB };
+};
+#endif
+
+// https://immersive-web.github.io/WebXR-WebGPU-Binding/#dictdef-xrgpuprojectionlayerinit
+struct XRProjectionLayerDescriptor {
+    TextureFormat colorFormat { TextureFormat::Bgra8unorm };
+    std::optional<TextureFormat> depthStencilFormat;
+    OptionSet<TextureUsage> textureUsage { TextureUsage::RenderAttachment };
+    double scaleFactor { 1 };
+};
 
 // https://gpuweb.github.io/gpuweb/#dictdef-gpurenderbundleencoderdescriptor
 struct RenderBundleEncoderDescriptor {
