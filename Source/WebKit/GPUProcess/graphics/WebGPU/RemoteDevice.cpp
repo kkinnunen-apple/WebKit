@@ -235,7 +235,8 @@ void RemoteDevice::updateExternalTexture(WebKit::WebGPUIdentifier externalTextur
 void RemoteDevice::createBindGroupLayout(const WebGPU::BindGroupLayoutDescriptor& descriptor, WebGPUIdentifier identifier)
 {
     Ref objectHeap = m_objectHeap.get();
-    auto convertedDescriptor = objectHeap->convertFromBacking(descriptor);
+    Vector<WebCore::WebGPU::BindGroupLayoutEntry> entries;
+    auto convertedDescriptor = objectHeap->convertFromBacking(descriptor, entries);
     MESSAGE_CHECK(convertedDescriptor);
 
     auto bindGroupLayout = m_backing->createBindGroupLayout(*convertedDescriptor);

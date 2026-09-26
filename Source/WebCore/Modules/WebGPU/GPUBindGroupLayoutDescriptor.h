@@ -34,13 +34,15 @@
 namespace WebCore {
 
 struct GPUBindGroupLayoutDescriptor : public GPUObjectDescriptorBase {
-    WebGPU::BindGroupLayoutDescriptor convertToBacking() const
+    // The descriptor borrows the entries from entriesStorage.
+    WebGPU::BindGroupLayoutDescriptor convertToBacking(Vector<WebGPU::BindGroupLayoutEntry>& entriesStorage) const
     {
+        entriesStorage = entries.map([](auto& entry) {
+            return entry.convertToBacking();
+        });
         return {
-            { label },
-            entries.map([](auto& entry) {
-                return entry.convertToBacking();
-            }),
+            .label = label,
+            .entries = entriesStorage.span(),
         };
     }
 

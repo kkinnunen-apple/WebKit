@@ -109,7 +109,6 @@ Modules/WebGPU/GPUVertexBufferLayout.cpp
 Modules/WebGPU/GPUVertexState.cpp
 Modules/WebGPU/Implementation/WebGPUAdapterImpl.cpp
 Modules/WebGPU/Implementation/WebGPUBindGroupImpl.cpp
-Modules/WebGPU/Implementation/WebGPUBindGroupLayoutImpl.cpp
 Modules/WebGPU/Implementation/WebGPUCommandBufferImpl.cpp
 Modules/WebGPU/Implementation/WebGPUCommandEncoderImpl.cpp
 Modules/WebGPU/Implementation/WebGPUCompositorIntegrationImpl.cpp

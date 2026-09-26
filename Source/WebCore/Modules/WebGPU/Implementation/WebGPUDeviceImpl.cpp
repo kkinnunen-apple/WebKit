@@ -30,8 +30,8 @@
 
 #include "WebGPUBindGroupDescriptor.h"
 #include "WebGPUBindGroupImpl.h"
+#include "WebGPUBindGroupLayout.h"
 #include "WebGPUBindGroupLayoutDescriptor.h"
-#include "WebGPUBindGroupLayoutImpl.h"
 #include "WebGPUBuffer.h"
 #include "WebGPUBufferDescriptor.h"
 #include "WebGPUCommandEncoderDescriptor.h"
@@ -244,7 +244,7 @@ RefPtr<BindGroupLayout> DeviceImpl::createBindGroupLayout(const BindGroupLayoutD
         .entries = backingEntries.size() ? backingEntries.span().data() : nullptr,
     };
 
-    return BindGroupLayoutImpl::create(adoptWebGPU(wgpuDeviceCreateBindGroupLayout(m_backing.get(), &backingDescriptor)), m_convertToBackingContext);
+    return adoptRef(::WebGPU::fromAPI(wgpuDeviceCreateBindGroupLayout(m_backing.get(), &backingDescriptor)));
 }
 
 RefPtr<PipelineLayout> DeviceImpl::createPipelineLayout(const PipelineLayoutDescriptor& descriptor)

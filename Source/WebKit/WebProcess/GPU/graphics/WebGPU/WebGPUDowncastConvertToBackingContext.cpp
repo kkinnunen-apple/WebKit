@@ -74,7 +74,7 @@ WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::BindGroupLayout& bindGroupLayout)
 {
-    return downcast<RemoteBindGroupLayoutProxy>(bindGroupLayout).backing();
+    return static_cast<const RemoteBindGroupLayoutProxy&>(bindGroupLayout).backing();
 }
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::Buffer& buffer)

@@ -28,8 +28,9 @@
 
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
-#include "WebGPUBindGroupLayoutImpl.h"
+#include "WebGPUBindGroupLayout.h"
 #include "WebGPUConvertToBackingContext.h"
+#include <WebGPU/WebGPUCppBridge.h>
 #include <WebGPU/WebGPUExt.h>
 #include <wtf/TZoneMallocInlines.h>
 
@@ -48,7 +49,7 @@ RenderPipelineImpl::~RenderPipelineImpl() = default;
 Ref<BindGroupLayout> RenderPipelineImpl::getBindGroupLayout(uint32_t index)
 {
     // "A new GPUBindGroupLayout wrapper is returned each time"
-    return BindGroupLayoutImpl::create(adoptWebGPU(wgpuRenderPipelineGetBindGroupLayout(m_backing.get(), index)), m_convertToBackingContext);
+    return adoptRef(::WebGPU::fromAPI(wgpuRenderPipelineGetBindGroupLayout(m_backing.get(), index)));
 }
 
 void RenderPipelineImpl::setLabelInternal(const String& label)

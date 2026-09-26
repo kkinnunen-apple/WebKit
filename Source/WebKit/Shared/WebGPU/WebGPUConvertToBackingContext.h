@@ -37,6 +37,8 @@
 #include "WebGPUOrigin3D.h"
 #include "WebGPURenderPassTimestampWrites.h"
 #include "WebGPUTextureViewDescriptor.h"
+#include <WebCore/WebGPUBindGroupLayout.h>
+#include <WebCore/WebGPUBindGroupLayoutDescriptor.h>
 #include <WebCore/WebGPUBlendComponent.h>
 #include <WebCore/WebGPUBlendState.h>
 #include <WebCore/WebGPUBuffer.h>
@@ -71,9 +73,6 @@ class Adapter;
 class BindGroup;
 struct BindGroupDescriptor;
 struct BindGroupEntry;
-class BindGroupLayout;
-struct BindGroupLayoutDescriptor;
-struct BindGroupLayoutEntry;
 struct BufferBinding;
 struct CanvasConfiguration;
 struct ColorTargetState;
