@@ -111,12 +111,10 @@ Vector<MachSendRight> CompositorIntegrationImpl::recreateRenderBuffers(int width
             m_renderBuffers.append(makeUniqueRefFromNonNullUniquePtr(WTF::move(buffer)));
     }
 
-    {
-        auto renderBuffers = adoptCF(CFArrayCreateMutable(kCFAllocatorDefault, m_renderBuffers.size(), &kCFTypeArrayCallBacks));
-        for (auto& ioSurface : m_renderBuffers)
-            CFArrayAppendValue(renderBuffers.get(), ioSurface->surface());
-        m_renderBuffersWereRecreatedCallback(static_cast<CFArrayRef>(renderBuffers));
-    }
+    auto renderBuffers = m_renderBuffers.map([](auto& ioSurface) {
+        return ioSurface->surface();
+    });
+    m_renderBuffersWereRecreatedCallback(renderBuffers.span());
 
     return m_renderBuffers.map([](const auto& renderBuffer) {
         return renderBuffer->createSendRight();

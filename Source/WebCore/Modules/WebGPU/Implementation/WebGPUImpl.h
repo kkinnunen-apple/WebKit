@@ -79,7 +79,7 @@ public:
     void ref() const final { RefCounted::ref(); }
     void deref() const final { RefCounted::deref(); }
 
-    static Ref<GPUImpl> create(WebGPUPtr<WGPUInstance>&& instance, ConvertToBackingContext& convertToBackingContext)
+    static Ref<GPUImpl> create(Ref<::WebGPU::Instance>&& instance, ConvertToBackingContext& convertToBackingContext)
     {
         return adoptRef(*new GPUImpl(WTF::move(instance), convertToBackingContext));
     }
@@ -98,14 +98,13 @@ public:
 private:
     friend class DowncastConvertToBackingContext;
 
-    GPUImpl(WebGPUPtr<WGPUInstance>&&, ConvertToBackingContext&);
+    GPUImpl(Ref<::WebGPU::Instance>&&, ConvertToBackingContext&);
 
     GPUImpl(const GPUImpl&) = delete;
     GPUImpl(GPUImpl&&) = delete;
     GPUImpl& operator=(const GPUImpl&) = delete;
     GPUImpl& operator=(GPUImpl&&) = delete;
 
-    WGPUInstance backing() const { return m_backing.get(); }
     bool isGPUImpl() const final { return true; }
 
     void requestAdapter(const RequestAdapterOptions&, CompletionHandler<void(RefPtr<Adapter>&&)>&&) final;
@@ -141,7 +140,7 @@ private:
     bool isValid(const XRProjectionLayer&) const final;
     bool isValid(const XRView&) const final;
 
-    WebGPUPtr<WGPUInstance> m_backing;
+    const Ref<::WebGPU::Instance> m_backing;
     const Ref<ConvertToBackingContext> m_convertToBackingContext;
 };
 

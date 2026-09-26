@@ -77,6 +77,7 @@
 #include <WebCore/WebGPURenderPassEncoder.h>
 #include <WebCore/WebGPURenderPassTimestampWrites.h>
 #include <WebCore/WebGPURenderPipeline.h>
+#include <WebCore/WebGPURequestAdapterOptions.h>
 #include <WebCore/WebGPUSampler.h>
 #include <WebCore/WebGPUSamplerBindingLayout.h>
 #include <WebCore/WebGPUShaderModule.h>
@@ -122,7 +123,6 @@ struct ProgrammableStage;
 struct RenderBundleEncoderDescriptor;
 struct RenderPassLayout;
 struct RenderPipelineDescriptor;
-struct RequestAdapterOptions;
 struct ShaderModuleCompilationHint;
 struct ShaderModuleDescriptor;
 class SupportedFeatures;
@@ -134,7 +134,6 @@ class XRBinding;
 class XRProjectionLayer;
 class XRSubImage;
 class XRView;
-
 } // namespace WebCore::WebGPU
 
 namespace WebKit::WebGPU {

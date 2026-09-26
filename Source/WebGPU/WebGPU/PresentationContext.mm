@@ -40,6 +40,11 @@ Ref<PresentationContext> PresentationContext::create(const WGPUSurfaceDescriptor
     return PresentationContextIOSurface::create(descriptor, instance);
 }
 
+Ref<PresentationContext> PresentationContext::create(const WebGPU::PresentationContextDescriptor& descriptor, const Instance& instance)
+{
+    return PresentationContextIOSurface::create(descriptor, instance);
+}
+
 PresentationContext::PresentationContext() = default;
 
 PresentationContext::~PresentationContext() = default;

@@ -109,11 +109,6 @@ WGPUExternalTexture DowncastConvertToBackingContext::convertToBacking(const Exte
     return ::WebGPU::toAPI(const_cast<ExternalTexture&>(externalTexture));
 }
 
-WGPUInstance DowncastConvertToBackingContext::convertToBacking(const GPU& gpu)
-{
-    return downcast<GPUImpl>(gpu).backing();
-}
-
 WGPUPipelineLayout DowncastConvertToBackingContext::convertToBacking(const PipelineLayout& pipelineLayout)
 {
     return ::WebGPU::toAPI(const_cast<PipelineLayout&>(pipelineLayout));

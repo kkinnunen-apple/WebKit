@@ -50,7 +50,7 @@ namespace WebCore::WebGPU {
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(GPUImpl);
 
-GPUImpl::GPUImpl(WebGPUPtr<WGPUInstance>&& instance, ConvertToBackingContext& convertToBackingContext)
+GPUImpl::GPUImpl(Ref<::WebGPU::Instance>&& instance, ConvertToBackingContext& convertToBackingContext)
     : m_backing(WTF::move(instance))
     , m_convertToBackingContext(convertToBackingContext)
 {
@@ -58,65 +58,26 @@ GPUImpl::GPUImpl(WebGPUPtr<WGPUInstance>&& instance, ConvertToBackingContext& co
 
 GPUImpl::~GPUImpl() = default;
 
-static void requestAdapterCallback(WGPURequestAdapterStatus status, WGPUAdapter adapter, const char* message, void* userdata)
-{
-    auto block = reinterpret_cast<void(^)(WGPURequestAdapterStatus, WGPUAdapter, const char*)>(userdata);
-    block(status, adapter, message);
-    Block_release(block); // Block_release is matched with Block_copy below in GPUImpl::requestAdapter().
-}
-
 void GPUImpl::requestAdapter(const RequestAdapterOptions& options, CompletionHandler<void(RefPtr<Adapter>&&)>&& callback)
 {
-    Ref convertToBackingContext = m_convertToBackingContext;
-
-    WGPURequestAdapterOptions backingOptions {
-        .compatibleSurface = nullptr,
+    auto backingOptions = options;
 #if CPU(X86_64)
-        .powerPreference = WGPUPowerPreference_HighPerformance,
-#else
-        .powerPreference = options.powerPreference ? convertToBackingContext->convertToBacking(*options.powerPreference) : static_cast<WGPUPowerPreference>(WGPUPowerPreference_Undefined),
+    backingOptions.powerPreference = PowerPreference::HighPerformance;
 #endif
-        .backendType = WGPUBackendType_Metal,
-        .forceFallbackAdapter = options.forceFallbackAdapter,
-        .xrCompatible = options.xrCompatible,
-    };
-
-    auto blockPtr = makeBlockPtr([callback = WTF::move(callback)](WGPURequestAdapterStatus status, WGPUAdapter adapter, const char*) mutable {
-        if (status == WGPURequestAdapterStatus_Success)
-            callback(adoptRef(::WebGPU::fromAPI(adapter)));
-        else
-            callback(nullptr);
-    });
-    wgpuInstanceRequestAdapter(m_backing.get(), &backingOptions, &requestAdapterCallback, Block_copy(blockPtr.get())); // Block_copy is matched with Block_release above in requestAdapterCallback().
-}
-
-static WTF::Function<void(CompletionHandler<void()>&&)> convert(WGPUOnSubmittedWorkScheduledCallback&& onSubmittedWorkScheduledCallback)
-{
-    return [onSubmittedWorkScheduledCallback = makeBlockPtr(WTF::move(onSubmittedWorkScheduledCallback))](CompletionHandler<void()>&& completionHandler) {
-        onSubmittedWorkScheduledCallback(makeBlockPtr(WTF::move(completionHandler)).get());
-    };
+    m_backing->requestAdapter(backingOptions, WTF::move(callback));
 }
 
 RefPtr<PresentationContext> GPUImpl::createPresentationContext(const PresentationContextDescriptor& presentationContextDescriptor)
 {
     Ref compositorIntegration { m_convertToBackingContext->convertToBacking(protect(presentationContextDescriptor.compositorIntegration)) };
 
-    auto registerCallbacksBlock = makeBlockPtr([&](WGPURenderBuffersWereRecreatedBlockCallback renderBuffersWereRecreatedCallback, WGPUOnSubmittedWorkScheduledCallback onSubmittedWorkScheduledCallback) {
-        compositorIntegration->registerCallbacks(makeBlockPtr(WTF::move(renderBuffersWereRecreatedCallback)), convert(WTF::move(onSubmittedWorkScheduledCallback)));
+    RefPtr result = m_backing->createPresentationContext({
+        .registerCompositorIntegration = [&](auto&& renderBuffersWereRecreated, auto&& onSubmittedWorkScheduled) {
+            compositorIntegration->registerCallbacks(WTF::move(renderBuffersWereRecreated), WTF::move(onSubmittedWorkScheduled));
+        },
     });
-
-    WGPUSurfaceDescriptorCocoaCustomSurface cocoaDescriptor {
-        .chain = { nullptr, static_cast<WGPUSType>(WGPUSTypeExtended_SurfaceDescriptorCocoaSurfaceBacking) },
-        .compositorIntegrationRegister = registerCallbacksBlock.get(),
-    };
-
-    WGPUSurfaceDescriptor surfaceDescriptor {
-        .nextInChain = &cocoaDescriptor.chain,
-        .label = { },
-    };
-
-    Ref<PresentationContext> result = adoptRef(::WebGPU::fromAPI(wgpuInstanceCreateSurface(m_backing.get(), &surfaceDescriptor)));
-    compositorIntegration->setPresentationContext(result);
+    if (result)
+        compositorIntegration->setPresentationContext(*result);
     return result;
 }
 
