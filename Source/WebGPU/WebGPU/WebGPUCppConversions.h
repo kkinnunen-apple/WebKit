@@ -31,6 +31,7 @@
 #import <WebGPU/WebGPUExt.h>
 #import <optional>
 #import <type_traits>
+#import <wtf/IndexedRange.h>
 #import <wtf/OptionSet.h>
 #import <wtf/StdLibExtras.h>
 #import <wtf/Vector.h>
@@ -2209,6 +2210,232 @@ inline Vector<WGPUCompilationMessage> toAPI(const WebGPU::CompilationInfo& compi
             .utf16Length = message.length,
         };
     });
+}
+
+// A null entry point is the only entry point of the module for the stage. A non-null one names
+// an entry point even if it does not convert to a string.
+inline String entryPointFromAPI(const char* entryPoint)
+{
+    if (!entryPoint)
+        return { };
+    auto result = fromAPI(entryPoint);
+    return result.isNull() ? emptyString() : result;
+}
+
+inline std::optional<WebGPU::ProgrammableStage> programmableStageFromAPI(WGPUShaderModule module, const char* entryPoint, std::span<const WGPUConstantEntry> constants, Vector<WebGPU::ConstantEntry>& constantsStorage LIFETIME_BOUND)
+{
+    if (!module)
+        return std::nullopt;
+
+    constantsStorage = WTF::map(constants, [](auto& constant) {
+        return WebGPU::ConstantEntry { .key = fromAPI(constant.key), .value = constant.value };
+    });
+    return WebGPU::ProgrammableStage {
+        .module = WebGPU::fromAPI(module),
+        .entryPoint = entryPointFromAPI(entryPoint),
+        .constants = constantsStorage.span(),
+    };
+}
+
+struct ComputePipelineDescriptorStorage {
+    Vector<WebGPU::ConstantEntry> constants;
+};
+
+inline std::optional<WebGPU::ComputePipelineDescriptor> fromAPI(const WGPUComputePipelineDescriptor& descriptor, ComputePipelineDescriptorStorage& storage LIFETIME_BOUND)
+{
+    auto compute = programmableStageFromAPI(descriptor.compute.module, descriptor.compute.entryPoint, unsafeMakeSpan(descriptor.compute.constants, descriptor.compute.constantCount), storage.constants);
+    if (!compute)
+        return std::nullopt;
+
+    return WebGPU::ComputePipelineDescriptor {
+        .label = fromAPI(descriptor.label),
+        .layout = descriptor.layout ? RefPtr { &WebGPU::fromAPI(descriptor.layout) } : nullptr,
+        .compute = WTF::move(*compute),
+    };
+}
+
+inline std::optional<WebGPU::BlendComponent> fromAPI(const WGPUBlendComponent& component)
+{
+    auto operation = fromAPI(component.operation);
+    auto srcFactor = fromAPI(component.srcFactor);
+    auto dstFactor = fromAPI(component.dstFactor);
+    if (!operation || !srcFactor || !dstFactor)
+        return std::nullopt;
+    return WebGPU::BlendComponent { .operation = *operation, .srcFactor = *srcFactor, .dstFactor = *dstFactor };
+}
+
+// WGPUCompareFunction_Undefined in a stencil face state is WebGPU::CompareFunction::Always, the default.
+inline std::optional<WebGPU::StencilFaceState> fromAPI(const WGPUStencilFaceState& state)
+{
+    auto compare = state.compare == WGPUCompareFunction_Undefined ? std::optional { WebGPU::CompareFunction::Always } : fromAPI(state.compare);
+    auto failOp = fromAPI(state.failOp);
+    auto depthFailOp = fromAPI(state.depthFailOp);
+    auto passOp = fromAPI(state.passOp);
+    if (!compare || !failOp || !depthFailOp || !passOp)
+        return std::nullopt;
+    return WebGPU::StencilFaceState { .compare = *compare, .failOp = *failOp, .depthFailOp = *depthFailOp, .passOp = *passOp };
+}
+
+inline std::optional<WebGPU::DepthStencilState> fromAPI(const WGPUDepthStencilState& state)
+{
+    auto format = fromAPI(state.format);
+    auto stencilFront = fromAPI(state.stencilFront);
+    auto stencilBack = fromAPI(state.stencilBack);
+    if (!format || !stencilFront || !stencilBack)
+        return std::nullopt;
+
+    std::optional<bool> depthWriteEnabled;
+    switch (state.depthWriteEnabled) {
+    case WGPUOptionalBool_False:
+        depthWriteEnabled = false;
+        break;
+    case WGPUOptionalBool_True:
+        depthWriteEnabled = true;
+        break;
+    case WGPUOptionalBool_Undefined:
+        break;
+    default:
+        return std::nullopt;
+    }
+
+    std::optional<WebGPU::CompareFunction> depthCompare;
+    if (state.depthCompare != WGPUCompareFunction_Undefined) {
+        depthCompare = fromAPI(state.depthCompare);
+        if (!depthCompare)
+            return std::nullopt;
+    }
+
+    return WebGPU::DepthStencilState {
+        .format = *format,
+        .depthWriteEnabled = depthWriteEnabled,
+        .depthCompare = depthCompare,
+        .stencilFront = *stencilFront,
+        .stencilBack = *stencilBack,
+        .stencilReadMask = state.stencilReadMask,
+        .stencilWriteMask = state.stencilWriteMask,
+        .depthBias = state.depthBias,
+        .depthBiasSlopeScale = state.depthBiasSlopeScale,
+        .depthBiasClamp = state.depthBiasClamp,
+    };
+}
+
+struct RenderPipelineDescriptorStorage {
+    Vector<WebGPU::ConstantEntry> vertexConstants;
+    Vector<Vector<WebGPU::VertexAttribute>> vertexAttributes;
+    Vector<std::optional<WebGPU::VertexBufferLayout>> vertexBuffers;
+    Vector<WebGPU::ConstantEntry> fragmentConstants;
+    Vector<std::optional<WebGPU::ColorTargetState>> fragmentTargets;
+};
+
+inline std::optional<WebGPU::RenderPipelineDescriptor> fromAPI(const WGPURenderPipelineDescriptor& descriptor, RenderPipelineDescriptorStorage& storage LIFETIME_BOUND)
+{
+    auto vertexStage = programmableStageFromAPI(descriptor.vertex.module, descriptor.vertex.entryPoint, unsafeMakeSpan(descriptor.vertex.constants, descriptor.vertex.constantCount), storage.vertexConstants);
+    if (!vertexStage)
+        return std::nullopt;
+
+    // A vertex buffer layout with WGPU_COPY_STRIDE_UNDEFINED as its stride is an empty slot.
+    auto buffers = unsafeMakeSpan(descriptor.vertex.buffers, descriptor.vertex.bufferCount);
+    storage.vertexAttributes.clear();
+    storage.vertexBuffers.clear();
+    for (auto& buffer : buffers) {
+        Vector<WebGPU::VertexAttribute> attributes;
+        for (auto& attribute : unsafeMakeSpan(buffer.attributes, buffer.attributeCount)) {
+            auto format = fromAPI(attribute.format);
+            if (!format)
+                return std::nullopt;
+            attributes.append({ .format = *format, .offset = attribute.offset, .shaderLocation = attribute.shaderLocation });
+        }
+        storage.vertexAttributes.append(WTF::move(attributes));
+    }
+    for (auto [i, buffer] : indexedRange(buffers)) {
+        if (buffer.arrayStride == WGPU_COPY_STRIDE_UNDEFINED) {
+            storage.vertexBuffers.append(std::nullopt);
+            continue;
+        }
+        auto stepMode = fromAPI(buffer.stepMode);
+        if (!stepMode)
+            return std::nullopt;
+        storage.vertexBuffers.append(WebGPU::VertexBufferLayout {
+            .arrayStride = buffer.arrayStride,
+            .stepMode = *stepMode,
+            .attributes = storage.vertexAttributes[i].span(),
+        });
+    }
+
+    auto topology = fromAPI(descriptor.primitive.topology);
+    auto frontFace = fromAPI(descriptor.primitive.frontFace);
+    auto cullMode = fromAPI(descriptor.primitive.cullMode);
+    if (!topology || !frontFace || !cullMode)
+        return std::nullopt;
+    std::optional<WebGPU::IndexFormat> stripIndexFormat;
+    if (descriptor.primitive.stripIndexFormat != WGPUIndexFormat_Undefined) {
+        stripIndexFormat = fromAPI(descriptor.primitive.stripIndexFormat);
+        if (!stripIndexFormat)
+            return std::nullopt;
+    }
+
+    std::optional<WebGPU::DepthStencilState> depthStencil;
+    if (descriptor.depthStencil) {
+        depthStencil = fromAPI(*descriptor.depthStencil);
+        if (!depthStencil)
+            return std::nullopt;
+    }
+
+    std::optional<WebGPU::FragmentState> fragment;
+    if (auto* fragmentState = descriptor.fragment) {
+        auto fragmentStage = programmableStageFromAPI(fragmentState->module, fragmentState->entryPoint, unsafeMakeSpan(fragmentState->constants, fragmentState->constantCount), storage.fragmentConstants);
+        if (!fragmentStage)
+            return std::nullopt;
+
+        // A color target with WGPUTextureFormat_Undefined as its format is an empty slot.
+        storage.fragmentTargets.clear();
+        for (auto& target : unsafeMakeSpan(fragmentState->targets, fragmentState->targetCount)) {
+            if (target.format == WGPUTextureFormat_Undefined) {
+                storage.fragmentTargets.append(std::nullopt);
+                continue;
+            }
+            auto format = fromAPI(target.format);
+            auto writeMask = colorWriteFromAPI(target.writeMask);
+            if (!format || !writeMask)
+                return std::nullopt;
+            std::optional<WebGPU::BlendState> blend;
+            if (target.blend) {
+                auto color = fromAPI(target.blend->color);
+                auto alpha = fromAPI(target.blend->alpha);
+                if (!color || !alpha)
+                    return std::nullopt;
+                blend = WebGPU::BlendState { .color = *color, .alpha = *alpha };
+            }
+            storage.fragmentTargets.append(WebGPU::ColorTargetState { .format = *format, .blend = blend, .writeMask = *writeMask });
+        }
+        fragment = WebGPU::FragmentState {
+            .stage = WTF::move(*fragmentStage),
+            .targets = storage.fragmentTargets.span(),
+        };
+    }
+
+    return WebGPU::RenderPipelineDescriptor {
+        .label = fromAPI(descriptor.label),
+        .layout = descriptor.layout ? RefPtr { &WebGPU::fromAPI(descriptor.layout) } : nullptr,
+        .vertex = {
+            .stage = WTF::move(*vertexStage),
+            .buffers = storage.vertexBuffers.span(),
+        },
+        .primitive = {
+            .topology = *topology,
+            .stripIndexFormat = stripIndexFormat,
+            .frontFace = *frontFace,
+            .cullMode = *cullMode,
+            .unclippedDepth = !!descriptor.primitive.unclippedDepth,
+        },
+        .depthStencil = WTF::move(depthStencil),
+        .multisample = {
+            .count = descriptor.multisample.count,
+            .mask = descriptor.multisample.mask,
+            .alphaToCoverageEnabled = !!descriptor.multisample.alphaToCoverageEnabled,
+        },
+        .fragment = WTF::move(fragment),
+    };
 }
 
 } // namespace WebGPU::Metal

@@ -209,6 +209,11 @@ enum class MipmapFilterMode : uint8_t {
     Linear,
 };
 
+enum class PipelineErrorReason : uint8_t {
+    Validation,
+    Internal,
+};
+
 enum class PowerPreference : bool {
     LowPower,
     HighPerformance,
@@ -643,6 +648,129 @@ struct ShaderModuleDescriptor {
     String code; // WGSL.
     std::span<const ShaderModuleCompilationHint> hints; // Borrowed for the duration of the call.
 } SWIFT_NONESCAPABLE;
+
+// https://gpuweb.github.io/gpuweb/#dom-gpuprogrammablestage-constants
+struct ConstantEntry {
+    String key;
+    double value { 0 };
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpuprogrammablestage
+struct ProgrammableStage {
+    Ref<ShaderModule> module;
+    String entryPoint; // A null string: the only entry point of the module for the stage.
+    std::span<const ConstantEntry> constants; // Borrowed for the duration of the call.
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpucomputepipelinedescriptor
+struct ComputePipelineDescriptor {
+    String label;
+    RefPtr<PipelineLayout> layout; // nullptr: a layout that the pipeline generates from its shaders.
+    ProgrammableStage compute;
+} SWIFT_NONESCAPABLE;
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpuvertexattribute
+struct VertexAttribute {
+    VertexFormat format { VertexFormat::Uint8x2 };
+    uint64_t offset { 0 };
+    uint32_t shaderLocation { 0 };
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpuvertexbufferlayout
+struct VertexBufferLayout {
+    uint64_t arrayStride { 0 };
+    VertexStepMode stepMode { VertexStepMode::Vertex };
+    std::span<const VertexAttribute> attributes; // Borrowed for the duration of the call.
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpuvertexstate
+struct VertexState {
+    ProgrammableStage stage;
+    // Borrowed for the duration of the call. std::nullopt: no vertex buffer in that slot.
+    std::span<const std::optional<VertexBufferLayout>> buffers;
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpublendcomponent
+struct BlendComponent {
+    BlendOperation operation { BlendOperation::Add };
+    BlendFactor srcFactor { BlendFactor::One };
+    BlendFactor dstFactor { BlendFactor::Zero };
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpublendstate
+struct BlendState {
+    BlendComponent color;
+    BlendComponent alpha;
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpucolortargetstate
+struct ColorTargetState {
+    TextureFormat format { TextureFormat::R8unorm };
+    std::optional<BlendState> blend;
+    OptionSet<ColorWrite> writeMask { ColorWrite::Red, ColorWrite::Green, ColorWrite::Blue, ColorWrite::Alpha };
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpufragmentstate
+struct FragmentState {
+    ProgrammableStage stage;
+    // Borrowed for the duration of the call. std::nullopt: no color target in that slot.
+    std::span<const std::optional<ColorTargetState>> targets;
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpuprimitivestate
+struct PrimitiveState {
+    PrimitiveTopology topology { PrimitiveTopology::TriangleList };
+    std::optional<IndexFormat> stripIndexFormat;
+    FrontFace frontFace { FrontFace::CCW };
+    CullMode cullMode { CullMode::None };
+    bool unclippedDepth { false };
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpustencilfacestate
+struct StencilFaceState {
+    CompareFunction compare { CompareFunction::Always };
+    StencilOperation failOp { StencilOperation::Keep };
+    StencilOperation depthFailOp { StencilOperation::Keep };
+    StencilOperation passOp { StencilOperation::Keep };
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpudepthstencilstate
+struct DepthStencilState {
+    TextureFormat format { TextureFormat::Depth24plus };
+    std::optional<bool> depthWriteEnabled;
+    std::optional<CompareFunction> depthCompare;
+    StencilFaceState stencilFront;
+    StencilFaceState stencilBack;
+    uint32_t stencilReadMask { 0xFFFFFFFF };
+    uint32_t stencilWriteMask { 0xFFFFFFFF };
+    int32_t depthBias { 0 };
+    float depthBiasSlopeScale { 0 };
+    float depthBiasClamp { 0 };
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpumultisamplestate
+struct MultisampleState {
+    uint32_t count { 1 };
+    uint32_t mask { 0xFFFFFFFF };
+    bool alphaToCoverageEnabled { false };
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpurenderpipelinedescriptor
+struct RenderPipelineDescriptor {
+    String label;
+    RefPtr<PipelineLayout> layout; // nullptr: a layout that the pipeline generates from its shaders.
+    VertexState vertex;
+    PrimitiveState primitive;
+    std::optional<DepthStencilState> depthStencil;
+    MultisampleState multisample;
+    std::optional<FragmentState> fragment;
+} SWIFT_NONESCAPABLE;
+
+// https://gpuweb.github.io/gpuweb/#gpupipelineerror
+struct PipelineError {
+    PipelineErrorReason reason { PipelineErrorReason::Validation };
+    String message;
+};
 
 // https://gpuweb.github.io/gpuweb/#gpucompilationmessage
 struct CompilationMessage {

@@ -71,6 +71,11 @@ inline PipelineLayout& metal(WebGPU::PipelineLayout& pipelineLayout)
     return static_cast<PipelineLayout&>(pipelineLayout);
 }
 
+inline ShaderModule& metal(WebGPU::ShaderModule& shaderModule)
+{
+    return static_cast<ShaderModule&>(shaderModule);
+}
+
 inline Buffer& metal(WebGPU::Buffer& buffer)
 {
     return static_cast<Buffer&>(buffer);
@@ -249,26 +254,6 @@ inline std::span<const WGPUTextureFormat> colorFormatsSpan(const WGPURenderBundl
     return unsafeMakeSpan(descriptor.colorFormats, descriptor.colorFormatCount);
 }
 
-inline std::span<const WGPUConstantEntry> constantsSpan(const WGPUComputeState& state)
-{
-    return unsafeMakeSpan(state.constants, state.constantCount);
-}
-
-inline std::span<const WGPUConstantEntry> constantsSpan(const WGPUVertexState& state)
-{
-    return unsafeMakeSpan(state.constants, state.constantCount);
-}
-
-inline std::span<const WGPUConstantEntry> constantsSpan(const WGPUFragmentState& state)
-{
-    return unsafeMakeSpan(state.constants, state.constantCount);
-}
-
-inline std::span<const WGPUVertexAttribute> attributesSpan(const WGPUVertexBufferLayout& layout)
-{
-    return unsafeMakeSpan(layout.attributes, layout.attributeCount);
-}
-
 inline std::span<const WGPUFeatureName> requiredFeaturesSpan(const WGPUDeviceDescriptor& descriptor)
 {
     return unsafeMakeSpan(descriptor.requiredFeatures, descriptor.requiredFeatureCount);
@@ -277,16 +262,6 @@ inline std::span<const WGPUFeatureName> requiredFeaturesSpan(const WGPUDeviceDes
 inline std::span<const WGPURenderPassColorAttachment> colorAttachmentsSpan(const WGPURenderPassDescriptor& descriptor)
 {
     return unsafeMakeSpan(descriptor.colorAttachments, descriptor.colorAttachmentCount);
-}
-
-inline std::span<const WGPUVertexBufferLayout> buffersSpan(const WGPUVertexState& state)
-{
-    return unsafeMakeSpan(state.buffers, state.bufferCount);
-}
-
-inline std::span<const WGPUColorTargetState> targetsSpan(const WGPUFragmentState& state)
-{
-    return unsafeMakeSpan(state.targets, state.targetCount);
 }
 
 template<typename R, typename... Args>
