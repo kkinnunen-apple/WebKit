@@ -51,9 +51,9 @@ class GPUQuerySet;
 
 class GPUCommandEncoder : public RefCountedAndCanMakeWeakPtr<GPUCommandEncoder> {
 public:
-    static Ref<GPUCommandEncoder> create(Ref<WebGPU::CommandEncoder>&& backing, GPUDevice& device)
+    static Ref<GPUCommandEncoder> create(Ref<WebGPU::CommandEncoder>&& backing, String&& label, GPUDevice& device)
     {
-        return adoptRef(*new GPUCommandEncoder(WTF::move(backing), device));
+        return adoptRef(*new GPUCommandEncoder(WTF::move(backing), WTF::move(label), device));
     }
 
     String NODELETE label() const;
@@ -118,9 +118,10 @@ public:
     bool hasActiveInspectorCanvasCallTracer() const;
 
 private:
-    GPUCommandEncoder(Ref<WebGPU::CommandEncoder>&&, GPUDevice&);
+    GPUCommandEncoder(Ref<WebGPU::CommandEncoder>&&, String&& label, GPUDevice&);
 
     Ref<WebGPU::CommandEncoder> m_backing;
+    String m_label;
     WeakPtr<GPUDevice, WeakPtrImplWithEventTargetData> m_device;
     std::optional<String> m_overrideLabel;
 };

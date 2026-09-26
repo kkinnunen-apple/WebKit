@@ -38,9 +38,9 @@ struct GPUComputePassTimestampWrites {
     WebGPU::ComputePassTimestampWrites convertToBacking() const
     {
         return {
-            querySet->backing(),
-            beginningOfPassWriteIndex.value_or(WebGPU::kQuerySetIndexUndefined),
-            endOfPassWriteIndex.value_or(WebGPU::kQuerySetIndexUndefined),
+            .querySet = querySet->backing(),
+            .beginningOfPassWriteIndex = beginningOfPassWriteIndex,
+            .endOfPassWriteIndex = endOfPassWriteIndex,
         };
     }
 

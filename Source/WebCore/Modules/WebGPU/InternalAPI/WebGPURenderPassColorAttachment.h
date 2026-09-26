@@ -26,68 +26,18 @@
 #pragma once
 
 #include <WebCore/WebGPUColor.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <WebCore/WebGPULoadOp.h>
 #include <WebCore/WebGPUStoreOp.h>
 #include <WebCore/WebGPUTexture.h>
 #include <WebCore/WebGPUTextureView.h>
-#include <wtf/Ref.h>
-#include <wtf/Vector.h>
-#include <wtf/WeakRef.h>
+#include <optional>
 
 namespace WebCore::WebGPU {
 
-
-using RenderPassColorAttachmentView = Variant<const Ref<Texture>, const Ref<TextureView>>;
-using RenderPassResolveAttachmentView = Variant<RefPtr<Texture>, RefPtr<TextureView>>;
-
-struct RenderPassColorAttachment {
-    RenderPassColorAttachmentView view;
-    std::optional<IntegerCoordinate> depthSlice;
-    std::optional<RenderPassResolveAttachmentView> resolveTarget;
-
-    std::optional<Color> clearValue;
-    LoadOp loadOp { LoadOp::Load };
-    StoreOp storeOp { StoreOp::Store };
-
-    Texture* texture() const
-    {
-        return WTF::switchOn(view, [&](const Ref<Texture>& texture) -> Texture* {
-            return texture.ptr();
-        }, [&](const Ref<TextureView>&) -> Texture* {
-            return nullptr;
-        });
-    }
-    TextureView* textureView() const
-    {
-        return WTF::switchOn(view, [&](const Ref<Texture>&) -> TextureView* {
-            return nullptr;
-        }, [&](const Ref<TextureView>& textureView) -> TextureView* {
-            return textureView.ptr();
-        });
-    }
-    Texture* resolveTexture() const
-    {
-        if (!resolveTarget)
-            return nullptr;
-
-        return WTF::switchOn(*resolveTarget, [&](const RefPtr<Texture>& texture) -> Texture* {
-            return texture.get();
-        }, [&](const RefPtr<TextureView>&) -> Texture* {
-            return nullptr;
-        });
-    }
-    TextureView* resolveTextureView() const
-    {
-        if (!resolveTarget)
-            return nullptr;
-
-        return WTF::switchOn(*resolveTarget, [&](const RefPtr<Texture>&) -> TextureView* {
-            return nullptr;
-        }, [&](const RefPtr<TextureView>& textureView) -> TextureView* {
-            return textureView.get();
-        });
-    }
-};
+using RenderPassColorAttachmentView = ::WebGPU::RenderPassAttachmentView;
+using RenderPassResolveAttachmentView = ::WebGPU::RenderPassAttachmentView;
+using RenderPassColorAttachment = ::WebGPU::RenderPassColorAttachment;
 
 } // namespace WebCore::WebGPU

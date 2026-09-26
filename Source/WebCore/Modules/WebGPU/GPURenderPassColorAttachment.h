@@ -47,10 +47,10 @@ struct GPURenderPassColorAttachment {
         if (resolveTarget) {
             return WTF::switchOn(*resolveTarget,
                 [](const Ref<GPUTexture>& texture) -> WebGPU::RenderPassResolveAttachmentView {
-                    return &texture->backing();
+                    return texture->backing();
                 },
                 [](const Ref<GPUTextureView>& view) -> WebGPU::RenderPassResolveAttachmentView {
-                    return &view->backing();
+                    return view->backing();
                 }
             );
         }
@@ -71,7 +71,7 @@ struct GPURenderPassColorAttachment {
             ),
             .depthSlice = depthSlice,
             .resolveTarget = parseResolveTarget(),
-            .clearValue = clearValue ? std::optional { WebCore::convertToBacking(*clearValue) } : std::nullopt,
+            .clearValue = clearValue ? WebCore::convertToBacking(*clearValue) : WebGPU::Color { },
             .loadOp = WebCore::convertToBacking(loadOp),
             .storeOp = WebCore::convertToBacking(storeOp),
         };

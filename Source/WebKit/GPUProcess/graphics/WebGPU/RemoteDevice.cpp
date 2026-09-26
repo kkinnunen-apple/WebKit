@@ -393,13 +393,7 @@ void RemoteDevice::createRenderPipelineAsync(const WebGPU::RenderPipelineDescrip
 void RemoteDevice::createCommandEncoder(const std::optional<WebGPU::CommandEncoderDescriptor>& descriptor, WebGPUIdentifier identifier)
 {
     Ref objectHeap = m_objectHeap.get();
-    std::optional<WebCore::WebGPU::CommandEncoderDescriptor> convertedDescriptor;
-    if (descriptor) {
-        auto resultDescriptor = objectHeap->convertFromBacking(*descriptor);
-        MESSAGE_CHECK(resultDescriptor);
-        convertedDescriptor = WTF::move(resultDescriptor);
-    }
-    auto commandEncoder = m_backing->createCommandEncoder(convertedDescriptor);
+    auto commandEncoder = m_backing->createCommandEncoder(descriptor);
     MESSAGE_CHECK(commandEncoder);
     auto remoteCommandEncoder = RemoteCommandEncoder::create(*m_gpuConnectionToWebProcess.get(), protect(m_gpu), *commandEncoder, objectHeap, protect(m_streamConnection), identifier);
     objectHeap->addObject(identifier, remoteCommandEncoder);

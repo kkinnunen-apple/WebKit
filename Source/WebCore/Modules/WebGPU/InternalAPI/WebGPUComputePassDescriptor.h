@@ -26,12 +26,10 @@
 #pragma once
 
 #include <WebCore/WebGPUComputePassTimestampWrites.h>
-#include <WebCore/WebGPUObjectDescriptorBase.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-struct ComputePassDescriptor : public ObjectDescriptorBase {
-    std::optional<ComputePassTimestampWrites> timestampWrites;
-};
+using ComputePassDescriptor = ::WebGPU::ComputePassDescriptor;
 
 } // namespace WebCore::WebGPU

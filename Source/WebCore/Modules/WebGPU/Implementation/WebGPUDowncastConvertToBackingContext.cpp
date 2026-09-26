@@ -33,7 +33,7 @@
 #include "WebGPUBindGroupLayout.h"
 #include "WebGPUBuffer.h"
 #include "WebGPUCommandBuffer.h"
-#include "WebGPUCommandEncoderImpl.h"
+#include "WebGPUCommandEncoder.h"
 #include "WebGPUCompositorIntegrationImpl.h"
 #include "WebGPUComputePassEncoder.h"
 #include "WebGPUComputePipeline.h"
@@ -90,7 +90,7 @@ WGPUCommandBuffer DowncastConvertToBackingContext::convertToBacking(const Comman
 
 WGPUCommandEncoder DowncastConvertToBackingContext::convertToBacking(const CommandEncoder& commandEncoder)
 {
-    return downcast<CommandEncoderImpl>(commandEncoder).backing();
+    return ::WebGPU::toAPI(const_cast<CommandEncoder&>(commandEncoder));
 }
 
 WGPUComputePassEncoder DowncastConvertToBackingContext::convertToBacking(const ComputePassEncoder& computePassEncoder)

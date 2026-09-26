@@ -37,16 +37,15 @@
 
 namespace WebKit::WebGPU {
 
-static WebGPUIdentifier getIdentifier(ConvertToBackingContext& convertToBacking, const WebCore::WebGPU::RenderPassDepthStencilAttachment& renderPassDepthStencilAttachment)
+static WebGPUIdentifier depthStencilAttachmentViewIdentifier(ConvertToBackingContext& convertToBacking, const WebCore::WebGPU::RenderPassDepthAttachmentView& view)
 {
-    if (RefPtr view = renderPassDepthStencilAttachment.textureView())
-        return convertToBacking.convertToBacking(*view);
-
-    return convertToBacking.convertToBacking(*protect(renderPassDepthStencilAttachment.texture()));
+    return WTF::switchOn(view, [&](const auto& textureOrView) {
+        return convertToBacking.convertToBacking(textureOrView.get());
+    });
 }
 std::optional<RenderPassDepthStencilAttachment> ConvertToBackingContext::convertToBacking(const WebCore::WebGPU::RenderPassDepthStencilAttachment& renderPassDepthStencilAttachment)
 {
-    auto identifier = getIdentifier(*this, renderPassDepthStencilAttachment);
+    auto identifier = depthStencilAttachmentViewIdentifier(*this, renderPassDepthStencilAttachment.view);
 
     return { { identifier, renderPassDepthStencilAttachment.depthClearValue, renderPassDepthStencilAttachment.depthLoadOp, renderPassDepthStencilAttachment.depthStoreOp, renderPassDepthStencilAttachment.depthReadOnly, renderPassDepthStencilAttachment.stencilClearValue, renderPassDepthStencilAttachment.stencilLoadOp, renderPassDepthStencilAttachment.stencilStoreOp, renderPassDepthStencilAttachment.stencilReadOnly } };
 }
@@ -60,11 +59,11 @@ std::optional<WebCore::WebGPU::RenderPassDepthStencilAttachment> ConvertFromBack
 
     WebCore::WebGPU::RenderPassDepthAttachmentView viewTextureVariant = [&] -> WebCore::WebGPU::RenderPassDepthAttachmentView {
         if (view)
-            return *view;
-
-        return *texture;
+            return view.releaseNonNull();
+        return texture.releaseNonNull();
     }();
-    return { { viewTextureVariant, renderPassDepthStencilAttachment.depthClearValue, renderPassDepthStencilAttachment.depthLoadOp, renderPassDepthStencilAttachment.depthStoreOp, renderPassDepthStencilAttachment.depthReadOnly, renderPassDepthStencilAttachment.stencilClearValue, renderPassDepthStencilAttachment.stencilLoadOp, renderPassDepthStencilAttachment.stencilStoreOp, renderPassDepthStencilAttachment.stencilReadOnly } };
+
+    return { { WTF::move(viewTextureVariant), renderPassDepthStencilAttachment.depthClearValue, renderPassDepthStencilAttachment.depthLoadOp, renderPassDepthStencilAttachment.depthStoreOp, renderPassDepthStencilAttachment.depthReadOnly, renderPassDepthStencilAttachment.stencilClearValue, renderPassDepthStencilAttachment.stencilLoadOp, renderPassDepthStencilAttachment.stencilStoreOp, renderPassDepthStencilAttachment.stencilReadOnly } };
 }
 
 } // namespace WebKit

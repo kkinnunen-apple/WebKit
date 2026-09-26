@@ -30,6 +30,7 @@
 #include <WebCore/WebGPUCommandBufferDescriptor.h>
 #include <WebCore/WebGPUComputePassDescriptor.h>
 #include <WebCore/WebGPUComputePassEncoder.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUExtent3D.h>
 #include <WebCore/WebGPUImageCopyBuffer.h>
 #include <WebCore/WebGPUImageCopyTexture.h>
@@ -37,86 +38,9 @@
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURenderPassDescriptor.h>
 #include <WebCore/WebGPURenderPassEncoder.h>
-#include <optional>
-#include <wtf/Ref.h>
-#include <wtf/RefCountedAndCanMakeWeakPtr.h>
-#include <wtf/WeakPtr.h>
-#include <wtf/text/WTFString.h>
 
 namespace WebCore::WebGPU {
 
-
-class CommandEncoder : public RefCountedAndCanMakeWeakPtr<CommandEncoder> {
-public:
-    virtual ~CommandEncoder() = default;
-
-    String label() const { return m_label; }
-
-    void setLabel(String&& label)
-    {
-        m_label = WTF::move(label);
-        setLabelInternal(m_label);
-    }
-
-    virtual RefPtr<RenderPassEncoder> beginRenderPass(const RenderPassDescriptor&) = 0;
-    virtual RefPtr<ComputePassEncoder> beginComputePass(const std::optional<ComputePassDescriptor>&) = 0;
-
-    virtual void copyBufferToBuffer(
-        const Buffer& source,
-        Size64 sourceOffset,
-        const Buffer& destination,
-        Size64 destinationOffset,
-        Size64) = 0;
-
-    virtual void copyBufferToTexture(
-        const ImageCopyBuffer& source,
-        const ImageCopyTexture& destination,
-        const Extent3D& copySize) = 0;
-
-    virtual void copyTextureToBuffer(
-        const ImageCopyTexture& source,
-        const ImageCopyBuffer& destination,
-        const Extent3D& copySize) = 0;
-
-    virtual void copyTextureToTexture(
-        const ImageCopyTexture& source,
-        const ImageCopyTexture& destination,
-        const Extent3D& copySize) = 0;
-
-    virtual void clearBuffer(
-        const Buffer&,
-        Size64 offset = 0,
-        std::optional<Size64> = std::nullopt) = 0;
-
-    virtual void pushDebugGroup(String&& groupLabel) = 0;
-    virtual void popDebugGroup() = 0;
-    virtual void insertDebugMarker(String&& markerLabel) = 0;
-
-    virtual void writeTimestamp(const QuerySet&, Size32 queryIndex) = 0;
-
-    virtual void resolveQuerySet(
-        const QuerySet&,
-        Size32 firstQuery,
-        Size32 queryCount,
-        const Buffer& destination,
-        Size64 destinationOffset) = 0;
-
-    virtual RefPtr<CommandBuffer> finish(const CommandBufferDescriptor&) = 0;
-    virtual bool isRemoteCommandEncoderProxy() const { return false; }
-    virtual bool isCommandEncoderImpl() const { return false; }
-
-protected:
-    CommandEncoder() = default;
-
-private:
-    CommandEncoder(const CommandEncoder&) = delete;
-    CommandEncoder(CommandEncoder&&) = delete;
-    CommandEncoder& operator=(const CommandEncoder&) = delete;
-    CommandEncoder& operator=(CommandEncoder&&) = delete;
-
-    virtual void setLabelInternal(const String&) = 0;
-
-    String m_label;
-};
+using CommandEncoder = ::WebGPU::CommandEncoder;
 
 } // namespace WebCore::WebGPU

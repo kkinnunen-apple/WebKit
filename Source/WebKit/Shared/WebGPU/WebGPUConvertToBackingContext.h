@@ -28,6 +28,7 @@
 #if ENABLE(GPU_PROCESS)
 
 #include "WebGPUColor.h"
+#include "WebGPUCommandEncoderDescriptor.h"
 #include "WebGPUCompilationMessage.h"
 #include "WebGPUComputePassTimestampWrites.h"
 #include "WebGPUError.h"
@@ -47,6 +48,8 @@
 #include <WebCore/WebGPUBufferBindingLayout.h>
 #include <WebCore/WebGPUColor.h>
 #include <WebCore/WebGPUCommandBuffer.h>
+#include <WebCore/WebGPUCommandEncoder.h>
+#include <WebCore/WebGPUComputePassDescriptor.h>
 #include <WebCore/WebGPUComputePassEncoder.h>
 #include <WebCore/WebGPUComputePassTimestampWrites.h>
 #include <WebCore/WebGPUComputePipeline.h>
@@ -66,6 +69,7 @@
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURenderBundle.h>
 #include <WebCore/WebGPURenderBundleEncoder.h>
+#include <WebCore/WebGPURenderPassDescriptor.h>
 #include <WebCore/WebGPURenderPassEncoder.h>
 #include <WebCore/WebGPURenderPassTimestampWrites.h>
 #include <WebCore/WebGPURenderPipeline.h>
@@ -85,10 +89,7 @@ namespace WebCore::WebGPU {
 class Adapter;
 struct CanvasConfiguration;
 struct ColorTargetState;
-class CommandEncoder;
-struct CommandEncoderDescriptor;
 class CompositorIntegration;
-struct ComputePassDescriptor;
 struct ComputePipelineDescriptor;
 struct DepthStencilState;
 class Device;
@@ -109,9 +110,6 @@ struct PresentationContextDescriptor;
 struct ProgrammableStage;
 class Queue;
 struct RenderBundleEncoderDescriptor;
-struct RenderPassColorAttachment;
-struct RenderPassDepthStencilAttachment;
-struct RenderPassDescriptor;
 struct RenderPassLayout;
 struct RenderPipelineDescriptor;
 struct RequestAdapterOptions;
@@ -141,7 +139,6 @@ struct BufferBinding;
 struct BufferBindingLayout;
 struct CanvasConfiguration;
 struct ColorTargetState;
-struct CommandEncoderDescriptor;
 struct ComputePassDescriptor;
 struct ComputePipelineDescriptor;
 struct DepthStencilState;
@@ -204,9 +201,7 @@ public:
     std::optional<BufferBindingLayout> NODELETE convertToBacking(const WebCore::WebGPU::BufferBindingLayout&);
     std::optional<CanvasConfiguration> convertToBacking(const WebCore::WebGPU::CanvasConfiguration&);
     std::optional<ColorTargetState> convertToBacking(const WebCore::WebGPU::ColorTargetState&);
-    std::optional<CommandEncoderDescriptor> convertToBacking(const WebCore::WebGPU::CommandEncoderDescriptor&);
     std::optional<ComputePassDescriptor> convertToBacking(const WebCore::WebGPU::ComputePassDescriptor&);
-    std::optional<ComputePassTimestampWrites> convertToBacking(const WebCore::WebGPU::ComputePassTimestampWrites&);
     std::optional<ComputePipelineDescriptor> convertToBacking(const WebCore::WebGPU::ComputePipelineDescriptor&);
     std::optional<DepthStencilState> convertToBacking(const WebCore::WebGPU::DepthStencilState&);
     std::optional<DeviceDescriptor> convertToBacking(const WebCore::WebGPU::DeviceDescriptor&);

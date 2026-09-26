@@ -25,11 +25,10 @@
 
 #pragma once
 
-#include <WebCore/WebGPUObjectDescriptorBase.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-struct CommandEncoderDescriptor : public ObjectDescriptorBase {
-};
+using CommandEncoderDescriptor = ::WebGPU::CommandEncoderDescriptor;
 
 } // namespace WebCore::WebGPU

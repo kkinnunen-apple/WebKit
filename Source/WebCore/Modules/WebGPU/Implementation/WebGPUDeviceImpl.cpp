@@ -34,8 +34,8 @@
 #include "WebGPUBindGroupLayoutDescriptor.h"
 #include "WebGPUBuffer.h"
 #include "WebGPUBufferDescriptor.h"
+#include "WebGPUCommandEncoder.h"
 #include "WebGPUCommandEncoderDescriptor.h"
-#include "WebGPUCommandEncoderImpl.h"
 #include "WebGPUComputePipeline.h"
 #include "WebGPUComputePipelineDescriptor.h"
 #include "WebGPUConvertToBackingContext.h"
@@ -630,7 +630,7 @@ RefPtr<CommandEncoder> DeviceImpl::createCommandEncoder(const std::optional<Comm
         .label = label,
     };
 
-    return CommandEncoderImpl::create(adoptWebGPU(wgpuDeviceCreateCommandEncoder(m_backing.get(), &backingDescriptor)), m_convertToBackingContext);
+    return adoptRef(::WebGPU::fromAPI(wgpuDeviceCreateCommandEncoder(m_backing.get(), &backingDescriptor)));
 }
 
 RefPtr<RenderBundleEncoder> DeviceImpl::createRenderBundleEncoder(const RenderBundleEncoderDescriptor& descriptor)

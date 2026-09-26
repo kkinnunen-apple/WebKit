@@ -89,7 +89,7 @@ WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::CommandEncoder& commandEncoder)
 {
-    return downcast<RemoteCommandEncoderProxy>(commandEncoder).backing();
+    return static_cast<const RemoteCommandEncoderProxy&>(commandEncoder).backing();
 }
 
 const RemoteCompositorIntegrationProxy& DowncastConvertToBackingContext::convertToRawBacking(const WebCore::WebGPU::CompositorIntegration& compositorIntegration)

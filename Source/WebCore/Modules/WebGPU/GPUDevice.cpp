@@ -768,10 +768,11 @@ static WebGPU::CommandEncoderDescriptor NODELETE convertToBacking(const std::opt
 
 ExceptionOr<Ref<GPUCommandEncoder>> GPUDevice::createCommandEncoder(std::optional<GPUCommandEncoderDescriptor>&& commandEncoderDescriptor)
 {
-    RefPtr encoder = m_backing->createCommandEncoder(convertToBacking(commandEncoderDescriptor));
+    auto backingDescriptor = convertToBacking(commandEncoderDescriptor);
+    RefPtr encoder = m_backing->createCommandEncoder(backingDescriptor);
     if (!encoder)
         return Exception { ExceptionCode::InvalidStateError, "GPUDevice.createCommandEncoder: Unable to make command encoder."_s };
-    return GPUCommandEncoder::create(encoder.releaseNonNull(), *this);
+    return GPUCommandEncoder::create(encoder.releaseNonNull(), WTF::move(backingDescriptor.label), *this);
 }
 
 ExceptionOr<Ref<GPURenderBundleEncoder>> GPUDevice::createRenderBundleEncoder(GPURenderBundleEncoderDescriptor&& renderBundleEncoderDescriptor)

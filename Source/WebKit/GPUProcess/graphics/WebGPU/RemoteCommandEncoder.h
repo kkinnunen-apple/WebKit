@@ -32,15 +32,12 @@
 #include "WebGPUCommandBufferDescriptor.h"
 #include "WebGPUExtent3D.h"
 #include "WebGPUIdentifier.h"
+#include <WebCore/WebGPUCommandEncoder.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <wtf/Ref.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakRef.h>
 #include <wtf/text/WTFString.h>
-
-namespace WebCore::WebGPU {
-class CommandEncoder;
-}
 
 namespace IPC {
 class Connection;

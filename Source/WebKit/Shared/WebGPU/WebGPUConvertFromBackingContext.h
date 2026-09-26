@@ -28,6 +28,7 @@
 #if ENABLE(GPU_PROCESS)
 
 #include "WebGPUColor.h"
+#include "WebGPUCommandEncoderDescriptor.h"
 #include "WebGPUCompilationMessage.h"
 #include "WebGPUComputePassTimestampWrites.h"
 #include "WebGPUError.h"
@@ -47,6 +48,8 @@
 #include <WebCore/WebGPUBufferBindingLayout.h>
 #include <WebCore/WebGPUColor.h>
 #include <WebCore/WebGPUCommandBuffer.h>
+#include <WebCore/WebGPUCommandEncoder.h>
+#include <WebCore/WebGPUComputePassDescriptor.h>
 #include <WebCore/WebGPUComputePassEncoder.h>
 #include <WebCore/WebGPUComputePassTimestampWrites.h>
 #include <WebCore/WebGPUComputePipeline.h>
@@ -66,6 +69,7 @@
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURenderBundle.h>
 #include <WebCore/WebGPURenderBundleEncoder.h>
+#include <WebCore/WebGPURenderPassDescriptor.h>
 #include <WebCore/WebGPURenderPassEncoder.h>
 #include <WebCore/WebGPURenderPassTimestampWrites.h>
 #include <WebCore/WebGPURenderPipeline.h>
@@ -95,10 +99,7 @@ namespace WebCore::WebGPU {
 class Adapter;
 struct CanvasConfiguration;
 struct ColorTargetState;
-class CommandEncoder;
-struct CommandEncoderDescriptor;
 class CompositorIntegration;
-struct ComputePassDescriptor;
 struct ComputePipelineDescriptor;
 struct DepthStencilState;
 class Device;
@@ -119,9 +120,6 @@ struct PresentationContextDescriptor;
 struct ProgrammableStage;
 class Queue;
 struct RenderBundleEncoderDescriptor;
-struct RenderPassColorAttachment;
-struct RenderPassDepthStencilAttachment;
-struct RenderPassDescriptor;
 struct RenderPassLayout;
 struct RenderPipelineDescriptor;
 struct RequestAdapterOptions;
@@ -151,7 +149,6 @@ struct BufferBinding;
 struct BufferBindingLayout;
 struct CanvasConfiguration;
 struct ColorTargetState;
-struct CommandEncoderDescriptor;
 struct ComputePassDescriptor;
 struct ComputePipelineDescriptor;
 struct DepthStencilState;
@@ -213,9 +210,7 @@ public:
     std::optional<WebCore::WebGPU::BufferBindingLayout> NODELETE convertFromBacking(const BufferBindingLayout&);
     std::optional<WebCore::WebGPU::CanvasConfiguration> convertFromBacking(const CanvasConfiguration&);
     std::optional<WebCore::WebGPU::ColorTargetState> convertFromBacking(const ColorTargetState&);
-    std::optional<WebCore::WebGPU::CommandEncoderDescriptor> convertFromBacking(const CommandEncoderDescriptor&);
     std::optional<WebCore::WebGPU::ComputePassDescriptor> convertFromBacking(const ComputePassDescriptor&);
-    std::optional<WebCore::WebGPU::ComputePassTimestampWrites> convertFromBacking(const ComputePassTimestampWrites&);
     std::optional<WebCore::WebGPU::ComputePipelineDescriptor> convertFromBacking(const ComputePipelineDescriptor&, bool allowMissingPipelineLayout = false);
     std::optional<WebCore::WebGPU::DepthStencilState> convertFromBacking(const DepthStencilState&);
     std::optional<WebCore::WebGPU::DeviceDescriptor> convertFromBacking(const DeviceDescriptor&);
@@ -249,7 +244,7 @@ public:
     std::optional<WebCore::WebGPU::RenderBundleEncoderDescriptor> convertFromBacking(const RenderBundleEncoderDescriptor&);
     std::optional<WebCore::WebGPU::RenderPassColorAttachment> convertFromBacking(const RenderPassColorAttachment&);
     std::optional<WebCore::WebGPU::RenderPassDepthStencilAttachment> convertFromBacking(const RenderPassDepthStencilAttachment&);
-    std::optional<WebCore::WebGPU::RenderPassDescriptor> convertFromBacking(const RenderPassDescriptor&);
+    std::optional<WebCore::WebGPU::RenderPassDescriptor> convertFromBacking(const RenderPassDescriptor&, Vector<std::optional<WebCore::WebGPU::RenderPassColorAttachment>>& colorAttachmentsStorage);
     std::optional<WebCore::WebGPU::RenderPassLayout> convertFromBacking(const RenderPassLayout&);
     std::optional<WebCore::WebGPU::RenderPassTimestampWrites> convertFromBacking(const RenderPassTimestampWrites&);
     std::optional<WebCore::WebGPU::RenderPipelineDescriptor> convertFromBacking(const RenderPipelineDescriptor&, bool allowMissingPipelineLayout = false);
@@ -273,7 +268,7 @@ public:
     virtual RefPtr<WebCore::WebGPU::BindGroupLayout> convertBindGroupLayoutFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::Buffer> convertBufferFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::CommandBuffer> convertCommandBufferFromBacking(WebGPUIdentifier) = 0;
-    virtual WeakPtr<WebCore::WebGPU::CommandEncoder> convertCommandEncoderFromBacking(WebGPUIdentifier) = 0;
+    virtual RefPtr<WebCore::WebGPU::CommandEncoder> convertCommandEncoderFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::CompositorIntegration> convertCompositorIntegrationFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::ComputePassEncoder> convertComputePassEncoderFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::ComputePipeline> convertComputePipelineFromBacking(WebGPUIdentifier) = 0;

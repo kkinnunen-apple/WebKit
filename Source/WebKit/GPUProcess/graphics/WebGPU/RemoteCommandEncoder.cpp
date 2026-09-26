@@ -73,7 +73,8 @@ void RemoteCommandEncoder::stopListeningForIPC()
 void RemoteCommandEncoder::beginRenderPass(const WebGPU::RenderPassDescriptor& descriptor, WebGPUIdentifier identifier)
 {
     Ref objectHeap = m_objectHeap.get();
-    auto convertedDescriptor = objectHeap->convertFromBacking(descriptor);
+    Vector<std::optional<WebCore::WebGPU::RenderPassColorAttachment>> colorAttachments;
+    auto convertedDescriptor = objectHeap->convertFromBacking(descriptor, colorAttachments);
     MESSAGE_CHECK(convertedDescriptor);
 
     auto renderPassEncoder = protect(m_backing)->beginRenderPass(*convertedDescriptor);

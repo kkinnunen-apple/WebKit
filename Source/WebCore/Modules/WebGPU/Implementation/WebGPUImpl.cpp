@@ -160,8 +160,7 @@ bool GPUImpl::isValid(const CommandBuffer& commandBuffer) const
 
 bool GPUImpl::isValid(const CommandEncoder& commandEncoder) const
 {
-    WGPUCommandEncoder wgpuCommandEncoder = m_convertToBackingContext.get().convertToBacking(commandEncoder);
-    return wgpuCommandEncoderIsValid(wgpuCommandEncoder);
+    return commandEncoder.isValid();
 }
 
 bool GPUImpl::isValid(const ComputePassEncoder& computePassEncoder) const
