@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <WebCore/WebGPUDevice.h>
 #include <WebCore/WebGPUTexture.h>
 #include <wtf/Ref.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
@@ -32,7 +33,6 @@
 
 namespace WebCore::WebGPU {
 
-class Device;
 
 class XRSubImage : public RefCountedAndCanMakeWeakPtr<XRSubImage> {
 public:

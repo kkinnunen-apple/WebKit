@@ -260,7 +260,7 @@ void GPURenderPassEncoder::end()
     m_currentPipeline = nullptr;
     if (RefPtr device = m_device) {
         m_overrideLabel = label();
-        m_backing = device->backing().invalidRenderPassEncoder();
+        m_backing = device->invalidRenderPassEncoder();
     }
 }
 

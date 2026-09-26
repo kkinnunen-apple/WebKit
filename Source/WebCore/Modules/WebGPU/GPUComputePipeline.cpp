@@ -131,7 +131,7 @@ void GPUComputePipeline::updateShader(const String& source, CompletionHandler<vo
     shaderModuleDescriptor.code = source;
 
     device->backing().pauseAllErrorReporting(true);
-    RefPtr shaderModule = device->backing().createShaderModule(shaderModuleDescriptor);
+    RefPtr shaderModule = WebGPU::createShaderModule(device->backing(), shaderModuleDescriptor);
     device->backing().pauseAllErrorReporting(false);
 
     if (!shaderModule) {
@@ -141,7 +141,7 @@ void GPUComputePipeline::updateShader(const String& source, CompletionHandler<vo
 
     auto descriptor = m_descriptor;
     descriptor.compute.module = *shaderModule;
-    device->backing().createComputePipelineWithPipelineLayoutFromPipelineAsync(descriptor, m_backing, [weakThis = WeakPtr { *this }, descriptor, shaderModuleDescriptor = WTF::move(shaderModuleDescriptor), completionHandler = WTF::move(completionHandler)](RefPtr<WebGPU::ComputePipeline>&& pipeline) mutable {
+    WebGPU::createComputePipelineWithPipelineLayoutFromPipelineAsync(device->backing(), descriptor, m_backing, [weakThis = WeakPtr { *this }, descriptor, shaderModuleDescriptor = WTF::move(shaderModuleDescriptor), completionHandler = WTF::move(completionHandler)](Expected<Ref<WebGPU::ComputePipeline>, ::WebGPU::PipelineError>&& pipeline) mutable {
         RefPtr protectedThis { weakThis };
         if (!protectedThis) {
             completionHandler(false);
@@ -149,7 +149,7 @@ void GPUComputePipeline::updateShader(const String& source, CompletionHandler<vo
         }
 
         if (pipeline)
-            protectedThis->m_backing = pipeline.releaseNonNull();
+            protectedThis->m_backing = WTF::move(*pipeline);
         protectedThis->m_descriptor = WTF::move(descriptor);
         protectedThis->m_shaderModuleDescriptor = WTF::move(shaderModuleDescriptor);
         completionHandler(true);

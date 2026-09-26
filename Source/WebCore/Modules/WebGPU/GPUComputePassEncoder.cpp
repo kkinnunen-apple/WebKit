@@ -85,7 +85,7 @@ void GPUComputePassEncoder::end()
     protect(backing())->end();
     if (RefPtr device = m_device) {
         m_overrideLabel = label();
-        m_backing = device->backing().invalidComputePassEncoder();
+        m_backing = device->invalidComputePassEncoder();
     }
 }
 

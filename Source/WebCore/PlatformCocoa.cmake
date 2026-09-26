@@ -815,7 +815,6 @@ list(REMOVE_ITEM WebCore_PRIVATE_FRAMEWORK_HEADERS
     Modules/WebGPU/Implementation/WebGPUAdapterImpl.h
     Modules/WebGPU/Implementation/WebGPUCompositorIntegrationImpl.h
     Modules/WebGPU/Implementation/WebGPUConvertToBackingContext.h
-    Modules/WebGPU/Implementation/WebGPUDeviceImpl.h
     Modules/WebGPU/Implementation/WebGPUDowncastConvertToBackingContext.h
     Modules/WebGPU/Implementation/WebGPUImpl.h
     Modules/WebGPU/Implementation/WebGPUPresentationContextImpl.h

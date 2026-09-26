@@ -2930,7 +2930,7 @@ static MTLStorageMode NODELETE storageMode(bool deviceHasUnifiedMemory, bool sup
 #endif
 }
 
-Ref<Texture> Device::createTexture(const WebGPU::TextureDescriptor& descriptor)
+RefPtr<WebGPU::Texture> Device::createTexture(const WebGPU::TextureDescriptor& descriptor)
 {
     if (!isValid())
         return Texture::createInvalid(*this);

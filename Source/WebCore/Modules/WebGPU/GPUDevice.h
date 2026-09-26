@@ -160,6 +160,13 @@ public:
 
     WebGPU::Device& backing() { return m_backing; }
     const WebGPU::Device& backing() const { return m_backing; }
+    // Stand-ins for the objects that cannot be created, or are no longer valid, made invalid on
+    // purpose. The empty bind group layout stands in for a missing pipeline layout slot.
+    Ref<WebGPU::CommandEncoder> invalidCommandEncoder() const { return *m_invalidCommandEncoder; }
+    Ref<WebGPU::CommandBuffer> invalidCommandBuffer() const { return *m_invalidCommandBuffer; }
+    Ref<WebGPU::RenderPassEncoder> invalidRenderPassEncoder() const { return *m_invalidRenderPassEncoder; }
+    Ref<WebGPU::ComputePassEncoder> invalidComputePassEncoder() const { return *m_invalidComputePassEncoder; }
+    Ref<WebGPU::BindGroupLayout> emptyBindGroupLayout() const { return *m_emptyBindGroupLayout; }
     void removeBufferToUnmap(GPUBuffer&);
     void addBufferToUnmap(GPUBuffer&);
     Ref<GPUAdapterInfo> NODELETE adapterInfo() const;
@@ -200,6 +207,12 @@ private:
     const Ref<WebGPU::Device> m_backing;
     const Ref<GPUQueue> m_queue;
     RefPtr<GPUPipelineLayout> m_autoPipelineLayout;
+    String m_label;
+    RefPtr<WebGPU::CommandEncoder> m_invalidCommandEncoder;
+    RefPtr<WebGPU::CommandBuffer> m_invalidCommandBuffer;
+    RefPtr<WebGPU::RenderPassEncoder> m_invalidRenderPassEncoder;
+    RefPtr<WebGPU::ComputePassEncoder> m_invalidComputePassEncoder;
+    RefPtr<WebGPU::BindGroupLayout> m_emptyBindGroupLayout;
     WeakHashSet<GPUBuffer> m_buffersToUnmap;
     WeakHashSet<GPUBuffer> m_buffers;
     WeakHashSet<GPUTexture> m_textures;

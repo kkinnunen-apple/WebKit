@@ -136,7 +136,7 @@ static RenderBundleICBWithResources* makeRenderBundleICBWithResources(id<MTLIndi
     return renderBundle;
 }
 
-Ref<RenderBundleEncoder> Device::createRenderBundleEncoder(const WebGPU::RenderBundleEncoderDescriptor& descriptor)
+RefPtr<WebGPU::RenderBundleEncoder> Device::createRenderBundleEncoder(const WebGPU::RenderBundleEncoderDescriptor& descriptor)
 {
     if (!isValid())
         return RenderBundleEncoder::createInvalid(*this, @"createRenderBundleEncoder: invalid device");

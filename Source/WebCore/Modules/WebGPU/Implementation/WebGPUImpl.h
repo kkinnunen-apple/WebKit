@@ -36,6 +36,7 @@
 #include "WebGPUComputePassEncoder.h"
 #include "WebGPUComputePipeline.h"
 #include "WebGPUConvertToBackingContext.h"
+#include "WebGPUDevice.h"
 #include "WebGPUExternalTexture.h"
 #include "WebGPUPipelineLayout.h"
 #include "WebGPUPtr.h"
@@ -67,7 +68,6 @@ namespace WebCore::WebGPU {
 class Adapter;
 class CompositorIntegration;
 class ConvertToBackingContext;
-class Device;
 class PresentationContext;
 class XRBinding;
 class XRProjectionLayer;

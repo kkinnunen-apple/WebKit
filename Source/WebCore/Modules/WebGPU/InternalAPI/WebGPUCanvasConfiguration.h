@@ -37,7 +37,7 @@
 namespace WebCore::WebGPU {
 
 struct CanvasConfiguration {
-    WeakRef<Device> device;
+    Ref<Device> device;
     TextureFormat format { TextureFormat::R8unorm };
     TextureUsageFlags usage { TextureUsage::RenderAttachment };
     Vector<TextureFormat> viewFormats;

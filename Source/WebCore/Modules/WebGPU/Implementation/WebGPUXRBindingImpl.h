@@ -27,6 +27,7 @@
 
 #if HAVE(WEBGPU_IMPLEMENTATION) && ENABLE(WEBGPU)
 
+#include "WebGPUDevice.h"
 #include "WebGPUPtr.h"
 #include "WebGPUXRBinding.h"
 
@@ -39,7 +40,6 @@
 #endif
 
 namespace WebCore {
-class Device;
 class NativeImage;
 }
 

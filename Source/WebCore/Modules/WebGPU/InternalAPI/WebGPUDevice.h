@@ -36,8 +36,7 @@
 #include <WebCore/WebGPUCommandEncoderDescriptor.h>
 #include <WebCore/WebGPUComputePassEncoder.h>
 #include <WebCore/WebGPUComputePipeline.h>
-#include <WebCore/WebGPUDeviceLostInfo.h>
-#include <WebCore/WebGPUError.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUErrorFilter.h>
 #include <WebCore/WebGPUExternalTexture.h>
 #include <WebCore/WebGPUPipelineLayout.h>
@@ -51,113 +50,27 @@
 #include <WebCore/WebGPUSampler.h>
 #include <WebCore/WebGPUSamplerDescriptor.h>
 #include <WebCore/WebGPUShaderModule.h>
-#include <WebCore/WebGPUSupportedFeatures.h>
-#include <WebCore/WebGPUSupportedLimits.h>
 #include <WebCore/WebGPUTexture.h>
 #include <WebCore/WebGPUTextureDescriptor.h>
-#include <optional>
 #include <wtf/CompletionHandler.h>
-#include <wtf/HashSet.h>
-#include <wtf/Platform.h>
-#include <wtf/Ref.h>
-#include <wtf/RefCountedAndCanMakeWeakPtr.h>
-#include <wtf/WeakPtr.h>
 #include <wtf/text/WTFString.h>
-
-#if HAVE(IOSURFACE)
-#include <IOSurface/IOSurfaceRef.h>
-#endif
-
-#if PLATFORM(COCOA) && ENABLE(VIDEO)
-#include <WebCore/MediaPlayerIdentifier.h>
-#endif
 
 namespace WebCore::WebGPU {
 
 struct ComputePipelineDescriptor;
-struct ExternalTextureDescriptor;
-struct RenderPipelineDescriptor;
-class PresentationContext;
-struct RenderBundleEncoderDescriptor;
 struct RenderPipelineDescriptor;
 struct ShaderModuleDescriptor;
-class Surface;
-class XRBinding;
 
-class Device : public RefCountedAndCanMakeWeakPtr<Device> {
-public:
-    virtual ~Device() = default;
+using Device = ::WebGPU::Device;
 
-    String label() const { return m_label; }
-
-    void setLabel(String&& label)
-    {
-        m_label = WTF::move(label);
-        setLabelInternal(m_label);
-    }
-
-    SupportedFeatures& features() { return m_features; }
-    const SupportedFeatures& features() const { return m_features; }
-    SupportedLimits& limits() { return m_limits; }
-    const SupportedLimits& limits() const { return m_limits; }
-
-    virtual Ref<Queue> queue() = 0;
-
-    virtual void destroy() = 0;
-
-    virtual RefPtr<Buffer> createBuffer(const BufferDescriptor&) = 0;
-    virtual RefPtr<Texture> createTexture(const TextureDescriptor&) = 0;
-    virtual RefPtr<Sampler> createSampler(const SamplerDescriptor&) = 0;
-
-    virtual RefPtr<BindGroupLayout> createBindGroupLayout(const BindGroupLayoutDescriptor&) = 0;
-    virtual RefPtr<PipelineLayout> createPipelineLayout(const PipelineLayoutDescriptor&) = 0;
-    virtual RefPtr<BindGroup> createBindGroup(const BindGroupDescriptor&) = 0;
-
-    virtual RefPtr<ShaderModule> createShaderModule(const ShaderModuleDescriptor&) = 0;
-    virtual RefPtr<ComputePipeline> createComputePipeline(const ComputePipelineDescriptor&) = 0;
-    virtual RefPtr<RenderPipeline> createRenderPipeline(const RenderPipelineDescriptor&) = 0;
-    virtual void createComputePipelineAsync(const ComputePipelineDescriptor&, CompletionHandler<void(RefPtr<ComputePipeline>&&, String&&)>&&) = 0;
-    virtual void createRenderPipelineAsync(const RenderPipelineDescriptor&, CompletionHandler<void(RefPtr<RenderPipeline>&&, String&&)>&&) = 0;
-    virtual void createComputePipelineWithPipelineLayoutFromPipelineAsync(const ComputePipelineDescriptor&, const ComputePipeline&, CompletionHandler<void(RefPtr<ComputePipeline>&&)>&&) = 0;
-    virtual void createRenderPipelineWithPipelineLayoutFromPipelineAsync(const RenderPipelineDescriptor&, const RenderPipeline&, CompletionHandler<void(RefPtr<RenderPipeline>&&)>&&) = 0;
-
-    virtual RefPtr<CommandEncoder> createCommandEncoder(const std::optional<CommandEncoderDescriptor>&) = 0;
-    virtual RefPtr<RenderBundleEncoder> createRenderBundleEncoder(const RenderBundleEncoderDescriptor&) = 0;
-
-    virtual RefPtr<QuerySet> createQuerySet(const QuerySetDescriptor&) = 0;
-
-    virtual void pushErrorScope(ErrorFilter) = 0;
-    virtual void popErrorScope(CompletionHandler<void(bool, std::optional<Error>&&)>&&) = 0;
-    virtual void resolveUncapturedErrorEvent(CompletionHandler<void(bool, std::optional<Error>&&)>&&) = 0;
-    virtual void resolveDeviceLostPromise(CompletionHandler<void(WebCore::WebGPU::DeviceLostReason)>&&) = 0;
-    virtual Ref<CommandEncoder> invalidCommandEncoder() = 0;
-    virtual Ref<CommandBuffer> invalidCommandBuffer() = 0;
-    virtual Ref<RenderPassEncoder> invalidRenderPassEncoder() = 0;
-    virtual Ref<ComputePassEncoder> invalidComputePassEncoder() = 0;
-    virtual void pauseAllErrorReporting(bool pause) = 0;
-
-    virtual bool isRemoteDeviceProxy() const { return false; }
-    virtual bool isDeviceImpl() const { return false; }
-    virtual Ref<BindGroupLayout> emptyBindGroupLayout() const = 0;
-
-protected:
-    Device(Ref<SupportedFeatures>&& features, Ref<SupportedLimits>&& limits)
-        : m_features(WTF::move(features))
-        , m_limits(WTF::move(limits))
-    {
-    }
-
-private:
-    Device(const Device&) = delete;
-    Device(Device&&) = delete;
-    Device& operator=(const Device&) = delete;
-    Device& operator=(Device&&) = delete;
-
-    virtual void setLabelInternal(const String&) = 0;
-
-    String m_label;
-    const Ref<SupportedFeatures> m_features;
-    const Ref<SupportedLimits> m_limits;
-};
+// WebCore keeps these descriptors, which own their arrays. These functions create the objects from
+// them through the WebGPU::Device, which borrows the arrays for the call.
+RefPtr<ShaderModule> createShaderModule(Device&, const ShaderModuleDescriptor&);
+RefPtr<ComputePipeline> createComputePipeline(Device&, const ComputePipelineDescriptor&);
+RefPtr<RenderPipeline> createRenderPipeline(Device&, const RenderPipelineDescriptor&);
+void createComputePipelineAsync(Device&, const ComputePipelineDescriptor&, CompletionHandler<void(Expected<Ref<ComputePipeline>, ::WebGPU::PipelineError>&&)>&&);
+void createRenderPipelineAsync(Device&, const RenderPipelineDescriptor&, CompletionHandler<void(Expected<Ref<RenderPipeline>, ::WebGPU::PipelineError>&&)>&&);
+void createComputePipelineWithPipelineLayoutFromPipelineAsync(Device&, const ComputePipelineDescriptor&, const ComputePipeline& pipelineToReplace, CompletionHandler<void(Expected<Ref<ComputePipeline>, ::WebGPU::PipelineError>&&)>&&);
+void createRenderPipelineWithPipelineLayoutFromPipelineAsync(Device&, const RenderPipelineDescriptor&, const RenderPipeline& pipelineToReplace, CompletionHandler<void(Expected<Ref<RenderPipeline>, ::WebGPU::PipelineError>&&)>&&);
 
 } // namespace WebCore::WebGPU

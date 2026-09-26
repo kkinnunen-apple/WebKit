@@ -42,6 +42,7 @@
 #include <cstdint>
 #include <optional>
 #include <span>
+#include <wtf/Expected.h>
 #include <wtf/Forward.h>
 #include <wtf/OptionSet.h>
 #include <wtf/Ref.h>
@@ -127,6 +128,9 @@ enum class ColorWrite : uint8_t {
     Green = 1 << 1,
     Blue  = 1 << 2,
     Alpha = 1 << 3,
+    // Set when the caller passed a bit that is not one of the above, so that the mask can be
+    // rejected instead of being silently narrowed to the bits we do recognize.
+    Invalid = 1 << 4,
 };
 
 enum class CompareFunction : uint8_t {
@@ -1300,6 +1304,43 @@ class Device : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<Device> {
 public:
     virtual ~Device() = default;
 
+    virtual Vector<FeatureName> features() const = 0;
+    virtual const Limits& limits() const = 0;
+    virtual Ref<Queue> queue() = 0;
+    virtual void destroy() = 0;
+
+    virtual RefPtr<Buffer> createBuffer(const BufferDescriptor&) = 0;
+    virtual RefPtr<Texture> createTexture(const TextureDescriptor&) = 0;
+    virtual RefPtr<Sampler> createSampler(const SamplerDescriptor&) = 0;
+#if PLATFORM(COCOA)
+    virtual RefPtr<ExternalTexture> importExternalTexture(const ExternalTextureDescriptor&) = 0;
+#endif
+    virtual RefPtr<BindGroupLayout> createBindGroupLayout(const BindGroupLayoutDescriptor&) = 0;
+    virtual RefPtr<PipelineLayout> createPipelineLayout(const PipelineLayoutDescriptor&) = 0;
+    virtual RefPtr<BindGroup> createBindGroup(const BindGroupDescriptor&) = 0;
+    virtual RefPtr<ShaderModule> createShaderModule(const ShaderModuleDescriptor&) = 0;
+    virtual RefPtr<ComputePipeline> createComputePipeline(const ComputePipelineDescriptor&) = 0;
+    virtual RefPtr<RenderPipeline> createRenderPipeline(const RenderPipelineDescriptor&) = 0;
+    virtual void createComputePipelineAsync(const ComputePipelineDescriptor&, CompletionHandler<void(Expected<Ref<ComputePipeline>, PipelineError>&&)>&&) = 0;
+    virtual void createRenderPipelineAsync(const RenderPipelineDescriptor&, CompletionHandler<void(Expected<Ref<RenderPipeline>, PipelineError>&&)>&&) = 0;
+    // Creates the pipeline again, with the layout that pipelineToReplace generated from its shaders.
+    virtual void createComputePipelineWithPipelineLayoutFromPipelineAsync(const ComputePipelineDescriptor&, const ComputePipeline& pipelineToReplace, CompletionHandler<void(Expected<Ref<ComputePipeline>, PipelineError>&&)>&&) = 0;
+    virtual void createRenderPipelineWithPipelineLayoutFromPipelineAsync(const RenderPipelineDescriptor&, const RenderPipeline& pipelineToReplace, CompletionHandler<void(Expected<Ref<RenderPipeline>, PipelineError>&&)>&&) = 0;
+    virtual RefPtr<CommandEncoder> createCommandEncoder(const CommandEncoderDescriptor&) = 0;
+    virtual RefPtr<RenderBundleEncoder> createRenderBundleEncoder(const RenderBundleEncoderDescriptor&) = 0;
+    virtual RefPtr<QuerySet> createQuerySet(const QuerySetDescriptor&) = 0;
+
+    virtual void pushErrorScope(ErrorFilter) = 0;
+    // Completes with true and no error when the scope caught none, or when the device is lost; with
+    // false and the error when it caught one; and with false and no error when there is no scope.
+    virtual void popErrorScope(CompletionHandler<void(bool, std::optional<Error>&&)>&&) = 0;
+    // Completes once, with true and the error, when an error is not caught by any scope; or with false
+    // when the device is destroyed or the callback is replaced.
+    virtual void resolveUncapturedErrorEvent(CompletionHandler<void(bool, std::optional<Error>&&)>&&) = 0;
+    // An empty callback clears the current one. Setting a callback completes the current one.
+    virtual void resolveDeviceLostPromise(CompletionHandler<void(DeviceLostReason, String&&)>&&) = 0;
+    // Stops generating errors, for the objects that are created invalid on purpose.
+    virtual void pauseAllErrorReporting(bool pause) = 0;
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 

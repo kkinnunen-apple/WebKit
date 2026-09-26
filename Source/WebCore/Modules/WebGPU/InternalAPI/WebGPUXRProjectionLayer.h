@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <WebCore/WebGPUDevice.h>
 #include <WebCore/WebGPUTextureFormat.h>
 #include <WebCore/WebGPUTextureUsage.h>
 #include <WebCore/WebGPUXREye.h>
@@ -50,7 +51,6 @@ struct RateMapDescription;
 
 namespace WebCore::WebGPU {
 
-class Device;
 class XRGPUSubImage;
 class XRProjectionLayer;
 class XRFrame;

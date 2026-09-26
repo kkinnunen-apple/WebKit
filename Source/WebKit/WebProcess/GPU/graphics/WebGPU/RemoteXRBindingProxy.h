@@ -31,6 +31,7 @@
 #include "RemoteGPUProxy.h"
 #include "RemotePresentationContextProxy.h"
 #include "WebGPUIdentifier.h"
+#include <WebCore/WebGPUDevice.h>
 #include <WebCore/WebGPUXRBinding.h>
 #include <WebCore/WebGPUXREye.h>
 
@@ -39,7 +40,6 @@ class WebXRFrame;
 }
 
 namespace WebCore::WebGPU {
-class Device;
 class XRProjectionLayer;
 class XRView;
 }

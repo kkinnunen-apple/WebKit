@@ -357,7 +357,6 @@ Shared/WebGPU/WebGPUInternalError.cpp
 Shared/WebGPU/WebGPUMultisampleState.cpp
 Shared/WebGPU/WebGPUObjectDescriptorBase.cpp
 Shared/WebGPU/WebGPUOutOfMemoryError.cpp
-Shared/WebGPU/WebGPUPipelineDescriptorBase.cpp
 Shared/WebGPU/WebGPUPipelineLayoutDescriptor.cpp
 Shared/WebGPU/WebGPUPresentationContextDescriptor.cpp
 Shared/WebGPU/WebGPUPrimitiveState.cpp
@@ -371,7 +370,6 @@ Shared/WebGPU/WebGPURenderPassTimestampWrites.cpp
 Shared/WebGPU/WebGPURenderPipelineDescriptor.cpp
 Shared/WebGPU/WebGPURequestAdapterOptions.cpp
 Shared/WebGPU/WebGPUSamplerBindingLayout.cpp
-Shared/WebGPU/WebGPUShaderModuleCompilationHint.cpp
 Shared/WebGPU/WebGPUShaderModuleDescriptor.cpp
 Shared/WebGPU/WebGPUStencilFaceState.cpp
 Shared/WebGPU/WebGPUStorageTextureBindingLayout.cpp

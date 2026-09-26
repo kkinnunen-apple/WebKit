@@ -27,12 +27,12 @@
 
 #if HAVE(WEBGPU_IMPLEMENTATION) && ENABLE(WEBGPU)
 
+#include "WebGPUDevice.h"
 #include "WebGPUPtr.h"
 #include "WebGPUXRProjectionLayer.h"
 #include <WebGPU/WebGPU.h>
 
 namespace WebCore {
-class Device;
 class NativeImage;
 }
 

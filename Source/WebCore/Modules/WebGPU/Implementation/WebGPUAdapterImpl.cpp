@@ -29,7 +29,7 @@
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
 #include "WebGPUConvertToBackingContext.h"
-#include "WebGPUDeviceImpl.h"
+#include <WebGPU/WebGPUCppBridge.h>
 #include <WebGPU/WebGPUExt.h>
 #include <wtf/BlockPtr.h>
 #include <wtf/TZoneMallocInlines.h>
@@ -314,44 +314,7 @@ void AdapterImpl::requestDevice(const DeviceDescriptor& descriptor, CompletionHa
         .deviceLostUserdata = nullptr,
     };
 
-    auto requestedLimits = SupportedLimits::create(limits.maxTextureDimension1D,
-        limits.maxTextureDimension2D,
-        limits.maxTextureDimension3D,
-        limits.maxTextureArrayLayers,
-        limits.maxBindGroups,
-        limits.maxBindGroupsPlusVertexBuffers,
-        limits.maxBindingsPerBindGroup,
-        limits.maxDynamicUniformBuffersPerPipelineLayout,
-        limits.maxDynamicStorageBuffersPerPipelineLayout,
-        limits.maxSampledTexturesPerShaderStage,
-        limits.maxSamplersPerShaderStage,
-        limits.maxStorageBuffersPerShaderStage,
-        limits.maxStorageTexturesPerShaderStage,
-        limits.maxUniformBuffersPerShaderStage,
-        limits.maxUniformBufferBindingSize,
-        limits.maxStorageBufferBindingSize,
-        limits.minUniformBufferOffsetAlignment,
-        limits.minStorageBufferOffsetAlignment,
-        limits.maxVertexBuffers,
-        limits.maxBufferSize,
-        limits.maxVertexAttributes,
-        limits.maxVertexBufferArrayStride,
-        limits.maxInterStageShaderVariables,
-        limits.maxColorAttachments,
-        limits.maxColorAttachmentBytesPerSample,
-        limits.maxComputeWorkgroupStorageSize,
-        limits.maxComputeInvocationsPerWorkgroup,
-        limits.maxComputeWorkgroupSizeX,
-        limits.maxComputeWorkgroupSizeY,
-        limits.maxComputeWorkgroupSizeZ,
-        limits.maxComputeWorkgroupsPerDimension,
-        limits.maxStorageBuffersInFragmentStage,
-        limits.maxStorageTexturesInFragmentStage,
-        limits.maxStorageBuffersInVertexStage,
-        limits.maxStorageTexturesInVertexStage);
-
-    auto requestedFeatures = supportedFeatures(features);
-    auto blockPtr = makeBlockPtr([protectedThis = protect(*this), convertToBackingContext = m_convertToBackingContext.copyRef(), callback = WTF::move(callback), requestedLimits, requestedFeatures](WGPURequestDeviceStatus status, WGPUDevice device, const char*) mutable {
+    auto blockPtr = makeBlockPtr([protectedThis = protect(*this), callback = WTF::move(callback)](WGPURequestDeviceStatus status, WGPUDevice device, const char*) mutable {
         auto adoptedDevice = adoptWebGPU(device);
         // A null device is how the caller learns the request was rejected; an adapter that has
         // already handed out a device reports itself this way.
@@ -359,7 +322,7 @@ void AdapterImpl::requestDevice(const DeviceDescriptor& descriptor, CompletionHa
             callback(nullptr);
             return;
         }
-        callback(DeviceImpl::create(WTF::move(adoptedDevice), WTF::move(requestedFeatures), WTF::move(requestedLimits), convertToBackingContext));
+        callback(adoptRef(::WebGPU::fromAPI(adoptedDevice.leakRef())));
     });
     wgpuAdapterRequestDevice(m_backing.get(), &backingDescriptor, &requestDeviceCallback, Block_copy(blockPtr.get())); // Block_copy is matched with Block_release above in requestDeviceCallback().
 }

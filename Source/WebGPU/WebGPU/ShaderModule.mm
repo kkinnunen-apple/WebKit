@@ -181,7 +181,7 @@ static Ref<ShaderModule> handleShaderSuccessOrFailure(WebGPU::Metal::Device &obj
     return ShaderModule::createInvalid(object, failedCheck);
 }
 
-Ref<ShaderModule> Device::createShaderModule(const WebGPU::ShaderModuleDescriptor& descriptor)
+RefPtr<WebGPU::ShaderModule> Device::createShaderModule(const WebGPU::ShaderModuleDescriptor& descriptor)
 {
     if (!isValid())
         return ShaderModule::createInvalid(*this);

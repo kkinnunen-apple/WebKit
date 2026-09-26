@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 #include <wtf/Ref.h>
 #include <wtf/RefCounted.h>
@@ -33,6 +34,46 @@ namespace WebCore::WebGPU {
 
 class SupportedLimits final : public RefCounted<SupportedLimits> {
 public:
+    static Ref<SupportedLimits> create(const ::WebGPU::Limits& limits)
+    {
+        return create(
+            limits.maxTextureDimension1D,
+            limits.maxTextureDimension2D,
+            limits.maxTextureDimension3D,
+            limits.maxTextureArrayLayers,
+            limits.maxBindGroups,
+            limits.maxBindGroupsPlusVertexBuffers,
+            limits.maxBindingsPerBindGroup,
+            limits.maxDynamicUniformBuffersPerPipelineLayout,
+            limits.maxDynamicStorageBuffersPerPipelineLayout,
+            limits.maxSampledTexturesPerShaderStage,
+            limits.maxSamplersPerShaderStage,
+            limits.maxStorageBuffersPerShaderStage,
+            limits.maxStorageTexturesPerShaderStage,
+            limits.maxUniformBuffersPerShaderStage,
+            limits.maxUniformBufferBindingSize,
+            limits.maxStorageBufferBindingSize,
+            limits.minUniformBufferOffsetAlignment,
+            limits.minStorageBufferOffsetAlignment,
+            limits.maxVertexBuffers,
+            limits.maxBufferSize,
+            limits.maxVertexAttributes,
+            limits.maxVertexBufferArrayStride,
+            limits.maxInterStageShaderVariables,
+            limits.maxColorAttachments,
+            limits.maxColorAttachmentBytesPerSample,
+            limits.maxComputeWorkgroupStorageSize,
+            limits.maxComputeInvocationsPerWorkgroup,
+            limits.maxComputeWorkgroupSizeX,
+            limits.maxComputeWorkgroupSizeY,
+            limits.maxComputeWorkgroupSizeZ,
+            limits.maxComputeWorkgroupsPerDimension,
+            limits.maxStorageBuffersInFragmentStage,
+            limits.maxStorageTexturesInFragmentStage,
+            limits.maxStorageBuffersInVertexStage,
+            limits.maxStorageTexturesInVertexStage);
+    }
+
     static Ref<SupportedLimits> create(
         uint32_t maxTextureDimension1D,
         uint32_t maxTextureDimension2D,
