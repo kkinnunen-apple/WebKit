@@ -1865,6 +1865,40 @@ constexpr WGPUExtent3D toAPI(const WebGPU::Extent3D& extent)
     return { .width = extent.width, .height = extent.height, .depthOrArrayLayers = extent.depthOrArrayLayers };
 }
 
+constexpr WebGPU::Origin3D fromAPI(const WGPUOrigin3D& origin)
+{
+    return { .x = origin.x, .y = origin.y, .z = origin.z };
+}
+
+// WGPU_COPY_STRIDE_UNDEFINED is std::nullopt.
+constexpr WebGPU::TexelCopyBufferLayout fromAPI(const WGPUTexelCopyBufferLayout& layout)
+{
+    auto stride = [](uint32_t value) {
+        return value == WGPU_COPY_STRIDE_UNDEFINED ? std::nullopt : std::optional { value };
+    };
+    return { .offset = layout.offset, .bytesPerRow = stride(layout.bytesPerRow), .rowsPerImage = stride(layout.rowsPerImage) };
+}
+
+inline std::optional<WebGPU::TexelCopyBufferInfo> fromAPI(const WGPUTexelCopyBufferInfo& info)
+{
+    if (!info.buffer)
+        return std::nullopt;
+    return WebGPU::TexelCopyBufferInfo { .layout = fromAPI(info.layout), .buffer = WebGPU::fromAPI(info.buffer) };
+}
+
+inline std::optional<WebGPU::TexelCopyTextureInfo> fromAPI(const WGPUTexelCopyTextureInfo& info)
+{
+    auto aspect = fromAPI(info.aspect);
+    if (!info.texture || !aspect)
+        return std::nullopt;
+    return WebGPU::TexelCopyTextureInfo {
+        .texture = WebGPU::fromAPI(info.texture),
+        .mipLevel = info.mipLevel,
+        .origin = fromAPI(info.origin),
+        .aspect = *aspect,
+    };
+}
+
 inline std::optional<WebGPU::BufferDescriptor> fromAPI(const WGPUBufferDescriptor& descriptor)
 {
     auto usage = bufferUsageFromAPI(descriptor.usage);

@@ -54,7 +54,7 @@ Ref<PipelineLayout> Device::createPipelineLayout(const WebGPU::PipelineLayoutDes
             return PipelineLayout::createInvalid(*this);
         }
         Vector<Ref<BindGroupLayout>> bindGroupLayouts(descriptorBindGroupLayouts.size(), [&](size_t i) {
-            return Ref<BindGroupLayout> { metal(descriptorBindGroupLayouts[i]) };
+            return Ref<BindGroupLayout> { metal(descriptorBindGroupLayouts[i].get()) };
         });
         ShaderStage stages[] = { ShaderStage::Vertex, ShaderStage::Fragment, ShaderStage::Compute };
         for (ShaderStage shaderStage : stages) {
