@@ -10126,7 +10126,6 @@
 		1CFAE2E12A4D7A1D0004AE37 /* WebGPURenderBundleEncoderImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPURenderBundleEncoderImpl.h; sourceTree = "<group>"; };
 		1CFAE2E42A4D7A1E0004AE37 /* WebGPUCommandEncoderImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUCommandEncoderImpl.h; sourceTree = "<group>"; };
 		1CFAE2E52A4D7A1E0004AE37 /* WebGPURenderPipelineImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPURenderPipelineImpl.cpp; sourceTree = "<group>"; };
-		1CFAE2E72A4D7A1F0004AE37 /* WebGPUBindGroupImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUBindGroupImpl.cpp; sourceTree = "<group>"; };
 		1CFAE2E82A4D7A1F0004AE37 /* WebGPUPresentationContextImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUPresentationContextImpl.cpp; sourceTree = "<group>"; };
 		1CFAE2E92A4D7A1F0004AE37 /* WebGPUAdapterImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUAdapterImpl.cpp; sourceTree = "<group>"; };
 		1CFAE2EC2A4D7A200004AE37 /* WebGPUImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUImpl.h; sourceTree = "<group>"; };
@@ -10135,7 +10134,6 @@
 		1CFAE2F12A4D7A220004AE37 /* WebGPUAdapterImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUAdapterImpl.h; sourceTree = "<group>"; };
 		1CFAE2F22A4D7A220004AE37 /* WebGPUConvertToBackingContext.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUConvertToBackingContext.cpp; sourceTree = "<group>"; };
 		1CFAE2F32A4D7A220004AE37 /* WebGPURenderPipelineImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPURenderPipelineImpl.h; sourceTree = "<group>"; };
-		1CFAE2F62A4D7A230004AE37 /* WebGPUBindGroupImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUBindGroupImpl.h; sourceTree = "<group>"; };
 		1CFAE2F72A4D7A230004AE37 /* WebGPURenderBundleImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPURenderBundleImpl.h; sourceTree = "<group>"; };
 		1CFAE2F82A4D7A240004AE37 /* WebGPUCreateImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUCreateImpl.h; sourceTree = "<group>"; };
 		1CFAE2FA2A4D7A240004AE37 /* WebGPUCreateImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUCreateImpl.cpp; sourceTree = "<group>"; };
@@ -26827,8 +26825,6 @@
 				1CFAE2E92A4D7A1F0004AE37 /* WebGPUAdapterImpl.cpp */,
 				1CFAE2F12A4D7A220004AE37 /* WebGPUAdapterImpl.h */,
 				D54E58EB99024AC25995B361 /* WebGPUAPIUtilities.h */,
-				1CFAE2E72A4D7A1F0004AE37 /* WebGPUBindGroupImpl.cpp */,
-				1CFAE2F62A4D7A230004AE37 /* WebGPUBindGroupImpl.h */,
 				1CFAE2CB2A4D7A170004AE37 /* WebGPUCommandBufferImpl.cpp */,
 				1CFAE2FB2A4D7A250004AE37 /* WebGPUCommandBufferImpl.h */,
 				1CFAE2EF2A4D7A210004AE37 /* WebGPUCommandEncoderImpl.cpp */,

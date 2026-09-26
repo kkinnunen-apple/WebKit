@@ -50,6 +50,10 @@ public:
     RemoteDeviceProxy& parent() const { return m_parent; }
     RemoteGPUProxy& root() { return m_parent->root(); }
 
+    bool updateExternalTextures(WebCore::WebGPU::ExternalTexture&) final;
+    void setLabel(String&&) final;
+    bool isValid() const final;
+
 private:
     friend class DowncastConvertToBackingContext;
 
@@ -59,8 +63,6 @@ private:
     RemoteBindGroupProxy(RemoteBindGroupProxy&&) = delete;
     RemoteBindGroupProxy& operator=(const RemoteBindGroupProxy&) = delete;
     RemoteBindGroupProxy& operator=(RemoteBindGroupProxy&&) = delete;
-
-    bool isRemoteBindGroupProxy() const final { return true; }
 
     WebGPUIdentifier backing() const { return m_backing; }
     
@@ -75,18 +77,11 @@ private:
         return protect(root().streamClientConnection())->sendSync(std::forward<T>(message), backing());
     }
 
-    void setLabelInternal(const String&) final;
-    bool updateExternalTextures(WebCore::WebGPU::ExternalTexture&) final;
-
     WebGPUIdentifier m_backing;
     const Ref<ConvertToBackingContext> m_convertToBackingContext;
     const Ref<RemoteDeviceProxy> m_parent;
 };
 
 } // namespace WebKit::WebGPU
-
-SPECIALIZE_TYPE_TRAITS_BEGIN(WebKit::WebGPU::RemoteBindGroupProxy)
-    static bool isType(const WebCore::WebGPU::BindGroup& group) { return group.isRemoteBindGroupProxy(); }
-SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // ENABLE(GPU_PROCESS)

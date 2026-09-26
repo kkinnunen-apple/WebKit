@@ -1666,8 +1666,10 @@ bool BindGroup::rebindSamplersIfNeeded() const
     return true;
 }
 
-bool BindGroup::updateExternalTextures(ExternalTexture& externalTexture)
+bool BindGroup::updateExternalTextures(WebGPU::ExternalTexture& apiExternalTexture)
 {
+    // Every WebGPU::ExternalTexture that reaches a WebGPU::Metal::BindGroup is a WebGPU::Metal::ExternalTexture.
+    auto& externalTexture = static_cast<ExternalTexture&>(apiExternalTexture);
     if (!m_bindGroupLayout || externalTexture.openCommandEncoderCount())
         return false;
 

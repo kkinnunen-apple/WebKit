@@ -28,8 +28,8 @@
 
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
+#include "WebGPUBindGroup.h"
 #include "WebGPUBindGroupDescriptor.h"
-#include "WebGPUBindGroupImpl.h"
 #include "WebGPUBindGroupLayout.h"
 #include "WebGPUBindGroupLayoutDescriptor.h"
 #include "WebGPUBuffer.h"
@@ -273,16 +273,16 @@ RefPtr<BindGroup> DeviceImpl::createBindGroup(const BindGroupDescriptor& descrip
 
     Ref convertToBackingContext = m_convertToBackingContext;
     SegmentedVector<WGPUExternalTexture, 1> chainedEntries;
-    auto backingEntries = descriptor.entries.map([&](const auto& bindGroupEntry) {
+    auto backingEntries = WTF::map(descriptor.entries, [&](const auto& bindGroupEntry) {
         return WGPUBindGroupEntry {
             .binding = bindGroupEntry.binding,
             .buffer = std::holds_alternative<BufferBinding>(bindGroupEntry.resource) ? convertToBackingContext->convertToBacking(std::get<BufferBinding>(bindGroupEntry.resource).buffer) : nullptr,
             .offset = std::holds_alternative<BufferBinding>(bindGroupEntry.resource) ? std::get<BufferBinding>(bindGroupEntry.resource).offset : 0,
             .size = std::holds_alternative<BufferBinding>(bindGroupEntry.resource) ? std::get<BufferBinding>(bindGroupEntry.resource).size.value_or(WGPU_WHOLE_SIZE) : 0,
-            .sampler = std::holds_alternative<std::reference_wrapper<Sampler>>(bindGroupEntry.resource) ? convertToBackingContext->convertToBacking(std::get<std::reference_wrapper<Sampler>>(bindGroupEntry.resource).get()) : nullptr,
-            .texture = std::holds_alternative<std::reference_wrapper<Texture>>(bindGroupEntry.resource) ? convertToBackingContext->convertToBacking(std::get<std::reference_wrapper<Texture>>(bindGroupEntry.resource).get()) : nullptr,
-            .textureView = std::holds_alternative<std::reference_wrapper<TextureView>>(bindGroupEntry.resource) ? convertToBackingContext->convertToBacking(std::get<std::reference_wrapper<TextureView>>(bindGroupEntry.resource).get()) : nullptr,
-            .externalTexture = std::holds_alternative<std::reference_wrapper<ExternalTexture>>(bindGroupEntry.resource) ? convertToBackingContext->convertToBacking(std::get<std::reference_wrapper<ExternalTexture>>(bindGroupEntry.resource).get()) : nullptr,
+            .sampler = std::holds_alternative<Ref<Sampler>>(bindGroupEntry.resource) ? convertToBackingContext->convertToBacking(std::get<Ref<Sampler>>(bindGroupEntry.resource).get()) : nullptr,
+            .texture = std::holds_alternative<Ref<Texture>>(bindGroupEntry.resource) ? convertToBackingContext->convertToBacking(std::get<Ref<Texture>>(bindGroupEntry.resource).get()) : nullptr,
+            .textureView = std::holds_alternative<Ref<TextureView>>(bindGroupEntry.resource) ? convertToBackingContext->convertToBacking(std::get<Ref<TextureView>>(bindGroupEntry.resource).get()) : nullptr,
+            .externalTexture = std::holds_alternative<Ref<ExternalTexture>>(bindGroupEntry.resource) ? convertToBackingContext->convertToBacking(std::get<Ref<ExternalTexture>>(bindGroupEntry.resource).get()) : nullptr,
         };
     });
 
@@ -293,7 +293,7 @@ RefPtr<BindGroup> DeviceImpl::createBindGroup(const BindGroupDescriptor& descrip
         .entries = backingEntries.size() ? backingEntries.span().data() : nullptr,
     };
 
-    return BindGroupImpl::create(adoptWebGPU(wgpuDeviceCreateBindGroup(m_backing.get(), &backingDescriptor)), convertToBackingContext);
+    return adoptRef(::WebGPU::fromAPI(wgpuDeviceCreateBindGroup(m_backing.get(), &backingDescriptor)));
 }
 
 RefPtr<ShaderModule> DeviceImpl::createShaderModule(const ShaderModuleDescriptor& descriptor)

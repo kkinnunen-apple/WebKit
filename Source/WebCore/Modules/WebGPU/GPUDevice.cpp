@@ -619,10 +619,12 @@ ExceptionOr<Ref<GPUBindGroup>> GPUDevice::createBindGroup(GPUBindGroupDescriptor
     }
 #endif
 
-    RefPtr group = m_backing->createBindGroup(bindGroupDescriptor.convertToBacking());
+    Vector<WebGPU::BindGroupEntry> entries;
+    auto backingDescriptor = bindGroupDescriptor.convertToBacking(entries);
+    RefPtr group = m_backing->createBindGroup(backingDescriptor);
     if (!group)
         return Exception { ExceptionCode::InvalidStateError, "GPUDevice.createBindGroup: Unable to make bind group."_s };
-    auto result = GPUBindGroup::create(group.releaseNonNull(), WTF::move(currentLayout), *this);
+    auto result = GPUBindGroup::create(group.releaseNonNull(), WTF::move(backingDescriptor.label), WTF::move(currentLayout), *this);
 #if ENABLE(VIDEO) && PLATFORM(COCOA)
     if (hasExternalTexture) {
         m_lastCreatedExternalTextureBindGroup.first = bindGroupDescriptor.entries;

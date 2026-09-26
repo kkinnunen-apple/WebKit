@@ -26,17 +26,11 @@
 #pragma once
 
 #include <WebCore/WebGPUBuffer.h>
-#include <WebCore/WebGPUIntegralTypes.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <optional>
-#include <wtf/Ref.h>
-#include <wtf/WeakRef.h>
 
 namespace WebCore::WebGPU {
 
-struct BufferBinding {
-    Ref<Buffer> buffer;
-    Size64 offset { 0 };
-    std::optional<Size64> size;
-};
+using BufferBinding = ::WebGPU::BufferBinding;
 
 } // namespace WebCore::WebGPU

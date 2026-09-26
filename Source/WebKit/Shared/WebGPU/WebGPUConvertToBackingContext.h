@@ -37,6 +37,8 @@
 #include "WebGPUOrigin3D.h"
 #include "WebGPURenderPassTimestampWrites.h"
 #include "WebGPUTextureViewDescriptor.h"
+#include <WebCore/WebGPUBindGroup.h>
+#include <WebCore/WebGPUBindGroupDescriptor.h>
 #include <WebCore/WebGPUBindGroupLayout.h>
 #include <WebCore/WebGPUBindGroupLayoutDescriptor.h>
 #include <WebCore/WebGPUBlendComponent.h>
@@ -72,10 +74,6 @@
 namespace WebCore::WebGPU {
 
 class Adapter;
-class BindGroup;
-struct BindGroupDescriptor;
-struct BindGroupEntry;
-struct BufferBinding;
 struct CanvasConfiguration;
 struct ColorTargetState;
 class CommandBuffer;

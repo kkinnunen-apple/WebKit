@@ -101,7 +101,7 @@ void RemoteComputePassEncoder::setBindGroup(WebCore::WebGPU::Index32 index, std:
         return;
     }
 
-    RefPtr convertedBindGroup = protect(m_objectHeap)->convertBindGroupFromBacking(*bindGroup).get();
+    RefPtr convertedBindGroup = protect(m_objectHeap)->convertBindGroupFromBacking(*bindGroup);
     ASSERT(convertedBindGroup);
     if (!convertedBindGroup)
         return;

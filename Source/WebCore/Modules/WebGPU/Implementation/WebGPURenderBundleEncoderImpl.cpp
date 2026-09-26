@@ -28,7 +28,7 @@
 
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
-#include "WebGPUBindGroupImpl.h"
+#include "WebGPUBindGroup.h"
 #include "WebGPUBuffer.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPURenderBundleImpl.h"

@@ -37,6 +37,8 @@
 #include "WebGPUOrigin3D.h"
 #include "WebGPURenderPassTimestampWrites.h"
 #include "WebGPUTextureViewDescriptor.h"
+#include <WebCore/WebGPUBindGroup.h>
+#include <WebCore/WebGPUBindGroupDescriptor.h>
 #include <WebCore/WebGPUBindGroupLayout.h>
 #include <WebCore/WebGPUBindGroupLayoutDescriptor.h>
 #include <WebCore/WebGPUBlendComponent.h>
@@ -82,10 +84,6 @@ enum class VideoFrameRotation : uint16_t;
 namespace WebCore::WebGPU {
 
 class Adapter;
-class BindGroup;
-struct BindGroupDescriptor;
-struct BindGroupEntry;
-struct BufferBinding;
 struct CanvasConfiguration;
 struct ColorTargetState;
 class CommandBuffer;
@@ -209,7 +207,7 @@ class ConvertFromBackingContext {
 public:
     virtual ~ConvertFromBackingContext() = default;
 
-    std::optional<WebCore::WebGPU::BindGroupDescriptor> convertFromBacking(const BindGroupDescriptor&);
+    std::optional<WebCore::WebGPU::BindGroupDescriptor> convertFromBacking(const BindGroupDescriptor&, Vector<WebCore::WebGPU::BindGroupEntry>& entriesStorage);
     std::optional<WebCore::WebGPU::BindGroupEntry> convertFromBacking(const BindGroupEntry&);
     std::optional<WebCore::WebGPU::BindGroupLayoutDescriptor> convertFromBacking(const BindGroupLayoutDescriptor&, Vector<WebCore::WebGPU::BindGroupLayoutEntry>& entriesStorage);
     std::optional<WebCore::WebGPU::BindGroupLayoutEntry> convertFromBacking(const BindGroupLayoutEntry&);
@@ -277,7 +275,7 @@ public:
     std::optional<WebCore::WebGPU::VertexState> convertFromBacking(const VertexState&);
 
     virtual WeakPtr<WebCore::WebGPU::Adapter> convertAdapterFromBacking(WebGPUIdentifier) = 0;
-    virtual WeakPtr<WebCore::WebGPU::BindGroup> convertBindGroupFromBacking(WebGPUIdentifier) = 0;
+    virtual RefPtr<WebCore::WebGPU::BindGroup> convertBindGroupFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::BindGroupLayout> convertBindGroupLayoutFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::Buffer> convertBufferFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::CommandBuffer> convertCommandBufferFromBacking(WebGPUIdentifier) = 0;
