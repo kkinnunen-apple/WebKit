@@ -35,6 +35,8 @@
 #include "WebGPUObjectHeap.h"
 #include <WebCore/SharedMemory.h>
 #include <WebCore/WebGPUBuffer.h>
+#include <WebCore/WebGPUImageCopyExternalImage.h>
+#include <WebCore/WebGPUImageCopyTextureTagged.h>
 #include <WebCore/WebGPUQueue.h>
 #include <wtf/TZoneMallocInlines.h>
 
@@ -135,7 +137,7 @@ void RemoteQueue::writeBuffer(
     }
 
     Ref backing = protect(m_backing);
-    backing->writeBufferNoCopy(protect(*convertedBuffer), bufferOffset, data->mutableSpan(), 0, std::nullopt);
+    backing->writeBuffer(protect(*convertedBuffer), bufferOffset, data->span());
     keepAliveUntilSubmittedWorkDone(backing, WTF::move(data));
     completionHandler(true);
 }
@@ -151,7 +153,7 @@ void RemoteQueue::writeBufferWithCopy(
     if (!convertedBuffer)
         return;
 
-    protect(m_backing)->writeBufferNoCopy(protect(*convertedBuffer), bufferOffset, data.mutableSpan(), 0, std::nullopt);
+    protect(m_backing)->writeBuffer(protect(*convertedBuffer), bufferOffset, data.span());
 }
 
 void RemoteQueue::writeTexture(
@@ -173,7 +175,7 @@ void RemoteQueue::writeTexture(
     }
 
     Ref backing = protect(m_backing);
-    backing->writeTexture(*convertedDestination, data->mutableSpan(), *convertedDataLayout, size);
+    backing->writeTexture(*convertedDestination, data->span(), *convertedDataLayout, size);
     keepAliveUntilSubmittedWorkDone(backing, WTF::move(data));
     completionHandler(true);
 }
@@ -192,7 +194,7 @@ void RemoteQueue::writeTextureWithCopy(
     if (!convertedDestination || !convertedDataLayout)
         return;
 
-    protect(m_backing)->writeTexture(*convertedDestination, data.mutableSpan(), *convertedDataLayout, size);
+    protect(m_backing)->writeTexture(*convertedDestination, data.span(), *convertedDataLayout, size);
 }
 
 void RemoteQueue::copyExternalImageToTexture(

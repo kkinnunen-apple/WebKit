@@ -30,10 +30,14 @@
 
 #include "WebGPUAdapterImpl.h"
 #include "WebGPUCompositorIntegrationImpl.h"
+#include "WebGPUImageCopyExternalImage.h"
+#include "WebGPUImageCopyTextureTagged.h"
 #include "WebGPUPresentationContextDescriptor.h"
 #include "WebGPUPresentationContextImpl.h"
-#include "WebGPUQueueImpl.h"
+#include <WebCore/ColorSpace.h>
 #include <WebCore/GraphicsContext.h>
+#include <WebCore/IOSurface.h>
+#include <WebCore/ImageBuffer.h>
 #include <WebCore/IntSize.h>
 #include <WebCore/NativeImage.h>
 #include <WebGPU/WebGPUExt.h>
@@ -119,14 +123,157 @@ RefPtr<CompositorIntegration> GPUImpl::createCompositorIntegration()
     return CompositorIntegrationImpl::create(m_convertToBackingContext);
 }
 
-void GPUImpl::copyExternalImageToTexture(Queue& queue, const ImageCopyExternalImage& source, const ImageCopyTextureTagged& destination, const Extent3D& copySize)
+#if ENABLE(VIDEO)
+static ::WebGPU::VideoFrameRotation NODELETE convertToAPI(VideoFrameRotation rotation)
 {
-    downcast<QueueImpl>(queue).copyExternalImageToTexture(source, destination, copySize);
+    switch (rotation) {
+    case VideoFrameRotation::None:
+        return ::WebGPU::VideoFrameRotation::None;
+    case VideoFrameRotation::Right:
+        return ::WebGPU::VideoFrameRotation::Right;
+    case VideoFrameRotation::UpsideDown:
+        return ::WebGPU::VideoFrameRotation::UpsideDown;
+    case VideoFrameRotation::Left:
+        return ::WebGPU::VideoFrameRotation::Left;
+    }
+
+    ASSERT_NOT_REACHED();
+    return ::WebGPU::VideoFrameRotation::None;
+}
+#endif
+
+static ::WebGPU::PredefinedColorSpace NODELETE convertToAPI(PredefinedColorSpace colorSpace)
+{
+    switch (colorSpace) {
+    case PredefinedColorSpace::SRGB:
+        return ::WebGPU::PredefinedColorSpace::SRGB;
+    case PredefinedColorSpace::SRGBLinear:
+        return ::WebGPU::PredefinedColorSpace::SRGBLinear;
+#if ENABLE(PREDEFINED_COLOR_SPACE_DISPLAY_P3)
+    case PredefinedColorSpace::DisplayP3:
+        return ::WebGPU::PredefinedColorSpace::DisplayP3;
+    case PredefinedColorSpace::DisplayP3Linear:
+        return ::WebGPU::PredefinedColorSpace::DisplayP3Linear;
+#endif
+    }
+
+    ASSERT_NOT_REACHED();
+    return ::WebGPU::PredefinedColorSpace::SRGB;
 }
 
-RefPtr<WebCore::NativeImage> GPUImpl::nativeImage(Queue& queue, WebCore::VideoFrame& videoFrame)
+// The IOSurface format an accelerated ImageBuffer of this pixel format is backed by, expressed as the
+// equivalent texture format, plus whether its alpha channel holds meaningful data. std::nullopt for
+// the formats GPUQueue::copyExternalImageToTexture keeps on the CPU readback path.
+struct SourceTextureFormat {
+    ::WebGPU::TextureFormat format;
+    bool hasAlpha;
+};
+
+static std::optional<SourceTextureFormat> NODELETE sourceTextureFormat(PixelFormat pixelFormat)
 {
-    return downcast<QueueImpl>(queue).getNativeImage(videoFrame);
+    switch (pixelFormat) {
+    case PixelFormat::RGBA8:
+        return SourceTextureFormat { ::WebGPU::TextureFormat::Rgba8unorm, true };
+    case PixelFormat::BGRA8:
+        return SourceTextureFormat { ::WebGPU::TextureFormat::Bgra8unorm, true };
+    case PixelFormat::BGRX8:
+        // IOSurface::Format::BGRX uses the same IOSurface pixel format as BGRA, but CoreGraphics
+        // renders into it with kCGImageAlphaNoneSkipFirst, so the alpha byte is undefined.
+        return SourceTextureFormat { ::WebGPU::TextureFormat::Bgra8unorm, false };
+    case PixelFormat::RGBX8:
+        return SourceTextureFormat { ::WebGPU::TextureFormat::Rgba8unorm, false };
+#if ENABLE(PIXEL_FORMAT_RGBA16F)
+    case PixelFormat::RGBA16F:
+        return SourceTextureFormat { ::WebGPU::TextureFormat::Rgba16float, true };
+#endif
+#if ENABLE(PIXEL_FORMAT_RGBA16)
+    case PixelFormat::RGBA16:
+        return SourceTextureFormat { ::WebGPU::TextureFormat::Rgba16unorm, true };
+#endif
+#if ENABLE(PIXEL_FORMAT_RGB10)
+    case PixelFormat::RGB10:
+#endif
+#if ENABLE(PIXEL_FORMAT_RGB10A8)
+    case PixelFormat::RGB10A8:
+#endif
+#if ENABLE(PIXEL_FORMAT_RGB10) || ENABLE(PIXEL_FORMAT_RGB10A8)
+        // Packed 10-bit surfaces have no single-plane MTLPixelFormat equivalent.
+        return std::nullopt;
+#endif
+    }
+
+    ASSERT_NOT_REACHED();
+    return std::nullopt;
+}
+
+void GPUImpl::copyExternalImageToTexture(Queue& queue, const ImageCopyExternalImage& source, const ImageCopyTextureTagged& destination, const Extent3D& copySize)
+{
+    ::WebGPU::ImageCopyExternalImage backingSource {
+        .origin = source.origin.value_or(Origin2D { }),
+        .flipY = source.flipY,
+        .hasAlpha = false,
+        // An ImageBitmap created with premultiplyAlpha: "none" was put into its buffer straight, so
+        // the caller has to say; a buffer a 2D context composited is premultiplied.
+        .premultipliedAlpha = source.premultipliedAlpha,
+    };
+
+#if ENABLE(VIDEO)
+    if (source.videoSource) {
+        // The decoded frame the GPU process resolved for us. Its extent, its crop and its primaries
+        // all travel with the frame, so the backing queue reads them off it rather than being told
+        // here; and a decoded frame is opaque, so its alpha is replaced with 1 the way an external
+        // texture's is.
+        auto* pixelBuffer = std::get_if<RetainPtr<CVPixelBufferRef>>(&*source.videoSource);
+        if (!pixelBuffer || !*pixelBuffer)
+            return;
+
+        backingSource.pixelBuffer = *pixelBuffer;
+        // The display transform is the one thing about the frame its pixel buffer does not carry.
+        backingSource.pixelBufferRotation = convertToAPI(source.videoSourceRotation);
+        backingSource.pixelBufferIsMirrored = source.videoSourceIsMirrored;
+        backingSource.premultipliedAlpha = true;
+    } else
+#endif
+    {
+        RefPtr sourceImageBuffer = source.imageBuffer;
+        if (!sourceImageBuffer)
+            return;
+
+        // Only accelerated ImageBuffers have an IOSurface to wrap in an MTLTexture. GPUQueue rejects
+        // unaccelerated sources before we get here, but the backing may have been dropped since.
+        auto* surface = sourceImageBuffer->surface();
+        if (!surface)
+            return;
+
+        auto sourceSize = sourceImageBuffer->truncatedLogicalSize();
+        if (!sourceSize.width() || !sourceSize.height())
+            return;
+
+        auto sourceFormat = sourceTextureFormat(sourceImageBuffer->pixelFormat());
+        if (!sourceFormat)
+            return;
+
+        backingSource.source = surface->surface();
+        backingSource.sourceFormat = sourceFormat->format;
+        backingSource.sourceSize = { static_cast<uint32_t>(sourceSize.width()), static_cast<uint32_t>(sourceSize.height()) };
+        backingSource.hasAlpha = sourceFormat->hasAlpha;
+        backingSource.colorSpace = sourceImageBuffer->colorSpace() == ColorSpace::DisplayP3() ? ::WebGPU::PredefinedColorSpace::DisplayP3 : ::WebGPU::PredefinedColorSpace::SRGB;
+    }
+
+    queue.copyExternalImageToTexture(backingSource, {
+        .texture = destination.texture,
+        .mipLevel = destination.mipLevel,
+        .origin = destination.origin,
+        .aspect = destination.aspect,
+        .colorSpace = convertToAPI(destination.colorSpace),
+        .premultipliedAlpha = destination.premultipliedAlpha,
+    }, copySize);
+}
+
+RefPtr<WebCore::NativeImage> GPUImpl::nativeImage(Queue&, WebCore::VideoFrame&)
+{
+    // Only RemoteGPUProxy resolves a video frame to an image, through its video frame object heap.
+    RELEASE_ASSERT_NOT_REACHED();
 }
 
 void GPUImpl::paintToCanvas(WebCore::NativeImage& image, const WebCore::IntSize& canvasSize, WebCore::GraphicsContext& context)
@@ -213,8 +360,7 @@ bool GPUImpl::isValid(const QuerySet& querySet) const
 
 bool GPUImpl::isValid(const Queue& queue) const
 {
-    WGPUQueue wgpuQueue = m_convertToBackingContext.get().convertToBacking(queue);
-    return wgpuQueueIsValid(wgpuQueue);
+    return queue.isValid();
 }
 
 bool GPUImpl::isValid(const RenderBundleEncoder& renderBundleEncoder) const

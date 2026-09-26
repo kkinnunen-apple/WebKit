@@ -1373,6 +1373,15 @@ class Queue : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<Queue> {
 public:
     virtual ~Queue() = default;
 
+    virtual void submit(Vector<Ref<CommandBuffer>>&&) = 0;
+    virtual void onSubmittedWorkDone(CompletionHandler<void()>&&) = 0;
+    // A large write may alias `data` rather than copy it, until the work submitted after it has
+    // completed. The caller keeps it alive until then, for example with onSubmittedWorkDone().
+    virtual void writeBuffer(const Buffer&, uint64_t bufferOffset, std::span<const uint8_t> data) = 0;
+    virtual void writeTexture(const TexelCopyTextureInfo& destination, std::span<const uint8_t> data, const TexelCopyBufferLayout&, const Extent3D& writeSize) = 0;
+#if PLATFORM(COCOA)
+    virtual void copyExternalImageToTexture(const ImageCopyExternalImage& source, const ImageCopyTextureTagged& destination, const Extent3D& copySize) = 0;
+#endif
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 

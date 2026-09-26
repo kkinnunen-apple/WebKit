@@ -100,7 +100,7 @@ DeviceImpl::DeviceImpl(WebGPUPtr<WGPUDevice>&& device, Ref<SupportedFeatures>&& 
     : Device(WTF::move(features), WTF::move(limits))
     , m_backing(device.copyRef())
     , m_convertToBackingContext(convertToBackingContext)
-    , m_queue(QueueImpl::create(WebGPUPtr<WGPUQueue> { wgpuDeviceGetQueue(device.get()) }, convertToBackingContext))
+    , m_queue(::WebGPU::fromAPI(wgpuDeviceGetQueue(device.get())))
 {
 }
 

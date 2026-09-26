@@ -33,6 +33,7 @@
 #include "WebGPUExtent3D.h"
 #include "WebGPUIdentifier.h"
 #include <WebCore/WebGPUIntegralTypes.h>
+#include <WebCore/WebGPUQueue.h>
 #include <cstdint>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Ref.h>
@@ -43,10 +44,6 @@
 
 namespace WebCore {
 class SharedMemoryHandle;
-}
-
-namespace WebCore::WebGPU {
-class Queue;
 }
 
 namespace IPC {

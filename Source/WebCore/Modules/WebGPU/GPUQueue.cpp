@@ -85,11 +85,12 @@ GPUDevice* GPUQueue::device() const
 
 String GPUQueue::label() const
 {
-    return m_backing->label();
+    return m_label;
 }
 
 void GPUQueue::setLabel(String&& label)
 {
+    m_label = label;
     m_backing->setLabel(WTF::move(label));
 }
 
@@ -142,7 +143,7 @@ ExceptionOr<void> GPUQueue::writeBuffer(
     if (dataOffset > dataSize || dataOffset + contentSize > dataSize || (contentSize % 4))
         return Exception { ExceptionCode::OperationError };
 
-    m_backing->writeBuffer(buffer.backing(), bufferOffset, data.span().subspan(dataOffset, contentSize), 0, contentSize);
+    m_backing->writeBuffer(buffer.backing(), bufferOffset, data.span().subspan(dataOffset, contentSize));
     return { };
 }
 
@@ -688,7 +689,7 @@ static void imageBytesForSource(WebGPU::GPU& gpu, WebGPU::Queue& backing, const 
 
 #if HAVE(IOSURFACE)
 // Whether the backing queue can wrap an accelerated ImageBuffer of this pixel format in a texture.
-// Kept in sync with QueueImpl::copyExternalImageToTexture, which does the wrapping: a format it
+// Kept in sync with GPUImpl::copyExternalImageToTexture, which does the wrapping: a format it
 // cannot express has to be rejected here, while there is still a CPU path to fall back to.
 static bool isSupportedGPUSourcePixelFormat(PixelFormat pixelFormat)
 {

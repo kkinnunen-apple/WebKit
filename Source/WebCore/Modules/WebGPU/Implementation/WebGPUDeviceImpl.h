@@ -30,7 +30,7 @@
 #include "WebGPUDevice.h"
 #include "WebGPUDeviceLostReason.h"
 #include "WebGPUPtr.h"
-#include "WebGPUQueueImpl.h"
+#include "WebGPUQueue.h"
 #include <WebCore/MediaPlayerIdentifier.h>
 #include <WebGPU/WebGPU.h>
 #include <wtf/Deque.h>
@@ -108,7 +108,7 @@ private:
 
     WebGPUPtr<WGPUDevice> m_backing;
     const Ref<ConvertToBackingContext> m_convertToBackingContext;
-    const Ref<QueueImpl> m_queue;
+    const Ref<Queue> m_queue;
 };
 
 } // namespace WebCore::WebGPU

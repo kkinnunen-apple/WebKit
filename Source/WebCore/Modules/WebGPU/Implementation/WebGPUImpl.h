@@ -40,6 +40,7 @@
 #include "WebGPUPipelineLayout.h"
 #include "WebGPUPtr.h"
 #include "WebGPUQuerySet.h"
+#include "WebGPUQueue.h"
 #include "WebGPURenderBundle.h"
 #include "WebGPURenderBundleEncoder.h"
 #include "WebGPURenderPassEncoder.h"
@@ -68,7 +69,6 @@ class CompositorIntegration;
 class ConvertToBackingContext;
 class Device;
 class PresentationContext;
-class Queue;
 class XRBinding;
 class XRProjectionLayer;
 class XRSubImage;

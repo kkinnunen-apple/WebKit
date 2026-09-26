@@ -686,13 +686,13 @@ Device::ExternalTextureData Device::createExternalTextureFromPixelBuffer(CVPixel
             mtlTexture1 = [mtlTexture1 newTextureViewWithPixelFormat:mtlTexture1.pixelFormat textureType:mtlTexture1.textureType levels:NSMakeRange(0, mtlTexture1.mipmapLevelCount) slices:NSMakeRange(0, mtlTexture1.arrayLength) swizzle:*secondPlaneSwizzle];
     }
 
-    protect(m_defaultQueue)->onSubmittedWorkDone([plane0, plane1](WGPUQueueWorkDoneStatus) {
+    protect(m_defaultQueue)->onSubmittedWorkDone(CompletionHandler<void()> { [plane0, plane1] {
         if (plane0)
             CFRelease(plane0);
 
         if (plane1)
             CFRelease(plane1);
-    });
+    } });
 
     float Ax = 1.f / (upperRight[0] - lowerLeft[0]);
     float Bx = -Ax * lowerLeft[0];
