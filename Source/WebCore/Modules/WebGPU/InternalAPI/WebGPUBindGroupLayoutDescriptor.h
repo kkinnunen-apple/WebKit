@@ -26,13 +26,10 @@
 #pragma once
 
 #include <WebCore/WebGPUBindGroupLayoutEntry.h>
-#include <WebCore/WebGPUObjectDescriptorBase.h>
-#include <wtf/Vector.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-struct BindGroupLayoutDescriptor : public ObjectDescriptorBase {
-    Vector<BindGroupLayoutEntry> entries;
-};
+using BindGroupLayoutDescriptor = ::WebGPU::BindGroupLayoutDescriptor;
 
 } // namespace WebCore::WebGPU

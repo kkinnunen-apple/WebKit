@@ -576,10 +576,12 @@ ExceptionOr<Ref<GPUBindGroupLayout>> GPUDevice::createBindGroupLayout(GPUBindGro
         }
     }
 
-    RefPtr layout = m_backing->createBindGroupLayout(bindGroupLayoutDescriptor.convertToBacking());
+    Vector<WebGPU::BindGroupLayoutEntry> entries;
+    auto backingDescriptor = bindGroupLayoutDescriptor.convertToBacking(entries);
+    RefPtr layout = m_backing->createBindGroupLayout(backingDescriptor);
     if (!layout)
         return Exception { ExceptionCode::InvalidStateError, "GPUDevice.createBindGroupLayout: Unable to create bind group layout."_s };
-    return GPUBindGroupLayout::create(layout.releaseNonNull(), 0, this);
+    return GPUBindGroupLayout::create(layout.releaseNonNull(), WTF::move(backingDescriptor.label), 0, this);
 }
 
 RefPtr<GPUPipelineLayout> GPUDevice::createAutoPipelineLayout()

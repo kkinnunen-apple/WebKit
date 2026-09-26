@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <WebCore/WebGPUBindGroupLayout.h>
 #include <cstdint>
 #include <wtf/Ref.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
@@ -33,7 +34,6 @@
 
 namespace WebCore::WebGPU {
 
-class BindGroupLayout;
 
 class ComputePipeline : public RefCountedAndCanMakeWeakPtr<ComputePipeline> {
 public:

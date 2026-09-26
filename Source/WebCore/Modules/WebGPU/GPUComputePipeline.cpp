@@ -116,7 +116,7 @@ void GPUComputePipeline::setLabel(String&& label)
 Ref<GPUBindGroupLayout> GPUComputePipeline::getBindGroupLayout(uint32_t index)
 {
     // "A new GPUBindGroupLayout wrapper is returned each time"
-    return GPUBindGroupLayout::create(protect(backing())->getBindGroupLayout(index), m_uniqueId, protect(m_device));
+    return GPUBindGroupLayout::create(protect(backing())->getBindGroupLayout(index), { }, m_uniqueId, protect(m_device));
 }
 
 void GPUComputePipeline::updateShader(const String& source, CompletionHandler<void(bool)>&& completionHandler)

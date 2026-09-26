@@ -26,16 +26,16 @@
 #pragma once
 
 #include <WebCore/WebGPUBindGroupEntry.h>
+#include <WebCore/WebGPUBindGroupLayout.h>
 #include <WebCore/WebGPUObjectDescriptorBase.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakRef.h>
 
 namespace WebCore::WebGPU {
 
-class BindGroupLayout;
 
 struct BindGroupDescriptor : public ObjectDescriptorBase {
-    WeakRef<BindGroupLayout> layout;
+    Ref<BindGroupLayout> layout;
     Vector<BindGroupEntry> entries;
 };
 

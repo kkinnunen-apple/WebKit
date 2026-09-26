@@ -121,7 +121,7 @@ void GPURenderPipeline::setLabel(String&& label)
 Ref<GPUBindGroupLayout> GPURenderPipeline::getBindGroupLayout(uint32_t index)
 {
     // "A new GPUBindGroupLayout wrapper is returned each time"
-    return GPUBindGroupLayout::create(protect(backing())->getBindGroupLayout(index), m_uniqueId, protect(m_device));
+    return GPUBindGroupLayout::create(protect(backing())->getBindGroupLayout(index), { }, m_uniqueId, protect(m_device));
 }
 
 void GPURenderPipeline::updateVertexShader(const String& source, CompletionHandler<void(bool)>&& completionHandler)

@@ -35,7 +35,6 @@
 
 namespace WebCore::WebGPU {
 
-class BindGroupLayoutImpl;
 class ConvertToBackingContext;
 
 class RenderPipelineImpl final : public RenderPipeline {

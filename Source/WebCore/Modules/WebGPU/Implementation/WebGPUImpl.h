@@ -28,6 +28,7 @@
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
 #include "WebGPU.h"
+#include "WebGPUBindGroupLayout.h"
 #include "WebGPUBuffer.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUExternalTexture.h"
@@ -54,7 +55,6 @@ namespace WebCore::WebGPU {
 
 class Adapter;
 class BindGroup;
-class BindGroupLayout;
 class CompositorIntegration;
 class CommandBuffer;
 class CommandEncoder;

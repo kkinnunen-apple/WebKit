@@ -151,8 +151,7 @@ bool GPUImpl::isValid(const BindGroup& bindGroup) const
 
 bool GPUImpl::isValid(const BindGroupLayout& bindGroupLayout) const
 {
-    WGPUBindGroupLayout wgpuBindGroupLayout = m_convertToBackingContext.get().convertToBacking(bindGroupLayout);
-    return wgpuBindGroupLayoutIsValid(wgpuBindGroupLayout);
+    return bindGroupLayout.isValid();
 }
 
 bool GPUImpl::isValid(const CommandBuffer& commandBuffer) const
