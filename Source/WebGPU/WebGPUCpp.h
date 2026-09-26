@@ -1252,6 +1252,16 @@ class ComputePassEncoder : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPt
 public:
     virtual ~ComputePassEncoder() = default;
 
+    virtual void setPipeline(const ComputePipeline&) = 0;
+    virtual void dispatch(uint32_t workgroupCountX, uint32_t workgroupCountY = 1, uint32_t workgroupCountZ = 1) = 0;
+    virtual void dispatchIndirect(const Buffer& indirectBuffer, uint64_t indirectOffset) = 0;
+    virtual void end() = 0;
+    // The dynamic offsets are borrowed for the call. std::nullopt skips the check of their
+    // count against the layout.
+    virtual void setBindGroup(uint32_t index, const BindGroup*, std::optional<std::span<const uint32_t>> dynamicOffsets) = 0;
+    virtual void pushDebugGroup(String&& groupLabel) = 0;
+    virtual void popDebugGroup() = 0;
+    virtual void insertDebugMarker(String&& markerLabel) = 0;
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 

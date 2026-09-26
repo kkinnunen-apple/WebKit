@@ -32,6 +32,7 @@
 #include "WebGPUBindGroupLayout.h"
 #include "WebGPUBuffer.h"
 #include "WebGPUCommandBuffer.h"
+#include "WebGPUComputePassEncoder.h"
 #include "WebGPUComputePipeline.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUExternalTexture.h"
@@ -62,7 +63,6 @@ namespace WebCore::WebGPU {
 class Adapter;
 class CompositorIntegration;
 class CommandEncoder;
-class ComputePassEncoder;
 class ConvertToBackingContext;
 class Device;
 class PresentationContext;

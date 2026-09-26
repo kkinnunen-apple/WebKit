@@ -32,6 +32,7 @@
 #include <WebCore/WebGPUBuffer.h>
 #include <WebCore/WebGPUBufferDescriptor.h>
 #include <WebCore/WebGPUCommandBuffer.h>
+#include <WebCore/WebGPUComputePassEncoder.h>
 #include <WebCore/WebGPUComputePipeline.h>
 #include <WebCore/WebGPUDeviceLostInfo.h>
 #include <WebCore/WebGPUError.h>
@@ -70,7 +71,6 @@ namespace WebCore::WebGPU {
 
 class CommandEncoder;
 struct CommandEncoderDescriptor;
-class ComputePassEncoder;
 struct ComputePipelineDescriptor;
 struct ExternalTextureDescriptor;
 struct RenderPipelineDescriptor;

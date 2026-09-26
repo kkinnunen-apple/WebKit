@@ -47,6 +47,7 @@
 #include <WebCore/WebGPUBufferBindingLayout.h>
 #include <WebCore/WebGPUColor.h>
 #include <WebCore/WebGPUCommandBuffer.h>
+#include <WebCore/WebGPUComputePassEncoder.h>
 #include <WebCore/WebGPUComputePassTimestampWrites.h>
 #include <WebCore/WebGPUComputePipeline.h>
 #include <WebCore/WebGPUError.h>
@@ -84,7 +85,6 @@ class CommandEncoder;
 struct CommandEncoderDescriptor;
 class CompositorIntegration;
 struct ComputePassDescriptor;
-class ComputePassEncoder;
 struct ComputePipelineDescriptor;
 struct DepthStencilState;
 class Device;

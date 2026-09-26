@@ -97,7 +97,7 @@ void RemoteComputePassEncoder::setBindGroup(WebCore::WebGPU::Index32 index, std:
     std::optional<Vector<WebCore::WebGPU::BufferDynamicOffset>>&& offsets)
 {
     if (!bindGroup) {
-        protect(m_backing)->setBindGroup(index, nullptr, WTF::move(offsets));
+        protect(m_backing)->setBindGroup(index, nullptr, offsets ? std::optional { offsets->span() } : std::nullopt);
         return;
     }
 
@@ -106,7 +106,7 @@ void RemoteComputePassEncoder::setBindGroup(WebCore::WebGPU::Index32 index, std:
     if (!convertedBindGroup)
         return;
 
-    protect(m_backing)->setBindGroup(index, convertedBindGroup.get(), WTF::move(offsets));
+    protect(m_backing)->setBindGroup(index, convertedBindGroup.get(), offsets ? std::optional { offsets->span() } : std::nullopt);
 }
 
 void RemoteComputePassEncoder::pushDebugGroup(String&& groupLabel)
