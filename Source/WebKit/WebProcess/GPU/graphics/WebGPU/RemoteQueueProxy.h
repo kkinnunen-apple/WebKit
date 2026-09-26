@@ -51,7 +51,7 @@ public:
     virtual ~RemoteQueueProxy();
 
     // Called by RemoteGPUProxy, which implements the queue commands that take WebCore sources.
-    void copyExternalImageToTexture(const WebCore::WebGPU::ImageCopyExternalImage& source, const WebCore::WebGPU::ImageCopyTextureTagged& destination, const WebCore::WebGPU::Extent3D& copySize);
+    void copyExternalImageToTexture(const WebCore::WebGPUExternalImageSource& source, const WebCore::WebGPU::ImageCopyTextureTagged& destination, const WebCore::WebGPU::Extent3D& copySize);
     RefPtr<WebCore::NativeImage> getNativeImage(WebCore::VideoFrame&);
 
     RemoteAdapterProxy& parent() const { return m_parent; }
@@ -97,7 +97,7 @@ private:
 
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
     void copyExternalImageFromVideoFrameToTexture(
-        const WebCore::WebGPU::ImageCopyExternalImage& source,
+        const WebCore::WebGPUExternalImageSource& source,
         const WebCore::WebGPU::ImageCopyTextureTagged& destination,
         const WebCore::WebGPU::Extent3D& copySize);
 #endif

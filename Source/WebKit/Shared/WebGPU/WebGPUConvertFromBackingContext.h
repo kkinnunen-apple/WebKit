@@ -107,22 +107,18 @@ namespace WebCore::WebGPU {
 
 struct CanvasConfiguration;
 struct ColorTargetState;
-class CompositorIntegration;
 struct ComputePipelineDescriptor;
 struct DepthStencilState;
 struct DeviceDescriptor;
 struct ExternalTextureDescriptor;
 struct FragmentState;
-class GPU;
 struct Identifier;
-struct ImageCopyExternalImage;
 struct ImageCopyTextureTagged;
 class InternalError;
 struct ObjectDescriptorBase;
 class OutOfMemoryError;
 struct PipelineDescriptorBase;
 struct CanvasConfiguration;
-struct PresentationContextDescriptor;
 struct ProgrammableStage;
 struct RenderBundleEncoderDescriptor;
 struct RenderPassLayout;
@@ -135,6 +131,13 @@ class ValidationError;
 struct VertexBufferLayout;
 struct VertexState;
 } // namespace WebCore::WebGPU
+
+namespace WebCore {
+class WebGPUCompositorIntegration;
+class WebGPUIntegration;
+struct WebGPUExternalImageSource;
+struct WebGPUPresentationContextDescriptor;
+}
 
 namespace WebKit::WebGPU {
 
@@ -233,9 +236,9 @@ public:
     std::optional<::WebGPU::FragmentState> convertFromBacking(const FragmentState&, RenderPipelineDescriptorStorage&);
     std::optional<WebCore::WebGPU::Identifier> convertFromBacking(const Identifier&);
     std::optional<WebCore::WebGPU::ImageCopyBuffer> convertFromBacking(const ImageCopyBuffer&);
-    std::optional<WebCore::WebGPU::ImageCopyExternalImage> convertFromBacking(const ImageCopyExternalImage&);
+    std::optional<WebCore::WebGPUExternalImageSource> convertFromBacking(const ImageCopyExternalImage&);
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
-    std::optional<WebCore::WebGPU::ImageCopyExternalImage> convertFromBacking(const ImageCopyExternalImageVideoSource&, PixelBufferType, WebCore::VideoFrameRotation, bool isMirrored);
+    std::optional<WebCore::WebGPUExternalImageSource> convertFromBacking(const ImageCopyExternalImageVideoSource&, PixelBufferType, WebCore::VideoFrameRotation, bool isMirrored);
 #endif
     std::optional<WebCore::WebGPU::ImageCopyTexture> convertFromBacking(const ImageCopyTexture&);
     std::optional<WebCore::WebGPU::ImageCopyTextureTagged> convertFromBacking(const ImageCopyTextureTagged&);
@@ -247,7 +250,7 @@ public:
     // std::nullopt when the layout does not convert; nullptr when it is missing and allowed to be.
     std::optional<RefPtr<WebCore::WebGPU::PipelineLayout>> convertLayoutFromBacking(const PipelineDescriptorBase&, bool allowMissingPipelineLayout);
     std::optional<WebCore::WebGPU::PipelineLayoutDescriptor> convertFromBacking(const PipelineLayoutDescriptor&, Vector<Ref<WebCore::WebGPU::BindGroupLayout>>& bindGroupLayoutsStorage);
-    std::optional<WebCore::WebGPU::PresentationContextDescriptor> convertFromBacking(const PresentationContextDescriptor&);
+    std::optional<WebCore::WebGPUPresentationContextDescriptor> convertFromBacking(const PresentationContextDescriptor&);
     std::optional<WebCore::WebGPU::PrimitiveState> NODELETE convertFromBacking(const PrimitiveState&);
     std::optional<::WebGPU::ProgrammableStage> convertFromBacking(const ProgrammableStage&, Vector<::WebGPU::ConstantEntry>& constantsStorage);
     std::optional<::WebGPU::RenderBundleEncoderDescriptor> convertFromBacking(const RenderBundleEncoderDescriptor&);
@@ -276,7 +279,7 @@ public:
     virtual RefPtr<WebCore::WebGPU::Buffer> convertBufferFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::CommandBuffer> convertCommandBufferFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::CommandEncoder> convertCommandEncoderFromBacking(WebGPUIdentifier) = 0;
-    virtual WeakPtr<WebCore::WebGPU::CompositorIntegration> convertCompositorIntegrationFromBacking(WebGPUIdentifier) = 0;
+    virtual WeakPtr<WebCore::WebGPUCompositorIntegration> convertCompositorIntegrationFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::ComputePassEncoder> convertComputePassEncoderFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::ComputePipeline> convertComputePipelineFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::Device> convertDeviceFromBacking(WebGPUIdentifier) = 0;

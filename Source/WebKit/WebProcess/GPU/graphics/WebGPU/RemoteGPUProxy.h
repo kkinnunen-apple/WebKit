@@ -59,7 +59,7 @@ class ConvertToBackingContext;
 class DowncastConvertToBackingContext;
 }
 
-class RemoteGPUProxy final : public WebCore::WebGPU::GPU, private IPC::Connection::Client, public ThreadSafeRefCounted<RemoteGPUProxy>, SerialFunctionDispatcher {
+class RemoteGPUProxy final : public WebCore::WebGPUIntegration, private IPC::Connection::Client, public ThreadSafeRefCounted<RemoteGPUProxy>, SerialFunctionDispatcher {
     WTF_MAKE_TZONE_ALLOCATED(RemoteGPUProxy);
     WTF_OVERRIDE_DELETE_FOR_CHECKED_PTR(RemoteGPUProxy);
 public:
@@ -76,7 +76,7 @@ public:
     void deref() const final { return ThreadSafeRefCounted<RemoteGPUProxy>::deref(); }
 
     void paintToCanvas(WebCore::NativeImage&, const WebCore::IntSize&, WebCore::GraphicsContext&) final;
-    void copyExternalImageToTexture(WebCore::WebGPU::Queue&, const WebCore::WebGPU::ImageCopyExternalImage& source, const WebCore::WebGPU::ImageCopyTextureTagged& destination, const WebCore::WebGPU::Extent3D& copySize) final;
+    void copyExternalImageToTexture(WebCore::WebGPU::Queue&, const WebCore::WebGPUExternalImageSource& source, const WebCore::WebGPU::ImageCopyTextureTagged& destination, const WebCore::WebGPU::Extent3D& copySize) final;
     RefPtr<WebCore::NativeImage> nativeImage(WebCore::WebGPU::Queue&, WebCore::VideoFrame&) final;
     RefPtr<WebCore::WebGPU::ExternalTexture> importExternalTexture(WebCore::WebGPU::Device&, const WebCore::WebGPU::ExternalTextureDescriptor&) final;
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
@@ -126,10 +126,10 @@ private:
 
     void requestAdapter(const WebCore::WebGPU::RequestAdapterOptions&, CompletionHandler<void(RefPtr<WebCore::WebGPU::Adapter>&&)>&&) final;
 
-    RefPtr<WebCore::WebGPU::PresentationContext> createPresentationContext(const WebCore::WebGPU::PresentationContextDescriptor&) final;
+    RefPtr<WebCore::WebGPU::PresentationContext> createPresentationContext(const WebCore::WebGPUPresentationContextDescriptor&) final;
 
-    RefPtr<WebCore::WebGPU::CompositorIntegration> createCompositorIntegration() final;
-    bool isValid(const WebCore::WebGPU::CompositorIntegration&) const final;
+    RefPtr<WebCore::WebGPUCompositorIntegration> createCompositorIntegration() final;
+    bool isValid(const WebCore::WebGPUCompositorIntegration&) const final;
     bool isValid(const WebCore::WebGPU::Buffer&) const final;
     bool isValid(const WebCore::WebGPU::Adapter&) const final;
     bool isValid(const WebCore::WebGPU::BindGroup&) const final;
@@ -177,7 +177,7 @@ private:
 } // namespace WebKit
 
 SPECIALIZE_TYPE_TRAITS_BEGIN(WebKit::RemoteGPUProxy)
-    static bool isType(const WebCore::WebGPU::GPU& gpu) { return gpu.isRemoteGPUProxy(); }
+    static bool isType(const WebCore::WebGPUIntegration& gpu) { return gpu.isRemoteGPUProxy(); }
 SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // ENABLE(GPU_PROCESS)

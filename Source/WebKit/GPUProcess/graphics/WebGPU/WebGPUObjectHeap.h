@@ -61,9 +61,9 @@
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/TZoneMalloc.h>
 
-namespace WebCore::WebGPU {
-class CompositorIntegration;
-class GPU;
+namespace WebCore {
+class WebGPUCompositorIntegration;
+class WebGPUIntegration;
 }
 
 namespace WebKit {
@@ -146,7 +146,7 @@ public:
     RefPtr<WebCore::WebGPU::Buffer> convertBufferFromBacking(WebGPUIdentifier) final;
     RefPtr<WebCore::WebGPU::CommandBuffer> convertCommandBufferFromBacking(WebGPUIdentifier) final;
     RefPtr<WebCore::WebGPU::CommandEncoder> convertCommandEncoderFromBacking(WebGPUIdentifier) final;
-    WeakPtr<WebCore::WebGPU::CompositorIntegration> convertCompositorIntegrationFromBacking(WebGPUIdentifier) final;
+    WeakPtr<WebCore::WebGPUCompositorIntegration> convertCompositorIntegrationFromBacking(WebGPUIdentifier) final;
     RefPtr<WebCore::WebGPU::ComputePassEncoder> convertComputePassEncoderFromBacking(WebGPUIdentifier) final;
     RefPtr<WebCore::WebGPU::ComputePipeline> convertComputePipelineFromBacking(WebGPUIdentifier) final;
     RefPtr<WebCore::WebGPU::Device> convertDeviceFromBacking(WebGPUIdentifier) final;
@@ -172,7 +172,7 @@ public:
         bool exists { false };
         bool valid { false };
     };
-    ExistsAndValid objectExistsAndValid(const WebCore::WebGPU::GPU&, WebGPUIdentifier) const;
+    ExistsAndValid objectExistsAndValid(const WebCore::WebGPUIntegration&, WebGPUIdentifier) const;
 private:
     ObjectHeap();
 

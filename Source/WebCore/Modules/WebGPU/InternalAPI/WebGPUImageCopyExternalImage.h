@@ -31,10 +31,12 @@
 #include <optional>
 #include <wtf/RefPtr.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct ImageCopyExternalImage {
-    std::optional<Origin2D> origin;
+// An image or a video frame to copy to a texture: a WebCore source, which the WebGPU implementations
+// cannot see.
+struct WebGPUExternalImageSource {
+    std::optional<WebGPU::Origin2D> origin;
     bool flipY { false };
     // The source, when it is backed by an ImageBuffer whose pixels are already GPU-resident
     // (a canvas, an OffscreenCanvas, or an ImageBitmap). Null for the sources which still take
@@ -46,7 +48,7 @@ struct ImageCopyExternalImage {
     // Set in place of imageBuffer when the source is a video element or a WebCodecs frame. The
     // decoded frame already lives in the GPU process, so it is named rather than read back, the
     // same way importExternalTexture() names one.
-    std::optional<VideoSourceIdentifier> videoSource;
+    std::optional<WebGPU::VideoSourceIdentifier> videoSource;
 #if ENABLE(VIDEO)
     // How that frame has to be transformed to be presented, which its pixels are not stored with:
     // a horizontal mirror if videoSourceIsMirrored, then a clockwise rotation. A frame a media
@@ -57,4 +59,4 @@ struct ImageCopyExternalImage {
 #endif
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

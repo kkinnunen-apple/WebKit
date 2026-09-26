@@ -53,7 +53,7 @@ struct GPUCopyElementImageSource;
 
 class GPUQueue : public RefCountedAndCanMakeWeakPtr<GPUQueue> {
 public:
-    static Ref<GPUQueue> create(Ref<WebGPU::Queue>&& backing, Ref<WebGPU::GPU>&& gpu, GPUDevice& device)
+    static Ref<GPUQueue> create(Ref<WebGPU::Queue>&& backing, Ref<WebGPUIntegration>&& gpu, GPUDevice& device)
     {
         return adoptRef(*new GPUQueue(WTF::move(backing), WTF::move(gpu), device));
     }
@@ -97,11 +97,11 @@ public:
     bool hasActiveInspectorCanvasCallTracer() const;
 
 private:
-    GPUQueue(Ref<WebGPU::Queue>&&, Ref<WebGPU::GPU>&&, GPUDevice&);
+    GPUQueue(Ref<WebGPU::Queue>&&, Ref<WebGPUIntegration>&&, GPUDevice&);
 
     const Ref<WebGPU::Queue> m_backing;
     // The root, which has the commands that take WebCore sources.
-    const Ref<WebGPU::GPU> m_gpu;
+    const Ref<WebGPUIntegration> m_gpu;
     String m_label;
     WeakPtr<GPUDevice, WeakPtrImplWithEventTargetData> m_device;
 };

@@ -41,15 +41,15 @@
 
 namespace WebCore::WebGPU {
 
-WTF_MAKE_TZONE_ALLOCATED_IMPL(CompositorIntegrationImpl);
+WTF_MAKE_TZONE_ALLOCATED_IMPL(WebGPUCompositorIntegrationImpl);
 
-CompositorIntegrationImpl::CompositorIntegrationImpl()
+WebGPUCompositorIntegrationImpl::WebGPUCompositorIntegrationImpl()
 {
 }
 
-CompositorIntegrationImpl::~CompositorIntegrationImpl() = default;
+WebGPUCompositorIntegrationImpl::~WebGPUCompositorIntegrationImpl() = default;
 
-void CompositorIntegrationImpl::prepareForDisplay(uint32_t frameIndex, CompletionHandler<void()>&& completionHandler)
+void WebGPUCompositorIntegrationImpl::prepareForDisplay(uint32_t frameIndex, CompletionHandler<void()>&& completionHandler)
 {
     if (RefPtr presentationContext = m_presentationContext)
         presentationContext->present(frameIndex);
@@ -57,14 +57,14 @@ void CompositorIntegrationImpl::prepareForDisplay(uint32_t frameIndex, Completio
     m_onSubmittedWorkScheduledCallback(WTF::move(completionHandler));
 }
 
-Seconds CompositorIntegrationImpl::lastFrameGPUCost() const
+Seconds WebGPUCompositorIntegrationImpl::lastFrameGPUCost() const
 {
     if (RefPtr presentationContext = m_presentationContext)
         return presentationContext->lastFrameGPUCost();
     return 0_s;
 }
 
-void CompositorIntegrationImpl::updateContentsHeadroom(float headroom)
+void WebGPUCompositorIntegrationImpl::updateContentsHeadroom(float headroom)
 {
 #if HAVE(SUPPORT_HDR_DISPLAY)
     for (auto& ioSurface : m_renderBuffers)
@@ -75,7 +75,7 @@ void CompositorIntegrationImpl::updateContentsHeadroom(float headroom)
 }
 
 #if PLATFORM(COCOA)
-Vector<MachSendRight> CompositorIntegrationImpl::recreateRenderBuffers(int width, int height, WebCore::ColorSpace&& colorSpace, WebCore::AlphaPremultiplication alphaMode, TextureFormat textureFormat, unsigned bufferCount, Device& device)
+Vector<MachSendRight> WebGPUCompositorIntegrationImpl::recreateRenderBuffers(int width, int height, WebCore::ColorSpace&& colorSpace, WebCore::AlphaPremultiplication alphaMode, TextureFormat textureFormat, unsigned bufferCount, Device& device)
 {
     m_renderBuffers.clear();
     m_device = device;
@@ -120,7 +120,7 @@ Vector<MachSendRight> CompositorIntegrationImpl::recreateRenderBuffers(int width
 }
 #endif
 
-void CompositorIntegrationImpl::withDisplayBufferAsNativeImage(uint32_t bufferIndex, Function<void(WebCore::NativeImage*)> completion)
+void WebGPUCompositorIntegrationImpl::withDisplayBufferAsNativeImage(uint32_t bufferIndex, Function<void(WebCore::NativeImage*)> completion)
 {
     if (!m_renderBuffers.size() || bufferIndex >= m_renderBuffers.size() || !m_device.get())
         return completion(nullptr);
@@ -148,7 +148,7 @@ void CompositorIntegrationImpl::withDisplayBufferAsNativeImage(uint32_t bufferIn
     completion(displayImage.get());
 }
 
-void CompositorIntegrationImpl::paintCompositedResultsToCanvas(WebCore::ImageBuffer&, uint32_t)
+void WebGPUCompositorIntegrationImpl::paintCompositedResultsToCanvas(WebCore::ImageBuffer&, uint32_t)
 {
     ASSERT_NOT_REACHED();
 }

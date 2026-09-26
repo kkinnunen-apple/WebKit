@@ -51,15 +51,15 @@ class NativeImage;
 namespace WebCore::WebGPU {
 
 
-class CompositorIntegrationImpl final : public CompositorIntegration {
-    WTF_MAKE_TZONE_ALLOCATED(CompositorIntegrationImpl);
+class WebGPUCompositorIntegrationImpl final : public WebGPUCompositorIntegration {
+    WTF_MAKE_TZONE_ALLOCATED(WebGPUCompositorIntegrationImpl);
 public:
-    static Ref<CompositorIntegrationImpl> create()
+    static Ref<WebGPUCompositorIntegrationImpl> create()
     {
-        return adoptRef(*new CompositorIntegrationImpl());
+        return adoptRef(*new WebGPUCompositorIntegrationImpl());
     }
 
-    virtual ~CompositorIntegrationImpl();
+    virtual ~WebGPUCompositorIntegrationImpl();
 
     void setPresentationContext(PresentationContext& presentationContext)
     {
@@ -80,14 +80,14 @@ public:
 
 private:
 
-    CompositorIntegrationImpl();
+    WebGPUCompositorIntegrationImpl();
 
-    CompositorIntegrationImpl(const CompositorIntegrationImpl&) = delete;
-    CompositorIntegrationImpl(CompositorIntegrationImpl&&) = delete;
-    CompositorIntegrationImpl& operator=(const CompositorIntegrationImpl&) = delete;
-    CompositorIntegrationImpl& operator=(CompositorIntegrationImpl&&) = delete;
+    WebGPUCompositorIntegrationImpl(const WebGPUCompositorIntegrationImpl&) = delete;
+    WebGPUCompositorIntegrationImpl(WebGPUCompositorIntegrationImpl&&) = delete;
+    WebGPUCompositorIntegrationImpl& operator=(const WebGPUCompositorIntegrationImpl&) = delete;
+    WebGPUCompositorIntegrationImpl& operator=(WebGPUCompositorIntegrationImpl&&) = delete;
 
-    bool isCompositorIntegrationImpl() const final { return true; }
+    bool isWebGPUCompositorIntegrationImpl() const final { return true; }
 
     void prepareForDisplay(uint32_t frameIndex, CompletionHandler<void()>&&) override;
     void updateContentsHeadroom(float) override;
@@ -110,8 +110,8 @@ private:
 
 } // namespace WebCore::WebGPU
 
-SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::WebGPU::CompositorIntegrationImpl)
-    static bool isType(const WebCore::WebGPU::CompositorIntegration& compositorIntegration) { return compositorIntegration.isCompositorIntegrationImpl(); }
+SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::WebGPU::WebGPUCompositorIntegrationImpl)
+    static bool isType(const WebCore::WebGPUCompositorIntegration& compositorIntegration) { return compositorIntegration.isWebGPUCompositorIntegrationImpl(); }
 SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // HAVE(WEBGPU_IMPLEMENTATION)

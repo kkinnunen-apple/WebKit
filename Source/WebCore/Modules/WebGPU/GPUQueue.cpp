@@ -65,7 +65,7 @@
 
 namespace WebCore {
 
-GPUQueue::GPUQueue(Ref<WebGPU::Queue>&& backing, Ref<WebGPU::GPU>&& gpu, GPUDevice& device)
+GPUQueue::GPUQueue(Ref<WebGPU::Queue>&& backing, Ref<WebGPUIntegration>&& gpu, GPUDevice& device)
     : m_backing(WTF::move(backing))
     , m_gpu(WTF::move(gpu))
     , m_device(device)
@@ -423,7 +423,7 @@ static void clampDimension(WebGPU::Extent3D& extent3D, size_t dimension, WebGPU:
     }
 }
 
-static void getImageBytesFromVideoFrame(WebGPU::GPU& gpu, WebGPU::Queue& backing, const RefPtr<VideoFrame>& videoFrame, WebGPU::Extent3D& backingCopySize, NOESCAPE const ImageDataCallback& callback)
+static void getImageBytesFromVideoFrame(WebGPUIntegration& gpu, WebGPU::Queue& backing, const RefPtr<VideoFrame>& videoFrame, WebGPU::Extent3D& backingCopySize, NOESCAPE const ImageDataCallback& callback)
 {
     if (!videoFrame)
         return callback({ }, 0, 0);
@@ -481,7 +481,7 @@ static void clipTo8bitsPerChannel(std::span<const uint8_t> data, size_t bitsPerC
 }
 #endif
 
-static void imageBytesForSource(WebGPU::GPU& gpu, WebGPU::Queue& backing, const GPUImageCopyExternalImage& sourceDescriptor, const GPUImageCopyTextureTagged& destination, bool& needsYFlip, bool& needsPremultipliedAlpha, WebGPU::Extent3D& backingCopySize, NOESCAPE const ImageDataCallback& callback)
+static void imageBytesForSource(WebGPUIntegration& gpu, WebGPU::Queue& backing, const GPUImageCopyExternalImage& sourceDescriptor, const GPUImageCopyTextureTagged& destination, bool& needsYFlip, bool& needsPremultipliedAlpha, WebGPU::Extent3D& backingCopySize, NOESCAPE const ImageDataCallback& callback)
 {
     UNUSED_PARAM(needsYFlip);
     UNUSED_PARAM(needsPremultipliedAlpha);

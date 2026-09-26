@@ -27,10 +27,10 @@
 
 #include <WebCore/WebGPUCompositorIntegration.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct PresentationContextDescriptor {
-    Ref<CompositorIntegration> compositorIntegration;
+struct WebGPUPresentationContextDescriptor {
+    Ref<WebGPUCompositorIntegration> compositorIntegration;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

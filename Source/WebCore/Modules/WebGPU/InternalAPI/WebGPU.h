@@ -64,81 +64,82 @@
 #endif
 
 namespace WebCore {
-class NativeImage;
-class IntSize;
+
 class GraphicsContext;
+class IntSize;
+class NativeImage;
 class VideoFrame;
+class WebGPUCompositorIntegration;
+
+struct WebGPUExternalImageSource;
+struct WebGPUPresentationContextDescriptor;
+
+namespace WebGPU {
+struct ExternalTextureDescriptor;
+struct ImageCopyTextureTagged;
 }
 
-namespace WebCore::WebGPU {
-
-class CompositorIntegration;
-class GPU;
-class GPUImpl;
-
-struct ExternalTextureDescriptor;
-struct ImageCopyExternalImage;
-struct ImageCopyTextureTagged;
-struct PresentationContextDescriptor;
-
-class GPU : public AbstractRefCounted {
+// The root of WebGPU in WebCore. It creates the adapters and has the commands that take WebCore
+// types, which the WebGPU implementations cannot see.
+class WebGPUIntegration : public AbstractRefCounted {
 public:
-    WEBCORE_EXPORT virtual ~GPU() = default;
+    WEBCORE_EXPORT virtual ~WebGPUIntegration() = default;
 
-    virtual void requestAdapter(const RequestAdapterOptions&, CompletionHandler<void(RefPtr<Adapter>&&)>&&) = 0;
+    virtual void requestAdapter(const WebGPU::RequestAdapterOptions&, CompletionHandler<void(RefPtr<WebGPU::Adapter>&&)>&&) = 0;
 
-    virtual RefPtr<PresentationContext> createPresentationContext(const PresentationContextDescriptor&) = 0;
+    virtual RefPtr<WebGPU::PresentationContext> createPresentationContext(const WebGPUPresentationContextDescriptor&) = 0;
 
-    virtual RefPtr<CompositorIntegration> createCompositorIntegration() = 0;
-    virtual void paintToCanvas(WebCore::NativeImage&, const WebCore::IntSize&, WebCore::GraphicsContext&) = 0;
+    virtual RefPtr<WebGPUCompositorIntegration> createCompositorIntegration() = 0;
+    virtual void paintToCanvas(NativeImage&, const IntSize&, GraphicsContext&) = 0;
 
-    // The queue commands that take WebCore sources, which the WebGPU implementations cannot see.
-    virtual void copyExternalImageToTexture(Queue&, const ImageCopyExternalImage& source, const ImageCopyTextureTagged& destination, const Extent3D& copySize) = 0;
-    virtual RefPtr<WebCore::NativeImage> nativeImage(Queue&, WebCore::VideoFrame&) = 0;
+    // The queue commands that take WebCore sources.
+    virtual void copyExternalImageToTexture(WebGPU::Queue&, const WebGPUExternalImageSource& source, const WebGPU::ImageCopyTextureTagged& destination, const WebGPU::Extent3D& copySize) = 0;
+    virtual RefPtr<NativeImage> nativeImage(WebGPU::Queue&, VideoFrame&) = 0;
     // The device commands that take WebCore sources.
-    virtual RefPtr<ExternalTexture> importExternalTexture(Device&, const ExternalTextureDescriptor&) = 0;
+    virtual RefPtr<WebGPU::ExternalTexture> importExternalTexture(WebGPU::Device&, const WebGPU::ExternalTextureDescriptor&) = 0;
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
-    virtual void updateExternalTexture(Device&, const ExternalTexture&, const WebCore::MediaPlayerIdentifier&) = 0;
+    virtual void updateExternalTexture(WebGPU::Device&, const WebGPU::ExternalTexture&, const MediaPlayerIdentifier&) = 0;
 #endif
-    virtual bool isValid(const CompositorIntegration&) const = 0;
-    virtual bool isValid(const Buffer&) const = 0;
-    virtual bool isValid(const Adapter&) const = 0;
-    virtual bool isValid(const BindGroup&) const = 0;
-    virtual bool isValid(const BindGroupLayout&) const = 0;
-    virtual bool isValid(const CommandBuffer&) const = 0;
-    virtual bool isValid(const CommandEncoder&) const = 0;
-    virtual bool isValid(const ComputePassEncoder&) const = 0;
-    virtual bool isValid(const ComputePipeline&) const = 0;
-    virtual bool isValid(const Device&) const = 0;
-    virtual bool isValid(const ExternalTexture&) const = 0;
-    virtual bool isValid(const PipelineLayout&) const = 0;
-    virtual bool isValid(const PresentationContext&) const = 0;
-    virtual bool isValid(const QuerySet&) const = 0;
-    virtual bool isValid(const Queue&) const = 0;
-    virtual bool isValid(const RenderBundleEncoder&) const = 0;
-    virtual bool isValid(const RenderBundle&) const = 0;
-    virtual bool isValid(const RenderPassEncoder&) const = 0;
-    virtual bool isValid(const RenderPipeline&) const = 0;
-    virtual bool isValid(const Sampler&) const = 0;
-    virtual bool isValid(const ShaderModule&) const = 0;
-    virtual bool isValid(const Texture&) const = 0;
-    virtual bool isValid(const TextureView&) const = 0;
-    virtual bool isValid(const XRBinding&) const = 0;
-    virtual bool isValid(const XRSubImage&) const = 0;
-    virtual bool isValid(const XRProjectionLayer&) const = 0;
-    virtual bool isValid(const XRView&) const = 0;
+    // Whether an object is valid where it is implemented, for tests.
+    virtual bool isValid(const WebGPUCompositorIntegration&) const = 0;
+    virtual bool isValid(const WebGPU::Buffer&) const = 0;
+    virtual bool isValid(const WebGPU::Adapter&) const = 0;
+    virtual bool isValid(const WebGPU::BindGroup&) const = 0;
+    virtual bool isValid(const WebGPU::BindGroupLayout&) const = 0;
+    virtual bool isValid(const WebGPU::CommandBuffer&) const = 0;
+    virtual bool isValid(const WebGPU::CommandEncoder&) const = 0;
+    virtual bool isValid(const WebGPU::ComputePassEncoder&) const = 0;
+    virtual bool isValid(const WebGPU::ComputePipeline&) const = 0;
+    virtual bool isValid(const WebGPU::Device&) const = 0;
+    virtual bool isValid(const WebGPU::ExternalTexture&) const = 0;
+    virtual bool isValid(const WebGPU::PipelineLayout&) const = 0;
+    virtual bool isValid(const WebGPU::PresentationContext&) const = 0;
+    virtual bool isValid(const WebGPU::QuerySet&) const = 0;
+    virtual bool isValid(const WebGPU::Queue&) const = 0;
+    virtual bool isValid(const WebGPU::RenderBundleEncoder&) const = 0;
+    virtual bool isValid(const WebGPU::RenderBundle&) const = 0;
+    virtual bool isValid(const WebGPU::RenderPassEncoder&) const = 0;
+    virtual bool isValid(const WebGPU::RenderPipeline&) const = 0;
+    virtual bool isValid(const WebGPU::Sampler&) const = 0;
+    virtual bool isValid(const WebGPU::ShaderModule&) const = 0;
+    virtual bool isValid(const WebGPU::Texture&) const = 0;
+    virtual bool isValid(const WebGPU::TextureView&) const = 0;
+    virtual bool isValid(const WebGPU::XRBinding&) const = 0;
+    virtual bool isValid(const WebGPU::XRSubImage&) const = 0;
+    virtual bool isValid(const WebGPU::XRProjectionLayer&) const = 0;
+    virtual bool isValid(const WebGPU::XRView&) const = 0;
 
     virtual bool isRemoteGPUProxy() const { return false; }
-    virtual bool isGPUImpl() const { return false; }
+    virtual bool isWebGPUIntegrationImpl() const { return false; }
 
 protected:
-    GPU() = default;
+    WebGPUIntegration() = default;
 
 private:
-    GPU(const GPU&) = delete;
-    GPU(GPU&&) = delete;
-    GPU& operator=(const GPU&) = delete;
-    GPU& operator=(GPU&&) = delete;
+    WebGPUIntegration(const WebGPUIntegration&) = delete;
+    WebGPUIntegration(WebGPUIntegration&&) = delete;
+    WebGPUIntegration& operator=(const WebGPUIntegration&) = delete;
+    WebGPUIntegration& operator=(WebGPUIntegration&&) = delete;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

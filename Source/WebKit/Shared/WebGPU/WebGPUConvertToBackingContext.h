@@ -97,22 +97,18 @@ namespace WebCore::WebGPU {
 
 struct CanvasConfiguration;
 struct ColorTargetState;
-class CompositorIntegration;
 struct ComputePipelineDescriptor;
 struct DepthStencilState;
 struct DeviceDescriptor;
 struct ExternalTextureDescriptor;
 struct FragmentState;
-class GPU;
 struct Identifier;
-struct ImageCopyExternalImage;
 struct ImageCopyTextureTagged;
 class InternalError;
 struct ObjectDescriptorBase;
 class OutOfMemoryError;
 struct PipelineDescriptorBase;
 struct CanvasConfiguration;
-struct PresentationContextDescriptor;
 struct ProgrammableStage;
 struct RenderBundleEncoderDescriptor;
 struct RenderPassLayout;
@@ -125,6 +121,13 @@ class ValidationError;
 struct VertexBufferLayout;
 struct VertexState;
 } // namespace WebCore::WebGPU
+
+namespace WebCore {
+class WebGPUCompositorIntegration;
+class WebGPUIntegration;
+struct WebGPUExternalImageSource;
+struct WebGPUPresentationContextDescriptor;
+}
 
 namespace WebKit::WebGPU {
 
@@ -210,9 +213,9 @@ public:
     std::optional<FragmentState> convertToBacking(const ::WebGPU::FragmentState&);
     std::optional<Identifier> convertToBacking(const WebCore::WebGPU::Identifier&);
     std::optional<ImageCopyBuffer> convertToBacking(const WebCore::WebGPU::ImageCopyBuffer&);
-    std::optional<ImageCopyExternalImage> convertToBacking(const WebCore::WebGPU::ImageCopyExternalImage&);
+    std::optional<ImageCopyExternalImage> convertToBacking(const WebCore::WebGPUExternalImageSource&);
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
-    std::optional<ImageCopyExternalImageVideoSource> convertToBackingVideoSource(const WebCore::WebGPU::ImageCopyExternalImage&);
+    std::optional<ImageCopyExternalImageVideoSource> convertToBackingVideoSource(const WebCore::WebGPUExternalImageSource&);
 #endif
     std::optional<ImageCopyTexture> convertToBacking(const WebCore::WebGPU::ImageCopyTexture&);
     std::optional<ImageCopyTextureTagged> convertToBacking(const WebCore::WebGPU::ImageCopyTextureTagged&);
@@ -222,7 +225,7 @@ public:
     std::optional<ObjectDescriptorBase> NODELETE convertToBacking(const WebCore::WebGPU::ObjectDescriptorBase&);
     std::optional<OutOfMemoryError> NODELETE convertToBacking(const WebCore::WebGPU::OutOfMemoryError&);
     std::optional<PipelineLayoutDescriptor> convertToBacking(const WebCore::WebGPU::PipelineLayoutDescriptor&);
-    std::optional<PresentationContextDescriptor> convertToBacking(const WebCore::WebGPU::PresentationContextDescriptor&);
+    std::optional<PresentationContextDescriptor> convertToBacking(const WebCore::WebGPUPresentationContextDescriptor&);
     std::optional<PrimitiveState> NODELETE convertToBacking(const WebCore::WebGPU::PrimitiveState&);
     std::optional<ProgrammableStage> convertToBacking(const ::WebGPU::ProgrammableStage&);
     std::optional<RenderBundleEncoderDescriptor> convertToBacking(const ::WebGPU::RenderBundleEncoderDescriptor&);
@@ -251,13 +254,13 @@ public:
     virtual WebGPUIdentifier convertToBacking(const WebCore::WebGPU::Buffer&) = 0;
     virtual WebGPUIdentifier convertToBacking(const WebCore::WebGPU::CommandBuffer&) = 0;
     virtual WebGPUIdentifier convertToBacking(const WebCore::WebGPU::CommandEncoder&) = 0;
-    virtual const RemoteCompositorIntegrationProxy& convertToRawBacking(const WebCore::WebGPU::CompositorIntegration&) = 0;
-    virtual WebGPUIdentifier convertToBacking(const WebCore::WebGPU::CompositorIntegration&) = 0;
+    virtual const RemoteCompositorIntegrationProxy& convertToRawBacking(const WebCore::WebGPUCompositorIntegration&) = 0;
+    virtual WebGPUIdentifier convertToBacking(const WebCore::WebGPUCompositorIntegration&) = 0;
     virtual WebGPUIdentifier convertToBacking(const WebCore::WebGPU::ComputePassEncoder&) = 0;
     virtual WebGPUIdentifier convertToBacking(const WebCore::WebGPU::ComputePipeline&) = 0;
     virtual WebGPUIdentifier convertToBacking(const WebCore::WebGPU::Device&) = 0;
     virtual WebGPUIdentifier convertToBacking(const WebCore::WebGPU::ExternalTexture&) = 0;
-    virtual WebGPUIdentifier convertToBacking(const WebCore::WebGPU::GPU&) = 0;
+    virtual WebGPUIdentifier convertToBacking(const WebCore::WebGPUIntegration&) = 0;
     virtual WebGPUIdentifier convertToBacking(const WebCore::WebGPU::PipelineLayout&) = 0;
     virtual WebGPUIdentifier convertToBacking(const WebCore::WebGPU::PresentationContext&) = 0;
     virtual WebGPUIdentifier convertToBacking(const WebCore::WebGPU::QuerySet&) = 0;

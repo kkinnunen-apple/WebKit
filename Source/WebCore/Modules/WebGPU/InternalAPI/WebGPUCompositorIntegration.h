@@ -45,38 +45,36 @@
 #endif
 
 namespace WebCore {
+
 class ColorSpace;
 class ImageBuffer;
 class NativeImage;
-}
 
-namespace WebCore::WebGPU {
-
-
-class CompositorIntegration : public RefCountedAndCanMakeWeakPtr<CompositorIntegration> {
+// The render buffers that the compositor shows a WebGPU canvas from.
+class WebGPUCompositorIntegration : public RefCountedAndCanMakeWeakPtr<WebGPUCompositorIntegration> {
 public:
-    virtual ~CompositorIntegration() = default;
+    virtual ~WebGPUCompositorIntegration() = default;
 
 #if PLATFORM(COCOA)
-    virtual Vector<MachSendRight> recreateRenderBuffers(int width, int height, WebCore::ColorSpace&&, WebCore::AlphaPremultiplication, WebCore::WebGPU::TextureFormat, unsigned bufferCount, Device&) = 0;
+    virtual Vector<MachSendRight> recreateRenderBuffers(int width, int height, ColorSpace&&, AlphaPremultiplication, WebGPU::TextureFormat, unsigned bufferCount, WebGPU::Device&) = 0;
 #endif
 
     virtual void prepareForDisplay(uint32_t frameIndex, CompletionHandler<void()>&&) = 0;
     virtual Seconds lastFrameGPUCost() const { return 0_s; }
-    virtual void withDisplayBufferAsNativeImage(uint32_t bufferIndex, Function<void(WebCore::NativeImage*)>) = 0;
-    virtual void paintCompositedResultsToCanvas(WebCore::ImageBuffer&, uint32_t bufferIndex) = 0;
+    virtual void withDisplayBufferAsNativeImage(uint32_t bufferIndex, Function<void(NativeImage*)>) = 0;
+    virtual void paintCompositedResultsToCanvas(ImageBuffer&, uint32_t bufferIndex) = 0;
     virtual void updateContentsHeadroom(float) = 0;
     virtual bool isRemoteCompositorIntegrationProxy() const { return false; }
-    virtual bool isCompositorIntegrationImpl() const { return false; }
+    virtual bool isWebGPUCompositorIntegrationImpl() const { return false; }
 
 protected:
-    CompositorIntegration() = default;
+    WebGPUCompositorIntegration() = default;
 
 private:
-    CompositorIntegration(const CompositorIntegration&) = delete;
-    CompositorIntegration(CompositorIntegration&&) = delete;
-    CompositorIntegration& operator=(const CompositorIntegration&) = delete;
-    CompositorIntegration& operator=(CompositorIntegration&&) = delete;
+    WebGPUCompositorIntegration(const WebGPUCompositorIntegration&) = delete;
+    WebGPUCompositorIntegration(WebGPUCompositorIntegration&&) = delete;
+    WebGPUCompositorIntegration& operator=(const WebGPUCompositorIntegration&) = delete;
+    WebGPUCompositorIntegration& operator=(WebGPUCompositorIntegration&&) = delete;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

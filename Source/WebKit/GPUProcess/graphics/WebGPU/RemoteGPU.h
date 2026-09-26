@@ -48,11 +48,6 @@
 #include <wtf/ThreadSafeWeakPtr.h>
 #include <wtf/WeakPtr.h>
 
-namespace WebCore::WebGPU {
-class GPU;
-struct PresentationContextDescriptor;
-}
-
 namespace IPC {
 class Connection;
 }
@@ -68,6 +63,10 @@ class VideoFrame;
 
 namespace WebModel {
 struct ImageAsset;
+}
+
+namespace WebCore {
+class WebGPUIntegration;
 }
 
 namespace WebKit {
@@ -100,7 +99,7 @@ public:
     void paintNativeImageToImageBuffer(WebCore::NativeImage&, WebCore::RenderingResourceIdentifier);
     RefPtr<WebCore::ImageBuffer> imageBuffer(WebCore::RenderingResourceIdentifier);
     // The root, which has the commands that take WebCore sources.
-    RefPtr<WebCore::WebGPU::GPU> backing();
+    RefPtr<WebCore::WebGPUIntegration> backing();
     RefPtr<GPUConnectionToWebProcess> gpuConnectionToWebProcess() const;
 
     static Vector<UniqueRef<WebCore::IOSurface>> createRenderBuffers(unsigned width, unsigned height, const WebCore::ProcessIdentity&, bool standardDynamicRange = false);
@@ -131,7 +130,6 @@ private:
     // IPC::StreamServerConnection::Client overrides.
     void didReceiveInvalidMessage(IPC::StreamServerConnection&, IPC::MessageName, const Vector<uint32_t>&) final;
 
-
     void requestAdapter(const WebGPU::RequestAdapterOptions&, WebGPUIdentifier, CompletionHandler<void(std::optional<RemoteGPURequestAdapterResponse>&&)>&&);
     void NODELETE createModelBacking(unsigned width, unsigned height, WebModel::ImageAsset&& diffuseTexture, WebModel::ImageAsset&& specularTexture, WebKit::WebModelIdentifier, bool standardDynamicRange, CompletionHandler<void(Vector<MachSendRight>&&)>&&);
 
@@ -145,7 +143,7 @@ private:
     SharedPreferencesForWebProcess m_sharedPreferencesForWebProcess;
     Ref<IPC::StreamConnectionWorkQueue> m_workQueue;
     RefPtr<IPC::StreamServerConnection> m_streamConnection;
-    RefPtr<WebCore::WebGPU::GPU> m_backing WTF_GUARDED_BY_CAPABILITY(workQueue());
+    RefPtr<WebCore::WebGPUIntegration> m_backing WTF_GUARDED_BY_CAPABILITY(workQueue());
     Ref<WebGPU::ObjectHeap> m_objectHeap WTF_GUARDED_BY_CAPABILITY(workQueue());
     Ref<ModelObjectHeap> m_modelObjectHeap WTF_GUARDED_BY_CAPABILITY(workQueue());
     const WebGPUIdentifier m_identifier;

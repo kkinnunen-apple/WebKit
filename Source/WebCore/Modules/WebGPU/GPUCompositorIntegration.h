@@ -40,7 +40,7 @@ class ImageBuffer;
 
 class GPUCompositorIntegration : public RefCountedAndCanMakeWeakPtr<GPUCompositorIntegration> {
 public:
-    static Ref<GPUCompositorIntegration> create(Ref<WebGPU::CompositorIntegration>&& backing)
+    static Ref<GPUCompositorIntegration> create(Ref<WebGPUCompositorIntegration>&& backing)
     {
         return adoptRef(*new GPUCompositorIntegration(WTF::move(backing)));
     }
@@ -53,19 +53,19 @@ public:
 
     Seconds lastFrameGPUCost() const { return m_backing->lastFrameGPUCost(); }
 
-    WebGPU::CompositorIntegration& backing() { return m_backing; }
-    const WebGPU::CompositorIntegration& backing() const { return m_backing; }
+    WebGPUCompositorIntegration& backing() { return m_backing; }
+    const WebGPUCompositorIntegration& backing() const { return m_backing; }
 
     void paintCompositedResultsToCanvas(WebCore::ImageBuffer&, uint32_t);
     void updateContentsHeadroom(float);
 
 private:
-    GPUCompositorIntegration(Ref<WebGPU::CompositorIntegration>&& backing)
+    GPUCompositorIntegration(Ref<WebGPUCompositorIntegration>&& backing)
         : m_backing(WTF::move(backing))
     {
     }
 
-    const Ref<WebGPU::CompositorIntegration> m_backing;
+    const Ref<WebGPUCompositorIntegration> m_backing;
 };
 
 }
