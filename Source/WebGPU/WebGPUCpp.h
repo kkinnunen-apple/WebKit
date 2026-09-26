@@ -649,6 +649,27 @@ struct ShaderModuleDescriptor {
     std::span<const ShaderModuleCompilationHint> hints; // Borrowed for the duration of the call.
 } SWIFT_NONESCAPABLE;
 
+// https://gpuweb.github.io/gpuweb/#dictdef-gputexelcopybufferlayout
+struct TexelCopyBufferLayout {
+    uint64_t offset { 0 };
+    std::optional<uint32_t> bytesPerRow;
+    std::optional<uint32_t> rowsPerImage;
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gputexelcopybufferinfo
+struct TexelCopyBufferInfo {
+    TexelCopyBufferLayout layout;
+    Ref<Buffer> buffer;
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gputexelcopytextureinfo
+struct TexelCopyTextureInfo {
+    Ref<Texture> texture;
+    uint32_t mipLevel { 0 };
+    Origin3D origin;
+    TextureAspect aspect { TextureAspect::All };
+};
+
 // https://gpuweb.github.io/gpuweb/#dom-gpuprogrammablestage-constants
 struct ConstantEntry {
     String key;

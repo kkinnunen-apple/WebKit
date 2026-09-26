@@ -83,12 +83,12 @@ public:
     static bool NODELETE containsStencilAspect(WGPUTextureFormat);
     static bool NODELETE isDepthOrStencilFormat(WGPUTextureFormat);
     static WGPUTextureFormat NODELETE aspectSpecificFormat(WGPUTextureFormat, WGPUTextureAspect);
-    static NSString* errorValidatingImageCopyTexture(const WGPUTexelCopyTextureInfo&, const WGPUExtent3D&);
-    static NSString* errorValidatingTextureCopyRange(const WGPUTexelCopyTextureInfo&, const WGPUExtent3D&);
+    static NSString* errorValidatingImageCopyTexture(const WebGPU::TexelCopyTextureInfo&, const WebGPU::Extent3D&);
+    static NSString* errorValidatingTextureCopyRange(const WebGPU::TexelCopyTextureInfo&, const WebGPU::Extent3D&);
     static bool NODELETE refersToSingleAspect(WGPUTextureFormat, WGPUTextureAspect);
     static bool NODELETE isValidDepthStencilCopySource(WGPUTextureFormat, WGPUTextureAspect);
     static bool NODELETE isValidDepthStencilCopyDestination(WGPUTextureFormat, WGPUTextureAspect);
-    static NSString* errorValidatingLinearTextureData(const WGPUTexelCopyBufferLayout&, uint64_t, WGPUTextureFormat, WGPUExtent3D);
+    static NSString* errorValidatingLinearTextureData(const WebGPU::TexelCopyBufferLayout&, uint64_t, WGPUTextureFormat, const WebGPU::Extent3D&);
     static MTLTextureUsage NODELETE usage(OptionSet<WebGPU::TextureUsage>, WGPUTextureFormat);
     static MTLPixelFormat NODELETE pixelFormat(WGPUTextureFormat);
     static WGPUTextureFormat NODELETE textureFormat(MTLPixelFormat);

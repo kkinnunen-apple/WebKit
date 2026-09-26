@@ -101,6 +101,18 @@ inline TextureView& metal(WebGPU::TextureView& textureView)
     return static_cast<TextureView&>(textureView);
 }
 
+// For Swift, which cannot call the functions above: it does not see that the WebGPU::Metal classes
+// derive from the C++ API classes.
+inline Buffer& metal(const Ref<WebGPU::Buffer>& buffer)
+{
+    return metal(buffer.get());
+}
+
+inline Texture& metal(const Ref<WebGPU::Texture>& texture)
+{
+    return metal(texture.get());
+}
+
 // FIXME: It would be cool if we didn't have to list all these overloads, but instead could do something like bridge_cast() in WTF.
 
 inline Adapter& fromAPI(WGPUAdapter adapter)

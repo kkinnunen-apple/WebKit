@@ -833,7 +833,7 @@ bool Queue::isIdle() const
     return m_submittedCommandBufferCount == m_completedCommandBufferCount && !m_blitCommandEncoder && !m_stagedCopyEncoder;
 }
 
-NSString* Queue::errorValidatingWriteTexture(const WGPUTexelCopyTextureInfo& destination, const WGPUTexelCopyBufferLayout& dataLayout, const WGPUExtent3D& size, size_t dataByteSize, const Texture& texture) const
+NSString* Queue::errorValidatingWriteTexture(const WebGPU::TexelCopyTextureInfo& destination, const WebGPU::TexelCopyBufferLayout& dataLayout, const WebGPU::Extent3D& size, size_t dataByteSize, const Texture& texture) const
 {
 #define ERROR_STRING(x) [NSString stringWithFormat:@"GPUQueue.writeTexture: %@", x]
     if (!isValidToUseWith(texture, *this))
@@ -851,16 +851,16 @@ NSString* Queue::errorValidatingWriteTexture(const WGPUTexelCopyTextureInfo& des
     if (NSString* error = Texture::errorValidatingTextureCopyRange(destination, size))
         return ERROR_STRING(error);
 
-    if (!Texture::refersToSingleAspect(texture.format(), destination.aspect))
+    if (!Texture::refersToSingleAspect(texture.format(), toAPI(destination.aspect)))
         return ERROR_STRING(@"refersToSingleAspect failed");
 
     auto aspectSpecificFormat = texture.format();
 
     if (Texture::isDepthOrStencilFormat(texture.format())) {
-        if (!Texture::isValidDepthStencilCopyDestination(texture.format(), destination.aspect))
+        if (!Texture::isValidDepthStencilCopyDestination(texture.format(), toAPI(destination.aspect)))
             return ERROR_STRING(@"isValidDepthStencilCopyDestination failed");
 
-        aspectSpecificFormat = Texture::aspectSpecificFormat(texture.format(), destination.aspect);
+        aspectSpecificFormat = Texture::aspectSpecificFormat(texture.format(), toAPI(destination.aspect));
     }
 
     if (NSString* errorString = Texture::errorValidatingLinearTextureData(dataLayout, dataByteSize, aspectSpecificFormat, size))
@@ -877,13 +877,18 @@ const Device& Queue::device() const
     return *device.unsafeGet();
 }
 
-void Queue::clearTextureIfNeeded(const WGPUTexelCopyTextureInfo& destination, NSUInteger slice)
+RefPtr<Device> Queue::protectedDevice() const
+{
+    return m_device.get();
+}
+
+void Queue::clearTextureIfNeeded(const WebGPU::TexelCopyTextureInfo& destination, NSUInteger slice)
 {
     auto device = m_device.get();
     if (!device)
         return;
 
-    Ref texture = fromAPI(destination.texture);
+    Ref texture = metal(destination.texture);
     if (texture->isDestroyed()) {
         device->generateAValidationError("GPUQueue.clearTexture: destination texture is destroyed"_s);
         return;
@@ -910,7 +915,7 @@ bool Queue::writeWillCompletelyClear(WGPUTextureDimension textureDimension, uint
     return false;
 }
 
-void Queue::writeTexture(const WGPUTexelCopyTextureInfo& destination, std::span<uint8_t> data, const WGPUTexelCopyBufferLayout& dataLayout, const WGPUExtent3D& size, bool skipValidation)
+void Queue::writeTexture(const WebGPU::TexelCopyTextureInfo& destination, std::span<uint8_t> data, const WebGPU::TexelCopyBufferLayout& dataLayout, const WebGPU::Extent3D& size, bool skipValidation)
 {
     auto device = m_device.get();
     if (!device)
@@ -919,7 +924,7 @@ void Queue::writeTexture(const WGPUTexelCopyTextureInfo& destination, std::span<
     // https://gpuweb.github.io/gpuweb/#dom-gpuqueue-writetexture
 
     auto dataByteSize = data.size();
-    Ref texture = fromAPI(destination.texture);
+    Ref texture = metal(destination.texture);
     if (texture->isDestroyed()) {
         device->generateAValidationError("GPUQueue.writeTexture: destination texture is destroyed"_s);
         return;
@@ -927,7 +932,7 @@ void Queue::writeTexture(const WGPUTexelCopyTextureInfo& destination, std::span<
 
     auto textureFormat = texture->format();
     if (Texture::isDepthOrStencilFormat(textureFormat)) {
-        textureFormat = Texture::aspectSpecificFormat(textureFormat, destination.aspect);
+        textureFormat = Texture::aspectSpecificFormat(textureFormat, toAPI(destination.aspect));
         if (textureFormat == WGPUTextureFormat_Undefined) {
             device->generateAValidationError("Invalid depth-stencil format"_s);
             return;
@@ -953,7 +958,7 @@ void Queue::writeTexture(const WGPUTexelCopyTextureInfo& destination, std::span<
     auto heightForMetal = logicalSize.height < destination.origin.y ? 0 : std::min(size.height, logicalSize.height - destination.origin.y);
     auto depthForMetal = logicalSize.depthOrArrayLayers < destination.origin.z ? 0 : std::min(size.depthOrArrayLayers, logicalSize.depthOrArrayLayers - destination.origin.z);
 
-    NSUInteger bytesPerRow = dataLayout.bytesPerRow;
+    NSUInteger bytesPerRow = dataLayout.bytesPerRow.value_or(WGPU_COPY_STRIDE_UNDEFINED);
     if (bytesPerRow == WGPU_COPY_STRIDE_UNDEFINED)
         bytesPerRow = std::max<uint32_t>(size.height ? (data.size() / size.height) : data.size(), Texture::bytesPerRow(textureFormat, widthForMetal, texture->sampleCount()));
 
@@ -971,14 +976,14 @@ void Queue::writeTexture(const WGPUTexelCopyTextureInfo& destination, std::span<
         break;
     }
 
-    NSUInteger rowsPerImage = (dataLayout.rowsPerImage == WGPU_COPY_STRIDE_UNDEFINED) ? size.height : dataLayout.rowsPerImage;
+    NSUInteger rowsPerImage = dataLayout.rowsPerImage.value_or(size.height);
     auto checkedBytesPerImage = checkedProduct<uint32_t>(bytesPerRow, rowsPerImage);
     if (checkedBytesPerImage.hasOverflowed())
         return;
     NSUInteger bytesPerImage = checkedBytesPerImage.value();
 
     MTLBlitOption options = MTLBlitOptionNone;
-    switch (destination.aspect) {
+    switch (toAPI(destination.aspect)) {
     case WGPUTextureAspect_All:
         options = MTLBlitOptionNone;
         break;
@@ -1020,16 +1025,16 @@ void Queue::writeTexture(const WGPUTexelCopyTextureInfo& destination, std::span<
     auto blockHeight = Texture::texelBlockHeight(textureFormat);
     auto blockWidth = Texture::texelBlockWidth(textureFormat);
     if (!isCompressed && (bytesPerRow % blockSize || (bytesPerRow > maxRowBytes))) {
-        WGPUExtent3D newSize {
+        WebGPU::Extent3D newSize {
             .width = size.width,
             .height = isCompressed ? blockSize : blockHeight,
             .depthOrArrayLayers = 1
         };
 
         if (textureDimension != WGPUTextureDimension_1D && (heightForMetal > newSize.height || depthForMetal > newSize.depthOrArrayLayers)) {
-            WGPUTexelCopyBufferLayout newDataLayout {
+            WebGPU::TexelCopyBufferLayout newDataLayout {
                 .offset = 0,
-                .bytesPerRow = std::min<uint32_t>(maxRowBytes, dataLayout.bytesPerRow),
+                .bytesPerRow = std::min<uint32_t>(maxRowBytes, dataLayout.bytesPerRow.value_or(WGPU_COPY_STRIDE_UNDEFINED)),
                 .rowsPerImage = newSize.height
             };
 
@@ -1040,7 +1045,7 @@ void Queue::writeTexture(const WGPUTexelCopyTextureInfo& destination, std::span<
                 return;
 
             for (uint32_t z = 0, endZ = std::max<uint32_t>(1, depthForMetal); z < endZ; ++z) {
-                WGPUTexelCopyTextureInfo newDestination = destination;
+                auto newDestination = destination;
                 auto checkedNewDestinationOriginZ = checkedSum<uint32_t>(destination.origin.z, z);
                 if (checkedNewDestinationOriginZ.hasOverflowed())
                     return;
@@ -1811,6 +1816,18 @@ static bool isValidCopyExternalImageDestinationFormat(WGPUTextureFormat format, 
     }
 }
 
+// The texel copy destination of a tagged destination, whose texture is not null.
+static WebGPU::TexelCopyTextureInfo untaggedDestination(const WGPUImageCopyTextureTagged& destination)
+{
+    return {
+        .texture = fromAPI(destination.texture),
+        .mipLevel = destination.mipLevel,
+        .origin = fromAPI(destination.origin),
+        // An unknown aspect fails the check for WGPUTextureAspect_All below.
+        .aspect = fromAPI(destination.aspect).value_or(WebGPU::TextureAspect::All),
+    };
+}
+
 NSString* Queue::errorValidatingCopyExternalImageToTexture(const WGPUImageCopyTextureTagged& destination, const WGPUExtent3D& copySize, const Texture& texture, const Device& device) const
 {
     // https://gpuweb.github.io/gpuweb/#abstract-opdef-validating-gpuimagecopytexturetagged
@@ -1818,17 +1835,13 @@ NSString* Queue::errorValidatingCopyExternalImageToTexture(const WGPUImageCopyTe
     if (!isValidToUseWith(texture, *this))
         return ERROR_STRING(@"destination texture is not valid");
 
-    WGPUTexelCopyTextureInfo untaggedDestination {
-        .texture = destination.texture,
-        .mipLevel = destination.mipLevel,
-        .origin = destination.origin,
-        .aspect = destination.aspect,
-    };
+    auto apiDestination = untaggedDestination(destination);
+    auto apiCopySize = fromAPI(copySize);
 
-    if (NSString* error = Texture::errorValidatingImageCopyTexture(untaggedDestination, copySize))
+    if (NSString* error = Texture::errorValidatingImageCopyTexture(apiDestination, apiCopySize))
         return ERROR_STRING(error);
 
-    if (NSString* error = Texture::errorValidatingTextureCopyRange(untaggedDestination, copySize))
+    if (NSString* error = Texture::errorValidatingTextureCopyRange(apiDestination, apiCopySize))
         return ERROR_STRING(error);
 
     if (copySize.depthOrArrayLayers > 1)
@@ -2012,13 +2025,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
         if (writeWillCompletelyClear(WGPUTextureDimension_2D, widthForMetal, logicalSize.width, heightForMetal, logicalSize.height, 1, logicalSize.depthOrArrayLayers))
             texture->setPreviouslyCleared(destination.mipLevel, destinationSlice);
         else {
-            WGPUTexelCopyTextureInfo untaggedDestination {
-                .texture = destination.texture,
-                .mipLevel = destination.mipLevel,
-                .origin = destination.origin,
-                .aspect = destination.aspect,
-            };
-            clearTextureIfNeeded(untaggedDestination, destinationSlice);
+            clearTextureIfNeeded(untaggedDestination(destination), destinationSlice);
         }
     }
 
@@ -2186,7 +2193,14 @@ void wgpuQueueWriteBuffer(WGPUQueue queue, WGPUBuffer buffer, uint64_t bufferOff
 
 void wgpuQueueWriteTexture(WGPUQueue queue, const WGPUTexelCopyTextureInfo* destination, std::span<uint8_t> data, const WGPUTexelCopyBufferLayout* dataLayout, const WGPUExtent3D* writeSize)
 {
-    protect(WebGPU::Metal::fromAPI(queue))->writeTexture(*destination, data, *dataLayout, *writeSize);
+    Ref protectedQueue = WebGPU::Metal::fromAPI(queue);
+    auto apiDestination = WebGPU::Metal::fromAPI(*destination);
+    if (!apiDestination) {
+        if (RefPtr device = protectedQueue->protectedDevice())
+            device->generateAValidationError("GPUQueue.writeTexture: the destination has a null texture or an invalid aspect"_s);
+        return;
+    }
+    protectedQueue->writeTexture(*apiDestination, data, WebGPU::Metal::fromAPI(*dataLayout), WebGPU::Metal::fromAPI(*writeSize));
 }
 
 void wgpuQueueCopyExternalImageToTexture(WGPUQueue queue, const WGPUImageCopyExternalImage* source, const WGPUImageCopyTextureTagged* destination, const WGPUExtent3D* copySize)

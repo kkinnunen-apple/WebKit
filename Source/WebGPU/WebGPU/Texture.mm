@@ -3750,26 +3750,26 @@ WGPUExtent3D Texture::physicalTextureExtent(WGPUTextureDimension dimension, WGPU
     }
 }
 
-static WGPUExtent3D imageCopyTextureSubresourceSize(const WGPUTexelCopyTextureInfo& imageCopyTexture)
+static WGPUExtent3D imageCopyTextureSubresourceSize(const WebGPU::TexelCopyTextureInfo& imageCopyTexture)
 {
     // https://gpuweb.github.io/gpuweb/#imagecopytexture-subresource-size
 
-    return protect(fromAPI(imageCopyTexture.texture))->physicalMiplevelSpecificTextureExtent(imageCopyTexture.mipLevel);
+    return protect(metal(imageCopyTexture.texture))->physicalMiplevelSpecificTextureExtent(imageCopyTexture.mipLevel);
 }
 
-NSString* Texture::errorValidatingImageCopyTexture(const WGPUTexelCopyTextureInfo& imageCopyTexture, const WGPUExtent3D& copySize)
+NSString* Texture::errorValidatingImageCopyTexture(const WebGPU::TexelCopyTextureInfo& imageCopyTexture, const WebGPU::Extent3D& copySize)
 {
     // https://gpuweb.github.io/gpuweb/#abstract-opdef-validating-gpuimagecopytexture
 
-    uint32_t blockWidth = Texture::texelBlockWidth(fromAPI(imageCopyTexture.texture).format());
+    uint32_t blockWidth = Texture::texelBlockWidth(metal(imageCopyTexture.texture).format());
 
-    uint32_t blockHeight = Texture::texelBlockHeight(fromAPI(imageCopyTexture.texture).format());
+    uint32_t blockHeight = Texture::texelBlockHeight(metal(imageCopyTexture.texture).format());
 
-    if (!fromAPI(imageCopyTexture.texture).isValid())
+    if (!metal(imageCopyTexture.texture).isValid())
         return @"imageCopyTexture is not valid";
 
-    if (imageCopyTexture.mipLevel >= fromAPI(imageCopyTexture.texture).mipLevelCount())
-        return [NSString stringWithFormat:@"imageCopyTexture mip level(%u) is greater than or equal to the mipLevelCount(%u) in the texture", imageCopyTexture.mipLevel, fromAPI(imageCopyTexture.texture).mipLevelCount()];
+    if (imageCopyTexture.mipLevel >= metal(imageCopyTexture.texture).mipLevelCount())
+        return [NSString stringWithFormat:@"imageCopyTexture mip level(%u) is greater than or equal to the mipLevelCount(%u) in the texture", imageCopyTexture.mipLevel, metal(imageCopyTexture.texture).mipLevelCount()];
 
     if (imageCopyTexture.origin.x % blockWidth)
         return [NSString stringWithFormat:@"imageCopyTexture.origin.x(%u) is not a multiple of the texture blockWidth(%u)", imageCopyTexture.origin.x, blockWidth];
@@ -3777,8 +3777,8 @@ NSString* Texture::errorValidatingImageCopyTexture(const WGPUTexelCopyTextureInf
     if (imageCopyTexture.origin.y % blockHeight)
         return [NSString stringWithFormat:@"imageCopyTexture.origin.y(%u) is not a multiple of the texture blockHeight(%u)", imageCopyTexture.origin.y, blockHeight];
 
-    if (Texture::isDepthOrStencilFormat(fromAPI(imageCopyTexture.texture).format())
-        || fromAPI(imageCopyTexture.texture).sampleCount() > 1) {
+    if (Texture::isDepthOrStencilFormat(metal(imageCopyTexture.texture).format())
+        || metal(imageCopyTexture.texture).sampleCount() > 1) {
         auto subresourceSize = imageCopyTextureSubresourceSize(imageCopyTexture);
         if (subresourceSize.width != copySize.width
             || (copySize.height > 1 && subresourceSize.height != copySize.height))
@@ -4057,13 +4057,13 @@ bool Texture::isValidDepthStencilCopyDestination(WGPUTextureFormat format, WGPUT
     }
 }
 
-NSString* Texture::errorValidatingTextureCopyRange(const WGPUTexelCopyTextureInfo& imageCopyTexture, const WGPUExtent3D& copySize)
+NSString* Texture::errorValidatingTextureCopyRange(const WebGPU::TexelCopyTextureInfo& imageCopyTexture, const WebGPU::Extent3D& copySize)
 {
     // https://gpuweb.github.io/gpuweb/#validating-texture-copy-range
 
-    auto blockWidth = Texture::texelBlockWidth(fromAPI(imageCopyTexture.texture).format());
+    auto blockWidth = Texture::texelBlockWidth(metal(imageCopyTexture.texture).format());
 
-    auto blockHeight = Texture::texelBlockHeight(fromAPI(imageCopyTexture.texture).format());
+    auto blockHeight = Texture::texelBlockHeight(metal(imageCopyTexture.texture).format());
 
     auto subresourceSize = imageCopyTextureSubresourceSize(imageCopyTexture);
 
@@ -4090,13 +4090,17 @@ NSString* Texture::errorValidatingTextureCopyRange(const WGPUTexelCopyTextureInf
     return nil;
 }
 
-NSString* Texture::errorValidatingLinearTextureData(const WGPUTexelCopyBufferLayout& layout, uint64_t byteSize, WGPUTextureFormat format, WGPUExtent3D copyExtent)
+NSString* Texture::errorValidatingLinearTextureData(const WebGPU::TexelCopyBufferLayout& layout, uint64_t byteSize, WGPUTextureFormat format, const WebGPU::Extent3D& copyExtent)
 {
 #define ERROR_STRING(...) ([NSString stringWithFormat:@"GPUTexture.validateLinearTextureData: %@", __VA_ARGS__])
     // https://gpuweb.github.io/gpuweb/#abstract-opdef-validating-linear-texture-data
     uint32_t blockWidth = Texture::texelBlockWidth(format);
     uint32_t blockHeight = Texture::texelBlockHeight(format);
     uint32_t blockSize = Texture::texelBlockSize(format);
+
+    // The checks below and their messages use WGPU_COPY_STRIDE_UNDEFINED for a missing stride.
+    uint32_t bytesPerRow = layout.bytesPerRow.value_or(WGPU_COPY_STRIDE_UNDEFINED);
+    uint32_t rowsPerImage = layout.rowsPerImage.value_or(WGPU_COPY_STRIDE_UNDEFINED);
 
     auto widthInBlocks = copyExtent.width / blockWidth;
     if (copyExtent.width % blockWidth)
@@ -4111,29 +4115,29 @@ NSString* Texture::errorValidatingLinearTextureData(const WGPUTexelCopyBufferLay
         return ERROR_STRING([NSString stringWithFormat:@"bytesInLastRow = blockSize(%u + widthInBlocks(%u) overflowed", blockSize, widthInBlocks]);
 
     if (heightInBlocks > 1) {
-        if (layout.bytesPerRow == WGPU_COPY_STRIDE_UNDEFINED)
+        if (bytesPerRow == WGPU_COPY_STRIDE_UNDEFINED)
             return ERROR_STRING([NSString stringWithFormat:@"bytesPerRow is undefined, but heightInBlocks(%u) > 1, this is not allowed", heightInBlocks]);
     }
 
     if (copyExtent.depthOrArrayLayers > 1) {
-        if (layout.bytesPerRow == WGPU_COPY_STRIDE_UNDEFINED || layout.rowsPerImage == WGPU_COPY_STRIDE_UNDEFINED)
-            return ERROR_STRING([NSString stringWithFormat:@"depthOrArrayLayers(%u) > 1 but bytesPerRow(%u) or rowsPerImage(%u) is undefined, this is not allowed", copyExtent.depthOrArrayLayers, layout.bytesPerRow, layout.rowsPerImage]);
+        if (bytesPerRow == WGPU_COPY_STRIDE_UNDEFINED || rowsPerImage == WGPU_COPY_STRIDE_UNDEFINED)
+            return ERROR_STRING([NSString stringWithFormat:@"depthOrArrayLayers(%u) > 1 but bytesPerRow(%u) or rowsPerImage(%u) is undefined, this is not allowed", copyExtent.depthOrArrayLayers, bytesPerRow, rowsPerImage]);
     }
 
-    if (layout.bytesPerRow != WGPU_COPY_STRIDE_UNDEFINED) {
-        if (layout.bytesPerRow < bytesInLastRow.value())
-            return ERROR_STRING([NSString stringWithFormat:@"bytesPerRow(%u) is less than bytesInLastRow(%llu)", layout.bytesPerRow, bytesInLastRow.value()]);
+    if (bytesPerRow != WGPU_COPY_STRIDE_UNDEFINED) {
+        if (bytesPerRow < bytesInLastRow.value())
+            return ERROR_STRING([NSString stringWithFormat:@"bytesPerRow(%u) is less than bytesInLastRow(%llu)", bytesPerRow, bytesInLastRow.value()]);
     }
 
-    if (layout.rowsPerImage != WGPU_COPY_STRIDE_UNDEFINED) {
-        if (layout.rowsPerImage < heightInBlocks)
-            return ERROR_STRING([NSString stringWithFormat:@"layout.rowsPerImage(%u) is less than heightInBlocks(%u)", layout.rowsPerImage, heightInBlocks]);
+    if (rowsPerImage != WGPU_COPY_STRIDE_UNDEFINED) {
+        if (rowsPerImage < heightInBlocks)
+            return ERROR_STRING([NSString stringWithFormat:@"rowsPerImage(%u) is less than heightInBlocks(%u)", rowsPerImage, heightInBlocks]);
     }
 
     auto requiredBytesInCopy = CheckedUint64(0);
 
     if (copyExtent.depthOrArrayLayers > 1) {
-        auto bytesPerImage = checkedProduct<uint64_t>(layout.bytesPerRow, layout.rowsPerImage);
+        auto bytesPerImage = checkedProduct<uint64_t>(bytesPerRow, rowsPerImage);
         auto bytesBeforeLastImage = checkedProduct<uint64_t>(bytesPerImage, checkedDifference<uint64_t>(copyExtent.depthOrArrayLayers, 1));
 
         requiredBytesInCopy += bytesBeforeLastImage;
@@ -4141,7 +4145,7 @@ NSString* Texture::errorValidatingLinearTextureData(const WGPUTexelCopyBufferLay
 
     if (copyExtent.depthOrArrayLayers > 0) {
         if (heightInBlocks > 1)
-            requiredBytesInCopy += checkedProduct<uint64_t>(layout.bytesPerRow, checkedDifference<uint64_t>(heightInBlocks, 1));
+            requiredBytesInCopy += checkedProduct<uint64_t>(bytesPerRow, checkedDifference<uint64_t>(heightInBlocks, 1));
 
         if (heightInBlocks > 0)
             requiredBytesInCopy += bytesInLastRow;
