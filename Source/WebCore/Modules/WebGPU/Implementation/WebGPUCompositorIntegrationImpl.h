@@ -67,7 +67,7 @@ public:
         lazyInitialize(m_presentationContext, Ref { presentationContext });
     }
 
-    void registerCallbacks(WTF::Function<void(CFArrayRef)>&& renderBuffersWereRecreatedCallback, WTF::Function<void(CompletionHandler<void()>&&)>&& onSubmittedWorkScheduledCallback)
+    void registerCallbacks(WTF::Function<void(std::span<const IOSurfaceRef>)>&& renderBuffersWereRecreatedCallback, WTF::Function<void(CompletionHandler<void()>&&)>&& onSubmittedWorkScheduledCallback)
     {
         ASSERT(!m_renderBuffersWereRecreatedCallback);
         m_renderBuffersWereRecreatedCallback = WTF::move(renderBuffersWereRecreatedCallback);
@@ -100,7 +100,7 @@ private:
 
     Vector<UniqueRef<WebCore::IOSurface>> m_renderBuffers;
     WebCore::AlphaPremultiplication m_alphaMode { WebCore::AlphaPremultiplication::Premultiplied };
-    WTF::Function<void(CFArrayRef)> m_renderBuffersWereRecreatedCallback;
+    WTF::Function<void(std::span<const IOSurfaceRef>)> m_renderBuffersWereRecreatedCallback;
 #endif
 
     WTF::Function<void(CompletionHandler<void()>&&)> m_onSubmittedWorkScheduledCallback;

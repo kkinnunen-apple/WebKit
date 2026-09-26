@@ -25,15 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUPowerPreference.h>
-#include <optional>
 
 namespace WebCore::WebGPU {
 
-struct RequestAdapterOptions {
-    std::optional<PowerPreference> powerPreference;
-    bool forceFallbackAdapter { false };
-    bool xrCompatible { false };
-};
+using RequestAdapterOptions = ::WebGPU::RequestAdapterOptions;
 
 } // namespace WebCore::WebGPU

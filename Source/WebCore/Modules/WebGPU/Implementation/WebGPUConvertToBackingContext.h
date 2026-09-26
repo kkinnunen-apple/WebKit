@@ -194,7 +194,6 @@ public:
     virtual WGPUComputePipeline convertToBacking(const ComputePipeline&) = 0;
     virtual WGPUDevice convertToBacking(const Device&) = 0;
     virtual WGPUExternalTexture convertToBacking(const ExternalTexture&) = 0;
-    virtual WGPUInstance convertToBacking(const GPU&) = 0;
     virtual WGPUPipelineLayout convertToBacking(const PipelineLayout&) = 0;
     virtual WGPUQuerySet convertToBacking(const QuerySet&) = 0;
     virtual WGPUQueue convertToBacking(const Queue&) = 0;

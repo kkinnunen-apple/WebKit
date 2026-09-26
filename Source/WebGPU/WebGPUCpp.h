@@ -54,11 +54,20 @@
 #include <wtf/text/WTFString.h>
 
 #if PLATFORM(COCOA)
+#include <wtf/MachSendRight.h>
 #include <wtf/RetainPtr.h>
 
 typedef struct CGImage* CGImageRef;
 typedef struct __CVBuffer* CVPixelBufferRef;
 typedef struct __IOSurface* IOSurfaceRef;
+#endif
+
+#if !defined(WEBGPU_EXPORT)
+#if defined(BUILDING_WEBGPU) || defined(STATICALLY_LINKED_WITH_WEBGPU)
+#define WEBGPU_EXPORT WTF_EXPORT_DECLARATION
+#else
+#define WEBGPU_EXPORT WTF_IMPORT_DECLARATION
+#endif
 #endif
 
 namespace WebGPU {
@@ -812,6 +821,27 @@ struct Error {
     String message;
 };
 
+struct InstanceDescriptor {
+    // Runs a work item on the thread that the instance calls back on. Empty: the work items wait
+    // for processEvents().
+    Function<void(Function<void()>&&)> scheduleWork;
+#if PLATFORM(COCOA)
+    // The task that owns the resources the instance allocates.
+    std::optional<MachSendRight> webProcessResourceOwner;
+#endif
+};
+
+#if PLATFORM(COCOA)
+// A canvas surface, backed by the render buffers of a compositor.
+struct PresentationContextDescriptor {
+    // Called once, with the functions that the compositor calls back: one with the IOSurfaces of the
+    // render buffers each time it recreates them, and one with a completion handler to call once the
+    // work submitted so far has been scheduled. The IOSurfaces are borrowed for the call. The
+    // signatures have no RetainPtr, which is a different type in ARC and non-ARC code.
+    Function<void(Function<void(std::span<const IOSurfaceRef>)>&&, Function<void(CompletionHandler<void()>&&)>&&)> registerCompositorIntegration;
+};
+#endif
+
 // https://gpuweb.github.io/gpuweb/#dictdef-gpurequestadapteroptions
 struct RequestAdapterOptions {
     std::optional<PowerPreference> powerPreference;
@@ -1419,6 +1449,11 @@ class Instance : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<Instance
 public:
     virtual ~Instance() = default;
 
+    // Completes with nullptr when no adapter is available.
+    virtual void requestAdapter(const RequestAdapterOptions&, CompletionHandler<void(RefPtr<Adapter>&&)>&&) = 0;
+#if PLATFORM(COCOA)
+    virtual RefPtr<PresentationContext> createPresentationContext(const PresentationContextDescriptor&) = 0;
+#endif
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 
@@ -1667,6 +1702,9 @@ public:
 protected:
     XRView() = default;
 } SWIFT_SHARED_REFERENCE(refWebGPUXRView, derefWebGPUXRView) SWIFT_RETURNED_AS_UNRETAINED_BY_DEFAULT;
+
+// The root of the implementation.
+WEBGPU_EXPORT RefPtr<Instance> createInstance(InstanceDescriptor&&);
 
 } // namespace WebGPU
 
