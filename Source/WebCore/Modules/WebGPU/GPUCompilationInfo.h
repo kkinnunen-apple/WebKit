@@ -34,23 +34,22 @@ namespace WebCore {
 
 class GPUCompilationInfo : public RefCounted<GPUCompilationInfo> {
 public:
-    static Ref<GPUCompilationInfo> create(Ref<WebGPU::CompilationInfo>&& backing)
+    static Ref<GPUCompilationInfo> create(WebGPU::CompilationInfo&& backing)
     {
         return adoptRef(*new GPUCompilationInfo(WTF::move(backing)));
     }
 
     Vector<Ref<GPUCompilationMessage>> messages() const;
 
-    WebGPU::CompilationInfo& backing() { return m_backing; }
     const WebGPU::CompilationInfo& backing() const { return m_backing; }
 
 private:
-    GPUCompilationInfo(Ref<WebGPU::CompilationInfo>&& backing)
+    GPUCompilationInfo(WebGPU::CompilationInfo&& backing)
         : m_backing(WTF::move(backing))
     {
     }
 
-    const Ref<WebGPU::CompilationInfo> m_backing;
+    const WebGPU::CompilationInfo m_backing;
 };
 
 }

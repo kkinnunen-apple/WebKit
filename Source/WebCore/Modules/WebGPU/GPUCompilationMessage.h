@@ -36,7 +36,7 @@ namespace WebCore {
 
 class GPUCompilationMessage : public RefCounted<GPUCompilationMessage> {
 public:
-    static Ref<GPUCompilationMessage> create(WebGPU::CompilationMessage& backing)
+    static Ref<GPUCompilationMessage> create(const WebGPU::CompilationMessage& backing)
     {
         return adoptRef(*new GPUCompilationMessage(backing));
     }
@@ -48,16 +48,15 @@ public:
     uint64_t NODELETE offset() const;
     uint64_t NODELETE length() const;
 
-    WebGPU::CompilationMessage& backing() LIFETIME_BOUND { return m_backing; }
     const WebGPU::CompilationMessage& backing() const LIFETIME_BOUND { return m_backing; }
 
 private:
-    GPUCompilationMessage(WebGPU::CompilationMessage& backing)
+    GPUCompilationMessage(const WebGPU::CompilationMessage& backing)
         : m_backing(backing)
     {
     }
 
-    const Ref<WebGPU::CompilationMessage> m_backing;
+    const WebGPU::CompilationMessage m_backing;
 };
 
 }

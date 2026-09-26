@@ -127,7 +127,6 @@ Modules/WebGPU/Implementation/WebGPURenderBundleEncoderImpl.cpp
 Modules/WebGPU/Implementation/WebGPURenderBundleImpl.cpp
 Modules/WebGPU/Implementation/WebGPURenderPassEncoderImpl.cpp
 Modules/WebGPU/Implementation/WebGPURenderPipelineImpl.cpp
-Modules/WebGPU/Implementation/WebGPUShaderModuleImpl.cpp
 Modules/WebGPU/Implementation/WebGPUXRBindingImpl.cpp
 Modules/WebGPU/Implementation/WebGPUXRProjectionLayerImpl.cpp
 Modules/WebGPU/Implementation/WebGPUXRSubImageImpl.cpp

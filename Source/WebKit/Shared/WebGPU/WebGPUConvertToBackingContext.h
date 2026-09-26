@@ -28,6 +28,7 @@
 #if ENABLE(GPU_PROCESS)
 
 #include "WebGPUColor.h"
+#include "WebGPUCompilationMessage.h"
 #include "WebGPUComputePassTimestampWrites.h"
 #include "WebGPUError.h"
 #include "WebGPUExtent3D.h"
@@ -55,6 +56,7 @@
 #include <WebCore/WebGPURenderPassTimestampWrites.h>
 #include <WebCore/WebGPUSampler.h>
 #include <WebCore/WebGPUSamplerBindingLayout.h>
+#include <WebCore/WebGPUShaderModule.h>
 #include <WebCore/WebGPUStencilFaceState.h>
 #include <WebCore/WebGPUStorageTextureBindingLayout.h>
 #include <WebCore/WebGPUTexture.h>
@@ -79,7 +81,6 @@ class CommandBuffer;
 struct CommandBufferDescriptor;
 class CommandEncoder;
 struct CommandEncoderDescriptor;
-class CompilationMessage;
 class CompositorIntegration;
 struct ComputePassDescriptor;
 class ComputePassEncoder;
@@ -119,7 +120,6 @@ struct RenderPassLayout;
 class RenderPipeline;
 struct RenderPipelineDescriptor;
 struct RequestAdapterOptions;
-class ShaderModule;
 struct ShaderModuleCompilationHint;
 struct ShaderModuleDescriptor;
 class SupportedFeatures;
@@ -148,7 +148,6 @@ struct CanvasConfiguration;
 struct ColorTargetState;
 struct CommandBufferDescriptor;
 struct CommandEncoderDescriptor;
-struct CompilationMessage;
 struct ComputePassDescriptor;
 struct ComputePipelineDescriptor;
 struct DepthStencilState;
@@ -214,7 +213,6 @@ public:
     std::optional<ColorTargetState> convertToBacking(const WebCore::WebGPU::ColorTargetState&);
     std::optional<CommandBufferDescriptor> convertToBacking(const WebCore::WebGPU::CommandBufferDescriptor&);
     std::optional<CommandEncoderDescriptor> convertToBacking(const WebCore::WebGPU::CommandEncoderDescriptor&);
-    std::optional<CompilationMessage> NODELETE convertToBacking(const WebCore::WebGPU::CompilationMessage&);
     std::optional<ComputePassDescriptor> convertToBacking(const WebCore::WebGPU::ComputePassDescriptor&);
     std::optional<ComputePassTimestampWrites> convertToBacking(const WebCore::WebGPU::ComputePassTimestampWrites&);
     std::optional<ComputePipelineDescriptor> convertToBacking(const WebCore::WebGPU::ComputePipelineDescriptor&);

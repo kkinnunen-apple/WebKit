@@ -244,8 +244,7 @@ bool GPUImpl::isValid(const Sampler& sampler) const
 
 bool GPUImpl::isValid(const ShaderModule& shaderModule) const
 {
-    WGPUShaderModule wgpuShaderModule = m_convertToBackingContext.get().convertToBacking(shaderModule);
-    return wgpuShaderModuleIsValid(wgpuShaderModule);
+    return shaderModule.isValid();
 }
 
 bool GPUImpl::isValid(const Texture& texture) const

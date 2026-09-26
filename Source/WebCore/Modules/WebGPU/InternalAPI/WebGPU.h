@@ -30,6 +30,7 @@
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURequestAdapterOptions.h>
 #include <WebCore/WebGPUSampler.h>
+#include <WebCore/WebGPUShaderModule.h>
 #include <WebCore/WebGPUTexture.h>
 #include <WebCore/WebGPUTextureView.h>
 #include <optional>
@@ -64,7 +65,6 @@ class RenderBundleEncoder;
 class RenderBundle;
 class RenderPassEncoder;
 class RenderPipeline;
-class ShaderModule;
 class XRBinding;
 class XRProjectionLayer;
 class XRSubImage;

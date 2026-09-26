@@ -832,7 +832,6 @@ list(REMOVE_ITEM WebCore_PRIVATE_FRAMEWORK_HEADERS
     Modules/WebGPU/Implementation/WebGPURenderBundleImpl.h
     Modules/WebGPU/Implementation/WebGPURenderPassEncoderImpl.h
     Modules/WebGPU/Implementation/WebGPURenderPipelineImpl.h
-    Modules/WebGPU/Implementation/WebGPUShaderModuleImpl.h
     Modules/WebGPU/Implementation/WebGPUXRBindingImpl.h
     Modules/WebGPU/Implementation/WebGPUXRProjectionLayerImpl.h
     Modules/WebGPU/Implementation/WebGPUXRSubImageImpl.h

@@ -51,22 +51,25 @@ RemoteShaderModuleProxy::~RemoteShaderModuleProxy()
     UNUSED_VARIABLE(sendResult);
 }
 
-void RemoteShaderModuleProxy::compilationInfo(CompletionHandler<void(Ref<WebCore::WebGPU::CompilationInfo>&&)>&& callback)
+void RemoteShaderModuleProxy::compilationInfo(CompletionHandler<void(WebCore::WebGPU::CompilationInfo&&)>&& callback)
 {
-    auto sendResult = sendWithAsyncReply(Messages::RemoteShaderModule::CompilationInfo(), [callback = WTF::move(callback)](auto messages) mutable {
-        auto backingMessages = messages.map([](CompilationMessage compilationMessage) {
-            return WebCore::WebGPU::CompilationMessage::create(WTF::move(compilationMessage.message), compilationMessage.type, compilationMessage.lineNum, compilationMessage.linePos, compilationMessage.offset, compilationMessage.length);
-        });
-        callback(WebCore::WebGPU::CompilationInfo::create(WTF::move(backingMessages)));
+    auto sendResult = sendWithAsyncReply(Messages::RemoteShaderModule::CompilationInfo(), [callback = WTF::move(callback)](Vector<CompilationMessage>&& messages) mutable {
+        callback({ WTF::move(messages) });
     });
 
     UNUSED_PARAM(sendResult);
 }
 
-void RemoteShaderModuleProxy::setLabelInternal(const String& label)
+void RemoteShaderModuleProxy::setLabel(String&& label)
 {
-    auto sendResult = send(Messages::RemoteShaderModule::SetLabel(label));
+    auto sendResult = send(Messages::RemoteShaderModule::SetLabel(WTF::move(label)));
     UNUSED_VARIABLE(sendResult);
+}
+
+bool RemoteShaderModuleProxy::isValid() const
+{
+    // The Web Process cannot know. RemoteGPU::isValid() answers it for tests.
+    RELEASE_ASSERT_NOT_REACHED();
 }
 
 } // namespace WebKit::WebGPU

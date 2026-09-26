@@ -31,16 +31,13 @@
 #include "StreamMessageReceiver.h"
 #include "WebGPUCompilationMessage.h"
 #include "WebGPUIdentifier.h"
+#include <WebCore/WebGPUShaderModule.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Ref.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakRef.h>
 #include <wtf/text/WTFString.h>
-
-namespace WebCore::WebGPU {
-class ShaderModule;
-}
 
 namespace IPC {
 class StreamServerConnection;

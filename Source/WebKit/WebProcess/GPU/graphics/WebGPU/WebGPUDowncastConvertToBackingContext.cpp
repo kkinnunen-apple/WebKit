@@ -174,7 +174,7 @@ WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::ShaderModule& shaderModule)
 {
-    return downcast<RemoteShaderModuleProxy>(shaderModule).backing();
+    return static_cast<const RemoteShaderModuleProxy&>(shaderModule).backing();
 }
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::Texture& texture)

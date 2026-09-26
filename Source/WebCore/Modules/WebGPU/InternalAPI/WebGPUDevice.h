@@ -37,6 +37,7 @@
 #include <WebCore/WebGPURenderPipeline.h>
 #include <WebCore/WebGPUSampler.h>
 #include <WebCore/WebGPUSamplerDescriptor.h>
+#include <WebCore/WebGPUShaderModule.h>
 #include <WebCore/WebGPUSupportedFeatures.h>
 #include <WebCore/WebGPUSupportedLimits.h>
 #include <WebCore/WebGPUTexture.h>
@@ -82,7 +83,6 @@ struct RenderBundleEncoderDescriptor;
 class RenderPassEncoder;
 class RenderPipeline;
 struct RenderPipelineDescriptor;
-class ShaderModule;
 struct ShaderModuleDescriptor;
 class Surface;
 class XRBinding;

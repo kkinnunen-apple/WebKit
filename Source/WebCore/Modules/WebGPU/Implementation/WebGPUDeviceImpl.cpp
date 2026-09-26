@@ -55,8 +55,8 @@
 #include "WebGPURenderPipelineImpl.h"
 #include "WebGPUSampler.h"
 #include "WebGPUSamplerDescriptor.h"
+#include "WebGPUShaderModule.h"
 #include "WebGPUShaderModuleDescriptor.h"
-#include "WebGPUShaderModuleImpl.h"
 #include "WebGPUTexture.h"
 #include "WebGPUTextureDescriptor.h"
 #include "WebGPUTextureView.h"
@@ -329,7 +329,7 @@ RefPtr<ShaderModule> DeviceImpl::createShaderModule(const ShaderModuleDescriptor
         .hints = hintsEntries.size() ? &hintsEntries[0] : nullptr,
     };
 
-    return ShaderModuleImpl::create(adoptWebGPU(wgpuDeviceCreateShaderModule(m_backing.get(), &backingDescriptor)), convertToBackingContext);
+    return adoptRef(::WebGPU::fromAPI(wgpuDeviceCreateShaderModule(m_backing.get(), &backingDescriptor)));
 }
 
 template <typename T>

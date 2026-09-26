@@ -28,6 +28,7 @@
 #if ENABLE(GPU_PROCESS)
 
 #include "WebGPUColor.h"
+#include "WebGPUCompilationMessage.h"
 #include "WebGPUComputePassTimestampWrites.h"
 #include "WebGPUError.h"
 #include "WebGPUExtent3D.h"
@@ -55,6 +56,7 @@
 #include <WebCore/WebGPURenderPassTimestampWrites.h>
 #include <WebCore/WebGPUSampler.h>
 #include <WebCore/WebGPUSamplerBindingLayout.h>
+#include <WebCore/WebGPUShaderModule.h>
 #include <WebCore/WebGPUStencilFaceState.h>
 #include <WebCore/WebGPUStorageTextureBindingLayout.h>
 #include <WebCore/WebGPUTexture.h>
@@ -89,7 +91,6 @@ class CommandBuffer;
 struct CommandBufferDescriptor;
 class CommandEncoder;
 struct CommandEncoderDescriptor;
-class CompilationMessage;
 class CompositorIntegration;
 struct ComputePassDescriptor;
 class ComputePassEncoder;
@@ -129,7 +130,6 @@ struct RenderPassLayout;
 class RenderPipeline;
 struct RenderPipelineDescriptor;
 struct RequestAdapterOptions;
-class ShaderModule;
 struct ShaderModuleCompilationHint;
 struct ShaderModuleDescriptor;
 class SupportedFeatures;
@@ -158,7 +158,6 @@ struct CanvasConfiguration;
 struct ColorTargetState;
 struct CommandBufferDescriptor;
 struct CommandEncoderDescriptor;
-struct CompilationMessage;
 struct ComputePassDescriptor;
 struct ComputePipelineDescriptor;
 struct DepthStencilState;
@@ -223,7 +222,6 @@ public:
     std::optional<WebCore::WebGPU::ColorTargetState> convertFromBacking(const ColorTargetState&);
     std::optional<WebCore::WebGPU::CommandBufferDescriptor> convertFromBacking(const CommandBufferDescriptor&);
     std::optional<WebCore::WebGPU::CommandEncoderDescriptor> convertFromBacking(const CommandEncoderDescriptor&);
-    RefPtr<WebCore::WebGPU::CompilationMessage> convertFromBacking(const CompilationMessage&);
     std::optional<WebCore::WebGPU::ComputePassDescriptor> convertFromBacking(const ComputePassDescriptor&);
     std::optional<WebCore::WebGPU::ComputePassTimestampWrites> convertFromBacking(const ComputePassTimestampWrites&);
     std::optional<WebCore::WebGPU::ComputePipelineDescriptor> convertFromBacking(const ComputePipelineDescriptor&, bool allowMissingPipelineLayout = false);
@@ -298,7 +296,7 @@ public:
     virtual WeakPtr<WebCore::WebGPU::RenderPassEncoder> convertRenderPassEncoderFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::RenderPipeline> convertRenderPipelineFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::Sampler> convertSamplerFromBacking(WebGPUIdentifier) = 0;
-    virtual WeakPtr<WebCore::WebGPU::ShaderModule> convertShaderModuleFromBacking(WebGPUIdentifier) = 0;
+    virtual RefPtr<WebCore::WebGPU::ShaderModule> convertShaderModuleFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::PresentationContext> convertPresentationContextFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::Texture> convertTextureFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::TextureView> convertTextureViewFromBacking(WebGPUIdentifier) = 0;
