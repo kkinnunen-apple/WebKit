@@ -31,14 +31,14 @@
 #include <wtf/Vector.h>
 #include <wtf/WeakRef.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-using PipelineConstantValue = double; // May represent WGSL’s bool, f32, i32, u32.
+using WebGPUPipelineConstantValue = double; // May represent WGSL’s bool, f32, i32, u32.
 
-struct ProgrammableStage {
-    Ref<ShaderModule> module;
+struct WebGPUProgrammableStage {
+    Ref<WebGPU::ShaderModule> module;
     String entryPoint;
-    Vector<KeyValuePair<String, PipelineConstantValue>> constants;
+    Vector<KeyValuePair<String, WebGPUPipelineConstantValue>> constants;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

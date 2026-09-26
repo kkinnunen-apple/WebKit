@@ -36,7 +36,7 @@ namespace WebCore {
 
 Lock GPUComputePipeline::s_instancesLock;
 
-Ref<GPUComputePipeline> GPUComputePipeline::create(Ref<WebGPU::ComputePipeline>&& backing, uint64_t uniqueId, GPUDevice* device, WebGPU::ComputePipelineDescriptor&& descriptor, const WebGPU::ShaderModuleDescriptor& shaderModuleDescriptor)
+Ref<GPUComputePipeline> GPUComputePipeline::create(Ref<WebGPU::ComputePipeline>&& backing, uint64_t uniqueId, GPUDevice* device, WebGPUComputePipelineDescriptor&& descriptor, const WebGPUShaderModuleDescriptor& shaderModuleDescriptor)
 {
     Ref result = adoptRef(*new GPUComputePipeline(WTF::move(backing), uniqueId, device, WTF::move(descriptor), shaderModuleDescriptor));
 
@@ -69,7 +69,7 @@ void GPUComputePipeline::willDestroyDevice(GPUDevice& device)
     }
 }
 
-GPUComputePipeline::GPUComputePipeline(Ref<WebGPU::ComputePipeline>&& backing, uint64_t uniqueId, GPUDevice* device, WebGPU::ComputePipelineDescriptor&& descriptor, const WebGPU::ShaderModuleDescriptor& shaderModuleDescriptor)
+GPUComputePipeline::GPUComputePipeline(Ref<WebGPU::ComputePipeline>&& backing, uint64_t uniqueId, GPUDevice* device, WebGPUComputePipelineDescriptor&& descriptor, const WebGPUShaderModuleDescriptor& shaderModuleDescriptor)
     : m_backing(WTF::move(backing))
     , m_uniqueId(uniqueId)
     , m_descriptor(WTF::move(descriptor))
@@ -131,7 +131,7 @@ void GPUComputePipeline::updateShader(const String& source, CompletionHandler<vo
     shaderModuleDescriptor.code = source;
 
     device->backing().pauseAllErrorReporting(true);
-    RefPtr shaderModule = WebGPU::createShaderModule(device->backing(), shaderModuleDescriptor);
+    RefPtr shaderModule = WebCore::createShaderModule(device->backing(), shaderModuleDescriptor);
     device->backing().pauseAllErrorReporting(false);
 
     if (!shaderModule) {
@@ -141,7 +141,7 @@ void GPUComputePipeline::updateShader(const String& source, CompletionHandler<vo
 
     auto descriptor = m_descriptor;
     descriptor.compute.module = *shaderModule;
-    WebGPU::createComputePipelineWithPipelineLayoutFromPipelineAsync(device->backing(), descriptor, m_backing, [weakThis = WeakPtr { *this }, descriptor, shaderModuleDescriptor = WTF::move(shaderModuleDescriptor), completionHandler = WTF::move(completionHandler)](Expected<Ref<WebGPU::ComputePipeline>, ::WebGPU::PipelineError>&& pipeline) mutable {
+    WebCore::createComputePipelineWithPipelineLayoutFromPipelineAsync(device->backing(), descriptor, m_backing, [weakThis = WeakPtr { *this }, descriptor, shaderModuleDescriptor = WTF::move(shaderModuleDescriptor), completionHandler = WTF::move(completionHandler)](Expected<Ref<WebGPU::ComputePipeline>, ::WebGPU::PipelineError>&& pipeline) mutable {
         RefPtr protectedThis { weakThis };
         if (!protectedThis) {
             completionHandler(false);

@@ -33,7 +33,7 @@
 
 namespace WebCore {
 
-GPUShaderModule::GPUShaderModule(Ref<WebGPU::ShaderModule>&& backing, WebGPU::ShaderModuleDescriptor&& descriptor, GPUDevice& device)
+GPUShaderModule::GPUShaderModule(Ref<WebGPU::ShaderModule>&& backing, WebGPUShaderModuleDescriptor&& descriptor, GPUDevice& device)
     : m_backing(WTF::move(backing))
     , m_descriptor(WTF::move(descriptor))
     , m_device(device)

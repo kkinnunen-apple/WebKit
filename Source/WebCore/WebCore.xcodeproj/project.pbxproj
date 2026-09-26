@@ -890,7 +890,6 @@
 		1CFAE4112A4D8A140004AE37 /* WebGPUColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE2B62A4D79CA0004AE37 /* WebGPUColor.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1CFAE4122A4D8A140004AE37 /* WebGPUImageDataLayout.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE2B82A4D79CB0004AE37 /* WebGPUImageDataLayout.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1CFAE4132A4D8A140004AE37 /* WebGPUPresentationContextDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE2702A4D79B00004AE37 /* WebGPUPresentationContextDescriptor.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		1CFAE4142A4D8A140004AE37 /* WebGPUUncapturedErrorEventInit.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE2892A4D79BA0004AE37 /* WebGPUUncapturedErrorEventInit.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1CFAE4152A4D8A140004AE37 /* WebGPUShaderStage.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE2602A4D79AB0004AE37 /* WebGPUShaderStage.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1CFAE4162A4D8A140004AE37 /* WebGPUAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE2A52A4D79C40004AE37 /* WebGPUAdapter.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1CFAE4172A4D8A140004AE37 /* WebGPUInternalError.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE2B02A4D79C80004AE37 /* WebGPUInternalError.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -899,7 +898,6 @@
 		1CFAE41A2A4D8A140004AE37 /* WebGPUVertexBufferLayout.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE2842A4D79B80004AE37 /* WebGPUVertexBufferLayout.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1CFAE41B2A4D8A140004AE37 /* WebGPUShaderModuleDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE29E2A4D79C10004AE37 /* WebGPUShaderModuleDescriptor.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1CFAE41C2A4D8A140004AE37 /* WebGPUTextureAspect.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE24D2A4D79A50004AE37 /* WebGPUTextureAspect.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		1CFAE41D2A4D8A140004AE37 /* WebGPUUncapturedErrorEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE2872A4D79B90004AE37 /* WebGPUUncapturedErrorEvent.h */; };
 		1CFAE41E2A4D8A140004AE37 /* WebGPUFilterMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE28A2A4D79BA0004AE37 /* WebGPUFilterMode.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1CFAE41F2A4D8A140004AE37 /* WebGPUOrigin2D.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE2912A4D79BC0004AE37 /* WebGPUOrigin2D.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1CFAE4202A4D8A140004AE37 /* WebGPUObjectDescriptorBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFAE2682A4D79AD0004AE37 /* WebGPUObjectDescriptorBase.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -10031,9 +10029,7 @@
 		1CFAE2842A4D79B80004AE37 /* WebGPUVertexBufferLayout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUVertexBufferLayout.h; sourceTree = "<group>"; };
 		1CFAE2852A4D79B80004AE37 /* WebGPUImageCopyTexture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUImageCopyTexture.h; sourceTree = "<group>"; };
 		1CFAE2862A4D79B90004AE37 /* WebGPUProgrammableStage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUProgrammableStage.h; sourceTree = "<group>"; };
-		1CFAE2872A4D79B90004AE37 /* WebGPUUncapturedErrorEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUUncapturedErrorEvent.h; sourceTree = "<group>"; };
 		1CFAE2882A4D79B90004AE37 /* WebGPUPowerPreference.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUPowerPreference.h; sourceTree = "<group>"; };
-		1CFAE2892A4D79BA0004AE37 /* WebGPUUncapturedErrorEventInit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUUncapturedErrorEventInit.h; sourceTree = "<group>"; };
 		1CFAE28A2A4D79BA0004AE37 /* WebGPUFilterMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUFilterMode.h; sourceTree = "<group>"; };
 		1CFAE28B2A4D79BA0004AE37 /* WebGPUTextureViewDescriptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUTextureViewDescriptor.h; sourceTree = "<group>"; };
 		1CFAE28C2A4D79BA0004AE37 /* WebGPUStencilOperation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUStencilOperation.h; sourceTree = "<group>"; };
@@ -26763,8 +26759,6 @@
 				1CFAE2642A4D79AC0004AE37 /* WebGPUTextureView.h */,
 				1CFAE28B2A4D79BA0004AE37 /* WebGPUTextureViewDescriptor.h */,
 				1CFAE26E2A4D79AF0004AE37 /* WebGPUTextureViewDimension.h */,
-				1CFAE2872A4D79B90004AE37 /* WebGPUUncapturedErrorEvent.h */,
-				1CFAE2892A4D79BA0004AE37 /* WebGPUUncapturedErrorEventInit.h */,
 				1CFAE26F2A4D79B00004AE37 /* WebGPUValidationError.h */,
 				1CFAE28F2A4D79BC0004AE37 /* WebGPUVertexAttribute.h */,
 				1CFAE2842A4D79B80004AE37 /* WebGPUVertexBufferLayout.h */,
@@ -50507,8 +50501,6 @@
 				1CFAE3F92A4D8A140004AE37 /* WebGPUTextureView.h in Headers */,
 				1CFAE3BC2A4D8A130004AE37 /* WebGPUTextureViewDescriptor.h in Headers */,
 				1CFAE3EF2A4D8A140004AE37 /* WebGPUTextureViewDimension.h in Headers */,
-				1CFAE41D2A4D8A140004AE37 /* WebGPUUncapturedErrorEvent.h in Headers */,
-				1CFAE4142A4D8A140004AE37 /* WebGPUUncapturedErrorEventInit.h in Headers */,
 				1CFAE3DC2A4D8A140004AE37 /* WebGPUValidationError.h in Headers */,
 				1CFAE4272A4D8A140004AE37 /* WebGPUVertexAttribute.h in Headers */,
 				1CFAE41A2A4D8A140004AE37 /* WebGPUVertexBufferLayout.h in Headers */,

@@ -29,39 +29,39 @@
 #include <wtf/RefCounted.h>
 #include <wtf/text/WTFString.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-class ValidationError final : public RefCounted<ValidationError> {
+class WebGPUValidationError final : public RefCounted<WebGPUValidationError> {
 public:
-    static Ref<ValidationError> create(String&& message)
+    static Ref<WebGPUValidationError> create(String&& message)
     {
-        return adoptRef(*new ValidationError(WTF::move(message)));
+        return adoptRef(*new WebGPUValidationError(WTF::move(message)));
     }
 
-    static Ref<ValidationError> create(const String& message)
+    static Ref<WebGPUValidationError> create(const String& message)
     {
-        return adoptRef(*new ValidationError(message));
+        return adoptRef(*new WebGPUValidationError(message));
     }
 
     const String& message() const LIFETIME_BOUND { return m_message; }
 
 private:
-    ValidationError(String&& message)
+    WebGPUValidationError(String&& message)
         : m_message(WTF::move(message))
     {
     }
 
-    ValidationError(const String& message)
+    WebGPUValidationError(const String& message)
         : m_message(message)
     {
     }
 
-    ValidationError(const ValidationError&) = delete;
-    ValidationError(ValidationError&&) = delete;
-    ValidationError& operator=(const ValidationError&) = delete;
-    ValidationError& operator=(ValidationError&&) = delete;
+    WebGPUValidationError(const WebGPUValidationError&) = delete;
+    WebGPUValidationError(WebGPUValidationError&&) = delete;
+    WebGPUValidationError& operator=(const WebGPUValidationError&) = delete;
+    WebGPUValidationError& operator=(WebGPUValidationError&&) = delete;
 
     String m_message;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

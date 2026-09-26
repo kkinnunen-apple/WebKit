@@ -30,12 +30,12 @@
 #include <WebCore/WebGPUVertexStepMode.h>
 #include <wtf/Vector.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct VertexBufferLayout {
-    Size64 arrayStride { 0 };
-    VertexStepMode stepMode { VertexStepMode::Vertex };
-    Vector<VertexAttribute> attributes;
+struct WebGPUVertexBufferLayout {
+    WebGPU::Size64 arrayStride { 0 };
+    WebGPU::VertexStepMode stepMode { WebGPU::VertexStepMode::Vertex };
+    Vector<WebGPU::VertexAttribute> attributes;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

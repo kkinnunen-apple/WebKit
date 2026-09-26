@@ -126,6 +126,8 @@ namespace WebCore {
 class WebGPUCompositorIntegration;
 class WebGPUIntegration;
 struct WebGPUExternalImageSource;
+struct WebGPUExternalTextureDescriptor;
+struct WebGPUImageCopyTextureTagged;
 struct WebGPUPresentationContextDescriptor;
 }
 
@@ -207,9 +209,8 @@ public:
     std::optional<ComputePipelineDescriptor> convertToBacking(const ::WebGPU::ComputePipelineDescriptor&);
     std::optional<DepthStencilState> convertToBacking(const ::WebGPU::DepthStencilState&);
     std::optional<DeviceDescriptor> convertToBacking(const ::WebGPU::DeviceDescriptor&);
-    std::optional<Error> convertToBacking(const WebCore::WebGPU::Error&);
     std::optional<ExternalTextureBindingLayout> NODELETE convertToBacking(const WebCore::WebGPU::ExternalTextureBindingLayout&);
-    std::optional<ExternalTextureDescriptor> convertToBacking(const WebCore::WebGPU::ExternalTextureDescriptor&);
+    std::optional<ExternalTextureDescriptor> convertToBacking(const WebCore::WebGPUExternalTextureDescriptor&);
     std::optional<FragmentState> convertToBacking(const ::WebGPU::FragmentState&);
     std::optional<Identifier> convertToBacking(const WebCore::WebGPU::Identifier&);
     std::optional<ImageCopyBuffer> convertToBacking(const WebCore::WebGPU::ImageCopyBuffer&);
@@ -218,12 +219,10 @@ public:
     std::optional<ImageCopyExternalImageVideoSource> convertToBackingVideoSource(const WebCore::WebGPUExternalImageSource&);
 #endif
     std::optional<ImageCopyTexture> convertToBacking(const WebCore::WebGPU::ImageCopyTexture&);
-    std::optional<ImageCopyTextureTagged> convertToBacking(const WebCore::WebGPU::ImageCopyTextureTagged&);
+    std::optional<ImageCopyTextureTagged> convertToBacking(const WebCore::WebGPUImageCopyTextureTagged&);
     std::optional<ImageDataLayout> NODELETE convertToBacking(const WebCore::WebGPU::ImageDataLayout&);
-    std::optional<InternalError> NODELETE convertToBacking(const WebCore::WebGPU::InternalError&);
     std::optional<MultisampleState> NODELETE convertToBacking(const WebCore::WebGPU::MultisampleState&);
-    std::optional<ObjectDescriptorBase> NODELETE convertToBacking(const WebCore::WebGPU::ObjectDescriptorBase&);
-    std::optional<OutOfMemoryError> NODELETE convertToBacking(const WebCore::WebGPU::OutOfMemoryError&);
+    std::optional<ObjectDescriptorBase> NODELETE convertToBacking(const WebCore::WebGPUObjectDescriptorBase&);
     std::optional<PipelineLayoutDescriptor> convertToBacking(const WebCore::WebGPU::PipelineLayoutDescriptor&);
     std::optional<PresentationContextDescriptor> convertToBacking(const WebCore::WebGPUPresentationContextDescriptor&);
     std::optional<PrimitiveState> NODELETE convertToBacking(const WebCore::WebGPU::PrimitiveState&);
@@ -232,7 +231,6 @@ public:
     std::optional<RenderPassColorAttachment> convertToBacking(const WebCore::WebGPU::RenderPassColorAttachment&);
     std::optional<RenderPassDepthStencilAttachment> convertToBacking(const WebCore::WebGPU::RenderPassDepthStencilAttachment&);
     std::optional<RenderPassDescriptor> convertToBacking(const WebCore::WebGPU::RenderPassDescriptor&);
-    std::optional<RenderPassLayout> convertToBacking(const WebCore::WebGPU::RenderPassLayout&);
     std::optional<RenderPassTimestampWrites> convertToBacking(const WebCore::WebGPU::RenderPassTimestampWrites&);
     std::optional<RenderPipelineDescriptor> convertToBacking(const ::WebGPU::RenderPipelineDescriptor&);
     std::optional<RequestAdapterOptions> NODELETE convertToBacking(const WebCore::WebGPU::RequestAdapterOptions&);
@@ -240,10 +238,8 @@ public:
     std::optional<ShaderModuleDescriptor> convertToBacking(const ::WebGPU::ShaderModuleDescriptor&);
     std::optional<StencilFaceState> NODELETE convertToBacking(const WebCore::WebGPU::StencilFaceState&);
     std::optional<StorageTextureBindingLayout> NODELETE convertToBacking(const WebCore::WebGPU::StorageTextureBindingLayout&);
-    std::optional<SupportedFeatures> convertToBacking(const WebCore::WebGPU::SupportedFeatures&);
     std::optional<TextureBindingLayout> NODELETE convertToBacking(const WebCore::WebGPU::TextureBindingLayout&);
     std::optional<TextureDescriptor> convertToBacking(const WebCore::WebGPU::TextureDescriptor&);
-    std::optional<ValidationError> NODELETE convertToBacking(const WebCore::WebGPU::ValidationError&);
     std::optional<VertexAttribute> NODELETE convertToBacking(const WebCore::WebGPU::VertexAttribute&);
     std::optional<VertexBufferLayout> convertToBacking(const ::WebGPU::VertexBufferLayout&);
     std::optional<VertexState> convertToBacking(const ::WebGPU::VertexState&);

@@ -29,10 +29,10 @@
 #include <WebCore/WebGPUPipelineLayout.h>
 #include <wtf/WeakPtr.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct PipelineDescriptorBase : public ObjectDescriptorBase {
-    RefPtr<PipelineLayout> layout;
+struct WebGPUPipelineDescriptorBase : public WebGPUObjectDescriptorBase {
+    RefPtr<WebGPU::PipelineLayout> layout;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

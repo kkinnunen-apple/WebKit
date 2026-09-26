@@ -28,11 +28,11 @@
 #include <WebCore/WebGPUImageCopyTexture.h>
 #include <WebCore/WebGPUPredefinedColorSpace.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct ImageCopyTextureTagged : public ImageCopyTexture {
+struct WebGPUImageCopyTextureTagged : public WebGPU::ImageCopyTexture {
     PredefinedColorSpace colorSpace { PredefinedColorSpace::SRGB };
     bool premultipliedAlpha { false };
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

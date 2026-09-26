@@ -273,7 +273,6 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     Modules/WebGPU/InternalAPI/WebGPUTextureView.h
     Modules/WebGPU/InternalAPI/WebGPUTextureViewDescriptor.h
     Modules/WebGPU/InternalAPI/WebGPUTextureViewDimension.h
-    Modules/WebGPU/InternalAPI/WebGPUUncapturedErrorEventInit.h
     Modules/WebGPU/InternalAPI/WebGPUValidationError.h
     Modules/WebGPU/InternalAPI/WebGPUVertexAttribute.h
     Modules/WebGPU/InternalAPI/WebGPUVertexBufferLayout.h

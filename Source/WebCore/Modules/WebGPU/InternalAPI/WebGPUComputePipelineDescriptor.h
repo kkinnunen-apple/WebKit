@@ -28,10 +28,10 @@
 #include <WebCore/WebGPUPipelineDescriptorBase.h>
 #include <WebCore/WebGPUProgrammableStage.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct ComputePipelineDescriptor : public PipelineDescriptorBase {
-    ProgrammableStage compute;
+struct WebGPUComputePipelineDescriptor : public WebGPUPipelineDescriptorBase {
+    WebGPUProgrammableStage compute;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

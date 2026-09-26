@@ -32,11 +32,11 @@
 #include <wtf/KeyValuePair.h>
 #include <wtf/Vector.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct DeviceDescriptor : public ObjectDescriptorBase {
-    Vector<FeatureName> requiredFeatures;
+struct WebGPUDeviceDescriptor : public WebGPUObjectDescriptorBase {
+    Vector<WebGPU::FeatureName> requiredFeatures;
     Vector<KeyValuePair<String, uint64_t>> requiredLimits;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

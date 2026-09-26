@@ -37,18 +37,18 @@
 typedef struct CF_BRIDGED_TYPE(id) __CVBuffer* CVPixelBufferRef;
 #endif
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
 #if ENABLE(VIDEO) && PLATFORM(COCOA)
-using VideoSourceIdentifier = Variant<std::optional<WebCore::MediaPlayerIdentifier>, RefPtr<WebCore::VideoFrame>, RetainPtr<CVPixelBufferRef>>;
+using WebGPUVideoSourceIdentifier = Variant<std::optional<WebCore::MediaPlayerIdentifier>, RefPtr<WebCore::VideoFrame>, RetainPtr<CVPixelBufferRef>>;
 #elif ENABLE(VIDEO)
-using VideoSourceIdentifier = Variant<std::optional<WebCore::MediaPlayerIdentifier>, RefPtr<WebCore::VideoFrame>, void*>;
+using WebGPUVideoSourceIdentifier = Variant<std::optional<WebCore::MediaPlayerIdentifier>, RefPtr<WebCore::VideoFrame>, void*>;
 #else
-using VideoSourceIdentifier = Variant<std::optional<WebCore::MediaPlayerIdentifier>, void*>;
+using WebGPUVideoSourceIdentifier = Variant<std::optional<WebCore::MediaPlayerIdentifier>, void*>;
 #endif
 
-struct ExternalTextureDescriptor : public ObjectDescriptorBase {
-    VideoSourceIdentifier videoBacking;
+struct WebGPUExternalTextureDescriptor : public WebGPUObjectDescriptorBase {
+    WebGPUVideoSourceIdentifier videoBacking;
     PredefinedColorSpace colorSpace { PredefinedColorSpace::SRGB };
     // The size the source presents the frame at, which is not the size the frame was decoded into: a
     // WebCodecs frame carries a display size of its own, and a video element's intrinsic size accounts
@@ -56,4 +56,4 @@ struct ExternalTextureDescriptor : public ObjectDescriptorBase {
     IntSize visibleSize;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

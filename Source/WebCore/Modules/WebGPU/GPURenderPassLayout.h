@@ -36,7 +36,7 @@
 namespace WebCore {
 
 struct GPURenderPassLayout : public GPUObjectDescriptorBase {
-    WebGPU::RenderPassLayout convertToBacking() const
+    WebGPURenderPassLayout convertToBacking() const
     {
         return {
             { label },

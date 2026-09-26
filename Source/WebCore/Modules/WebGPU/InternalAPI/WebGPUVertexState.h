@@ -30,10 +30,10 @@
 #include <optional>
 #include <wtf/Vector.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct VertexState : public ProgrammableStage {
-    Vector<std::optional<VertexBufferLayout>> buffers;
+struct WebGPUVertexState : public WebGPUProgrammableStage {
+    Vector<std::optional<WebGPUVertexBufferLayout>> buffers;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

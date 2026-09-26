@@ -32,7 +32,7 @@
 namespace WebCore {
 
 struct GPURenderBundleEncoderDescriptor : public GPURenderPassLayout {
-    WebGPU::RenderBundleEncoderDescriptor convertToBacking() const
+    WebGPURenderBundleEncoderDescriptor convertToBacking() const
     {
         return {
             {

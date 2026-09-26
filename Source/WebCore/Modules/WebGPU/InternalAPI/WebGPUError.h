@@ -30,8 +30,8 @@
 #include <WebCore/WebGPUValidationError.h>
 #include <wtf/Ref.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-using Error = Variant<Ref<OutOfMemoryError>, Ref<ValidationError>, Ref<InternalError>>;
+using WebGPUError = Variant<Ref<WebGPUOutOfMemoryError>, Ref<WebGPUValidationError>, Ref<WebGPUInternalError>>;
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

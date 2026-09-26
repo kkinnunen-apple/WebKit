@@ -31,33 +31,33 @@
 #include <wtf/RefCounted.h>
 #include <wtf/text/WTFString.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-class DeviceLostInfo final : public RefCounted<DeviceLostInfo> {
+class WebGPUDeviceLostInfo final : public RefCounted<WebGPUDeviceLostInfo> {
 public:
-    static Ref<DeviceLostInfo> create(DeviceLostReason reason, String&& message)
+    static Ref<WebGPUDeviceLostInfo> create(WebGPU::DeviceLostReason reason, String&& message)
     {
-        return adoptRef(*new DeviceLostInfo(reason, WTF::move(message)));
+        return adoptRef(*new WebGPUDeviceLostInfo(reason, WTF::move(message)));
     }
 
-    DeviceLostReason reason() const { return m_reason; }
+    WebGPU::DeviceLostReason reason() const { return m_reason; }
     const String& message() const LIFETIME_BOUND { return m_message; }
 
 protected:
-    DeviceLostInfo(DeviceLostReason reason, String&& message)
+    WebGPUDeviceLostInfo(WebGPU::DeviceLostReason reason, String&& message)
         : m_reason(reason)
         , m_message(WTF::move(message))
     {
     }
 
 private:
-    DeviceLostInfo(const DeviceLostInfo&) = delete;
-    DeviceLostInfo(DeviceLostInfo&&) = delete;
-    DeviceLostInfo& operator=(const DeviceLostInfo&) = delete;
-    DeviceLostInfo& operator=(DeviceLostInfo&&) = delete;
+    WebGPUDeviceLostInfo(const WebGPUDeviceLostInfo&) = delete;
+    WebGPUDeviceLostInfo(WebGPUDeviceLostInfo&&) = delete;
+    WebGPUDeviceLostInfo& operator=(const WebGPUDeviceLostInfo&) = delete;
+    WebGPUDeviceLostInfo& operator=(WebGPUDeviceLostInfo&&) = delete;
 
-    DeviceLostReason m_reason;
+    WebGPU::DeviceLostReason m_reason;
     String m_message;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

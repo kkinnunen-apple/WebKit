@@ -30,10 +30,10 @@
 #include <optional>
 #include <wtf/Vector.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct FragmentState : public ProgrammableStage {
-    Vector<std::optional<ColorTargetState>> targets;
+struct WebGPUFragmentState : public WebGPUProgrammableStage {
+    Vector<std::optional<WebGPUColorTargetState>> targets;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore
