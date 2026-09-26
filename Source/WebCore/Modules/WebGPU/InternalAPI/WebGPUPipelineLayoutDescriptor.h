@@ -26,15 +26,10 @@
 #pragma once
 
 #include <WebCore/WebGPUBindGroupLayout.h>
-#include <WebCore/WebGPUObjectDescriptorBase.h>
-#include <functional>
-#include <wtf/Vector.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-
-struct PipelineLayoutDescriptor : public ObjectDescriptorBase {
-    std::optional<Vector<Ref<BindGroupLayout>>> bindGroupLayouts;
-};
+using PipelineLayoutDescriptor = ::WebGPU::PipelineLayoutDescriptor;
 
 } // namespace WebCore::WebGPU

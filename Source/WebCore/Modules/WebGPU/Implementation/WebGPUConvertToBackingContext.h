@@ -50,6 +50,7 @@
 #include "WebGPUMapMode.h"
 #include "WebGPUOrigin2D.h"
 #include "WebGPUOrigin3D.h"
+#include "WebGPUPipelineLayout.h"
 #include "WebGPUPowerPreference.h"
 #include "WebGPUPredefinedColorSpace.h"
 #include "WebGPUPrimitiveTopology.h"
@@ -123,7 +124,6 @@ class ComputePassEncoder;
 class ComputePipeline;
 class Device;
 class GPU;
-class PipelineLayout;
 class PresentationContext;
 class Queue;
 class RenderBundleEncoder;

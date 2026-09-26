@@ -158,7 +158,6 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     Modules/WebGPU/Implementation/WebGPUDeviceImpl.h
     Modules/WebGPU/Implementation/WebGPUDowncastConvertToBackingContext.h
     Modules/WebGPU/Implementation/WebGPUImpl.h
-    Modules/WebGPU/Implementation/WebGPUPipelineLayoutImpl.h
     Modules/WebGPU/Implementation/WebGPUPresentationContextImpl.h
     Modules/WebGPU/Implementation/WebGPUPtr.h
     Modules/WebGPU/Implementation/WebGPUQueueImpl.h

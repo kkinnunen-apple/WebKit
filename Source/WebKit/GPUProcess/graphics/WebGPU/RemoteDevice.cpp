@@ -248,7 +248,8 @@ void RemoteDevice::createBindGroupLayout(const WebGPU::BindGroupLayoutDescriptor
 void RemoteDevice::createPipelineLayout(const WebGPU::PipelineLayoutDescriptor& descriptor, WebGPUIdentifier identifier)
 {
     Ref objectHeap = m_objectHeap.get();
-    auto convertedDescriptor =  objectHeap->convertFromBacking(descriptor);
+    Vector<Ref<WebCore::WebGPU::BindGroupLayout>> bindGroupLayouts;
+    auto convertedDescriptor = objectHeap->convertFromBacking(descriptor, bindGroupLayouts);
     MESSAGE_CHECK(convertedDescriptor);
 
     auto pipelineLayout = m_backing->createPipelineLayout(*convertedDescriptor);

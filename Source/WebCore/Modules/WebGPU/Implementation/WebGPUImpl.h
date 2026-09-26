@@ -32,6 +32,7 @@
 #include "WebGPUBuffer.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUExternalTexture.h"
+#include "WebGPUPipelineLayout.h"
 #include "WebGPUPtr.h"
 #include "WebGPUQuerySet.h"
 #include "WebGPUSampler.h"
@@ -62,7 +63,6 @@ class ComputePassEncoder;
 class ComputePipeline;
 class ConvertToBackingContext;
 class Device;
-class PipelineLayout;
 class PresentationContext;
 class Queue;
 class RenderBundleEncoder;

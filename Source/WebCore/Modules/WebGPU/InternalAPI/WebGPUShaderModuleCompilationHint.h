@@ -32,7 +32,7 @@
 namespace WebCore::WebGPU {
 
 struct ShaderModuleCompilationHint {
-    WeakRef<PipelineLayout> pipelineLayout;
+    Ref<PipelineLayout> pipelineLayout;
 };
 
 } // namespace WebCore::WebGPU

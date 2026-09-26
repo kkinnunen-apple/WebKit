@@ -44,7 +44,7 @@ std::optional<ShaderModuleCompilationHint> ConvertToBackingContext::convertToBac
 
 std::optional<WebCore::WebGPU::ShaderModuleCompilationHint> ConvertFromBackingContext::convertFromBacking(const ShaderModuleCompilationHint& shaderModuleCompilationHint)
 {
-    WeakPtr pipelineLayout = convertPipelineLayoutFromBacking(shaderModuleCompilationHint.pipelineLayout);
+    RefPtr pipelineLayout = convertPipelineLayoutFromBacking(shaderModuleCompilationHint.pipelineLayout);
     if (!pipelineLayout)
         return std::nullopt;
 

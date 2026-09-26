@@ -28,6 +28,7 @@
 #include <WebCore/WebGPUBindGroupLayout.h>
 #include <WebCore/WebGPUBuffer.h>
 #include <WebCore/WebGPUExternalTexture.h>
+#include <WebCore/WebGPUPipelineLayout.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURequestAdapterOptions.h>
 #include <WebCore/WebGPUSampler.h>
@@ -58,7 +59,6 @@ class ComputePipeline;
 class Device;
 class GPU;
 class GPUImpl;
-class PipelineLayout;
 class PresentationContext;
 class Queue;
 class RenderBundleEncoder;

@@ -44,8 +44,8 @@
 #include "WebGPUExternalTextureDescriptor.h"
 #include "WebGPUInternalError.h"
 #include "WebGPUOutOfMemoryError.h"
+#include "WebGPUPipelineLayout.h"
 #include "WebGPUPipelineLayoutDescriptor.h"
-#include "WebGPUPipelineLayoutImpl.h"
 #include "WebGPUPresentationContextImpl.h"
 #include "WebGPUQuerySet.h"
 #include "WebGPUQuerySetDescriptor.h"
@@ -253,7 +253,7 @@ RefPtr<PipelineLayout> DeviceImpl::createPipelineLayout(const PipelineLayoutDesc
 
     Vector<WGPUBindGroupLayout> backingBindGroupLayouts;
     if (descriptor.bindGroupLayouts) {
-        backingBindGroupLayouts = descriptor.bindGroupLayouts->map([&convertToBackingContext = m_convertToBackingContext.get()](auto bindGroupLayout) {
+        backingBindGroupLayouts = WTF::map(*descriptor.bindGroupLayouts, [&convertToBackingContext = m_convertToBackingContext.get()](auto& bindGroupLayout) {
             return convertToBackingContext.convertToBacking(bindGroupLayout.get());
         });
     }
@@ -264,7 +264,7 @@ RefPtr<PipelineLayout> DeviceImpl::createPipelineLayout(const PipelineLayoutDesc
         .bindGroupLayouts = descriptor.bindGroupLayouts ? backingBindGroupLayouts.span().data() : nullptr,
     };
 
-    return PipelineLayoutImpl::create(adoptWebGPU(wgpuDeviceCreatePipelineLayout(m_backing.get(), &backingDescriptor)), m_convertToBackingContext);
+    return adoptRef(::WebGPU::fromAPI(wgpuDeviceCreatePipelineLayout(m_backing.get(), &backingDescriptor)));
 }
 
 RefPtr<BindGroup> DeviceImpl::createBindGroup(const BindGroupDescriptor& descriptor)

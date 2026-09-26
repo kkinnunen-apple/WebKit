@@ -587,20 +587,22 @@ ExceptionOr<Ref<GPUBindGroupLayout>> GPUDevice::createBindGroupLayout(GPUBindGro
 RefPtr<GPUPipelineLayout> GPUDevice::createAutoPipelineLayout()
 {
     RefPtr layout = m_backing->createPipelineLayout(WebGPU::PipelineLayoutDescriptor {
-        { "autoLayout"_s, },
-        std::nullopt
+        .label = "autoLayout"_s,
+        .bindGroupLayouts = std::nullopt,
     });
     if (!layout)
         return nullptr;
-    return GPUPipelineLayout::create(layout.releaseNonNull(), *this);
+    return GPUPipelineLayout::create(layout.releaseNonNull(), "autoLayout"_s, *this);
 }
 
 ExceptionOr<Ref<GPUPipelineLayout>> GPUDevice::createPipelineLayout(GPUPipelineLayoutDescriptor&& pipelineLayoutDescriptor)
 {
-    RefPtr pipelineLayout = m_backing->createPipelineLayout(pipelineLayoutDescriptor.convertToBacking(m_backing));
+    Vector<Ref<WebGPU::BindGroupLayout>> bindGroupLayouts;
+    auto backingDescriptor = pipelineLayoutDescriptor.convertToBacking(m_backing, bindGroupLayouts);
+    RefPtr pipelineLayout = m_backing->createPipelineLayout(backingDescriptor);
     if (!pipelineLayout)
         return Exception { ExceptionCode::InvalidStateError, "GPUDevice.createPipelineLayout: Unable to make pipeline layout."_s };
-    return GPUPipelineLayout::create(pipelineLayout.releaseNonNull(), *this);
+    return GPUPipelineLayout::create(pipelineLayout.releaseNonNull(), WTF::move(backingDescriptor.label), *this);
 }
 
 ExceptionOr<Ref<GPUBindGroup>> GPUDevice::createBindGroup(GPUBindGroupDescriptor&& bindGroupDescriptor)

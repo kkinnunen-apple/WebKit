@@ -40,7 +40,7 @@
 #include "WebGPUDeviceImpl.h"
 #include "WebGPUExternalTexture.h"
 #include "WebGPUImpl.h"
-#include "WebGPUPipelineLayoutImpl.h"
+#include "WebGPUPipelineLayout.h"
 #include "WebGPUPresentationContextImpl.h"
 #include "WebGPUQuerySet.h"
 #include "WebGPUQueueImpl.h"
@@ -120,7 +120,7 @@ WGPUInstance DowncastConvertToBackingContext::convertToBacking(const GPU& gpu)
 
 WGPUPipelineLayout DowncastConvertToBackingContext::convertToBacking(const PipelineLayout& pipelineLayout)
 {
-    return downcast<PipelineLayoutImpl>(pipelineLayout).backing();
+    return ::WebGPU::toAPI(const_cast<PipelineLayout&>(pipelineLayout));
 }
 
 WGPUSurface DowncastConvertToBackingContext::convertToBacking(const PresentationContext& presentationContext)
