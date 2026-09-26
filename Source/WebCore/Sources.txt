@@ -108,9 +108,7 @@ Modules/WebGPU/GPUVertexAttribute.cpp
 Modules/WebGPU/GPUVertexBufferLayout.cpp
 Modules/WebGPU/GPUVertexState.cpp
 Modules/WebGPU/Implementation/WebGPUCompositorIntegrationImpl.cpp
-Modules/WebGPU/Implementation/WebGPUConvertToBackingContext.cpp
 Modules/WebGPU/Implementation/WebGPUCreateImpl.cpp
-Modules/WebGPU/Implementation/WebGPUDowncastConvertToBackingContext.cpp
 Modules/WebGPU/Implementation/WebGPUImpl.cpp
 Modules/WebGPU/InternalAPI/WebGPUXRLayerBacking.cpp
 Modules/WebGPU/WGSLLanguageFeatures.cpp

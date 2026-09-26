@@ -28,7 +28,6 @@
 
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
-#include "WebGPUConvertToBackingContext.h"
 #include "WebGPUDevice.h"
 #include "WebGPUQueue.h"
 #include "WebGPUTextureFormat.h"
@@ -44,8 +43,7 @@ namespace WebCore::WebGPU {
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(CompositorIntegrationImpl);
 
-CompositorIntegrationImpl::CompositorIntegrationImpl(ConvertToBackingContext& convertToBackingContext)
-    : m_convertToBackingContext(convertToBackingContext)
+CompositorIntegrationImpl::CompositorIntegrationImpl()
 {
 }
 

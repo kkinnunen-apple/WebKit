@@ -50,14 +50,13 @@ class NativeImage;
 
 namespace WebCore::WebGPU {
 
-class ConvertToBackingContext;
 
 class CompositorIntegrationImpl final : public CompositorIntegration {
     WTF_MAKE_TZONE_ALLOCATED(CompositorIntegrationImpl);
 public:
-    static Ref<CompositorIntegrationImpl> create(ConvertToBackingContext& convertToBackingContext)
+    static Ref<CompositorIntegrationImpl> create()
     {
-        return adoptRef(*new CompositorIntegrationImpl(convertToBackingContext));
+        return adoptRef(*new CompositorIntegrationImpl());
     }
 
     virtual ~CompositorIntegrationImpl();
@@ -79,9 +78,8 @@ public:
     void NODELETE paintCompositedResultsToCanvas(WebCore::ImageBuffer&, uint32_t) final;
 
 private:
-    friend class DowncastConvertToBackingContext;
 
-    explicit CompositorIntegrationImpl(ConvertToBackingContext&);
+    CompositorIntegrationImpl();
 
     CompositorIntegrationImpl(const CompositorIntegrationImpl&) = delete;
     CompositorIntegrationImpl(CompositorIntegrationImpl&&) = delete;
@@ -106,7 +104,6 @@ private:
     WTF::Function<void(CompletionHandler<void()>&&)> m_onSubmittedWorkScheduledCallback;
 
     const RefPtr<PresentationContext> m_presentationContext;
-    const Ref<ConvertToBackingContext> m_convertToBackingContext;
     ThreadSafeWeakPtr<Device> m_device;
 };
 

@@ -145,13 +145,9 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     Modules/WebGPU/GPUVertexState.h
     Modules/WebGPU/GPUVertexStepMode.h
 
-    Modules/WebGPU/Implementation/WebGPUAPIUtilities.h
     Modules/WebGPU/Implementation/WebGPUCompositorIntegrationImpl.h
-    Modules/WebGPU/Implementation/WebGPUConvertToBackingContext.h
     Modules/WebGPU/Implementation/WebGPUCreateImpl.h
-    Modules/WebGPU/Implementation/WebGPUDowncastConvertToBackingContext.h
     Modules/WebGPU/Implementation/WebGPUImpl.h
-    Modules/WebGPU/Implementation/WebGPUPtr.h
 
     Modules/WebGPU/InternalAPI/WebGPU.h
     Modules/WebGPU/InternalAPI/WebGPUAdapter.h

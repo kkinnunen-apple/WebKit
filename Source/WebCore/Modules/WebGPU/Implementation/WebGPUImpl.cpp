@@ -53,9 +53,8 @@ namespace WebCore::WebGPU {
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(GPUImpl);
 
-GPUImpl::GPUImpl(Ref<::WebGPU::Instance>&& instance, ConvertToBackingContext& convertToBackingContext)
+GPUImpl::GPUImpl(Ref<::WebGPU::Instance>&& instance)
     : m_backing(WTF::move(instance))
-    , m_convertToBackingContext(convertToBackingContext)
 {
 }
 
@@ -72,7 +71,8 @@ void GPUImpl::requestAdapter(const RequestAdapterOptions& options, CompletionHan
 
 RefPtr<PresentationContext> GPUImpl::createPresentationContext(const PresentationContextDescriptor& presentationContextDescriptor)
 {
-    Ref compositorIntegration { m_convertToBackingContext->convertToBacking(protect(presentationContextDescriptor.compositorIntegration)) };
+    // Every WebCore::WebGPU::CompositorIntegration that GPUImpl creates is a CompositorIntegrationImpl.
+    Ref compositorIntegration = static_cast<CompositorIntegrationImpl&>(presentationContextDescriptor.compositorIntegration.get());
 
     RefPtr result = m_backing->createPresentationContext({
         .registerCompositorIntegration = [&](auto&& renderBuffersWereRecreated, auto&& onSubmittedWorkScheduled) {
@@ -86,7 +86,7 @@ RefPtr<PresentationContext> GPUImpl::createPresentationContext(const Presentatio
 
 RefPtr<CompositorIntegration> GPUImpl::createCompositorIntegration()
 {
-    return CompositorIntegrationImpl::create(m_convertToBackingContext);
+    return CompositorIntegrationImpl::create();
 }
 
 #if ENABLE(VIDEO)
