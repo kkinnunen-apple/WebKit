@@ -115,7 +115,7 @@ void QueueImpl::writeTexture(
     WGPUTexelCopyTextureInfo backingDestination {
         .texture = convertToBackingContext->convertToBacking(protect(destination.texture)),
         .mipLevel = destination.mipLevel,
-        .origin = destination.origin ? convertToBackingContext->convertToBacking(*destination.origin) : WGPUOrigin3D { 0, 0, 0 },
+        .origin = convertToBackingContext->convertToBacking(destination.origin),
         .aspect = convertToBackingContext->convertToBacking(destination.aspect),
     };
 
@@ -268,7 +268,7 @@ void QueueImpl::copyExternalImageToTexture(
     WGPUImageCopyTextureTagged backingDestination {
         .texture = convertToBackingContext->convertToBacking(protect(destination.texture)),
         .mipLevel = destination.mipLevel,
-        .origin = destination.origin ? convertToBackingContext->convertToBacking(*destination.origin) : WGPUOrigin3D { 0, 0, 0 },
+        .origin = convertToBackingContext->convertToBacking(destination.origin),
         .aspect = convertToBackingContext->convertToBacking(destination.aspect),
         .colorSpace = convertToBackingContext->convertToBacking(destination.colorSpace),
         .premultipliedAlpha = destination.premultipliedAlpha,

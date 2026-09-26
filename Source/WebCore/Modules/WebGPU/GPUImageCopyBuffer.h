@@ -36,12 +36,12 @@ struct GPUImageCopyBuffer : public GPUImageDataLayout {
     WebGPU::ImageCopyBuffer convertToBacking() const
     {
         return {
-            {
-                offset,
-                bytesPerRow,
-                rowsPerImage,
+            .layout = {
+                .offset = offset,
+                .bytesPerRow = bytesPerRow,
+                .rowsPerImage = rowsPerImage,
             },
-            buffer->backing()
+            .buffer = buffer->backing(),
         };
     }
 

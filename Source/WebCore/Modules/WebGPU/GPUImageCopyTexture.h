@@ -40,10 +40,10 @@ struct GPUImageCopyTexture {
     WebGPU::ImageCopyTexture convertToBacking() const
     {
         return {
-            texture->backing(),
-            mipLevel,
-            origin ? std::optional { WebCore::convertToBacking(*origin) } : std::nullopt,
-            WebCore::convertToBacking(aspect),
+            .texture = texture->backing(),
+            .mipLevel = mipLevel,
+            .origin = origin ? WebCore::convertToBacking(*origin) : WebGPU::Origin3D { },
+            .aspect = WebCore::convertToBacking(aspect),
         };
     }
 

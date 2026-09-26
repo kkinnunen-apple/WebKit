@@ -54,6 +54,8 @@
 #include <WebCore/WebGPUExtent3D.h>
 #include <WebCore/WebGPUExternalTexture.h>
 #include <WebCore/WebGPUExternalTextureBindingLayout.h>
+#include <WebCore/WebGPUImageCopyBuffer.h>
+#include <WebCore/WebGPUImageCopyTexture.h>
 #include <WebCore/WebGPUImageDataLayout.h>
 #include <WebCore/WebGPUMultisampleState.h>
 #include <WebCore/WebGPUOrigin2D.h>
@@ -95,9 +97,7 @@ struct ExternalTextureDescriptor;
 struct FragmentState;
 class GPU;
 struct Identifier;
-struct ImageCopyBuffer;
 struct ImageCopyExternalImage;
-struct ImageCopyTexture;
 struct ImageCopyTextureTagged;
 class InternalError;
 struct ObjectDescriptorBase;
