@@ -90,7 +90,7 @@ ExceptionOr<Ref<GPURenderPassEncoder>> GPUCommandEncoder::beginRenderPass(const 
     RefPtr encoder = protect(backing())->beginRenderPass(renderPassDescriptor.convertToBacking());
     if (!encoder)
         return Exception { ExceptionCode::InvalidStateError, "GPUCommandEncoder.beginRenderPass: Unable to begin render pass."_s };
-    return GPURenderPassEncoder::create(encoder.releaseNonNull(), *this, canvasColorAttachmentMask);
+    return GPURenderPassEncoder::create(encoder.releaseNonNull(), String { renderPassDescriptor.label }, *this, canvasColorAttachmentMask);
 }
 
 ExceptionOr<Ref<GPUComputePassEncoder>> GPUCommandEncoder::beginComputePass(const std::optional<GPUComputePassDescriptor>& computePassDescriptor)

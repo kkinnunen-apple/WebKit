@@ -33,14 +33,11 @@
 #include "WebGPUIdentifier.h"
 #include <WebCore/WebGPUIndexFormat.h>
 #include <WebCore/WebGPUIntegralTypes.h>
+#include <WebCore/WebGPURenderPassEncoder.h>
 #include <wtf/Ref.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakRef.h>
 #include <wtf/text/WTFString.h>
-
-namespace WebCore::WebGPU {
-class RenderPassEncoder;
-}
 
 namespace IPC {
 class StreamServerConnection;

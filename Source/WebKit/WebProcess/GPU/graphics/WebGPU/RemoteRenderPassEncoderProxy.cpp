@@ -112,27 +112,13 @@ void RemoteRenderPassEncoderProxy::drawIndexedIndirect(const WebCore::WebGPU::Bu
     UNUSED_VARIABLE(sendResult);
 }
 
-void RemoteRenderPassEncoderProxy::setBindGroup(WebCore::WebGPU::Index32 index, const WebCore::WebGPU::BindGroup* bindGroup,
-    std::optional<Vector<WebCore::WebGPU::BufferDynamicOffset>>&& dynamicOffsets)
+void RemoteRenderPassEncoderProxy::setBindGroup(uint32_t index, const WebCore::WebGPU::BindGroup* bindGroup, std::optional<std::span<const uint32_t>> dynamicOffsets)
 {
     std::optional<WebGPUIdentifier> convertedBindGroup;
     if (bindGroup)
         convertedBindGroup = m_convertToBackingContext->convertToBacking(*bindGroup);
 
-    auto sendResult = send(Messages::RemoteRenderPassEncoder::SetBindGroup(index, convertedBindGroup, dynamicOffsets));
-    UNUSED_VARIABLE(sendResult);
-}
-
-void RemoteRenderPassEncoderProxy::setBindGroup(WebCore::WebGPU::Index32 index, const WebCore::WebGPU::BindGroup* bindGroup,
-    std::span<const uint32_t> dynamicOffsetsArrayBuffer,
-    WebCore::WebGPU::Size64 dynamicOffsetsDataStart,
-    WebCore::WebGPU::Size32 dynamicOffsetsDataLength)
-{
-    std::optional<WebGPUIdentifier> convertedBindGroup;
-    if (bindGroup)
-        convertedBindGroup = m_convertToBackingContext->convertToBacking(*bindGroup);
-
-    auto sendResult = send(Messages::RemoteRenderPassEncoder::SetBindGroup(index, convertedBindGroup, Vector<WebCore::WebGPU::BufferDynamicOffset>(dynamicOffsetsArrayBuffer.subspan(dynamicOffsetsDataStart, dynamicOffsetsDataLength))));
+    auto sendResult = send(Messages::RemoteRenderPassEncoder::SetBindGroup(index, convertedBindGroup, dynamicOffsets ? std::optional { Vector<uint32_t>(*dynamicOffsets) } : std::nullopt));
     UNUSED_VARIABLE(sendResult);
 }
 
@@ -169,7 +155,7 @@ void RemoteRenderPassEncoderProxy::setScissorRect(WebCore::WebGPU::IntegerCoordi
     UNUSED_VARIABLE(sendResult);
 }
 
-void RemoteRenderPassEncoderProxy::setBlendConstant(WebCore::WebGPU::Color color)
+void RemoteRenderPassEncoderProxy::setBlendConstant(const WebCore::WebGPU::Color& color)
 {
     auto sendResult = send(Messages::RemoteRenderPassEncoder::SetBlendConstant(color));
     UNUSED_VARIABLE(sendResult);
@@ -193,7 +179,7 @@ void RemoteRenderPassEncoderProxy::endOcclusionQuery()
     UNUSED_VARIABLE(sendResult);
 }
 
-void RemoteRenderPassEncoderProxy::executeBundles(Vector<Ref<WebCore::WebGPU::RenderBundle>>&& renderBundles)
+void RemoteRenderPassEncoderProxy::executeBundles(std::span<const Ref<WebCore::WebGPU::RenderBundle>> renderBundles)
 {
     auto convertedRenderBundles = WTF::compactMap(renderBundles, [&](auto& renderBundle) -> std::optional<WebGPUIdentifier> {
         return m_convertToBackingContext->convertToBacking(renderBundle);
@@ -209,10 +195,16 @@ void RemoteRenderPassEncoderProxy::end()
     UNUSED_VARIABLE(sendResult);
 }
 
-void RemoteRenderPassEncoderProxy::setLabelInternal(const String& label)
+void RemoteRenderPassEncoderProxy::setLabel(String&& label)
 {
-    auto sendResult = send(Messages::RemoteRenderPassEncoder::SetLabel(label));
+    auto sendResult = send(Messages::RemoteRenderPassEncoder::SetLabel(WTF::move(label)));
     UNUSED_VARIABLE(sendResult);
+}
+
+bool RemoteRenderPassEncoderProxy::isValid() const
+{
+    // The Web Process cannot know. RemoteGPU::isValid() answers it for tests.
+    RELEASE_ASSERT_NOT_REACHED();
 }
 
 } // namespace WebKit::WebGPU

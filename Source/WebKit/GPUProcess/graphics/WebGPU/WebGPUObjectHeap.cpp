@@ -410,7 +410,7 @@ RefPtr<WebCore::WebGPU::RenderBundle> ObjectHeap::convertRenderBundleFromBacking
     return &std::get<IPC::ScopedActiveMessageReceiveQueue<RemoteRenderBundle>>(iterator->value)->backing();
 }
 
-WeakPtr<WebCore::WebGPU::RenderPassEncoder> ObjectHeap::convertRenderPassEncoderFromBacking(WebGPUIdentifier identifier)
+RefPtr<WebCore::WebGPU::RenderPassEncoder> ObjectHeap::convertRenderPassEncoderFromBacking(WebGPUIdentifier identifier)
 {
     auto iterator = m_objects.find(identifier);
     if (iterator == m_objects.end() || !std::holds_alternative<IPC::ScopedActiveMessageReceiveQueue<RemoteRenderPassEncoder>>(iterator->value))

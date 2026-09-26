@@ -159,7 +159,7 @@ WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::RenderPassEncoder& renderPassEncoder)
 {
-    return downcast<RemoteRenderPassEncoderProxy>(renderPassEncoder).backing();
+    return static_cast<const RemoteRenderPassEncoderProxy&>(renderPassEncoder).backing();
 }
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::RenderPipeline& renderPipeline)
