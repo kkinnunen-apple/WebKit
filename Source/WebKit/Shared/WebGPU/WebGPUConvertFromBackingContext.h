@@ -53,6 +53,8 @@
 #include <WebCore/WebGPUMultisampleState.h>
 #include <WebCore/WebGPUOrigin2D.h>
 #include <WebCore/WebGPUOrigin3D.h>
+#include <WebCore/WebGPUPipelineLayout.h>
+#include <WebCore/WebGPUPipelineLayoutDescriptor.h>
 #include <WebCore/WebGPUPrimitiveState.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURenderPassTimestampWrites.h>
@@ -110,8 +112,6 @@ class InternalError;
 struct ObjectDescriptorBase;
 class OutOfMemoryError;
 struct PipelineDescriptorBase;
-class PipelineLayout;
-struct PipelineLayoutDescriptor;
 struct CanvasConfiguration;
 class PresentationContext;
 struct PresentationContextDescriptor;
@@ -249,7 +249,7 @@ public:
     std::optional<WebCore::WebGPU::ObjectDescriptorBase> NODELETE convertFromBacking(const ObjectDescriptorBase&);
     RefPtr<WebCore::WebGPU::OutOfMemoryError> convertFromBacking(const OutOfMemoryError&);
     std::optional<WebCore::WebGPU::PipelineDescriptorBase> convertFromBacking(const PipelineDescriptorBase&, bool allowMissingPipelineLayout = false);
-    std::optional<WebCore::WebGPU::PipelineLayoutDescriptor> convertFromBacking(const PipelineLayoutDescriptor&);
+    std::optional<WebCore::WebGPU::PipelineLayoutDescriptor> convertFromBacking(const PipelineLayoutDescriptor&, Vector<Ref<WebCore::WebGPU::BindGroupLayout>>& bindGroupLayoutsStorage);
     std::optional<WebCore::WebGPU::PresentationContextDescriptor> convertFromBacking(const PresentationContextDescriptor&);
     std::optional<WebCore::WebGPU::PrimitiveState> NODELETE convertFromBacking(const PrimitiveState&);
     std::optional<WebCore::WebGPU::ProgrammableStage> convertFromBacking(const ProgrammableStage&);
@@ -287,7 +287,7 @@ public:
     virtual WeakPtr<WebCore::WebGPU::ComputePipeline> convertComputePipelineFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::Device> convertDeviceFromBacking(WebGPUIdentifier) = 0;
     virtual ThreadSafeWeakPtr<WebCore::WebGPU::ExternalTexture> convertExternalTextureFromBacking(WebGPUIdentifier) = 0;
-    virtual WeakPtr<WebCore::WebGPU::PipelineLayout> convertPipelineLayoutFromBacking(WebGPUIdentifier) = 0;
+    virtual RefPtr<WebCore::WebGPU::PipelineLayout> convertPipelineLayoutFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::QuerySet> convertQuerySetFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::Queue> convertQueueFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::RenderBundleEncoder> convertRenderBundleEncoderFromBacking(WebGPUIdentifier) = 0;

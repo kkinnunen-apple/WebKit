@@ -191,8 +191,7 @@ bool GPUImpl::isValid(const ExternalTexture& externalTexture) const
 
 bool GPUImpl::isValid(const PipelineLayout& pipelineLayout) const
 {
-    WGPUPipelineLayout wgpuPipelineLayout = m_convertToBackingContext.get().convertToBacking(pipelineLayout);
-    return wgpuPipelineLayoutIsValid(wgpuPipelineLayout);
+    return pipelineLayout.isValid();
 }
 
 bool GPUImpl::isValid(const PresentationContext& presentationContext) const

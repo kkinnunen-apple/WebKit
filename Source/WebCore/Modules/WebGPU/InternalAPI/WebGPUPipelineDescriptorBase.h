@@ -32,7 +32,7 @@
 namespace WebCore::WebGPU {
 
 struct PipelineDescriptorBase : public ObjectDescriptorBase {
-    WeakPtr<PipelineLayout> layout;
+    RefPtr<PipelineLayout> layout;
 };
 
 } // namespace WebCore::WebGPU

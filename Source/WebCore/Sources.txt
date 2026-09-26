@@ -119,7 +119,6 @@ Modules/WebGPU/Implementation/WebGPUCreateImpl.cpp
 Modules/WebGPU/Implementation/WebGPUDeviceImpl.cpp
 Modules/WebGPU/Implementation/WebGPUDowncastConvertToBackingContext.cpp
 Modules/WebGPU/Implementation/WebGPUImpl.cpp
-Modules/WebGPU/Implementation/WebGPUPipelineLayoutImpl.cpp
 Modules/WebGPU/Implementation/WebGPUPresentationContextImpl.cpp
 Modules/WebGPU/Implementation/WebGPUQueueImpl.cpp
 Modules/WebGPU/Implementation/WebGPURenderBundleEncoderImpl.cpp

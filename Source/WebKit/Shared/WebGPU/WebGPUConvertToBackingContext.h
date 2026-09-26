@@ -53,6 +53,8 @@
 #include <WebCore/WebGPUMultisampleState.h>
 #include <WebCore/WebGPUOrigin2D.h>
 #include <WebCore/WebGPUOrigin3D.h>
+#include <WebCore/WebGPUPipelineLayout.h>
+#include <WebCore/WebGPUPipelineLayoutDescriptor.h>
 #include <WebCore/WebGPUPrimitiveState.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURenderPassTimestampWrites.h>
@@ -100,8 +102,6 @@ class InternalError;
 struct ObjectDescriptorBase;
 class OutOfMemoryError;
 struct PipelineDescriptorBase;
-class PipelineLayout;
-struct PipelineLayoutDescriptor;
 struct CanvasConfiguration;
 class PresentationContext;
 struct PresentationContextDescriptor;

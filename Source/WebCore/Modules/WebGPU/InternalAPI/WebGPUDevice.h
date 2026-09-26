@@ -34,6 +34,8 @@
 #include <WebCore/WebGPUError.h>
 #include <WebCore/WebGPUErrorFilter.h>
 #include <WebCore/WebGPUExternalTexture.h>
+#include <WebCore/WebGPUPipelineLayout.h>
+#include <WebCore/WebGPUPipelineLayoutDescriptor.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPUQuerySetDescriptor.h>
 #include <WebCore/WebGPURenderPipeline.h>
@@ -74,8 +76,6 @@ struct ComputePipelineDescriptor;
 struct ExternalTextureDescriptor;
 class RenderPipeline;
 struct RenderPipelineDescriptor;
-class PipelineLayout;
-struct PipelineLayoutDescriptor;
 class PresentationContext;
 class Queue;
 class RenderBundleEncoder;

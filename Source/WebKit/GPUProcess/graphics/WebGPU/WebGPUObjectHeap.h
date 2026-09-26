@@ -33,6 +33,7 @@
 #include <WebCore/WebGPUBindGroupLayout.h>
 #include <WebCore/WebGPUBuffer.h>
 #include <WebCore/WebGPUExternalTexture.h>
+#include <WebCore/WebGPUPipelineLayout.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPUSampler.h>
 #include <WebCore/WebGPUShaderModule.h>
@@ -53,7 +54,6 @@ class ComputePassEncoder;
 class ComputePipeline;
 class Device;
 class GPU;
-class PipelineLayout;
 class PresentationContext;
 class Queue;
 class RenderBundleEncoder;
@@ -151,7 +151,7 @@ public:
     WeakPtr<WebCore::WebGPU::ComputePipeline> convertComputePipelineFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::Device> convertDeviceFromBacking(WebGPUIdentifier) final;
     ThreadSafeWeakPtr<WebCore::WebGPU::ExternalTexture> convertExternalTextureFromBacking(WebGPUIdentifier) final;
-    WeakPtr<WebCore::WebGPU::PipelineLayout> convertPipelineLayoutFromBacking(WebGPUIdentifier) final;
+    RefPtr<WebCore::WebGPU::PipelineLayout> convertPipelineLayoutFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::PresentationContext> convertPresentationContextFromBacking(WebGPUIdentifier) final;
     RefPtr<WebCore::WebGPU::QuerySet> convertQuerySetFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::Queue> convertQueueFromBacking(WebGPUIdentifier) final;

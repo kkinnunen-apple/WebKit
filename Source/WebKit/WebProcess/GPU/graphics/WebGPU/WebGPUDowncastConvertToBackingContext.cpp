@@ -129,7 +129,7 @@ WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::PipelineLayout& pipelineLayout)
 {
-    return downcast<RemotePipelineLayoutProxy>(pipelineLayout).backing();
+    return static_cast<const RemotePipelineLayoutProxy&>(pipelineLayout).backing();
 }
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::PresentationContext& presentationContext)
