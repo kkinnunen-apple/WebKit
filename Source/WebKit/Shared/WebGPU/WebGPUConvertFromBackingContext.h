@@ -63,6 +63,7 @@
 #include <WebCore/WebGPUPrimitiveState.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURenderBundle.h>
+#include <WebCore/WebGPURenderPassEncoder.h>
 #include <WebCore/WebGPURenderPassTimestampWrites.h>
 #include <WebCore/WebGPURenderPipeline.h>
 #include <WebCore/WebGPUSampler.h>
@@ -121,7 +122,6 @@ struct RenderBundleEncoderDescriptor;
 struct RenderPassColorAttachment;
 struct RenderPassDepthStencilAttachment;
 struct RenderPassDescriptor;
-class RenderPassEncoder;
 struct RenderPassLayout;
 struct RenderPipelineDescriptor;
 struct RequestAdapterOptions;
@@ -284,7 +284,7 @@ public:
     virtual WeakPtr<WebCore::WebGPU::Queue> convertQueueFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::RenderBundleEncoder> convertRenderBundleEncoderFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::RenderBundle> convertRenderBundleFromBacking(WebGPUIdentifier) = 0;
-    virtual WeakPtr<WebCore::WebGPU::RenderPassEncoder> convertRenderPassEncoderFromBacking(WebGPUIdentifier) = 0;
+    virtual RefPtr<WebCore::WebGPU::RenderPassEncoder> convertRenderPassEncoderFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::RenderPipeline> convertRenderPipelineFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::Sampler> convertSamplerFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::ShaderModule> convertShaderModuleFromBacking(WebGPUIdentifier) = 0;

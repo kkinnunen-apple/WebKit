@@ -63,6 +63,7 @@
 #include <WebCore/WebGPUPrimitiveState.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURenderBundle.h>
+#include <WebCore/WebGPURenderPassEncoder.h>
 #include <WebCore/WebGPURenderPassTimestampWrites.h>
 #include <WebCore/WebGPURenderPipeline.h>
 #include <WebCore/WebGPUSampler.h>
@@ -111,7 +112,6 @@ struct RenderBundleEncoderDescriptor;
 struct RenderPassColorAttachment;
 struct RenderPassDepthStencilAttachment;
 struct RenderPassDescriptor;
-class RenderPassEncoder;
 struct RenderPassLayout;
 struct RenderPipelineDescriptor;
 struct RequestAdapterOptions;
