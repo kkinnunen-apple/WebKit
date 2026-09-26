@@ -25,13 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class StoreOp : uint8_t {
-    Store,
-    Discard,
-};
+using StoreOp = ::WebGPU::StoreOp;
 
 } // namespace WebCore::WebGPU

@@ -25,14 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class StorageTextureAccess : uint8_t {
-    WriteOnly,
-    ReadOnly,
-    ReadWrite,
-};
+using StorageTextureAccess = ::WebGPU::StorageTextureAccess;
 
 } // namespace WebCore::WebGPU

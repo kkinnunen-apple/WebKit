@@ -25,12 +25,9 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 namespace WebCore::WebGPU {
 
-enum class XREye : uint8_t {
-    None,
-    Left,
-    Right,
-};
+using XREye = ::WebGPU::XREye;
 
 } // namespace WebCore::WebGPU

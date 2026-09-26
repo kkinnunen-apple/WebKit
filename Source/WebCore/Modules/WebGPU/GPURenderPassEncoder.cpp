@@ -49,7 +49,7 @@ static RefPtr<WebGPU::RenderPipeline> applyInspectorPipelineHighlight(WebGPU::Re
         return nullptr;
 
     encoder.setPipeline(*highlightedPipeline);
-    encoder.setBlendConstant(WebGPU::Color { WebGPU::ColorDict { 111.0 / 255.0, 168.0 / 255.0, 220.0 / 255.0, 2.0 / 3.0 } });
+    encoder.setBlendConstant(WebGPU::Color { 111.0 / 255.0, 168.0 / 255.0, 220.0 / 255.0, 2.0 / 3.0 });
     return highlightedPipeline;
 }
 

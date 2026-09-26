@@ -25,13 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class CanvasAlphaMode : uint8_t {
-    Opaque,
-    Premultiplied,
-};
+using CanvasAlphaMode = ::WebGPU::CanvasAlphaMode;
 
 } // namespace WebCore::WebGPU

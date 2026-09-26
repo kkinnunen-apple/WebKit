@@ -25,17 +25,14 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <cstdint>
 #include <wtf/OptionSet.h>
 
 namespace WebCore::WebGPU {
 
-enum class ShaderStage : uint8_t {
-    Vertex   = 1 << 0,
-    Fragment = 1 << 1,
-    Compute  = 1 << 2,
-};
+using ShaderStage = ::WebGPU::ShaderStage;
 using ShaderStageFlags = OptionSet<ShaderStage>;
 
 } // namespace WebCore::WebGPU

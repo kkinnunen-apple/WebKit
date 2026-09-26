@@ -35,6 +35,7 @@
 #include "WebGPUError.h"
 #include "WebGPUIdentifier.h"
 #include <WebCore/MediaPlayerIdentifier.h>
+#include <WebCore/WebGPUDeviceLostReason.h>
 #include <WebCore/WebGPUErrorFilter.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Ref.h>
@@ -51,7 +52,6 @@ typedef struct __CVBuffer* CVPixelBufferRef;
 
 namespace WebCore::WebGPU {
 class Device;
-enum class DeviceLostReason : uint8_t;
 }
 
 namespace IPC {

@@ -27,20 +27,15 @@
 
 #include <WebCore/WebGPUBlendFactor.h>
 #include <WebCore/WebGPUBlendOperation.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <cstdint>
 #include <wtf/OptionSet.h>
 
 namespace WebCore::WebGPU {
 
-enum class ColorWrite : uint8_t {
-    Red   = 1 << 0,
-    Green = 1 << 1,
-    Blue  = 1 << 2,
-    Alpha = 1 << 3,
-    All = Red | Green | Blue | Alpha
-};
+using ColorWrite = ::WebGPU::ColorWrite;
 using ColorWriteFlags = uint32_t;
-static constexpr ColorWriteFlags ColorWriteFlags_All = static_cast<ColorWriteFlags>(ColorWrite::All);
+static constexpr ColorWriteFlags ColorWriteFlags_All = OptionSet<ColorWrite> { ColorWrite::Red, ColorWrite::Green, ColorWrite::Blue, ColorWrite::Alpha }.toRaw();
 
 } // namespace WebCore::WebGPU

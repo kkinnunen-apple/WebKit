@@ -111,18 +111,16 @@ void RemoteQueueProxy::writeTexture(
     ASSERT(convertedDestination);
     auto convertedDataLayout = m_convertToBackingContext->convertToBacking(dataLayout);
     ASSERT(convertedDataLayout);
-    auto convertedSize = m_convertToBackingContext->convertToBacking(size);
-    ASSERT(convertedSize);
-    if (!convertedDestination || !convertedDataLayout || !convertedSize)
+    if (!convertedDestination || !convertedDataLayout)
         return;
 
     if (source.size() > maxCrossProcessResourceCopySize) {
         auto handle = WebCore::SharedMemoryHandle::createCopy(source, WebCore::SharedMemoryProtection::ReadOnly);
-        auto sendResult = sendWithAsyncReply(Messages::RemoteQueue::WriteTexture(*convertedDestination, WTF::move(handle), *convertedDataLayout, *convertedSize), [](auto) mutable {
+        auto sendResult = sendWithAsyncReply(Messages::RemoteQueue::WriteTexture(*convertedDestination, WTF::move(handle), *convertedDataLayout, size), [](auto) mutable {
         });
         UNUSED_VARIABLE(sendResult);
     } else {
-        auto sendResult = send(Messages::RemoteQueue::WriteTextureWithCopy(*convertedDestination, Vector(source), *convertedDataLayout, *convertedSize));
+        auto sendResult = send(Messages::RemoteQueue::WriteTextureWithCopy(*convertedDestination, Vector(source), *convertedDataLayout, size));
         UNUSED_VARIABLE(sendResult);
     }
 }
@@ -170,16 +168,14 @@ void RemoteQueueProxy::copyExternalImageToTexture(
     ASSERT(convertedSource);
     auto convertedDestination = convertToBackingContext->convertToBacking(destination);
     ASSERT(convertedDestination);
-    auto convertedCopySize = convertToBackingContext->convertToBacking(copySize);
-    ASSERT(convertedCopySize);
-    if (!convertedSource || !convertedDestination || !convertedCopySize)
+    if (!convertedSource || !convertedDestination)
         return;
 
     // Sent synchronously, because the source is identified rather than referenced: releasing it, or
     // drawing into it again, travels on the RemoteRenderingBackend's stream, which is not ordered
     // against this one. Blocking until the GPU process has resolved the identifier and encoded the
     // copy is what keeps `sourceImageBuffer` from being released, or overwritten, too early.
-    auto sendResult = sendSync(Messages::RemoteQueue::CopyExternalImageToTexture(*convertedSource, *convertedDestination, *convertedCopySize));
+    auto sendResult = sendSync(Messages::RemoteQueue::CopyExternalImageToTexture(*convertedSource, *convertedDestination, copySize));
     UNUSED_VARIABLE(sendResult);
 }
 
@@ -195,9 +191,7 @@ void RemoteQueueProxy::copyExternalImageFromVideoFrameToTexture(
     ASSERT(convertedSource);
     auto convertedDestination = convertToBackingContext->convertToBacking(destination);
     ASSERT(convertedDestination);
-    auto convertedCopySize = convertToBackingContext->convertToBacking(copySize);
-    ASSERT(convertedCopySize);
-    if (!convertedSource || !convertedDestination || !convertedCopySize)
+    if (!convertedSource || !convertedDestination)
         return;
 
     // A frame with no media player behind it - every WebCodecs frame, and a media element whose
@@ -222,7 +216,7 @@ void RemoteQueueProxy::copyExternalImageFromVideoFrameToTexture(
     // Sent asynchronously, unlike the ImageBuffer copy above: the frame either travels with the
     // message or is named by a media player the GPU process resolves for itself, so there is no
     // identifier on another stream whose lifetime this call has to hold open.
-    auto sendResult = send(Messages::RemoteQueue::CopyExternalImageFromVideoFrameToTexture(WTF::move(*convertedSource), *convertedDestination, *convertedCopySize));
+    auto sendResult = send(Messages::RemoteQueue::CopyExternalImageFromVideoFrameToTexture(WTF::move(*convertedSource), *convertedDestination, copySize));
     UNUSED_VARIABLE(sendResult);
 }
 #endif

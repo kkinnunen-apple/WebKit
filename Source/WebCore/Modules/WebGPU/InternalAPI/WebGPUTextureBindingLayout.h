@@ -25,15 +25,12 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUTextureSampleType.h>
 #include <WebCore/WebGPUTextureViewDimension.h>
 
 namespace WebCore::WebGPU {
 
-struct TextureBindingLayout {
-    TextureSampleType sampleType { TextureSampleType::Float };
-    TextureViewDimension viewDimension { TextureViewDimension::_2d };
-    bool multisampled { false };
-};
+using TextureBindingLayout = ::WebGPU::TextureBindingLayout;
 
 } // namespace WebCore::WebGPU

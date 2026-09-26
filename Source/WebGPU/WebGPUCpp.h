@@ -1108,60 +1108,60 @@ struct BindGroupDescriptor {
 } // namespace WebGPU
 
 // Retain and release functions for SWIFT_SHARED_REFERENCE.
-inline void refWebGPUAdapter(WebGPU::Adapter*);
-inline void derefWebGPUAdapter(WebGPU::Adapter*);
-inline void refWebGPUBindGroup(WebGPU::BindGroup*);
-inline void derefWebGPUBindGroup(WebGPU::BindGroup*);
-inline void refWebGPUBindGroupLayout(WebGPU::BindGroupLayout*);
-inline void derefWebGPUBindGroupLayout(WebGPU::BindGroupLayout*);
-inline void refWebGPUBuffer(WebGPU::Buffer*);
-inline void derefWebGPUBuffer(WebGPU::Buffer*);
-inline void refWebGPUCommandBuffer(WebGPU::CommandBuffer*);
-inline void derefWebGPUCommandBuffer(WebGPU::CommandBuffer*);
-inline void refWebGPUCommandEncoder(WebGPU::CommandEncoder*);
-inline void derefWebGPUCommandEncoder(WebGPU::CommandEncoder*);
-inline void refWebGPUComputePassEncoder(WebGPU::ComputePassEncoder*);
-inline void derefWebGPUComputePassEncoder(WebGPU::ComputePassEncoder*);
-inline void refWebGPUComputePipeline(WebGPU::ComputePipeline*);
-inline void derefWebGPUComputePipeline(WebGPU::ComputePipeline*);
-inline void refWebGPUDevice(WebGPU::Device*);
-inline void derefWebGPUDevice(WebGPU::Device*);
-inline void refWebGPUExternalTexture(WebGPU::ExternalTexture*);
-inline void derefWebGPUExternalTexture(WebGPU::ExternalTexture*);
-inline void refWebGPUInstance(WebGPU::Instance*);
-inline void derefWebGPUInstance(WebGPU::Instance*);
-inline void refWebGPUPipelineLayout(WebGPU::PipelineLayout*);
-inline void derefWebGPUPipelineLayout(WebGPU::PipelineLayout*);
-inline void refWebGPUPresentationContext(WebGPU::PresentationContext*);
-inline void derefWebGPUPresentationContext(WebGPU::PresentationContext*);
-inline void refWebGPUQuerySet(WebGPU::QuerySet*);
-inline void derefWebGPUQuerySet(WebGPU::QuerySet*);
-inline void refWebGPUQueue(WebGPU::Queue*);
-inline void derefWebGPUQueue(WebGPU::Queue*);
-inline void refWebGPURenderBundle(WebGPU::RenderBundle*);
-inline void derefWebGPURenderBundle(WebGPU::RenderBundle*);
-inline void refWebGPURenderBundleEncoder(WebGPU::RenderBundleEncoder*);
-inline void derefWebGPURenderBundleEncoder(WebGPU::RenderBundleEncoder*);
-inline void refWebGPURenderPassEncoder(WebGPU::RenderPassEncoder*);
-inline void derefWebGPURenderPassEncoder(WebGPU::RenderPassEncoder*);
-inline void refWebGPURenderPipeline(WebGPU::RenderPipeline*);
-inline void derefWebGPURenderPipeline(WebGPU::RenderPipeline*);
-inline void refWebGPUSampler(WebGPU::Sampler*);
-inline void derefWebGPUSampler(WebGPU::Sampler*);
-inline void refWebGPUShaderModule(WebGPU::ShaderModule*);
-inline void derefWebGPUShaderModule(WebGPU::ShaderModule*);
-inline void refWebGPUTexture(WebGPU::Texture*);
-inline void derefWebGPUTexture(WebGPU::Texture*);
-inline void refWebGPUTextureView(WebGPU::TextureView*);
-inline void derefWebGPUTextureView(WebGPU::TextureView*);
-inline void refWebGPUXRBinding(WebGPU::XRBinding*);
-inline void derefWebGPUXRBinding(WebGPU::XRBinding*);
-inline void refWebGPUXRProjectionLayer(WebGPU::XRProjectionLayer*);
-inline void derefWebGPUXRProjectionLayer(WebGPU::XRProjectionLayer*);
-inline void refWebGPUXRSubImage(WebGPU::XRSubImage*);
-inline void derefWebGPUXRSubImage(WebGPU::XRSubImage*);
-inline void refWebGPUXRView(WebGPU::XRView*);
-inline void derefWebGPUXRView(WebGPU::XRView*);
+inline void refWebGPUAdapter(::WebGPU::Adapter*);
+inline void derefWebGPUAdapter(::WebGPU::Adapter*);
+inline void refWebGPUBindGroup(::WebGPU::BindGroup*);
+inline void derefWebGPUBindGroup(::WebGPU::BindGroup*);
+inline void refWebGPUBindGroupLayout(::WebGPU::BindGroupLayout*);
+inline void derefWebGPUBindGroupLayout(::WebGPU::BindGroupLayout*);
+inline void refWebGPUBuffer(::WebGPU::Buffer*);
+inline void derefWebGPUBuffer(::WebGPU::Buffer*);
+inline void refWebGPUCommandBuffer(::WebGPU::CommandBuffer*);
+inline void derefWebGPUCommandBuffer(::WebGPU::CommandBuffer*);
+inline void refWebGPUCommandEncoder(::WebGPU::CommandEncoder*);
+inline void derefWebGPUCommandEncoder(::WebGPU::CommandEncoder*);
+inline void refWebGPUComputePassEncoder(::WebGPU::ComputePassEncoder*);
+inline void derefWebGPUComputePassEncoder(::WebGPU::ComputePassEncoder*);
+inline void refWebGPUComputePipeline(::WebGPU::ComputePipeline*);
+inline void derefWebGPUComputePipeline(::WebGPU::ComputePipeline*);
+inline void refWebGPUDevice(::WebGPU::Device*);
+inline void derefWebGPUDevice(::WebGPU::Device*);
+inline void refWebGPUExternalTexture(::WebGPU::ExternalTexture*);
+inline void derefWebGPUExternalTexture(::WebGPU::ExternalTexture*);
+inline void refWebGPUInstance(::WebGPU::Instance*);
+inline void derefWebGPUInstance(::WebGPU::Instance*);
+inline void refWebGPUPipelineLayout(::WebGPU::PipelineLayout*);
+inline void derefWebGPUPipelineLayout(::WebGPU::PipelineLayout*);
+inline void refWebGPUPresentationContext(::WebGPU::PresentationContext*);
+inline void derefWebGPUPresentationContext(::WebGPU::PresentationContext*);
+inline void refWebGPUQuerySet(::WebGPU::QuerySet*);
+inline void derefWebGPUQuerySet(::WebGPU::QuerySet*);
+inline void refWebGPUQueue(::WebGPU::Queue*);
+inline void derefWebGPUQueue(::WebGPU::Queue*);
+inline void refWebGPURenderBundle(::WebGPU::RenderBundle*);
+inline void derefWebGPURenderBundle(::WebGPU::RenderBundle*);
+inline void refWebGPURenderBundleEncoder(::WebGPU::RenderBundleEncoder*);
+inline void derefWebGPURenderBundleEncoder(::WebGPU::RenderBundleEncoder*);
+inline void refWebGPURenderPassEncoder(::WebGPU::RenderPassEncoder*);
+inline void derefWebGPURenderPassEncoder(::WebGPU::RenderPassEncoder*);
+inline void refWebGPURenderPipeline(::WebGPU::RenderPipeline*);
+inline void derefWebGPURenderPipeline(::WebGPU::RenderPipeline*);
+inline void refWebGPUSampler(::WebGPU::Sampler*);
+inline void derefWebGPUSampler(::WebGPU::Sampler*);
+inline void refWebGPUShaderModule(::WebGPU::ShaderModule*);
+inline void derefWebGPUShaderModule(::WebGPU::ShaderModule*);
+inline void refWebGPUTexture(::WebGPU::Texture*);
+inline void derefWebGPUTexture(::WebGPU::Texture*);
+inline void refWebGPUTextureView(::WebGPU::TextureView*);
+inline void derefWebGPUTextureView(::WebGPU::TextureView*);
+inline void refWebGPUXRBinding(::WebGPU::XRBinding*);
+inline void derefWebGPUXRBinding(::WebGPU::XRBinding*);
+inline void refWebGPUXRProjectionLayer(::WebGPU::XRProjectionLayer*);
+inline void derefWebGPUXRProjectionLayer(::WebGPU::XRProjectionLayer*);
+inline void refWebGPUXRSubImage(::WebGPU::XRSubImage*);
+inline void derefWebGPUXRSubImage(::WebGPU::XRSubImage*);
+inline void refWebGPUXRView(::WebGPU::XRView*);
+inline void derefWebGPUXRView(::WebGPU::XRView*);
 
 namespace WebGPU {
 
@@ -1464,272 +1464,272 @@ protected:
 
 } // namespace WebGPU
 
-inline void refWebGPUAdapter(WebGPU::Adapter* object)
+inline void refWebGPUAdapter(::WebGPU::Adapter* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUAdapter(WebGPU::Adapter* object)
+inline void derefWebGPUAdapter(::WebGPU::Adapter* object)
 {
     object->deref();
 }
 
-inline void refWebGPUBindGroup(WebGPU::BindGroup* object)
+inline void refWebGPUBindGroup(::WebGPU::BindGroup* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUBindGroup(WebGPU::BindGroup* object)
+inline void derefWebGPUBindGroup(::WebGPU::BindGroup* object)
 {
     object->deref();
 }
 
-inline void refWebGPUBindGroupLayout(WebGPU::BindGroupLayout* object)
+inline void refWebGPUBindGroupLayout(::WebGPU::BindGroupLayout* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUBindGroupLayout(WebGPU::BindGroupLayout* object)
+inline void derefWebGPUBindGroupLayout(::WebGPU::BindGroupLayout* object)
 {
     object->deref();
 }
 
-inline void refWebGPUBuffer(WebGPU::Buffer* object)
+inline void refWebGPUBuffer(::WebGPU::Buffer* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUBuffer(WebGPU::Buffer* object)
+inline void derefWebGPUBuffer(::WebGPU::Buffer* object)
 {
     object->deref();
 }
 
-inline void refWebGPUCommandBuffer(WebGPU::CommandBuffer* object)
+inline void refWebGPUCommandBuffer(::WebGPU::CommandBuffer* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUCommandBuffer(WebGPU::CommandBuffer* object)
+inline void derefWebGPUCommandBuffer(::WebGPU::CommandBuffer* object)
 {
     object->deref();
 }
 
-inline void refWebGPUCommandEncoder(WebGPU::CommandEncoder* object)
+inline void refWebGPUCommandEncoder(::WebGPU::CommandEncoder* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUCommandEncoder(WebGPU::CommandEncoder* object)
+inline void derefWebGPUCommandEncoder(::WebGPU::CommandEncoder* object)
 {
     object->deref();
 }
 
-inline void refWebGPUComputePassEncoder(WebGPU::ComputePassEncoder* object)
+inline void refWebGPUComputePassEncoder(::WebGPU::ComputePassEncoder* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUComputePassEncoder(WebGPU::ComputePassEncoder* object)
+inline void derefWebGPUComputePassEncoder(::WebGPU::ComputePassEncoder* object)
 {
     object->deref();
 }
 
-inline void refWebGPUComputePipeline(WebGPU::ComputePipeline* object)
+inline void refWebGPUComputePipeline(::WebGPU::ComputePipeline* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUComputePipeline(WebGPU::ComputePipeline* object)
+inline void derefWebGPUComputePipeline(::WebGPU::ComputePipeline* object)
 {
     object->deref();
 }
 
-inline void refWebGPUDevice(WebGPU::Device* object)
+inline void refWebGPUDevice(::WebGPU::Device* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUDevice(WebGPU::Device* object)
+inline void derefWebGPUDevice(::WebGPU::Device* object)
 {
     object->deref();
 }
 
-inline void refWebGPUExternalTexture(WebGPU::ExternalTexture* object)
+inline void refWebGPUExternalTexture(::WebGPU::ExternalTexture* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUExternalTexture(WebGPU::ExternalTexture* object)
+inline void derefWebGPUExternalTexture(::WebGPU::ExternalTexture* object)
 {
     object->deref();
 }
 
-inline void refWebGPUInstance(WebGPU::Instance* object)
+inline void refWebGPUInstance(::WebGPU::Instance* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUInstance(WebGPU::Instance* object)
+inline void derefWebGPUInstance(::WebGPU::Instance* object)
 {
     object->deref();
 }
 
-inline void refWebGPUPipelineLayout(WebGPU::PipelineLayout* object)
+inline void refWebGPUPipelineLayout(::WebGPU::PipelineLayout* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUPipelineLayout(WebGPU::PipelineLayout* object)
+inline void derefWebGPUPipelineLayout(::WebGPU::PipelineLayout* object)
 {
     object->deref();
 }
 
-inline void refWebGPUPresentationContext(WebGPU::PresentationContext* object)
+inline void refWebGPUPresentationContext(::WebGPU::PresentationContext* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUPresentationContext(WebGPU::PresentationContext* object)
+inline void derefWebGPUPresentationContext(::WebGPU::PresentationContext* object)
 {
     object->deref();
 }
 
-inline void refWebGPUQuerySet(WebGPU::QuerySet* object)
+inline void refWebGPUQuerySet(::WebGPU::QuerySet* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUQuerySet(WebGPU::QuerySet* object)
+inline void derefWebGPUQuerySet(::WebGPU::QuerySet* object)
 {
     object->deref();
 }
 
-inline void refWebGPUQueue(WebGPU::Queue* object)
+inline void refWebGPUQueue(::WebGPU::Queue* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUQueue(WebGPU::Queue* object)
+inline void derefWebGPUQueue(::WebGPU::Queue* object)
 {
     object->deref();
 }
 
-inline void refWebGPURenderBundle(WebGPU::RenderBundle* object)
+inline void refWebGPURenderBundle(::WebGPU::RenderBundle* object)
 {
     object->ref();
 }
 
-inline void derefWebGPURenderBundle(WebGPU::RenderBundle* object)
+inline void derefWebGPURenderBundle(::WebGPU::RenderBundle* object)
 {
     object->deref();
 }
 
-inline void refWebGPURenderBundleEncoder(WebGPU::RenderBundleEncoder* object)
+inline void refWebGPURenderBundleEncoder(::WebGPU::RenderBundleEncoder* object)
 {
     object->ref();
 }
 
-inline void derefWebGPURenderBundleEncoder(WebGPU::RenderBundleEncoder* object)
+inline void derefWebGPURenderBundleEncoder(::WebGPU::RenderBundleEncoder* object)
 {
     object->deref();
 }
 
-inline void refWebGPURenderPassEncoder(WebGPU::RenderPassEncoder* object)
+inline void refWebGPURenderPassEncoder(::WebGPU::RenderPassEncoder* object)
 {
     object->ref();
 }
 
-inline void derefWebGPURenderPassEncoder(WebGPU::RenderPassEncoder* object)
+inline void derefWebGPURenderPassEncoder(::WebGPU::RenderPassEncoder* object)
 {
     object->deref();
 }
 
-inline void refWebGPURenderPipeline(WebGPU::RenderPipeline* object)
+inline void refWebGPURenderPipeline(::WebGPU::RenderPipeline* object)
 {
     object->ref();
 }
 
-inline void derefWebGPURenderPipeline(WebGPU::RenderPipeline* object)
+inline void derefWebGPURenderPipeline(::WebGPU::RenderPipeline* object)
 {
     object->deref();
 }
 
-inline void refWebGPUSampler(WebGPU::Sampler* object)
+inline void refWebGPUSampler(::WebGPU::Sampler* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUSampler(WebGPU::Sampler* object)
+inline void derefWebGPUSampler(::WebGPU::Sampler* object)
 {
     object->deref();
 }
 
-inline void refWebGPUShaderModule(WebGPU::ShaderModule* object)
+inline void refWebGPUShaderModule(::WebGPU::ShaderModule* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUShaderModule(WebGPU::ShaderModule* object)
+inline void derefWebGPUShaderModule(::WebGPU::ShaderModule* object)
 {
     object->deref();
 }
 
-inline void refWebGPUTexture(WebGPU::Texture* object)
+inline void refWebGPUTexture(::WebGPU::Texture* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUTexture(WebGPU::Texture* object)
+inline void derefWebGPUTexture(::WebGPU::Texture* object)
 {
     object->deref();
 }
 
-inline void refWebGPUTextureView(WebGPU::TextureView* object)
+inline void refWebGPUTextureView(::WebGPU::TextureView* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUTextureView(WebGPU::TextureView* object)
+inline void derefWebGPUTextureView(::WebGPU::TextureView* object)
 {
     object->deref();
 }
 
-inline void refWebGPUXRBinding(WebGPU::XRBinding* object)
+inline void refWebGPUXRBinding(::WebGPU::XRBinding* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUXRBinding(WebGPU::XRBinding* object)
+inline void derefWebGPUXRBinding(::WebGPU::XRBinding* object)
 {
     object->deref();
 }
 
-inline void refWebGPUXRProjectionLayer(WebGPU::XRProjectionLayer* object)
+inline void refWebGPUXRProjectionLayer(::WebGPU::XRProjectionLayer* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUXRProjectionLayer(WebGPU::XRProjectionLayer* object)
+inline void derefWebGPUXRProjectionLayer(::WebGPU::XRProjectionLayer* object)
 {
     object->deref();
 }
 
-inline void refWebGPUXRSubImage(WebGPU::XRSubImage* object)
+inline void refWebGPUXRSubImage(::WebGPU::XRSubImage* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUXRSubImage(WebGPU::XRSubImage* object)
+inline void derefWebGPUXRSubImage(::WebGPU::XRSubImage* object)
 {
     object->deref();
 }
 
-inline void refWebGPUXRView(WebGPU::XRView* object)
+inline void refWebGPUXRView(::WebGPU::XRView* object)
 {
     object->ref();
 }
 
-inline void derefWebGPUXRView(WebGPU::XRView* object)
+inline void derefWebGPUXRView(::WebGPU::XRView* object)
 {
     object->deref();
 }

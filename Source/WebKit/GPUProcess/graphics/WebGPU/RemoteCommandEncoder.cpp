@@ -125,12 +125,10 @@ void RemoteCommandEncoder::copyBufferToTexture(
     ASSERT(convertedSource);
     auto convertedDestination = m_objectHeap->convertFromBacking(destination);
     ASSERT(convertedDestination);
-    auto convertedCopySize = m_objectHeap->convertFromBacking(copySize);
-    ASSERT(convertedCopySize);
-    if (!convertedSource || !convertedDestination || !convertedCopySize)
+    if (!convertedSource || !convertedDestination)
         return;
 
-    protect(m_backing)->copyBufferToTexture(*convertedSource, *convertedDestination, *convertedCopySize);
+    protect(m_backing)->copyBufferToTexture(*convertedSource, *convertedDestination, copySize);
 }
 
 void RemoteCommandEncoder::copyTextureToBuffer(
@@ -142,12 +140,10 @@ void RemoteCommandEncoder::copyTextureToBuffer(
     ASSERT(convertedSource);
     auto convertedDestination = m_objectHeap->convertFromBacking(destination);
     ASSERT(convertedDestination);
-    auto convertedCopySize = m_objectHeap->convertFromBacking(copySize);
-    ASSERT(convertedCopySize);
-    if (!convertedSource || !convertedDestination || !convertedCopySize)
+    if (!convertedSource || !convertedDestination)
         return;
 
-    protect(m_backing)->copyTextureToBuffer(*convertedSource, *convertedDestination, *convertedCopySize);
+    protect(m_backing)->copyTextureToBuffer(*convertedSource, *convertedDestination, copySize);
 }
 
 void RemoteCommandEncoder::copyTextureToTexture(
@@ -159,12 +155,10 @@ void RemoteCommandEncoder::copyTextureToTexture(
     ASSERT(convertedSource);
     auto convertedDestination = m_objectHeap->convertFromBacking(destination);
     ASSERT(convertedDestination);
-    auto convertedCopySize = m_objectHeap->convertFromBacking(copySize);
-    ASSERT(convertedCopySize);
-    if (!convertedSource || !convertedDestination || !convertedCopySize)
+    if (!convertedSource || !convertedDestination)
         return;
 
-    protect(m_backing)->copyTextureToTexture(*convertedSource, *convertedDestination, *convertedCopySize);
+    protect(m_backing)->copyTextureToTexture(*convertedSource, *convertedDestination, copySize);
 }
 
 void RemoteCommandEncoder::clearBuffer(

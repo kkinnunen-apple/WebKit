@@ -25,16 +25,13 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUStorageTextureAccess.h>
 #include <WebCore/WebGPUTextureFormat.h>
 #include <WebCore/WebGPUTextureViewDimension.h>
 
 namespace WebCore::WebGPU {
 
-struct StorageTextureBindingLayout {
-    StorageTextureAccess access { StorageTextureAccess::WriteOnly };
-    TextureFormat format { TextureFormat::R8unorm };
-    TextureViewDimension viewDimension { TextureViewDimension::_2d };
-};
+using StorageTextureBindingLayout = ::WebGPU::StorageTextureBindingLayout;
 
 } // namespace WebCore::WebGPU

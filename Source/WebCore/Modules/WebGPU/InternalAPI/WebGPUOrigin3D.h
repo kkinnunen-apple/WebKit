@@ -25,17 +25,12 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <wtf/Vector.h>
 
 namespace WebCore::WebGPU {
 
-struct Origin3DDict {
-    IntegerCoordinate x { 0 };
-    IntegerCoordinate y { 0 };
-    IntegerCoordinate z { 0 };
-};
-
-using Origin3D = Variant<Vector<IntegerCoordinate>, Origin3DDict>;
+using Origin3D = ::WebGPU::Origin3D;
 
 } // namespace WebCore::WebGPU

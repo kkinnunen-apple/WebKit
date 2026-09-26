@@ -25,15 +25,12 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class ErrorFilter : uint8_t {
-    OutOfMemory,
-    Validation,
-    Internal
-};
+using ErrorFilter = ::WebGPU::ErrorFilter;
 
 } // namespace WebCore::WebGPU
 

@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUCullMode.h>
 #include <WebCore/WebGPUFrontFace.h>
 #include <WebCore/WebGPUIndexFormat.h>
@@ -34,14 +35,6 @@
 
 namespace WebCore::WebGPU {
 
-struct PrimitiveState {
-    PrimitiveTopology topology { PrimitiveTopology::TriangleList };
-    std::optional<IndexFormat> stripIndexFormat;
-    FrontFace frontFace { FrontFace::CCW };
-    CullMode cullMode { CullMode::None };
-
-    // Requires "depth-clip-control" feature.
-    bool unclippedDepth { false };
-};
+using PrimitiveState = ::WebGPU::PrimitiveState;
 
 } // namespace WebCore::WebGPU

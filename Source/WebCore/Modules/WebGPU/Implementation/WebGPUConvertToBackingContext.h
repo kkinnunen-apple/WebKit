@@ -27,16 +27,44 @@
 
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
+#include "WebGPUAddressMode.h"
+#include "WebGPUBlendFactor.h"
+#include "WebGPUBlendOperation.h"
+#include "WebGPUBufferBindingType.h"
 #include "WebGPUBufferUsage.h"
 #include "WebGPUColor.h"
 #include "WebGPUColorWrite.h"
+#include "WebGPUCompareFunction.h"
+#include "WebGPUCompilationMessageType.h"
+#include "WebGPUCullMode.h"
+#include "WebGPUErrorFilter.h"
 #include "WebGPUExtent3D.h"
+#include "WebGPUFeatureName.h"
+#include "WebGPUFilterMode.h"
+#include "WebGPUFrontFace.h"
+#include "WebGPUIndexFormat.h"
+#include "WebGPULoadOp.h"
 #include "WebGPUMapMode.h"
 #include "WebGPUOrigin2D.h"
 #include "WebGPUOrigin3D.h"
+#include "WebGPUPowerPreference.h"
 #include "WebGPUPredefinedColorSpace.h"
+#include "WebGPUPrimitiveTopology.h"
+#include "WebGPUQueryType.h"
+#include "WebGPUSamplerBindingType.h"
 #include "WebGPUShaderStage.h"
+#include "WebGPUStencilOperation.h"
+#include "WebGPUStorageTextureAccess.h"
+#include "WebGPUStoreOp.h"
+#include "WebGPUTextureAspect.h"
+#include "WebGPUTextureDimension.h"
+#include "WebGPUTextureFormat.h"
+#include "WebGPUTextureSampleType.h"
 #include "WebGPUTextureUsage.h"
+#include "WebGPUTextureViewDimension.h"
+#include "WebGPUVertexFormat.h"
+#include "WebGPUVertexStepMode.h"
+#include "WebGPUXREye.h"
 #include <WebGPU/WebGPU.h>
 #include <WebGPU/WebGPUExt.h>
 #include <cstdint>
@@ -78,59 +106,30 @@ inline WGPUStringView toBackingStringView(ASCIILiteral literal)
 }
 
 class Adapter;
-enum class AddressMode : uint8_t;
 class BindGroup;
 class BindGroupLayout;
-enum class BlendFactor : uint8_t;
-enum class BlendOperation : uint8_t;
 class Buffer;
-enum class BufferBindingType : uint8_t;
 class CommandBuffer;
 class CommandEncoder;
-enum class CompareFunction : uint8_t;
-enum class CompilationMessageType : uint8_t;
 class CompositorIntegration;
 class CompositorIntegrationImpl;
 class ComputePassEncoder;
 class ComputePipeline;
-enum class CullMode : uint8_t;
 class Device;
-enum class ErrorFilter : uint8_t;
 class ExternalTexture;
-enum class FeatureName : uint8_t;
-enum class FilterMode : uint8_t;
-enum class FrontFace : uint8_t;
 class GPU;
-enum class IndexFormat : uint8_t;
-enum class LoadOp : uint8_t;
-enum class MipmapFilterMode : uint8_t;
 class PipelineLayout;
-enum class PowerPreference : bool;
 class PresentationContext;
-enum class PrimitiveTopology : uint8_t;
 class QuerySet;
-enum class QueryType : uint8_t;
 class Queue;
 class RenderBundleEncoder;
 class RenderBundle;
 class RenderPassEncoder;
 class RenderPipeline;
 class Sampler;
-enum class SamplerBindingType : uint8_t;
 class ShaderModule;
-enum class StencilOperation : uint8_t;
-enum class StorageTextureAccess : uint8_t;
-enum class StoreOp : uint8_t;
 class Texture;
-enum class TextureAspect : uint8_t;
-enum class TextureDimension : uint8_t;
-enum class TextureFormat : uint8_t;
-enum class TextureSampleType : uint8_t;
 class TextureView;
-enum class TextureViewDimension : uint8_t;
-enum class VertexFormat : uint8_t;
-enum class VertexStepMode : uint8_t;
-enum class XREye : uint8_t;
 class XRBinding;
 class XRProjectionLayer;
 class XRSubImage;

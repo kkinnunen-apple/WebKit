@@ -167,15 +167,13 @@ void RemoteQueue::writeTexture(
     ASSERT(convertedDestination);
     auto convertedDataLayout = objectHeap->convertFromBacking(dataLayout);
     ASSERT(convertedDataLayout);
-    auto convertedSize = objectHeap->convertFromBacking(size);
-    ASSERT(convertedSize);
-    if (!convertedDestination || !convertedDataLayout || !convertedSize || !data || data->size() <= WebGPU::maxCrossProcessResourceCopySize) {
+    if (!convertedDestination || !convertedDataLayout || !data || data->size() <= WebGPU::maxCrossProcessResourceCopySize) {
         completionHandler(false);
         return;
     }
 
     Ref backing = protect(m_backing);
-    backing->writeTexture(*convertedDestination, data->mutableSpan(), *convertedDataLayout, *convertedSize);
+    backing->writeTexture(*convertedDestination, data->mutableSpan(), *convertedDataLayout, size);
     keepAliveUntilSubmittedWorkDone(backing, WTF::move(data));
     completionHandler(true);
 }
@@ -190,13 +188,11 @@ void RemoteQueue::writeTextureWithCopy(
     auto convertedDestination = objectHeap->convertFromBacking(destination);
     ASSERT(convertedDestination);
     auto convertedDataLayout = objectHeap->convertFromBacking(dataLayout);
-    ASSERT(convertedDestination);
-    auto convertedSize = objectHeap->convertFromBacking(size);
-    ASSERT(convertedSize);
-    if (!convertedDestination || !convertedDestination || !convertedSize)
+    ASSERT(convertedDataLayout);
+    if (!convertedDestination || !convertedDataLayout)
         return;
 
-    protect(m_backing)->writeTexture(*convertedDestination, data.mutableSpan(), *convertedDataLayout, *convertedSize);
+    protect(m_backing)->writeTexture(*convertedDestination, data.mutableSpan(), *convertedDataLayout, size);
 }
 
 void RemoteQueue::copyExternalImageToTexture(
@@ -217,9 +213,7 @@ void RemoteQueue::copyExternalImageToTexture(
     ASSERT(convertedSource);
     auto convertedDestination = objectHeap->convertFromBacking(destination);
     ASSERT(convertedDestination);
-    auto convertedCopySize = objectHeap->convertFromBacking(copySize);
-    ASSERT(convertedCopySize);
-    if (!convertedSource || !convertedDestination || !convertedCopySize)
+    if (!convertedSource || !convertedDestination)
         return;
 
     // ConvertFromBackingContext cannot resolve the source, because only RemoteGPU can reach the
@@ -231,7 +225,7 @@ void RemoteQueue::copyExternalImageToTexture(
         convertedSource->imageBuffer = WTF::move(sourceImageBuffer);
     }
 
-    protect(m_backing)->copyExternalImageToTexture(*convertedSource, *convertedDestination, *convertedCopySize);
+    protect(m_backing)->copyExternalImageToTexture(*convertedSource, *convertedDestination, copySize);
 }
 
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
@@ -286,12 +280,10 @@ void RemoteQueue::copyExternalImageFromVideoFrameToTexture(
     ASSERT(convertedSource);
     auto convertedDestination = objectHeap->convertFromBacking(destination);
     ASSERT(convertedDestination);
-    auto convertedCopySize = objectHeap->convertFromBacking(copySize);
-    ASSERT(convertedCopySize);
-    if (!convertedSource || !convertedDestination || !convertedCopySize)
+    if (!convertedSource || !convertedDestination)
         return;
 
-    protect(m_backing)->copyExternalImageToTexture(*convertedSource, *convertedDestination, *convertedCopySize);
+    protect(m_backing)->copyExternalImageToTexture(*convertedSource, *convertedDestination, copySize);
 }
 #endif
 

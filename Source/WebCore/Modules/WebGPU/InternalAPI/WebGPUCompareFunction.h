@@ -25,19 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class CompareFunction : uint8_t {
-    Never,
-    Less,
-    Equal,
-    LessEqual,
-    Greater,
-    NotEqual,
-    GreaterEqual,
-    Always,
-};
+using CompareFunction = ::WebGPU::CompareFunction;
 
 } // namespace WebCore::WebGPU

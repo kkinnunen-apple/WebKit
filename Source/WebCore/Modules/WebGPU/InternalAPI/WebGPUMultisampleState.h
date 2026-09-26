@@ -25,14 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 
 namespace WebCore::WebGPU {
 
-struct MultisampleState {
-    Size32 count { 1 };
-    SampleMask mask { 0xFFFFFFFF };
-    bool alphaToCoverageEnabled { false };
-};
+using MultisampleState = ::WebGPU::MultisampleState;
 
 } // namespace WebCore::WebGPU

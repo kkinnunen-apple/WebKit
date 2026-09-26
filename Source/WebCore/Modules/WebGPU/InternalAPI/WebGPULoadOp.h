@@ -25,13 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class LoadOp : uint8_t {
-    Load,
-    Clear,
-};
+using LoadOp = ::WebGPU::LoadOp;
 
 } // namespace WebCore::WebGPU

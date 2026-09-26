@@ -25,18 +25,13 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class FilterMode : uint8_t {
-    Nearest,
-    Linear,
-};
+using FilterMode = ::WebGPU::FilterMode;
 
-enum class MipmapFilterMode : uint8_t {
-    Nearest,
-    Linear,
-};
+using MipmapFilterMode = ::WebGPU::MipmapFilterMode;
 
 } // namespace WebCore::WebGPU

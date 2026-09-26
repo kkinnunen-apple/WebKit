@@ -25,14 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class TextureDimension : uint8_t {
-    _1d,
-    _2d,
-    _3d,
-};
+using TextureDimension = ::WebGPU::TextureDimension;
 
 } // namespace WebCore::WebGPU

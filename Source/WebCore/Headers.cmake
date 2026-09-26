@@ -218,6 +218,7 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     Modules/WebGPU/InternalAPI/WebGPUComputePassTimestampWrites.h
     Modules/WebGPU/InternalAPI/WebGPUComputePipeline.h
     Modules/WebGPU/InternalAPI/WebGPUComputePipelineDescriptor.h
+    Modules/WebGPU/InternalAPI/WebGPUCppAPI.h
     Modules/WebGPU/InternalAPI/WebGPUCullMode.h
     Modules/WebGPU/InternalAPI/WebGPUDepthStencilState.h
     Modules/WebGPU/InternalAPI/WebGPUDevice.h

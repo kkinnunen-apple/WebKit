@@ -25,23 +25,13 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 #include <wtf/OptionSet.h>
 
 namespace WebCore::WebGPU {
 
-enum class BufferUsage : uint16_t {
-    MapRead         = 1 << 0,
-    MapWrite        = 1 << 1,
-    CopySource      = 1 << 2,
-    CopyDestination = 1 << 3,
-    Index           = 1 << 4,
-    Vertex          = 1 << 5,
-    Uniform         = 1 << 6,
-    Storage         = 1 << 7,
-    Indirect        = 1 << 8,
-    QueryResolve    = 1 << 9,
-};
+using BufferUsage = ::WebGPU::BufferUsage;
 using BufferUsageFlags = std::underlying_type_t<BufferUsage>;
 
 } // namespace WebCore::WebGPU

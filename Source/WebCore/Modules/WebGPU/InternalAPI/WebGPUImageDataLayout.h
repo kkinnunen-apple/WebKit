@@ -25,15 +25,12 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <optional>
 
 namespace WebCore::WebGPU {
 
-struct ImageDataLayout {
-    Size64 offset { 0 };
-    std::optional<Size32> bytesPerRow;
-    std::optional<Size32> rowsPerImage;
-};
+using ImageDataLayout = ::WebGPU::TexelCopyBufferLayout;
 
 } // namespace WebCore::WebGPU

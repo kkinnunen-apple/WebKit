@@ -33,7 +33,7 @@
 namespace WebCore {
 
 struct GPUOrigin2DDict {
-    WebGPU::Origin2DDict convertToBacking() const
+    WebGPU::Origin2D convertToBacking() const
     {
         return {
             x,
@@ -54,7 +54,10 @@ Ref<JSON::Value> toJSON(const GPUOrigin2D&);
 inline WebGPU::Origin2D convertToBacking(const GPUOrigin2D& origin2D)
 {
     return WTF::switchOn(origin2D, [](const Vector<GPUIntegerCoordinate>& vector) -> WebGPU::Origin2D {
-        return vector;
+        return {
+            vector.size() > 0 ? vector[0] : 0,
+            vector.size() > 1 ? vector[1] : 0,
+        };
     }, [](const GPUOrigin2DDict& origin2D) -> WebGPU::Origin2D {
         return origin2D.convertToBacking();
     });

@@ -25,16 +25,14 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <cstdint>
 #include <wtf/OptionSet.h>
 
 namespace WebCore::WebGPU {
 
-enum class MapMode : uint8_t {
-    Read  = 1 << 0,
-    Write = 1 << 1,
-};
+using MapMode = ::WebGPU::MapMode;
 using MapModeFlags = OptionSet<MapMode>;
 
 } // namespace WebCore::WebGPU

@@ -179,12 +179,7 @@ void RemoteRenderPassEncoder::setScissorRect(WebCore::WebGPU::IntegerCoordinate 
 
 void RemoteRenderPassEncoder::setBlendConstant(WebGPU::Color color)
 {
-    auto convertedColor = protect(m_objectHeap)->convertFromBacking(color);
-    ASSERT(convertedColor);
-    if (!convertedColor)
-        return;
-
-    protect(m_backing)->setBlendConstant(*convertedColor);
+    protect(m_backing)->setBlendConstant(color);
 }
 
 void RemoteRenderPassEncoder::setStencilReference(WebCore::WebGPU::StencilValue stencilValue)

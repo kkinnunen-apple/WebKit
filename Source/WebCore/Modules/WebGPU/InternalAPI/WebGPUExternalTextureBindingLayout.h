@@ -25,9 +25,9 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 namespace WebCore::WebGPU {
 
-struct ExternalTextureBindingLayout {
-};
+using ExternalTextureBindingLayout = ::WebGPU::ExternalTextureBindingLayout;
 
 } // namespace WebCore::WebGPU

@@ -26,6 +26,7 @@
 #pragma once
 
 #include <WebCore/AlphaPremultiplication.h>
+#include <WebCore/WebGPUTextureFormat.h>
 
 #include <optional>
 #include <wtf/CompletionHandler.h>
@@ -51,8 +52,6 @@ class NativeImage;
 namespace WebCore::WebGPU {
 
 class Device;
-
-enum class TextureFormat : uint8_t;
 
 class CompositorIntegration : public RefCountedAndCanMakeWeakPtr<CompositorIntegration> {
 public:

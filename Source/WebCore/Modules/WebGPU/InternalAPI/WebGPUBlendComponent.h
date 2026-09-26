@@ -27,13 +27,10 @@
 
 #include <WebCore/WebGPUBlendFactor.h>
 #include <WebCore/WebGPUBlendOperation.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-struct BlendComponent {
-    BlendOperation operation { BlendOperation::Add };
-    BlendFactor srcFactor { BlendFactor::One };
-    BlendFactor dstFactor { BlendFactor::Zero };
-};
+using BlendComponent = ::WebGPU::BlendComponent;
 
 } // namespace WebCore::WebGPU

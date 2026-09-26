@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2023 Apple Inc. All rights reserved.
+ * Copyright (C) 2026 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -25,11 +25,9 @@
 
 #pragma once
 
-#include <WebCore/WebGPUCppAPI.h>
-#include <cstdint>
-
-namespace WebCore::WebGPU {
-
-using TextureAspect = ::WebGPU::TextureAspect;
-
-} // namespace WebCore::WebGPU
+// WebCore and WebKit headers include the WebGPU C++ API through this header. WebGPUCpp.h is not
+// a module of its own where WebCore and WebKit find it, so in a clang module build every
+// submodule that includes it directly would own a separate copy of the API types, and a header
+// that imports one submodule could not use the types of another. Through this header, all the
+// API types belong to this one submodule, which every user imports.
+#include <WebGPU/WebGPUCpp.h>

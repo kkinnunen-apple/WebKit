@@ -25,13 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class CanvasToneMappingMode : uint8_t {
-    Standard,
-    Extended,
-};
+using CanvasToneMappingMode = ::WebGPU::CanvasToneMappingMode;
 
 } // namespace WebCore::WebGPU

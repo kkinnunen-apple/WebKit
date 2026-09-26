@@ -25,14 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class AddressMode : uint8_t {
-    ClampToEdge,
-    Repeat,
-    MirrorRepeat,
-};
+using AddressMode = ::WebGPU::AddressMode;
 
 } // namespace WebCore::WebGPU

@@ -25,24 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class BlendFactor : uint8_t {
-    Zero,
-    One,
-    Src,
-    OneMinusSrc,
-    SrcAlpha,
-    OneMinusSrcAlpha,
-    Dst,
-    OneMinusDst,
-    DstAlpha,
-    OneMinusDstAlpha,
-    SrcAlphaSaturated,
-    Constant,
-    OneMinusConstant,
-};
+using BlendFactor = ::WebGPU::BlendFactor;
 
 } // namespace WebCore::WebGPU

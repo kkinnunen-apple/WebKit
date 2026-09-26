@@ -25,34 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class FeatureName : uint8_t {
-    DepthClipControl,
-    Depth32floatStencil8,
-    TextureCompressionBc,
-    TextureCompressionBcSliced3d,
-    TextureCompressionEtc2,
-    TextureCompressionAstc,
-    TextureCompressionAstcSliced3d,
-    TimestampQuery,
-    IndirectFirstInstance,
-    ShaderF16,
-    Rg11b10ufloatRenderable,
-    Bgra8unormStorage,
-    Float32Filterable,
-    Float32Blendable,
-    ClipDistances,
-    DualSourceBlending,
-    Float16Renderable,
-    Float32Renderable,
-    CoreFeaturesAndLimits,
-    TextureFormatsTier1,
-    TextureFormatsTier2,
-    PrimitiveIndex,
-    Subgroups,
-};
+using FeatureName = ::WebGPU::FeatureName;
 
 } // namespace WebCore::WebGPU

@@ -25,13 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 
 namespace WebCore::WebGPU {
 
-enum class FrontFace : uint8_t {
-    CCW,
-    CW,
-};
+using FrontFace = ::WebGPU::FrontFace;
 
 } // namespace WebCore::WebGPU
