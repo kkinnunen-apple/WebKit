@@ -48,7 +48,7 @@ std::optional<WebCore::WebGPU::ImageCopyTexture> ConvertFromBackingContext::conv
     if (!texture)
         return std::nullopt;
 
-    return { { *texture, imageCopyTexture.mipLevel, imageCopyTexture.origin, imageCopyTexture.aspect } };
+    return { { *texture, imageCopyTexture.mipLevel, imageCopyTexture.origin.value_or(WebCore::WebGPU::Origin3D { }), imageCopyTexture.aspect } };
 }
 
 } // namespace WebKit

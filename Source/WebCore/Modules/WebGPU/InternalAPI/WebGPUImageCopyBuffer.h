@@ -26,15 +26,11 @@
 #pragma once
 
 #include <WebCore/WebGPUBuffer.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUImageDataLayout.h>
-#include <wtf/Ref.h>
-#include <wtf/WeakRef.h>
 
 namespace WebCore::WebGPU {
 
-
-struct ImageCopyBuffer : public ImageDataLayout {
-    Ref<Buffer> buffer;
-};
+using ImageCopyBuffer = ::WebGPU::TexelCopyBufferInfo;
 
 } // namespace WebCore::WebGPU

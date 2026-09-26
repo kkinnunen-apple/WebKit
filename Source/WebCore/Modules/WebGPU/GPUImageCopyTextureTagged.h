@@ -35,12 +35,7 @@ struct GPUImageCopyTextureTagged : public GPUImageCopyTexture {
     WebGPU::ImageCopyTextureTagged convertToBacking() const
     {
         return {
-            {
-                texture->backing(),
-                mipLevel,
-                origin ? std::optional { WebCore::convertToBacking(*origin) } : std::nullopt,
-                WebCore::convertToBacking(aspect),
-            },
+            GPUImageCopyTexture::convertToBacking(),
             colorSpace,
             premultipliedAlpha,
         };

@@ -163,9 +163,9 @@ void CommandEncoderImpl::copyBufferToTexture(
 
     WGPUTexelCopyBufferInfo backingSource {
         .layout = {
-            .offset = source.offset,
-            .bytesPerRow = source.bytesPerRow.value_or(WGPU_COPY_STRIDE_UNDEFINED),
-            .rowsPerImage = source.rowsPerImage.value_or(WGPU_COPY_STRIDE_UNDEFINED),
+            .offset = source.layout.offset,
+            .bytesPerRow = source.layout.bytesPerRow.value_or(WGPU_COPY_STRIDE_UNDEFINED),
+            .rowsPerImage = source.layout.rowsPerImage.value_or(WGPU_COPY_STRIDE_UNDEFINED),
         },
         .buffer = convertToBackingContext->convertToBacking(protect(source.buffer)),
     };
@@ -173,7 +173,7 @@ void CommandEncoderImpl::copyBufferToTexture(
     WGPUTexelCopyTextureInfo backingDestination {
         .texture = convertToBackingContext->convertToBacking(protect(destination.texture)),
         .mipLevel = destination.mipLevel,
-        .origin = destination.origin ? convertToBackingContext->convertToBacking(*destination.origin) : WGPUOrigin3D { 0, 0, 0 },
+        .origin = convertToBackingContext->convertToBacking(destination.origin),
         .aspect = convertToBackingContext->convertToBacking(destination.aspect),
     };
 
@@ -192,15 +192,15 @@ void CommandEncoderImpl::copyTextureToBuffer(
     WGPUTexelCopyTextureInfo backingSource {
         .texture = convertToBackingContext->convertToBacking(protect(source.texture)),
         .mipLevel = source.mipLevel,
-        .origin = source.origin ? convertToBackingContext->convertToBacking(*source.origin) : WGPUOrigin3D { 0, 0, 0 },
+        .origin = convertToBackingContext->convertToBacking(source.origin),
         .aspect = convertToBackingContext->convertToBacking(source.aspect),
     };
 
     WGPUTexelCopyBufferInfo backingDestination {
         .layout = {
-            .offset = destination.offset,
-            .bytesPerRow = destination.bytesPerRow.value_or(WGPU_COPY_STRIDE_UNDEFINED),
-            .rowsPerImage = destination.rowsPerImage.value_or(WGPU_COPY_STRIDE_UNDEFINED),
+            .offset = destination.layout.offset,
+            .bytesPerRow = destination.layout.bytesPerRow.value_or(WGPU_COPY_STRIDE_UNDEFINED),
+            .rowsPerImage = destination.layout.rowsPerImage.value_or(WGPU_COPY_STRIDE_UNDEFINED),
         },
         .buffer = convertToBackingContext->convertToBacking(protect(destination.buffer)),
     };
@@ -220,14 +220,14 @@ void CommandEncoderImpl::copyTextureToTexture(
     WGPUTexelCopyTextureInfo backingSource {
         .texture = convertToBackingContext->convertToBacking(protect(source.texture)),
         .mipLevel = source.mipLevel,
-        .origin = source.origin ? convertToBackingContext->convertToBacking(*source.origin) : WGPUOrigin3D { 0, 0, 0 },
+        .origin = convertToBackingContext->convertToBacking(source.origin),
         .aspect = convertToBackingContext->convertToBacking(source.aspect),
     };
 
     WGPUTexelCopyTextureInfo backingDestination {
         .texture = convertToBackingContext->convertToBacking(protect(destination.texture)),
         .mipLevel = destination.mipLevel,
-        .origin = destination.origin ? convertToBackingContext->convertToBacking(*destination.origin) : WGPUOrigin3D { 0, 0, 0 },
+        .origin = convertToBackingContext->convertToBacking(destination.origin),
         .aspect = convertToBackingContext->convertToBacking(destination.aspect),
     };
 
