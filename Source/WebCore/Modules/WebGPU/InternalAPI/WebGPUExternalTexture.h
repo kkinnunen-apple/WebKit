@@ -25,50 +25,10 @@
 
 #pragma once
 
-#include <wtf/Platform.h>
-#include <wtf/Ref.h>
-#include <wtf/RefCounted.h>
-#include <wtf/ThreadSafeWeakPtr.h>
-#include <wtf/WeakPtr.h>
-#include <wtf/text/WTFString.h>
-
-#if PLATFORM(COCOA)
-typedef struct CF_BRIDGED_TYPE(id) __CVBuffer* CVPixelBufferRef;
-#endif
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-class ExternalTexture : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<ExternalTexture> {
-public:
-    virtual ~ExternalTexture() = default;
-
-    String label() const { return m_label; }
-
-    void setLabel(String&& label)
-    {
-        m_label = WTF::move(label);
-        setLabelInternal(m_label);
-    }
-    virtual void destroy() = 0;
-    virtual void undestroy() = 0;
-#if PLATFORM(COCOA)
-    virtual void updateExternalTexture(CVPixelBufferRef) = 0;
-#endif
-    virtual bool isRemoteExternalTextureProxy() const { return false; }
-    virtual bool isExternalTextureImpl() const { return false; }
-
-protected:
-    ExternalTexture() = default;
-
-private:
-    ExternalTexture(const ExternalTexture&) = delete;
-    ExternalTexture(ExternalTexture&&) = delete;
-    ExternalTexture& operator=(const ExternalTexture&) = delete;
-    ExternalTexture& operator=(ExternalTexture&&) = delete;
-
-    virtual void setLabelInternal(const String&) = 0;
-
-    String m_label;
-};
+using ExternalTexture = ::WebGPU::ExternalTexture;
 
 } // namespace WebCore::WebGPU

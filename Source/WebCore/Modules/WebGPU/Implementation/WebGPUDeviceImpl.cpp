@@ -40,8 +40,8 @@
 #include "WebGPUComputePipelineImpl.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUExtent3D.h"
+#include "WebGPUExternalTexture.h"
 #include "WebGPUExternalTextureDescriptor.h"
-#include "WebGPUExternalTextureImpl.h"
 #include "WebGPUInternalError.h"
 #include "WebGPUOutOfMemoryError.h"
 #include "WebGPUPipelineLayoutDescriptor.h"
@@ -204,7 +204,7 @@ RefPtr<ExternalTexture> DeviceImpl::importExternalTexture(const ExternalTextureD
         .visibleWidth = static_cast<uint32_t>(std::max(0, descriptor.visibleSize.width())),
         .visibleHeight = static_cast<uint32_t>(std::max(0, descriptor.visibleSize.height())),
     };
-    return ExternalTextureImpl::create(adoptWebGPU(wgpuDeviceImportExternalTexture(m_backing.get(), &backingDescriptor)), descriptor, m_convertToBackingContext);
+    return adoptRef(::WebGPU::fromAPI(wgpuDeviceImportExternalTexture(m_backing.get(), &backingDescriptor)));
 }
 
 RefPtr<BindGroupLayout> DeviceImpl::createBindGroupLayout(const BindGroupLayoutDescriptor& descriptor)

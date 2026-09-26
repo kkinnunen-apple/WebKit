@@ -119,7 +119,7 @@ WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::ExternalTexture& externalTexture)
 {
-    return downcast<RemoteExternalTextureProxy>(externalTexture).backing();
+    return static_cast<const RemoteExternalTextureProxy&>(externalTexture).backing();
 }
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::GPU& gpu)

@@ -29,7 +29,8 @@
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
 #include "WebGPUConvertToBackingContext.h"
-#include "WebGPUExternalTextureImpl.h"
+#include "WebGPUExternalTexture.h"
+#include <WebGPU/WebGPUCppBridge.h>
 #include <WebGPU/WebGPUExt.h>
 #include <wtf/TZoneMallocInlines.h>
 
@@ -52,7 +53,7 @@ void BindGroupImpl::setLabelInternal(const String& label)
 
 bool BindGroupImpl::updateExternalTextures(ExternalTexture& externalTexture)
 {
-    return wgpuBindGroupUpdateExternalTextures(m_backing.get(), downcast<ExternalTextureImpl>(externalTexture).backing());
+    return wgpuBindGroupUpdateExternalTextures(m_backing.get(), ::WebGPU::toAPI(const_cast<ExternalTexture&>(externalTexture)));
 }
 
 } // namespace WebCore::WebGPU

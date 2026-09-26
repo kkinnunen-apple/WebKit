@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <WebCore/WebGPUExternalTexture.h>
 #include <wtf/Ref.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/WeakPtr.h>
@@ -32,7 +33,6 @@
 
 namespace WebCore::WebGPU {
 
-class ExternalTexture;
 
 class BindGroup : public RefCountedAndCanMakeWeakPtr<BindGroup> {
 public:

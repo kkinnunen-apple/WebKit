@@ -10151,10 +10151,8 @@
 		1CFAE2DF2A4D7A1C0004AE37 /* WebGPUBindGroupLayoutImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUBindGroupLayoutImpl.cpp; sourceTree = "<group>"; };
 		1CFAE2E12A4D7A1D0004AE37 /* WebGPURenderBundleEncoderImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPURenderBundleEncoderImpl.h; sourceTree = "<group>"; };
 		1CFAE2E22A4D7A1D0004AE37 /* WebGPUBindGroupLayoutImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUBindGroupLayoutImpl.h; sourceTree = "<group>"; };
-		1CFAE2E32A4D7A1E0004AE37 /* WebGPUExternalTextureImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUExternalTextureImpl.cpp; sourceTree = "<group>"; };
 		1CFAE2E42A4D7A1E0004AE37 /* WebGPUCommandEncoderImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUCommandEncoderImpl.h; sourceTree = "<group>"; };
 		1CFAE2E52A4D7A1E0004AE37 /* WebGPURenderPipelineImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPURenderPipelineImpl.cpp; sourceTree = "<group>"; };
-		1CFAE2E62A4D7A1E0004AE37 /* WebGPUExternalTextureImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUExternalTextureImpl.h; sourceTree = "<group>"; };
 		1CFAE2E72A4D7A1F0004AE37 /* WebGPUBindGroupImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUBindGroupImpl.cpp; sourceTree = "<group>"; };
 		1CFAE2E82A4D7A1F0004AE37 /* WebGPUPresentationContextImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUPresentationContextImpl.cpp; sourceTree = "<group>"; };
 		1CFAE2E92A4D7A1F0004AE37 /* WebGPUAdapterImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUAdapterImpl.cpp; sourceTree = "<group>"; };
@@ -26905,8 +26903,6 @@
 				1CFAE3012A4D7A260004AE37 /* WebGPUDeviceImpl.h */,
 				1CFAE2EE2A4D7A210004AE37 /* WebGPUDowncastConvertToBackingContext.cpp */,
 				1CFAE2D92A4D7A1B0004AE37 /* WebGPUDowncastConvertToBackingContext.h */,
-				1CFAE2E32A4D7A1E0004AE37 /* WebGPUExternalTextureImpl.cpp */,
-				1CFAE2E62A4D7A1E0004AE37 /* WebGPUExternalTextureImpl.h */,
 				1CFAE2DB2A4D7A1B0004AE37 /* WebGPUImpl.cpp */,
 				1CFAE2EC2A4D7A200004AE37 /* WebGPUImpl.h */,
 				1CFAE2CC2A4D7A170004AE37 /* WebGPUPipelineLayoutImpl.cpp */,
