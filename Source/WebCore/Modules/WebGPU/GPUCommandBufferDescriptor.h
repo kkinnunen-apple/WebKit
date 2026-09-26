@@ -34,7 +34,7 @@ struct GPUCommandBufferDescriptor : public GPUObjectDescriptorBase {
     WebGPU::CommandBufferDescriptor convertToBacking() const
     {
         return {
-            { label },
+            .label = label,
         };
     }
 };

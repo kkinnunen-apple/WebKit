@@ -29,6 +29,7 @@
 
 #include "RemoteGPU.h"
 #include "StreamMessageReceiver.h"
+#include "WebGPUCommandBufferDescriptor.h"
 #include "WebGPUExtent3D.h"
 #include "WebGPUIdentifier.h"
 #include <WebCore/WebGPUIntegralTypes.h>
@@ -51,7 +52,6 @@ namespace WebKit {
 class GPUConnectionToWebProcess;
 
 namespace WebGPU {
-struct CommandBufferDescriptor;
 struct ComputePassDescriptor;
 struct ImageCopyBuffer;
 struct ImageCopyTexture;

@@ -41,9 +41,9 @@ class GPUDevice;
 
 class GPUCommandBuffer : public RefCountedAndCanMakeWeakPtr<GPUCommandBuffer> {
 public:
-    static Ref<GPUCommandBuffer> create(Ref<WebGPU::CommandBuffer>&& backing, GPUCommandEncoder& encoder)
+    static Ref<GPUCommandBuffer> create(Ref<WebGPU::CommandBuffer>&& backing, String&& label, GPUCommandEncoder& encoder)
     {
-        return adoptRef(*new GPUCommandBuffer(WTF::move(backing), encoder));
+        return adoptRef(*new GPUCommandBuffer(WTF::move(backing), WTF::move(label), encoder));
     }
 
     String NODELETE label() const;
@@ -59,13 +59,15 @@ public:
     bool hasActiveInspectorCanvasCallTracer() const;
 
 private:
-    GPUCommandBuffer(Ref<WebGPU::CommandBuffer>&& backing, GPUCommandEncoder& encoder)
+    GPUCommandBuffer(Ref<WebGPU::CommandBuffer>&& backing, String&& label, GPUCommandEncoder& encoder)
         : m_backing(WTF::move(backing))
+        , m_label(WTF::move(label))
         , m_encoder(encoder)
     {
     }
 
     Ref<WebGPU::CommandBuffer> m_backing;
+    String m_label;
     const Ref<GPUCommandEncoder> m_encoder;
     std::optional<String> m_overrideLabel;
 };

@@ -46,6 +46,7 @@
 #include <WebCore/WebGPUBuffer.h>
 #include <WebCore/WebGPUBufferBindingLayout.h>
 #include <WebCore/WebGPUColor.h>
+#include <WebCore/WebGPUCommandBuffer.h>
 #include <WebCore/WebGPUComputePassTimestampWrites.h>
 #include <WebCore/WebGPUError.h>
 #include <WebCore/WebGPUExtent3D.h>
@@ -76,8 +77,6 @@ namespace WebCore::WebGPU {
 class Adapter;
 struct CanvasConfiguration;
 struct ColorTargetState;
-class CommandBuffer;
-struct CommandBufferDescriptor;
 class CommandEncoder;
 struct CommandEncoderDescriptor;
 class CompositorIntegration;
@@ -143,7 +142,6 @@ struct BufferBinding;
 struct BufferBindingLayout;
 struct CanvasConfiguration;
 struct ColorTargetState;
-struct CommandBufferDescriptor;
 struct CommandEncoderDescriptor;
 struct ComputePassDescriptor;
 struct ComputePipelineDescriptor;
@@ -208,7 +206,6 @@ public:
     std::optional<BufferBindingLayout> NODELETE convertToBacking(const WebCore::WebGPU::BufferBindingLayout&);
     std::optional<CanvasConfiguration> convertToBacking(const WebCore::WebGPU::CanvasConfiguration&);
     std::optional<ColorTargetState> convertToBacking(const WebCore::WebGPU::ColorTargetState&);
-    std::optional<CommandBufferDescriptor> convertToBacking(const WebCore::WebGPU::CommandBufferDescriptor&);
     std::optional<CommandEncoderDescriptor> convertToBacking(const WebCore::WebGPU::CommandEncoderDescriptor&);
     std::optional<ComputePassDescriptor> convertToBacking(const WebCore::WebGPU::ComputePassDescriptor&);
     std::optional<ComputePassTimestampWrites> convertToBacking(const WebCore::WebGPU::ComputePassTimestampWrites&);
