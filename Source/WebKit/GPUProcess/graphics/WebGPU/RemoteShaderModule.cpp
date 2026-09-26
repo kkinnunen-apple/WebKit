@@ -64,18 +64,8 @@ void RemoteShaderModule::stopListeningForIPC()
 
 void RemoteShaderModule::compilationInfo(CompletionHandler<void(Vector<WebGPU::CompilationMessage>&&)>&& callback)
 {
-    protect(m_backing)->compilationInfo([callback = WTF::move(callback)] (Ref<WebCore::WebGPU::CompilationInfo>&& compilationMessage) mutable {
-        auto convertedMessages = compilationMessage->messages().map([] (const Ref<WebCore::WebGPU::CompilationMessage>& message) {
-            return WebGPU::CompilationMessage {
-                message->message(),
-                message->type(),
-                message->lineNum(),
-                message->linePos(),
-                message->offset(),
-                message->length(),
-            };
-        });
-        callback(WTF::move(convertedMessages));
+    protect(m_backing)->compilationInfo([callback = WTF::move(callback)] (WebCore::WebGPU::CompilationInfo&& compilationInfo) mutable {
+        callback(WTF::move(compilationInfo.messages));
     });
 }
 

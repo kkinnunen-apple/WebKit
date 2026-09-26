@@ -34,6 +34,7 @@
 #include "WebGPUPtr.h"
 #include "WebGPUQuerySet.h"
 #include "WebGPUSampler.h"
+#include "WebGPUShaderModule.h"
 #include "WebGPUTexture.h"
 #include "WebGPUTextureView.h"
 #include <WebGPU/WebGPU.h>
@@ -68,7 +69,6 @@ class RenderBundleEncoder;
 class RenderBundle;
 class RenderPassEncoder;
 class RenderPipeline;
-class ShaderModule;
 class XRBinding;
 class XRProjectionLayer;
 class XRSubImage;

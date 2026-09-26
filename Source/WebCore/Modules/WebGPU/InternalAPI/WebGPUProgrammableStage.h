@@ -36,7 +36,7 @@ namespace WebCore::WebGPU {
 using PipelineConstantValue = double; // May represent WGSL’s bool, f32, i32, u32.
 
 struct ProgrammableStage {
-    WeakRef<ShaderModule> module;
+    Ref<ShaderModule> module;
     String entryPoint;
     Vector<KeyValuePair<String, PipelineConstantValue>> constants;
 };

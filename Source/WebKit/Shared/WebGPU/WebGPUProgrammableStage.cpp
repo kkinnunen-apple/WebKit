@@ -44,7 +44,7 @@ std::optional<ProgrammableStage> ConvertToBackingContext::convertToBacking(const
 
 std::optional<WebCore::WebGPU::ProgrammableStage> ConvertFromBackingContext::convertFromBacking(const ProgrammableStage& programmableStage)
 {
-    WeakPtr shaderModule = convertShaderModuleFromBacking(programmableStage.module);
+    RefPtr shaderModule = convertShaderModuleFromBacking(programmableStage.module);
     if (!shaderModule)
         return std::nullopt;
 

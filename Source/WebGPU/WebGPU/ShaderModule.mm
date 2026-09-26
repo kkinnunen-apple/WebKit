@@ -765,7 +765,7 @@ static void appendMessages(Vector<WebGPU::CompilationMessage>& result, const Mes
             .message = compilationMessage.message(),
             .type = messages.type,
             .lineNum = compilationMessage.lineNumber(),
-            .linePos = compilationMessage.lineOffset(),
+            .linePos = compilationMessage.lineOffset() + 1,
             .offset = compilationMessage.offset(),
             .length = compilationMessage.length(),
         });

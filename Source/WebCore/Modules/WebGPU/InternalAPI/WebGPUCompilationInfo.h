@@ -26,33 +26,10 @@
 #pragma once
 
 #include <WebCore/WebGPUCompilationMessage.h>
-#include <wtf/Ref.h>
-#include <wtf/RefCounted.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-class CompilationInfo final : public RefCounted<CompilationInfo> {
-public:
-    static Ref<CompilationInfo> create(Vector<Ref<CompilationMessage>>&& messages)
-    {
-        return adoptRef(*new CompilationInfo(WTF::move(messages)));
-    }
-
-    const Vector<Ref<CompilationMessage>>& messages() const LIFETIME_BOUND { return m_messages; }
-
-protected:
-    CompilationInfo(Vector<Ref<CompilationMessage>>&& messages)
-        : m_messages(WTF::move(messages))
-    {
-    }
-
-private:
-    CompilationInfo(const CompilationInfo&) = delete;
-    CompilationInfo(CompilationInfo&&) = delete;
-    CompilationInfo& operator=(const CompilationInfo&) = delete;
-    CompilationInfo& operator=(CompilationInfo&&) = delete;
-
-    Vector<Ref<CompilationMessage>> m_messages;
-};
+using CompilationInfo = ::WebGPU::CompilationInfo;
 
 } // namespace WebCore::WebGPU

@@ -26,64 +26,10 @@
 #pragma once
 
 #include <WebCore/WebGPUCompilationMessageType.h>
-#include <cstdint>
-#include <wtf/Ref.h>
-#include <wtf/RefCounted.h>
-#include <wtf/text/WTFString.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-class CompilationMessage final : public RefCounted<CompilationMessage> {
-public:
-    static Ref<CompilationMessage> create(String&& message, CompilationMessageType type, uint64_t lineNum, uint64_t linePos, uint64_t offset, uint64_t length)
-    {
-        return adoptRef(*new CompilationMessage(WTF::move(message), type, lineNum, linePos, offset, length));
-    }
-
-    static Ref<CompilationMessage> create(const String& message, CompilationMessageType type, uint64_t lineNum, uint64_t linePos, uint64_t offset, uint64_t length)
-    {
-        return adoptRef(*new CompilationMessage(message, type, lineNum, linePos, offset, length));
-    }
-
-    const String& message() const LIFETIME_BOUND { return m_message; }
-    CompilationMessageType type() const { return m_type; }
-    uint64_t lineNum() const { return m_lineNum; }
-    uint64_t linePos() const { return m_linePos; }
-    uint64_t offset() const { return m_offset; }
-    uint64_t length() const { return m_length; }
-
-private:
-    CompilationMessage(String&& message, CompilationMessageType type, uint64_t lineNum, uint64_t linePos, uint64_t offset, uint64_t length)
-        : m_message(WTF::move(message))
-        , m_type(type)
-        , m_lineNum(lineNum)
-        , m_linePos(linePos)
-        , m_offset(offset)
-        , m_length(length)
-    {
-    }
-
-    CompilationMessage(const String& message, CompilationMessageType type, uint64_t lineNum, uint64_t linePos, uint64_t offset, uint64_t length)
-        : m_message(message)
-        , m_type(type)
-        , m_lineNum(lineNum)
-        , m_linePos(linePos)
-        , m_offset(offset)
-        , m_length(length)
-    {
-    }
-
-    CompilationMessage(const CompilationMessage&) = delete;
-    CompilationMessage(CompilationMessage&&) = delete;
-    CompilationMessage& operator=(const CompilationMessage&) = delete;
-    CompilationMessage& operator=(CompilationMessage&&) = delete;
-
-    String m_message;
-    CompilationMessageType m_type { CompilationMessageType::Error };
-    uint64_t m_lineNum { 0 };
-    uint64_t m_linePos { 0 };
-    uint64_t m_offset { 0 };
-    uint64_t m_length { 0 };
-};
+using CompilationMessage = ::WebGPU::CompilationMessage;
 
 } // namespace WebCore::WebGPU

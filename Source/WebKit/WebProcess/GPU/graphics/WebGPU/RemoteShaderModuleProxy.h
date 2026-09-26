@@ -49,6 +49,10 @@ public:
     RemoteDeviceProxy& parent() { return m_parent; }
     RemoteGPUProxy& root() { return m_parent->root(); }
 
+    void compilationInfo(CompletionHandler<void(WebCore::WebGPU::CompilationInfo&&)>&&) final;
+    void setLabel(String&&) final;
+    bool isValid() const final;
+
 private:
     friend class DowncastConvertToBackingContext;
 
@@ -58,8 +62,6 @@ private:
     RemoteShaderModuleProxy(RemoteShaderModuleProxy&&) = delete;
     RemoteShaderModuleProxy& operator=(const RemoteShaderModuleProxy&) = delete;
     RemoteShaderModuleProxy& operator=(RemoteShaderModuleProxy&&) = delete;
-
-    bool isRemoteShaderModuleProxy() const final { return true; }
 
     WebGPUIdentifier backing() const { return m_backing; }
     
@@ -74,19 +76,11 @@ private:
         return protect(root().streamClientConnection())->sendWithAsyncReply(std::forward<T>(message), std::forward<C>(completionHandler), backing());
     }
 
-    void compilationInfo(CompletionHandler<void(Ref<WebCore::WebGPU::CompilationInfo>&&)>&&) final;
-
-    void setLabelInternal(const String&) final;
-
     WebGPUIdentifier m_backing;
     const Ref<ConvertToBackingContext> m_convertToBackingContext;
     const Ref<RemoteDeviceProxy> m_parent;
 };
 
 } // namespace WebKit::WebGPU
-
-SPECIALIZE_TYPE_TRAITS_BEGIN(WebKit::WebGPU::RemoteShaderModuleProxy)
-    static bool isType(const WebCore::WebGPU::ShaderModule& module) { return module.isRemoteShaderModuleProxy(); }
-SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // ENABLE(GPU_PROCESS)

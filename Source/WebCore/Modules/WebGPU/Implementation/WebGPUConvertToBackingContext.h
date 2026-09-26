@@ -56,6 +56,7 @@
 #include "WebGPUQueryType.h"
 #include "WebGPUSampler.h"
 #include "WebGPUSamplerBindingType.h"
+#include "WebGPUShaderModule.h"
 #include "WebGPUShaderStage.h"
 #include "WebGPUStencilOperation.h"
 #include "WebGPUStorageTextureAccess.h"
@@ -129,7 +130,6 @@ class RenderBundleEncoder;
 class RenderBundle;
 class RenderPassEncoder;
 class RenderPipeline;
-class ShaderModule;
 class XRBinding;
 class XRProjectionLayer;
 class XRSubImage;

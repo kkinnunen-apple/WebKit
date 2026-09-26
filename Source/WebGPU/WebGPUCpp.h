@@ -1018,7 +1018,7 @@ struct CompilationMessage {
     String message;
     CompilationMessageType type { CompilationMessageType::Error };
     uint64_t lineNum { 0 };
-    uint64_t linePos { 0 };
+    uint64_t linePos { 0 }; // One-based, as in GPUCompilationMessage.
     uint64_t offset { 0 };
     uint64_t length { 0 };
 };
@@ -1410,6 +1410,7 @@ class ShaderModule : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<Shad
 public:
     virtual ~ShaderModule() = default;
 
+    virtual void compilationInfo(CompletionHandler<void(CompilationInfo&&)>&&) = 0;
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 

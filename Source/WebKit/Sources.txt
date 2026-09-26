@@ -342,7 +342,6 @@ Shared/WebGPU/WebGPUCanvasConfiguration.cpp
 Shared/WebGPU/WebGPUColorTargetState.cpp
 Shared/WebGPU/WebGPUCommandBufferDescriptor.cpp
 Shared/WebGPU/WebGPUCommandEncoderDescriptor.cpp
-Shared/WebGPU/WebGPUCompilationMessage.cpp
 Shared/WebGPU/WebGPUComputePassDescriptor.cpp
 Shared/WebGPU/WebGPUComputePassTimestampWrites.cpp
 Shared/WebGPU/WebGPUComputePipelineDescriptor.cpp
