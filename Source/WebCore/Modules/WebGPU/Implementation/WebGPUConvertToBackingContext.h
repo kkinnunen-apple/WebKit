@@ -50,6 +50,7 @@
 #include "WebGPUPowerPreference.h"
 #include "WebGPUPredefinedColorSpace.h"
 #include "WebGPUPrimitiveTopology.h"
+#include "WebGPUQuerySet.h"
 #include "WebGPUQueryType.h"
 #include "WebGPUSampler.h"
 #include "WebGPUSamplerBindingType.h"
@@ -121,7 +122,6 @@ class ExternalTexture;
 class GPU;
 class PipelineLayout;
 class PresentationContext;
-class QuerySet;
 class Queue;
 class RenderBundleEncoder;
 class RenderBundle;

@@ -42,7 +42,7 @@
 #include "WebGPUImpl.h"
 #include "WebGPUPipelineLayoutImpl.h"
 #include "WebGPUPresentationContextImpl.h"
-#include "WebGPUQuerySetImpl.h"
+#include "WebGPUQuerySet.h"
 #include "WebGPUQueueImpl.h"
 #include "WebGPURenderBundleEncoderImpl.h"
 #include "WebGPURenderBundleImpl.h"
@@ -130,7 +130,7 @@ WGPUSurface DowncastConvertToBackingContext::convertToBacking(const Presentation
 
 WGPUQuerySet DowncastConvertToBackingContext::convertToBacking(const QuerySet& querySet)
 {
-    return downcast<QuerySetImpl>(querySet).backing();
+    return ::WebGPU::toAPI(const_cast<QuerySet&>(querySet));
 }
 
 WGPUQueue DowncastConvertToBackingContext::convertToBacking(const Queue& queue)

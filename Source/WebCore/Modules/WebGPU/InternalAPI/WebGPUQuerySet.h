@@ -25,41 +25,10 @@
 
 #pragma once
 
-#include <wtf/Ref.h>
-#include <wtf/RefCountedAndCanMakeWeakPtr.h>
-#include <wtf/WeakPtr.h>
-#include <wtf/text/WTFString.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-class QuerySet : public RefCountedAndCanMakeWeakPtr<QuerySet> {
-public:
-    virtual ~QuerySet() = default;
-
-    String label() const { return m_label; }
-
-    void setLabel(String&& label)
-    {
-        m_label = WTF::move(label);
-        setLabelInternal(m_label);
-    }
-
-    virtual void destroy() = 0;
-    virtual bool isRemoteQuerySetProxy() const { return false; }
-    virtual bool isQuerySetImpl() const { return false; }
-
-protected:
-    QuerySet() = default;
-
-private:
-    QuerySet(const QuerySet&) = delete;
-    QuerySet(QuerySet&&) = delete;
-    QuerySet& operator=(const QuerySet&) = delete;
-    QuerySet& operator=(QuerySet&&) = delete;
-
-    virtual void setLabelInternal(const String&) = 0;
-
-    String m_label;
-};
+using QuerySet = ::WebGPU::QuerySet;
 
 } // namespace WebCore::WebGPU

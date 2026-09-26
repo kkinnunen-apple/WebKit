@@ -30,6 +30,7 @@
 #include "ScopedActiveMessageReceiveQueue.h"
 #include "WebGPUConvertFromBackingContext.h"
 #include "WebGPUIdentifier.h"
+#include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPUSampler.h>
 #include <functional>
 #include <wtf/HashMap.h>
@@ -52,7 +53,6 @@ class ExternalTexture;
 class GPU;
 class PipelineLayout;
 class PresentationContext;
-class QuerySet;
 class Queue;
 class RenderBundleEncoder;
 class RenderBundle;
@@ -154,7 +154,7 @@ public:
     ThreadSafeWeakPtr<WebCore::WebGPU::ExternalTexture> convertExternalTextureFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::PipelineLayout> convertPipelineLayoutFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::PresentationContext> convertPresentationContextFromBacking(WebGPUIdentifier) final;
-    WeakPtr<WebCore::WebGPU::QuerySet> convertQuerySetFromBacking(WebGPUIdentifier) final;
+    RefPtr<WebCore::WebGPU::QuerySet> convertQuerySetFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::Queue> convertQueueFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::RenderBundleEncoder> convertRenderBundleEncoderFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::RenderBundle> convertRenderBundleFromBacking(WebGPUIdentifier) final;

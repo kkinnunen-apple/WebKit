@@ -47,8 +47,8 @@
 #include "WebGPUPipelineLayoutDescriptor.h"
 #include "WebGPUPipelineLayoutImpl.h"
 #include "WebGPUPresentationContextImpl.h"
+#include "WebGPUQuerySet.h"
 #include "WebGPUQuerySetDescriptor.h"
-#include "WebGPUQuerySetImpl.h"
 #include "WebGPURenderBundleEncoderDescriptor.h"
 #include "WebGPURenderBundleEncoderImpl.h"
 #include "WebGPURenderPipelineDescriptor.h"
@@ -666,7 +666,7 @@ RefPtr<QuerySet> DeviceImpl::createQuerySet(const QuerySetDescriptor& descriptor
         .count = descriptor.count,
     };
 
-    return QuerySetImpl::create(adoptWebGPU(wgpuDeviceCreateQuerySet(m_backing.get(), &backingDescriptor)), convertToBackingContext);
+    return adoptRef(::WebGPU::fromAPI(wgpuDeviceCreateQuerySet(m_backing.get(), &backingDescriptor)));
 }
 
 void DeviceImpl::pushErrorScope(ErrorFilter errorFilter)

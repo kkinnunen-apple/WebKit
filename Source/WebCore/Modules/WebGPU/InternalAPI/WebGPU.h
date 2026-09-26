@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURequestAdapterOptions.h>
 #include <WebCore/WebGPUSampler.h>
 #include <optional>
@@ -56,7 +57,6 @@ class GPU;
 class GPUImpl;
 class PipelineLayout;
 class PresentationContext;
-class QuerySet;
 class Queue;
 class RenderBundleEncoder;
 class RenderBundle;

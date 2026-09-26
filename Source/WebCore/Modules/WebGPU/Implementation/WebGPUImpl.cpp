@@ -206,8 +206,7 @@ bool GPUImpl::isValid(const PresentationContext& presentationContext) const
 
 bool GPUImpl::isValid(const QuerySet& querySet) const
 {
-    WGPUQuerySet wgpuQuerySet = m_convertToBackingContext.get().convertToBacking(querySet);
-    return wgpuQuerySetIsValid(wgpuQuerySet);
+    return querySet.isValid();
 }
 
 bool GPUImpl::isValid(const Queue& queue) const

@@ -10161,7 +10161,6 @@
 		1CFAE2E92A4D7A1F0004AE37 /* WebGPUAdapterImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUAdapterImpl.cpp; sourceTree = "<group>"; };
 		1CFAE2EB2A4D7A200004AE37 /* WebGPUShaderModuleImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUShaderModuleImpl.cpp; sourceTree = "<group>"; };
 		1CFAE2EC2A4D7A200004AE37 /* WebGPUImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUImpl.h; sourceTree = "<group>"; };
-		1CFAE2ED2A4D7A210004AE37 /* WebGPUQuerySetImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUQuerySetImpl.cpp; sourceTree = "<group>"; };
 		1CFAE2EE2A4D7A210004AE37 /* WebGPUDowncastConvertToBackingContext.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUDowncastConvertToBackingContext.cpp; sourceTree = "<group>"; };
 		1CFAE2EF2A4D7A210004AE37 /* WebGPUCommandEncoderImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUCommandEncoderImpl.cpp; sourceTree = "<group>"; };
 		1CFAE2F02A4D7A210004AE37 /* WebGPUTextureViewImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUTextureViewImpl.cpp; sourceTree = "<group>"; };
@@ -10179,7 +10178,6 @@
 		1CFAE2FC2A4D7A250004AE37 /* WebGPUTextureViewImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUTextureViewImpl.h; sourceTree = "<group>"; };
 		1CFAE2FD2A4D7A250004AE37 /* WebGPURenderBundleEncoderImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPURenderBundleEncoderImpl.cpp; sourceTree = "<group>"; };
 		1CFAE2FE2A4D7A250004AE37 /* WebGPUShaderModuleImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUShaderModuleImpl.h; sourceTree = "<group>"; };
-		1CFAE2FF2A4D7A260004AE37 /* WebGPUQuerySetImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUQuerySetImpl.h; sourceTree = "<group>"; };
 		1CFAE3002A4D7A260004AE37 /* WebGPUConvertToBackingContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUConvertToBackingContext.h; sourceTree = "<group>"; };
 		1CFAE3012A4D7A260004AE37 /* WebGPUDeviceImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUDeviceImpl.h; sourceTree = "<group>"; };
 		1CFAE3220A6D6A3F0032593D /* libobjc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libobjc.dylib; path = /usr/lib/libobjc.dylib; sourceTree = "<absolute>"; };
@@ -26924,8 +26922,6 @@
 				1CFAE2E82A4D7A1F0004AE37 /* WebGPUPresentationContextImpl.cpp */,
 				1CFAE2D82A4D7A1A0004AE37 /* WebGPUPresentationContextImpl.h */,
 				1CFAE2D62A4D7A1A0004AE37 /* WebGPUPtr.h */,
-				1CFAE2ED2A4D7A210004AE37 /* WebGPUQuerySetImpl.cpp */,
-				1CFAE2FF2A4D7A260004AE37 /* WebGPUQuerySetImpl.h */,
 				1CFAE2D22A4D7A190004AE37 /* WebGPUQueueImpl.cpp */,
 				1CFAE2D32A4D7A190004AE37 /* WebGPUQueueImpl.h */,
 				1CFAE2FD2A4D7A250004AE37 /* WebGPURenderBundleEncoderImpl.cpp */,

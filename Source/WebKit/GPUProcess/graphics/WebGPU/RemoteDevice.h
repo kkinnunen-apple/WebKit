@@ -34,6 +34,7 @@
 #include "StreamMessageReceiver.h"
 #include "WebGPUError.h"
 #include "WebGPUIdentifier.h"
+#include "WebGPUQuerySetDescriptor.h"
 #include "WebGPUSamplerDescriptor.h"
 #include <WebCore/MediaPlayerIdentifier.h>
 #include <WebCore/WebGPUDeviceLostReason.h>
@@ -81,7 +82,6 @@ struct ComputePipelineDescriptor;
 struct ExternalTextureDescriptor;
 class ObjectHeap;
 struct PipelineLayoutDescriptor;
-struct QuerySetDescriptor;
 struct RenderBundleEncoderDescriptor;
 struct RenderPipelineDescriptor;
 struct ShaderModuleDescriptor;

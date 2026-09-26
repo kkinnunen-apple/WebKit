@@ -4578,7 +4578,6 @@
 		1C98C09D27462678002CCB78 /* WebGPUImageCopyTextureTagged.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUImageCopyTextureTagged.cpp; sourceTree = "<group>"; };
 		1C98C09E27462679002CCB78 /* WebGPURenderPassTimestampWrites.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPURenderPassTimestampWrites.cpp; sourceTree = "<group>"; };
 		1C98C09F27462679002CCB78 /* WebGPUPipelineDescriptorBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUPipelineDescriptorBase.cpp; sourceTree = "<group>"; };
-		1C98C0A127462679002CCB78 /* WebGPUQuerySetDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUQuerySetDescriptor.cpp; sourceTree = "<group>"; };
 		1C98C0A227462679002CCB78 /* WebGPUCommandBufferDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUCommandBufferDescriptor.cpp; sourceTree = "<group>"; };
 		1C98C0A32746267A002CCB78 /* WebGPUImageDataLayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUImageDataLayout.cpp; sourceTree = "<group>"; };
 		1C98C0A52746267A002CCB78 /* WebGPUBufferBindingLayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUBufferBindingLayout.cpp; sourceTree = "<group>"; };
@@ -11778,7 +11777,6 @@
 				1C98C09C27462678002CCB78 /* WebGPUProgrammableStage.cpp */,
 				1CB7468827439CB600F19874 /* WebGPUProgrammableStage.h */,
 				02789F0028D4401D00F77E40 /* WebGPUProgrammableStage.serialization.in */,
-				1C98C0A127462679002CCB78 /* WebGPUQuerySetDescriptor.cpp */,
 				1CB7469E27439CBC00F19874 /* WebGPUQuerySetDescriptor.h */,
 				5CBA4ACF29020A4200F70CCD /* WebGPUQuerySetDescriptor.serialization.in */,
 				1C98C0B42746267C002CCB78 /* WebGPURenderBundleDescriptor.cpp */,

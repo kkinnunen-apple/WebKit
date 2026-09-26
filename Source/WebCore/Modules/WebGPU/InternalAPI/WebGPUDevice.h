@@ -29,6 +29,8 @@
 #include <WebCore/WebGPUDeviceLostInfo.h>
 #include <WebCore/WebGPUError.h>
 #include <WebCore/WebGPUErrorFilter.h>
+#include <WebCore/WebGPUQuerySet.h>
+#include <WebCore/WebGPUQuerySetDescriptor.h>
 #include <WebCore/WebGPURenderPipeline.h>
 #include <WebCore/WebGPUSampler.h>
 #include <WebCore/WebGPUSamplerDescriptor.h>
@@ -72,8 +74,6 @@ struct RenderPipelineDescriptor;
 class PipelineLayout;
 struct PipelineLayoutDescriptor;
 class PresentationContext;
-class QuerySet;
-struct QuerySetDescriptor;
 class Queue;
 class RenderBundleEncoder;
 struct RenderBundleEncoderDescriptor;

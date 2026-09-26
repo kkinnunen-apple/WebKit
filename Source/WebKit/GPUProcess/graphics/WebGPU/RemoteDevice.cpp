@@ -420,10 +420,7 @@ void RemoteDevice::createRenderBundleEncoder(const WebGPU::RenderBundleEncoderDe
 void RemoteDevice::createQuerySet(const WebGPU::QuerySetDescriptor& descriptor, WebGPUIdentifier identifier)
 {
     Ref objectHeap = m_objectHeap.get();
-    auto convertedDescriptor = objectHeap->convertFromBacking(descriptor);
-    MESSAGE_CHECK(convertedDescriptor);
-
-    auto querySet = m_backing->createQuerySet(*convertedDescriptor);
+    auto querySet = m_backing->createQuerySet(descriptor);
     MESSAGE_CHECK(querySet);
     auto remoteQuerySet = RemoteQuerySet::create(*querySet, objectHeap, protect(m_streamConnection), protect(m_gpu), identifier);
     objectHeap->addObject(identifier, remoteQuerySet);
