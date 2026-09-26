@@ -386,7 +386,7 @@ RefPtr<WebCore::WebGPU::QuerySet> ObjectHeap::convertQuerySetFromBacking(WebGPUI
     return &std::get<IPC::ScopedActiveMessageReceiveQueue<RemoteQuerySet>>(iterator->value)->backing();
 }
 
-WeakPtr<WebCore::WebGPU::Queue> ObjectHeap::convertQueueFromBacking(WebGPUIdentifier identifier)
+RefPtr<WebCore::WebGPU::Queue> ObjectHeap::convertQueueFromBacking(WebGPUIdentifier identifier)
 {
     auto iterator = m_objects.find(identifier);
     if (iterator == m_objects.end() || !std::holds_alternative<IPC::ScopedActiveMessageReceiveQueue<RemoteQueue>>(iterator->value))

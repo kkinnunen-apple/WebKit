@@ -144,7 +144,7 @@ WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::Queue& queue)
 {
-    return downcast<RemoteQueueProxy>(queue).backing();
+    return static_cast<const RemoteQueueProxy&>(queue).backing();
 }
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::RenderBundleEncoder& renderBundleEncoder)

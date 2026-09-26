@@ -67,6 +67,7 @@
 #include <WebCore/WebGPUPipelineLayoutDescriptor.h>
 #include <WebCore/WebGPUPrimitiveState.h>
 #include <WebCore/WebGPUQuerySet.h>
+#include <WebCore/WebGPUQueue.h>
 #include <WebCore/WebGPURenderBundle.h>
 #include <WebCore/WebGPURenderBundleEncoder.h>
 #include <WebCore/WebGPURenderPassDescriptor.h>
@@ -118,7 +119,6 @@ struct CanvasConfiguration;
 class PresentationContext;
 struct PresentationContextDescriptor;
 struct ProgrammableStage;
-class Queue;
 struct RenderBundleEncoderDescriptor;
 struct RenderPassLayout;
 struct RenderPipelineDescriptor;
@@ -276,7 +276,7 @@ public:
     virtual ThreadSafeWeakPtr<WebCore::WebGPU::ExternalTexture> convertExternalTextureFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::PipelineLayout> convertPipelineLayoutFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::QuerySet> convertQuerySetFromBacking(WebGPUIdentifier) = 0;
-    virtual WeakPtr<WebCore::WebGPU::Queue> convertQueueFromBacking(WebGPUIdentifier) = 0;
+    virtual RefPtr<WebCore::WebGPU::Queue> convertQueueFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::RenderBundleEncoder> convertRenderBundleEncoderFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::RenderBundle> convertRenderBundleFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::RenderPassEncoder> convertRenderPassEncoderFromBacking(WebGPUIdentifier) = 0;

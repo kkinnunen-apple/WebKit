@@ -43,7 +43,6 @@
 #include "WebGPUPipelineLayout.h"
 #include "WebGPUPresentationContextImpl.h"
 #include "WebGPUQuerySet.h"
-#include "WebGPUQueueImpl.h"
 #include "WebGPURenderBundle.h"
 #include "WebGPURenderBundleEncoder.h"
 #include "WebGPURenderPassEncoder.h"
@@ -135,7 +134,7 @@ WGPUQuerySet DowncastConvertToBackingContext::convertToBacking(const QuerySet& q
 
 WGPUQueue DowncastConvertToBackingContext::convertToBacking(const Queue& queue)
 {
-    return downcast<QueueImpl>(queue).backing();
+    return ::WebGPU::toAPI(const_cast<Queue&>(queue));
 }
 
 WGPURenderBundleEncoder DowncastConvertToBackingContext::convertToBacking(const RenderBundleEncoder& renderBundleEncoder)

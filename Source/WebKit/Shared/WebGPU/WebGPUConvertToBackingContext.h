@@ -67,6 +67,7 @@
 #include <WebCore/WebGPUPipelineLayoutDescriptor.h>
 #include <WebCore/WebGPUPrimitiveState.h>
 #include <WebCore/WebGPUQuerySet.h>
+#include <WebCore/WebGPUQueue.h>
 #include <WebCore/WebGPURenderBundle.h>
 #include <WebCore/WebGPURenderBundleEncoder.h>
 #include <WebCore/WebGPURenderPassDescriptor.h>
@@ -108,7 +109,6 @@ struct CanvasConfiguration;
 class PresentationContext;
 struct PresentationContextDescriptor;
 struct ProgrammableStage;
-class Queue;
 struct RenderBundleEncoderDescriptor;
 struct RenderPassLayout;
 struct RenderPipelineDescriptor;

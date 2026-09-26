@@ -61,6 +61,7 @@
 #include "WebGPUPrimitiveTopology.h"
 #include "WebGPUQuerySet.h"
 #include "WebGPUQueryType.h"
+#include "WebGPUQueue.h"
 #include "WebGPURenderBundle.h"
 #include "WebGPURenderBundleEncoder.h"
 #include "WebGPURenderPassEncoder.h"
@@ -129,7 +130,6 @@ class CompositorIntegrationImpl;
 class Device;
 class GPU;
 class PresentationContext;
-class Queue;
 class XRBinding;
 class XRProjectionLayer;
 class XRSubImage;

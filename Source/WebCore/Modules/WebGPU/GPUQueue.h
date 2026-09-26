@@ -102,6 +102,7 @@ private:
     const Ref<WebGPU::Queue> m_backing;
     // The root, which has the commands that take WebCore sources.
     const Ref<WebGPU::GPU> m_gpu;
+    String m_label;
     WeakPtr<GPUDevice, WeakPtrImplWithEventTargetData> m_device;
 };
 
