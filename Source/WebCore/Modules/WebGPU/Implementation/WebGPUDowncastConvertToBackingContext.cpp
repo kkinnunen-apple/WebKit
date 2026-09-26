@@ -38,7 +38,7 @@
 #include "WebGPUComputePassEncoderImpl.h"
 #include "WebGPUComputePipelineImpl.h"
 #include "WebGPUDeviceImpl.h"
-#include "WebGPUExternalTextureImpl.h"
+#include "WebGPUExternalTexture.h"
 #include "WebGPUImpl.h"
 #include "WebGPUPipelineLayoutImpl.h"
 #include "WebGPUPresentationContextImpl.h"
@@ -110,7 +110,7 @@ WGPUDevice DowncastConvertToBackingContext::convertToBacking(const Device& devic
 
 WGPUExternalTexture DowncastConvertToBackingContext::convertToBacking(const ExternalTexture& externalTexture)
 {
-    return downcast<ExternalTextureImpl>(externalTexture).backing();
+    return ::WebGPU::toAPI(const_cast<ExternalTexture&>(externalTexture));
 }
 
 WGPUInstance DowncastConvertToBackingContext::convertToBacking(const GPU& gpu)

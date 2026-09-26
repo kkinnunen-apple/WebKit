@@ -31,6 +31,7 @@
 #include <WebCore/WebGPUDeviceLostInfo.h>
 #include <WebCore/WebGPUError.h>
 #include <WebCore/WebGPUErrorFilter.h>
+#include <WebCore/WebGPUExternalTexture.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPUQuerySetDescriptor.h>
 #include <WebCore/WebGPURenderPipeline.h>
@@ -69,7 +70,6 @@ struct CommandEncoderDescriptor;
 class ComputePassEncoder;
 class ComputePipeline;
 struct ComputePipelineDescriptor;
-class ExternalTexture;
 struct ExternalTextureDescriptor;
 class RenderPipeline;
 struct RenderPipelineDescriptor;

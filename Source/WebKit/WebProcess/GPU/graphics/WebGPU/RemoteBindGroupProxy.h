@@ -30,11 +30,8 @@
 #include "RemoteDeviceProxy.h"
 #include "WebGPUIdentifier.h"
 #include <WebCore/WebGPUBindGroup.h>
+#include <WebCore/WebGPUExternalTexture.h>
 #include <wtf/TZoneMalloc.h>
-
-namespace WebCore::WebGPU {
-class ExternalTexture;
-}
 
 namespace WebKit::WebGPU {
 

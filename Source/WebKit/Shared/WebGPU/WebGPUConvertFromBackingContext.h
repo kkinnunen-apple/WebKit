@@ -44,6 +44,7 @@
 #include <WebCore/WebGPUComputePassTimestampWrites.h>
 #include <WebCore/WebGPUError.h>
 #include <WebCore/WebGPUExtent3D.h>
+#include <WebCore/WebGPUExternalTexture.h>
 #include <WebCore/WebGPUExternalTextureBindingLayout.h>
 #include <WebCore/WebGPUImageDataLayout.h>
 #include <WebCore/WebGPUMultisampleState.h>
@@ -98,7 +99,6 @@ struct DepthStencilState;
 class Device;
 struct DeviceDescriptor;
 struct ExternalTextureDescriptor;
-class ExternalTexture;
 struct FragmentState;
 class GPU;
 struct Identifier;

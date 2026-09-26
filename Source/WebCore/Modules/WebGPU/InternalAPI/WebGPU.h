@@ -26,6 +26,7 @@
 #pragma once
 
 #include <WebCore/WebGPUBuffer.h>
+#include <WebCore/WebGPUExternalTexture.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURequestAdapterOptions.h>
 #include <WebCore/WebGPUSampler.h>
@@ -54,7 +55,6 @@ class CompositorIntegration;
 class ComputePassEncoder;
 class ComputePipeline;
 class Device;
-class ExternalTexture;
 class GPU;
 class GPUImpl;
 class PipelineLayout;

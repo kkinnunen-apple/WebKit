@@ -31,6 +31,7 @@
 #include "WebGPUConvertFromBackingContext.h"
 #include "WebGPUIdentifier.h"
 #include <WebCore/WebGPUBuffer.h>
+#include <WebCore/WebGPUExternalTexture.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPUSampler.h>
 #include <WebCore/WebGPUTexture.h>
@@ -50,7 +51,6 @@ class CompositorIntegration;
 class ComputePassEncoder;
 class ComputePipeline;
 class Device;
-class ExternalTexture;
 class GPU;
 class PipelineLayout;
 class PresentationContext;

@@ -1282,6 +1282,12 @@ class ExternalTexture : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<E
 public:
     virtual ~ExternalTexture() = default;
 
+    virtual void destroy() = 0;
+    virtual void undestroy() = 0;
+#if PLATFORM(COCOA)
+    // Makes the external texture show the frame in the pixel buffer.
+    virtual void updateExternalTexture(CVPixelBufferRef) = 0;
+#endif
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 

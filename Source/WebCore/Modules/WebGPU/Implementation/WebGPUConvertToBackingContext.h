@@ -40,6 +40,7 @@
 #include "WebGPUCullMode.h"
 #include "WebGPUErrorFilter.h"
 #include "WebGPUExtent3D.h"
+#include "WebGPUExternalTexture.h"
 #include "WebGPUFeatureName.h"
 #include "WebGPUFilterMode.h"
 #include "WebGPUFrontFace.h"
@@ -120,7 +121,6 @@ class CompositorIntegrationImpl;
 class ComputePassEncoder;
 class ComputePipeline;
 class Device;
-class ExternalTexture;
 class GPU;
 class PipelineLayout;
 class PresentationContext;

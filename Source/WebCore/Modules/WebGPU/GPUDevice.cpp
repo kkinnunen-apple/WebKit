@@ -529,11 +529,12 @@ ExceptionOr<Ref<GPUExternalTexture>> GPUDevice::importExternalTexture(GPUExterna
     }
 #endif
 
-    RefPtr texture = m_backing->importExternalTexture(externalTextureDescriptor.convertToBacking());
+    auto backingDescriptor = externalTextureDescriptor.convertToBacking();
+    RefPtr texture = m_backing->importExternalTexture(backingDescriptor);
     if (!texture)
         return Exception { ExceptionCode::InvalidStateError, "GPUDevice.importExternalTexture: Unable to import texture."_s };
 
-    auto externalTexture = GPUExternalTexture::create(texture.releaseNonNull(), *this);
+    auto externalTexture = GPUExternalTexture::create(texture.releaseNonNull(), WTF::move(backingDescriptor.label), *this);
 
 #if ENABLE(VIDEO)
 #if ENABLE(WEB_CODECS)
