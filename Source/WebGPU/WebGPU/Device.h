@@ -120,7 +120,7 @@ public:
     Ref<XRSubImage> createXRSubImage();
     Ref<XRView> createXRView();
     Ref<Buffer> createBuffer(const WebGPU::BufferDescriptor&);
-    Ref<CommandEncoder> createCommandEncoder(const WGPUCommandEncoderDescriptor&);
+    Ref<CommandEncoder> createCommandEncoder(const WebGPU::CommandEncoderDescriptor&);
     Ref<ComputePipeline> createComputePipeline(const WebGPU::ComputePipelineDescriptor&);
     void createComputePipelineAsync(const WebGPU::ComputePipelineDescriptor&, CompletionHandler<void(Expected<Ref<ComputePipeline>, WebGPU::PipelineError>&&)>&&);
     void createComputePipelineWithPipelineLayoutFromPipelineAsync(const WebGPU::ComputePipelineDescriptor&, const ComputePipeline&, CompletionHandler<void(Expected<Ref<ComputePipeline>, WebGPU::PipelineError>&&)>&&);

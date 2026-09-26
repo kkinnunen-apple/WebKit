@@ -110,7 +110,7 @@ void RenderPassEncoder::setFragmentBytes(id<MTLRenderCommandEncoder> commandEnco
     m_existingFragmentBuffers[bufferIndex] = { };
 }
 
-RenderPassEncoder::RenderPassEncoder(id<MTLRenderCommandEncoder> renderCommandEncoder, const WGPURenderPassDescriptor& descriptor, NSUInteger visibilityResultBufferSize, bool depthReadOnly, bool stencilReadOnly, CommandEncoder& rawParentEncoder, id<MTLBuffer> visibilityResultBuffer, uint64_t maxDrawCount, Device& device, MTLRenderPassDescriptor* metalDescriptor)
+RenderPassEncoder::RenderPassEncoder(id<MTLRenderCommandEncoder> renderCommandEncoder, const WebGPU::RenderPassDescriptor& descriptor, NSUInteger visibilityResultBufferSize, bool depthReadOnly, bool stencilReadOnly, CommandEncoder& rawParentEncoder, id<MTLBuffer> visibilityResultBuffer, uint64_t maxDrawCount, Device& device, MTLRenderPassDescriptor* metalDescriptor)
     : m_renderCommandEncoder(renderCommandEncoder)
     , m_device(device)
     , m_visibilityResultBufferSize(visibilityResultBufferSize)
@@ -125,30 +125,34 @@ RenderPassEncoder::RenderPassEncoder(id<MTLRenderCommandEncoder> renderCommandEn
     if (m_device->baseCapabilities().memoryBarrierLimit > maxDrawCount)
         m_metalDescriptor = nil;
 
-    auto colorAttachments = colorAttachmentsSpan(descriptor);
-    for (auto& attachment : colorAttachments) {
-        auto texture = attachment.view ? TextureOrTextureView(static_cast<TextureView*>(attachment.view)) : TextureOrTextureView(static_cast<Texture*>(attachment.texture));
-        m_colorAttachmentViews.append(texture);
-    }
-    if (const auto* attachment = descriptor.depthStencilAttachment)
-        m_depthStencilView = attachment->view ? TextureOrTextureView(fromAPI(attachment->view)) : TextureOrTextureView(fromAPI(attachment->texture));
+    // An empty color attachment slot has a null texture.
+    Vector<std::optional<ResolvedRenderPassColorAttachment>> colorAttachments(descriptor.colorAttachments.size(), [&](size_t i) {
+        return resolvedColorAttachment(descriptor, i);
+    });
+    for (auto& attachment : colorAttachments)
+        m_colorAttachmentViews.append(attachment ? attachment->view : TextureOrTextureView(static_cast<Texture*>(nullptr)));
+    auto resolvedDepthStencil = resolvedDepthStencilAttachment(descriptor);
+    auto* depthStencilAttachment = resolvedDepthStencil ? &*resolvedDepthStencil : nullptr;
+    if (const auto* attachment = depthStencilAttachment)
+        m_depthStencilView = attachment->view;
 
     m_parentEncoder->lock(true);
 
     m_attachmentsToClear = [NSMutableDictionary dictionary];
-    for (auto [ i, attachment ] : indexedRange(colorAttachments)) {
-        if (!attachment.view && !attachment.texture)
+    for (auto [ i, optionalAttachment ] : indexedRange(colorAttachments)) {
+        if (!optionalAttachment)
             continue;
+        auto& attachment = *optionalAttachment;
 
-        auto texture = attachment.view ? TextureOrTextureView(fromAPI(attachment.view)) : TextureOrTextureView(fromAPI(attachment.texture));
+        auto texture = attachment.view;
         if (texture.isDestroyed())
             m_parentEncoder->makeSubmitInvalid();
 
         texture.setPreviouslyCleared();
         addResourceToActiveResources(texture, BindGroupEntryUsage::Attachment);
         m_rasterSampleCount = texture.sampleCount();
-        if (attachment.resolveTarget || attachment.resolveTexture) {
-            auto texture = attachment.resolveTarget ? TextureOrTextureView(fromAPI(attachment.resolveTarget)) : TextureOrTextureView(fromAPI(attachment.resolveTexture));
+        if (attachment.resolveTarget) {
+            auto texture = *attachment.resolveTarget;
             texture.setCommandEncoder(m_parentEncoder);
             texture.setPreviouslyCleared();
             addResourceToActiveResources(texture, BindGroupEntryUsage::Attachment);
@@ -169,11 +173,11 @@ RenderPassEncoder::RenderPassEncoder(id<MTLRenderCommandEncoder> renderCommandEn
             [m_attachmentsToClear setObject:textureWithClearColor forKey:@(i)];
         }
 
-        textureWithClearColor.depthPlane = texture.isDestroyed() || attachment.depthSlice == WGPU_DEPTH_SLICE_UNDEFINED ? 0 : attachment.depthSlice;
+        textureWithClearColor.depthPlane = texture.isDestroyed() || !attachment.depthSlice ? 0 : *attachment.depthSlice;
     }
 
-    if (const auto* attachment = descriptor.depthStencilAttachment) {
-        auto textureView = attachment->view ? TextureOrTextureView(fromAPI(attachment->view)) : TextureOrTextureView(fromAPI(attachment->texture));
+    if (const auto* attachment = depthStencilAttachment) {
+        auto textureView = attachment->view;
         textureView.setPreviouslyCleared();
         textureView.setCommandEncoder(m_parentEncoder);
         id<MTLTexture> depthTexture = textureView.isDestroyed() ? nil : textureView.texture();

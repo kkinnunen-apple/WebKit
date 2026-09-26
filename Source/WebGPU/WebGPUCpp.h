@@ -649,6 +649,74 @@ struct ShaderModuleDescriptor {
     std::span<const ShaderModuleCompilationHint> hints; // Borrowed for the duration of the call.
 } SWIFT_NONESCAPABLE;
 
+// Swift cannot copy a struct that holds a Variant: swift-frontend crashes. Such members are hidden
+// from Swift with WEBGPU_HIDDEN_FROM_SWIFT, and the structs that hold them are SWIFT_NONCOPYABLE.
+// The implementations give Swift accessors for them.
+#define WEBGPU_HIDDEN_FROM_SWIFT __attribute__((availability(swift, unavailable)))
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpucommandencoderdescriptor
+struct CommandEncoderDescriptor {
+    String label;
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpucommandbufferdescriptor
+struct CommandBufferDescriptor {
+    String label;
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpurenderpasstimestampwrites
+// https://gpuweb.github.io/gpuweb/#dictdef-gpucomputepasstimestampwrites
+struct PassTimestampWrites {
+    Ref<QuerySet> querySet;
+    std::optional<uint32_t> beginningOfPassWriteIndex;
+    std::optional<uint32_t> endOfPassWriteIndex;
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpucomputepassdescriptor
+struct ComputePassDescriptor {
+    String label;
+    std::optional<PassTimestampWrites> timestampWrites;
+};
+
+// A texture as a render pass attachment is its default view.
+using RenderPassAttachmentView = Variant<Ref<TextureView>, Ref<Texture>>;
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpurenderpasscolorattachment
+struct RenderPassColorAttachment {
+    RenderPassAttachmentView view WEBGPU_HIDDEN_FROM_SWIFT;
+    std::optional<uint32_t> depthSlice;
+    std::optional<RenderPassAttachmentView> resolveTarget WEBGPU_HIDDEN_FROM_SWIFT;
+    Color clearValue;
+    LoadOp loadOp { LoadOp::Load };
+    StoreOp storeOp { StoreOp::Store };
+} SWIFT_NONCOPYABLE;
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpurenderpassdepthstencilattachment
+struct RenderPassDepthStencilAttachment {
+    RenderPassAttachmentView view WEBGPU_HIDDEN_FROM_SWIFT;
+    float depthClearValue { 0 };
+    std::optional<LoadOp> depthLoadOp;
+    std::optional<StoreOp> depthStoreOp;
+    bool depthReadOnly { false };
+    uint32_t stencilClearValue { 0 };
+    std::optional<LoadOp> stencilLoadOp;
+    std::optional<StoreOp> stencilStoreOp;
+    bool stencilReadOnly { false };
+} SWIFT_NONCOPYABLE;
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpurenderpassdescriptor
+struct RenderPassDescriptor {
+    String label;
+    // Borrowed for the duration of the call. std::nullopt: no color attachment in that slot.
+    std::span<const std::optional<RenderPassColorAttachment>> colorAttachments WEBGPU_HIDDEN_FROM_SWIFT;
+    std::optional<RenderPassDepthStencilAttachment> depthStencilAttachment WEBGPU_HIDDEN_FROM_SWIFT;
+    RefPtr<QuerySet> occlusionQuerySet;
+    std::optional<PassTimestampWrites> timestampWrites;
+    std::optional<uint64_t> maxDrawCount;
+
+    size_t colorAttachmentCount() const { return colorAttachments.size(); }
+} SWIFT_NONCOPYABLE SWIFT_NONESCAPABLE;
+
 // https://gpuweb.github.io/gpuweb/#dictdef-gputexelcopybufferlayout
 struct TexelCopyBufferLayout {
     uint64_t offset { 0 };

@@ -63,7 +63,7 @@ struct BindableResources;
 class RenderPassEncoder final : public WebGPU::RenderPassEncoder, public WGPURenderPassEncoderImpl, public CommandsMixin {
     WTF_MAKE_TZONE_ALLOCATED(RenderPassEncoder);
 public:
-    static Ref<RenderPassEncoder> create(id<MTLRenderCommandEncoder> renderCommandEncoder, const WGPURenderPassDescriptor& descriptor, NSUInteger visibilityResultBufferSize, bool depthReadOnly, bool stencilReadOnly, CommandEncoder& parentEncoder, id<MTLBuffer> visibilityResultBuffer, uint64_t maxDrawCount, Device& device, MTLRenderPassDescriptor* mtlDescriptor)
+    static Ref<RenderPassEncoder> create(id<MTLRenderCommandEncoder> renderCommandEncoder, const WebGPU::RenderPassDescriptor& descriptor, NSUInteger visibilityResultBufferSize, bool depthReadOnly, bool stencilReadOnly, CommandEncoder& parentEncoder, id<MTLBuffer> visibilityResultBuffer, uint64_t maxDrawCount, Device& device, MTLRenderPassDescriptor* mtlDescriptor)
     {
         return adoptRef(*new RenderPassEncoder(renderCommandEncoder, descriptor, visibilityResultBufferSize, depthReadOnly, stencilReadOnly, parentEncoder, visibilityResultBuffer, maxDrawCount, device, mtlDescriptor));
     }
@@ -136,7 +136,7 @@ public:
     void trackIndirectDeviceLostCheck(id<MTLBuffer> scratch, uint64_t scratchOffset, id<MTLBuffer> alsoRetain);
 
 private:
-    RenderPassEncoder(id<MTLRenderCommandEncoder>, const WGPURenderPassDescriptor&, NSUInteger, bool depthReadOnly, bool stencilReadOnly, CommandEncoder&, id<MTLBuffer>, uint64_t maxDrawCount, Device&, MTLRenderPassDescriptor*);
+    RenderPassEncoder(id<MTLRenderCommandEncoder>, const WebGPU::RenderPassDescriptor&, NSUInteger, bool depthReadOnly, bool stencilReadOnly, CommandEncoder&, id<MTLBuffer>, uint64_t maxDrawCount, Device&, MTLRenderPassDescriptor*);
     RenderPassEncoder(CommandEncoder&, Device&, NSString*);
 
     bool NODELETE validatePopDebugGroup() const;

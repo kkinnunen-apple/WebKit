@@ -103,7 +103,7 @@ static MTLStoreAction NODELETE storeAction(WGPUStoreOp storeOp, bool hasResolveT
     }
 }
 
-Ref<CommandEncoder> Device::createCommandEncoder(const WGPUCommandEncoderDescriptor& descriptor)
+Ref<CommandEncoder> Device::createCommandEncoder(const WebGPU::CommandEncoderDescriptor& descriptor)
 {
     if (!isValid())
         return CommandEncoder::createInvalid(*this);
@@ -116,7 +116,7 @@ Ref<CommandEncoder> Device::createCommandEncoder(const WGPUCommandEncoderDescrip
     if (!commandBuffer)
         return CommandEncoder::createInvalid(*this);
 
-    commandBuffer.label = fromAPI(descriptor.label).createNSString().get();
+    commandBuffer.label = descriptor.label.createNSString().get();
 
     auto commandEncoder = CommandEncoder::create(commandBuffer, *this, m_commandEncoderId++);
     m_commandEncoderMap.set(commandEncoder->uniqueId(), commandEncoder.ptr());
@@ -221,14 +221,14 @@ void CommandEncoder::finalizeBlitCommandEncoder()
     setExistingEncoder(nil);
 }
 
-static auto NODELETE timestampWriteIndex(auto writeIndex)
+static uint32_t NODELETE timestampWriteIndex(std::optional<uint32_t> writeIndex)
 {
-    return writeIndex == WGPU_QUERY_SET_INDEX_UNDEFINED ? 0 : writeIndex;
+    return writeIndex.value_or(0);
 }
 
-static NSUInteger NODELETE timestampWriteIndex(NSUInteger writeIndex, NSUInteger defaultValue, uint32_t offset)
+static NSUInteger NODELETE timestampWriteIndex(std::optional<uint32_t> writeIndex, NSUInteger defaultValue, uint32_t offset)
 {
-    return writeIndex == WGPU_QUERY_SET_INDEX_UNDEFINED ? defaultValue : (writeIndex + offset);
+    return writeIndex ? (static_cast<NSUInteger>(*writeIndex) + offset) : defaultValue;
 }
 
 static NSString* errorValidatingTimestampWrites(const auto& timestampWrites, const CommandEncoder& commandEncoder)
@@ -238,7 +238,7 @@ static NSString* errorValidatingTimestampWrites(const auto& timestampWrites, con
             return @"device does not have timestamp query feature";
 
         const auto& timestampWrite = *timestampWrites;
-        Ref querySet = fromAPI(timestampWrite.querySet);
+        Ref querySet = metal(timestampWrite.querySet);
         if (querySet->type() != WGPUQueryType_Timestamp)
             return [NSString stringWithFormat:@"query type is not timestamp but %d", querySet->type()];
 
@@ -249,18 +249,18 @@ static NSString* errorValidatingTimestampWrites(const auto& timestampWrites, con
         auto beginningOfPassWriteIndex = timestampWriteIndex(timestampWrite.beginningOfPassWriteIndex);
         auto endOfPassWriteIndex = timestampWriteIndex(timestampWrite.endOfPassWriteIndex);
         if (beginningOfPassWriteIndex >= querySetCount || endOfPassWriteIndex >= querySetCount || timestampWrite.beginningOfPassWriteIndex == timestampWrite.endOfPassWriteIndex)
-            return [NSString stringWithFormat:@"writeIndices mismatch: beginningOfPassWriteIndex(%u) >= querySetCount(%u) || endOfPassWriteIndex(%u) >= querySetCount(%u) || timestampWrite.beginningOfPassWriteIndex(%u) == timestampWrite.endOfPassWriteIndex(%u)", beginningOfPassWriteIndex, querySetCount, endOfPassWriteIndex, querySetCount, timestampWrite.beginningOfPassWriteIndex, timestampWrite.endOfPassWriteIndex];
+            return [NSString stringWithFormat:@"writeIndices mismatch: beginningOfPassWriteIndex(%u) >= querySetCount(%u) || endOfPassWriteIndex(%u) >= querySetCount(%u) || timestampWrite.beginningOfPassWriteIndex(%u) == timestampWrite.endOfPassWriteIndex(%u)", beginningOfPassWriteIndex, querySetCount, endOfPassWriteIndex, querySetCount, timestampWrite.beginningOfPassWriteIndex.value_or(WGPU_QUERY_SET_INDEX_UNDEFINED), timestampWrite.endOfPassWriteIndex.value_or(WGPU_QUERY_SET_INDEX_UNDEFINED)];
     }
 
     return nil;
 }
 
-NSString* CommandEncoder::errorValidatingComputePassDescriptor(const WGPUComputePassDescriptor& descriptor) const
+NSString* CommandEncoder::errorValidatingComputePassDescriptor(const WebGPU::ComputePassDescriptor& descriptor) const
 {
     return errorValidatingTimestampWrites(descriptor.timestampWrites, *this);
 }
 
-Ref<ComputePassEncoder> CommandEncoder::beginComputePass(const WGPUComputePassDescriptor& descriptor)
+Ref<ComputePassEncoder> CommandEncoder::beginComputePass(const WebGPU::ComputePassDescriptor& descriptor)
 {
 #if ENABLE(WEBGPU_SWIFT)
     if (isWebGPUSwiftEnabled())
@@ -289,14 +289,14 @@ Ref<ComputePassEncoder> CommandEncoder::beginComputePass(const WGPUComputePassDe
     MTLComputePassDescriptor* computePassDescriptor = [MTLComputePassDescriptor new];
     computePassDescriptor.dispatchType = MTLDispatchTypeSerial;
     QuerySet::CounterSampleBuffer counterSampleBuffer;
-    if (auto* wgpuTimestampWrites = descriptor.timestampWrites) {
-        Ref timestampWrites = fromAPI(wgpuTimestampWrites->querySet);
+    if (auto& apiTimestampWrites = descriptor.timestampWrites) {
+        Ref timestampWrites = metal(apiTimestampWrites->querySet);
         counterSampleBuffer = timestampWrites->counterSampleBufferWithOffset();
         timestampWrites->setCommandEncoder(*this);
     }
 
     if (m_device->enableEncoderTimestamps() || counterSampleBuffer.buffer) {
-        auto* timestampWrites = descriptor.timestampWrites;
+        auto& timestampWrites = descriptor.timestampWrites;
         computePassDescriptor.sampleBufferAttachments[0].sampleBuffer = counterSampleBuffer.buffer ?: m_device->timestampsBuffer(m_commandBuffer, 2);
         computePassDescriptor.sampleBufferAttachments[0].startOfEncoderSampleIndex = timestampWrites ? timestampWriteIndex(timestampWrites->beginningOfPassWriteIndex, MTLCounterDontSample, counterSampleBuffer.offset) : 0;
         computePassDescriptor.sampleBufferAttachments[0].endOfEncoderSampleIndex = timestampWrites ? timestampWriteIndex(timestampWrites->endOfPassWriteIndex, MTLCounterDontSample, counterSampleBuffer.offset) : 1;
@@ -352,10 +352,10 @@ void CommandEncoder::endEncoding(id<MTLCommandEncoder> encoder)
         discardCommandBuffer();
 }
 
-NSString* CommandEncoder::errorValidatingRenderPassDescriptor(const WGPURenderPassDescriptor& descriptor) const
+NSString* CommandEncoder::errorValidatingRenderPassDescriptor(const WebGPU::RenderPassDescriptor& descriptor) const
 {
-    if (auto* wgpuOcclusionQuery = descriptor.occlusionQuerySet) {
-        Ref occlusionQuery = fromAPI(wgpuOcclusionQuery);
+    if (auto& apiOcclusionQuery = descriptor.occlusionQuerySet) {
+        Ref occlusionQuery = metal(*apiOcclusionQuery);
         if (!isValidToUseWith(occlusionQuery, *this))
             return @"occlusion query does not match the device";
         if (occlusionQuery->type() != WGPUQueryType_Occlusion)
@@ -531,14 +531,14 @@ static bool isMultisampleTexture(id<MTLTexture> texture)
     return texture.textureType == MTLTextureType2DMultisample || texture.textureType == MTLTextureType2DMultisampleArray;
 }
 
-Ref<RenderPassEncoder> CommandEncoder::beginRenderPass(const WGPURenderPassDescriptor& descriptor)
+Ref<RenderPassEncoder> CommandEncoder::beginRenderPass(const WebGPU::RenderPassDescriptor& descriptor)
 {
 #if ENABLE(WEBGPU_SWIFT)
     if (isWebGPUSwiftEnabled())
         return commandEncoderBeginRenderPass(this, descriptor);
 #endif
 
-    auto maxDrawCount = descriptor.maxDrawCount;
+    auto maxDrawCount = descriptor.maxDrawCount.value_or(std::numeric_limits<uint64_t>::max());
 
     if (!prepareTheEncoderState()) {
         GENERATE_INVALID_ENCODER_STATE_ERROR();
@@ -556,8 +556,8 @@ Ref<RenderPassEncoder> CommandEncoder::beginRenderPass(const WGPURenderPassDescr
 
     MTLRenderPassDescriptor* mtlDescriptor = [MTLRenderPassDescriptor new];
     QuerySet::CounterSampleBuffer counterSampleBuffer;
-    if (auto* wgpuTimestampWrites = descriptor.timestampWrites) {
-        Ref timestampWrites = fromAPI(wgpuTimestampWrites->querySet);
+    if (auto& apiTimestampWrites = descriptor.timestampWrites) {
+        Ref timestampWrites = metal(apiTimestampWrites->querySet);
         timestampWrites->setCommandEncoder(*this);
         counterSampleBuffer = timestampWrites->counterSampleBufferWithOffset();
     }
@@ -579,7 +579,7 @@ Ref<RenderPassEncoder> CommandEncoder::beginRenderPass(const WGPURenderPassDescr
         }
     }
 
-    if (descriptor.colorAttachmentCount > 8)
+    if (descriptor.colorAttachments.size() > 8)
         return RenderPassEncoder::createInvalid(*this, m_device, @"color attachment count is > 8");
 
     finalizeBlitCommandEncoder();
@@ -591,9 +591,11 @@ Ref<RenderPassEncoder> CommandEncoder::beginRenderPass(const WGPURenderPassDescr
     using SliceSet = HashSet<uint64_t, DefaultHash<uint64_t>, WTF::UnsignedWithZeroKeyHashTraits<uint64_t>>;
     HashMap<void*, SliceSet> depthSlices;
     NSUInteger compositorTextureSlice = 0;
-    for (auto [ i, attachment ] : indexedRange(colorAttachmentsSpan(descriptor))) {
-        if (!attachment.view && !attachment.texture)
+    for (size_t i = 0; i < descriptor.colorAttachments.size(); ++i) {
+        auto optionalAttachment = resolvedColorAttachment(descriptor, i);
+        if (!optionalAttachment)
             continue;
+        auto& attachment = *optionalAttachment;
 
         // MTLRenderPassColorAttachmentDescriptorArray is bounds-checked internally.
         const auto& mtlAttachment = mtlDescriptor.colorAttachments[i];
@@ -603,7 +605,7 @@ Ref<RenderPassEncoder> CommandEncoder::beginRenderPass(const WGPURenderPassDescr
             attachment.clearValue.b,
             attachment.clearValue.a);
 
-        auto texture = attachment.view ? TextureOrTextureView(fromAPI(attachment.view)) : TextureOrTextureView(fromAPI(attachment.texture));
+        auto texture = attachment.view;
 
         if (!isValidToUseWith(texture, *this))
             return RenderPassEncoder::createInvalid(*this, m_device, @"device mismatch");
@@ -641,10 +643,10 @@ Ref<RenderPassEncoder> CommandEncoder::beginRenderPass(const WGPURenderPassDescr
         mtlAttachment.level = 0;
         mtlAttachment.slice = 0;
         uint64_t depthSliceOrArrayLayer = 0;
-        if (attachment.depthSlice != WGPU_DEPTH_SLICE_UNDEFINED) {
+        if (attachment.depthSlice) {
             if (!texture.is3DTexture())
                 return RenderPassEncoder::createInvalid(*this, m_device, @"depthSlice specified on 2D texture");
-            depthSliceOrArrayLayer = textureIsDestroyed ? 0 : attachment.depthSlice;
+            depthSliceOrArrayLayer = textureIsDestroyed ? 0 : *attachment.depthSlice;
             if (depthSliceOrArrayLayer >= texture.depthOrArrayLayers())
                 return RenderPassEncoder::createInvalid(*this, m_device, @"depthSlice is greater than texture's depth or array layers");
 
@@ -667,7 +669,7 @@ Ref<RenderPassEncoder> CommandEncoder::beginRenderPass(const WGPURenderPassDescr
         mtlAttachment.depthPlane = texture.is3DTexture() ? depthSliceOrArrayLayer : 0;
         mtlAttachment.slice = 0;
         mtlAttachment.loadAction = loadAction(attachment.loadOp);
-        mtlAttachment.storeAction = storeAction(attachment.storeOp, !!attachment.resolveTarget || !!attachment.resolveTexture);
+        mtlAttachment.storeAction = storeAction(attachment.storeOp, !!attachment.resolveTarget);
 
         zeroColorTargets = false;
         id<MTLTexture> textureToClear = nil;
@@ -675,8 +677,8 @@ Ref<RenderPassEncoder> CommandEncoder::beginRenderPass(const WGPURenderPassDescr
             textureToClear = mtlAttachment.texture;
 
         auto compositorTexture = texture;
-        if (attachment.resolveTarget || attachment.resolveTexture) {
-            auto resolveTarget = attachment.resolveTarget ? TextureOrTextureView(fromAPI(attachment.resolveTarget)) : TextureOrTextureView(fromAPI(attachment.resolveTexture));
+        if (attachment.resolveTarget) {
+            auto resolveTarget = *attachment.resolveTarget;
             compositorTexture = resolveTarget;
 
             if (!isValidToUseWith(resolveTarget, *this))
@@ -703,10 +705,8 @@ Ref<RenderPassEncoder> CommandEncoder::beginRenderPass(const WGPURenderPassDescr
             TextureAndClearColor *textureWithResolve = [[TextureAndClearColor alloc] initWithTexture:textureToClear];
             [attachmentsToClear setObject:textureWithResolve forKey:@(i)];
             texture.setPreviouslyCleared();
-            if (attachment.resolveTarget)
-                protect(fromAPI(attachment.resolveTarget))->setPreviouslyCleared();
-            if (attachment.resolveTexture)
-                protect(fromAPI(attachment.resolveTexture))->setPreviouslyCleared();
+            if (auto resolveTarget = attachment.resolveTarget)
+                resolveTarget->setPreviouslyCleared();
         }
     }
 
@@ -715,8 +715,10 @@ Ref<RenderPassEncoder> CommandEncoder::beginRenderPass(const WGPURenderPassDescr
     id<MTLTexture> depthStencilAttachmentToClear = nil;
     bool depthAttachmentToClear = false;
     bool hasDepthComponent = false;
-    if (const auto* attachment = descriptor.depthStencilAttachment) {
-        auto textureView = attachment->view ? TextureOrTextureView(fromAPI(attachment->view)) : TextureOrTextureView(fromAPI(attachment->texture));
+    auto resolvedDepthStencil = resolvedDepthStencilAttachment(descriptor);
+    auto* depthStencilAttachment = resolvedDepthStencil ? &*resolvedDepthStencil : nullptr;
+    if (const auto* attachment = depthStencilAttachment) {
+        auto textureView = attachment->view;
         if (!isValidToUseWith(textureView, *this))
             return RenderPassEncoder::createInvalid(*this, m_device, @"depth stencil texture device mismatch");
         id<MTLTexture> metalDepthStencilTexture = textureView.texture();
@@ -781,10 +783,10 @@ Ref<RenderPassEncoder> CommandEncoder::beginRenderPass(const WGPURenderPassDescr
     }
 
     bool stencilAttachmentToClear = false;
-    if (const auto* attachment = descriptor.depthStencilAttachment) {
+    if (const auto* attachment = depthStencilAttachment) {
         const auto& mtlAttachment = mtlDescriptor.stencilAttachment;
         stencilReadOnly = attachment->stencilReadOnly;
-        auto textureView = attachment->view ? TextureOrTextureView(fromAPI(attachment->view)) : TextureOrTextureView(fromAPI(attachment->texture));
+        auto textureView = attachment->view;
         if (hasStencilComponent)
             mtlAttachment.texture = textureView.texture();
         mtlAttachment.clearStencil = attachment->stencilClearValue;
@@ -813,8 +815,8 @@ Ref<RenderPassEncoder> CommandEncoder::beginRenderPass(const WGPURenderPassDescr
 
     size_t visibilityResultBufferSize = 0;
     id<MTLBuffer> visibilityResultBuffer = nil;
-    if (auto* wgpuOcclusionQuery = descriptor.occlusionQuerySet) {
-        Ref occlusionQuery = fromAPI(wgpuOcclusionQuery);
+    if (auto& apiOcclusionQuery = descriptor.occlusionQuerySet) {
+        Ref occlusionQuery = metal(*apiOcclusionQuery);
         occlusionQuery->setCommandEncoder(*this);
         if (occlusionQuery->type() != WGPUQueryType_Occlusion)
             return RenderPassEncoder::createInvalid(*this, m_device, @"querySet for occlusion query was not of type occlusion");
@@ -824,8 +826,8 @@ Ref<RenderPassEncoder> CommandEncoder::beginRenderPass(const WGPURenderPassDescr
     }
 
     if (attachmentsToClear.count || depthStencilAttachmentToClear) {
-        if (const auto* attachment = descriptor.depthStencilAttachment; depthStencilAttachmentToClear) {
-            auto textureView = attachment->view ? TextureOrTextureView(fromAPI(attachment->view)) : TextureOrTextureView(fromAPI(attachment->texture));
+        if (const auto* attachment = depthStencilAttachment; depthStencilAttachmentToClear) {
+            auto textureView = attachment->view;
             textureView.setPreviouslyCleared();
         }
 
@@ -2141,7 +2143,7 @@ NSString* CommandEncoder::validateFinishError() const
     return nil;
 }
 
-Ref<CommandBuffer> CommandEncoder::finish(const WGPUCommandBufferDescriptor& descriptor)
+Ref<CommandBuffer> CommandEncoder::finish(const WebGPU::CommandBufferDescriptor& descriptor)
 {
 #if ENABLE(WEBGPU_SWIFT)
     if (isWebGPUSwiftEnabled())
@@ -2480,12 +2482,21 @@ void wgpuCommandEncoderRelease(WGPUCommandEncoder commandEncoder)
 
 WGPUComputePassEncoder wgpuCommandEncoderBeginComputePass(WGPUCommandEncoder commandEncoder, const WGPUComputePassDescriptor* descriptor)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(commandEncoder))->beginComputePass(*descriptor));
+    Ref protectedCommandEncoder = WebGPU::Metal::fromAPI(commandEncoder);
+    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor);
+    if (!apiDescriptor)
+        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::ComputePassEncoder::createInvalid(protectedCommandEncoder, protectedCommandEncoder->device(), @"GPUComputePassDescriptor has timestamp writes without a query set"));
+    return WebGPU::Metal::releaseToAPI(protectedCommandEncoder->beginComputePass(*apiDescriptor));
 }
 
 WGPURenderPassEncoder wgpuCommandEncoderBeginRenderPass(WGPUCommandEncoder commandEncoder, const WGPURenderPassDescriptor* descriptor)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(commandEncoder))->beginRenderPass(*descriptor));
+    Ref protectedCommandEncoder = WebGPU::Metal::fromAPI(commandEncoder);
+    WebGPU::Metal::RenderPassDescriptorStorage storage;
+    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor, storage);
+    if (!apiDescriptor)
+        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::RenderPassEncoder::createInvalid(protectedCommandEncoder, protectedCommandEncoder->device(), @"GPURenderPassDescriptor has an invalid enum value, a depth stencil attachment without a view or timestamp writes without a query set"));
+    return WebGPU::Metal::releaseToAPI(protectedCommandEncoder->beginRenderPass(*apiDescriptor));
 }
 
 void wgpuCommandEncoderCopyBufferToBuffer(WGPUCommandEncoder commandEncoder, WGPUBuffer source, uint64_t sourceOffset, WGPUBuffer destination, uint64_t destinationOffset, uint64_t size)
@@ -2534,7 +2545,7 @@ void wgpuCommandEncoderClearBuffer(WGPUCommandEncoder commandEncoder, WGPUBuffer
 
 WGPUCommandBuffer wgpuCommandEncoderFinish(WGPUCommandEncoder commandEncoder, const WGPUCommandBufferDescriptor* descriptor)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(commandEncoder))->finish(*descriptor));
+    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(commandEncoder))->finish({ .label = descriptor->label }));
 }
 
 void wgpuCommandEncoderInsertDebugMarker(WGPUCommandEncoder commandEncoder, WGPUStringView markerLabel)
