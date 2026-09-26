@@ -136,7 +136,7 @@ void Device::createComputePipeline(const WGPUComputePipelineDescriptor& descript
     // Resolve the bind group layout now, while the descriptor is still guaranteed to be alive.
     Ref finalPipelineLayout = *pipelineLayout;
     if (!pipelineToReplace && pipelineLayout->isAutoLayout() && entryPointInformation.defaultLayout) {
-        Vector<Vector<WGPUBindGroupLayoutEntry>> bindGroupEntries;
+        Vector<Vector<ResolvedBindGroupLayoutEntry>> bindGroupEntries;
         if (NSString *layoutError = addPipelineLayouts(bindGroupEntries, entryPointInformation.defaultLayout))
             return callback(returnInvalidComputePipeline(*this, isAsync, layoutError));
 

@@ -919,62 +919,38 @@ static WGPUTextureFormat NODELETE convertFormat(WGSL::TexelFormat format)
     }
 }
 
-static auto makeBindingLayout(WGPUBindGroupLayoutEntry& newEntry, auto& bindingMember, WGPUBufferBindingType bufferTypeOverride = WGPUBufferBindingType_Undefined, uint64_t bufferSizeForBinding = 0)
+static BindGroupLayout::Entry::BindingLayout makeBindingLayout(auto& bindingMember, WGPUBufferBindingType bufferTypeOverride = WGPUBufferBindingType_Undefined, uint64_t bufferSizeForBinding = 0)
 {
     using Result = BindGroupLayout::Entry::BindingLayout;
     return WTF::switchOn(bindingMember, [&](const WGSL::BufferBindingLayout& bufferBinding) -> Result {
-        newEntry.buffer = WGPUBufferBindingLayout {
+        return BindGroupLayout::BufferBindingLayout {
             .type = (bufferTypeOverride != WGPUBufferBindingType_Undefined) ? bufferTypeOverride : convertBindingType(bufferBinding.type),
             .hasDynamicOffset = bufferBinding.hasDynamicOffset,
             .minBindingSize = bufferBinding.minBindingSize,
             .bufferSizeForBinding = bufferSizeForBinding,
         };
-        return BindGroupLayout::bindingLayoutFromAPI(newEntry.buffer);
     }, [&](const WGSL::SamplerBindingLayout& sampler) -> Result {
-        newEntry.sampler = WGPUSamplerBindingLayout {
+        return BindGroupLayout::SamplerBindingLayout {
             .type = convertSamplerBindingType(sampler.type)
         };
-        return BindGroupLayout::bindingLayoutFromAPI(newEntry.sampler);
     }, [&](const WGSL::TextureBindingLayout& texture) -> Result {
-        newEntry.texture = WGPUTextureBindingLayout {
+        return BindGroupLayout::TextureBindingLayout {
             .sampleType = convertSampleType(texture.sampleType),
             .viewDimension = convertViewDimension(texture.viewDimension),
             .multisampled = texture.multisampled
         };
-        return BindGroupLayout::bindingLayoutFromAPI(newEntry.texture);
     }, [&](const WGSL::StorageTextureBindingLayout& storageTexture) -> Result {
-        newEntry.storageTexture = WGPUStorageTextureBindingLayout {
+        return BindGroupLayout::StorageTextureBindingLayout {
             .access = convertAccess(storageTexture.access),
             .format = convertFormat(storageTexture.format),
             .viewDimension = convertViewDimension(storageTexture.viewDimension)
         };
-        return BindGroupLayout::bindingLayoutFromAPI(newEntry.storageTexture);
     }, [&](const WGSL::ExternalTextureBindingLayout&) -> Result {
-        newEntry.texture = WGPUTextureBindingLayout {
-            .sampleType = static_cast<WGPUTextureSampleType>(WGPUTextureSampleType_ExternalTexture),
-            .viewDimension = WGPUTextureViewDimension_2D,
-            .multisampled = false
-        };
-        return BindGroupLayout::bindingLayoutFromAPI(newEntry.texture);
+        return BindGroupLayout::ExternalTextureBindingLayout { };
     });
 }
 
-static BindGroupLayout::Entry::BindingLayout toBindingLayout(const WGPUBindGroupLayoutEntry& entry)
-{
-    BindGroupLayout::Entry::BindingLayout result;
-    if (BindGroupLayout::isPresent(entry.buffer))
-        result = BindGroupLayout::bindingLayoutFromAPI(entry.buffer);
-    else if (BindGroupLayout::isPresent(entry.sampler))
-        result = BindGroupLayout::bindingLayoutFromAPI(entry.sampler);
-    else if (BindGroupLayout::isPresent(entry.texture))
-        result = BindGroupLayout::bindingLayoutFromAPI(entry.texture);
-    else if (BindGroupLayout::isPresent(entry.storageTexture))
-        result = BindGroupLayout::bindingLayoutFromAPI(entry.storageTexture);
-
-    return result;
-}
-
-NSString* Device::addPipelineLayouts(Vector<Vector<WGPUBindGroupLayoutEntry>>& pipelineEntries, const std::optional<WGSL::PipelineLayout>& optionalPipelineLayout)
+NSString* Device::addPipelineLayouts(Vector<Vector<ResolvedBindGroupLayoutEntry>>& pipelineEntries, const std::optional<WGSL::PipelineLayout>& optionalPipelineLayout)
 {
     if (!optionalPipelineLayout || !optionalPipelineLayout->bindGroupLayouts.size())
         return nil;
@@ -1005,7 +981,7 @@ NSString* Device::addPipelineLayouts(Vector<Vector<WGPUBindGroupLayoutEntry>>& p
         for (auto& entry : bindGroupLayout.entries) {
             auto visibility = convertVisibility(entry.visibility);
             auto stage = visibility / 2;
-            WGPUBindGroupLayoutEntry newEntry = { };
+            ResolvedBindGroupLayoutEntry newEntry;
             // FIXME: https://bugs.webkit.org/show_bug.cgi?id=265204 - use a set instead
             bool isArrayLength = false;
             uint32_t webBinding = entry.webBinding;
@@ -1019,12 +995,12 @@ NSString* Device::addPipelineLayouts(Vector<Vector<WGPUBindGroupLayoutEntry>>& p
                 }
             }
 
-            if (auto existingBindingIndex = entries.findIf([&](const WGPUBindGroupLayoutEntry& e) {
+            if (auto existingBindingIndex = entries.findIf([&](const ResolvedBindGroupLayoutEntry& e) {
                 return e.binding == webBinding;
             }); existingBindingIndex != notFound) {
                 entries[existingBindingIndex].visibility |= visibility;
                 std::span(entries[existingBindingIndex].metalBinding)[stage] = entry.binding;
-                if (!BindGroupLayout::equalBindingEntries(toBindingLayout(entries[existingBindingIndex]), makeBindingLayout(newEntry, entry.bindingMember)))
+                if (!BindGroupLayout::equalBindingEntries(entries[existingBindingIndex].bindingLayout, makeBindingLayout(entry.bindingMember)))
                     return @"Binding mismatch in auto-generated layouts";
                 entryMap.set(entry.name, webBinding);
                 continue;
@@ -1048,7 +1024,7 @@ NSString* Device::addPipelineLayouts(Vector<Vector<WGPUBindGroupLayoutEntry>>& p
             newEntry.binding = webBinding;
             std::span(newEntry.metalBinding)[stage] = entry.binding;
             newEntry.visibility = visibility;
-            makeBindingLayout(newEntry, entry.bindingMember, bufferTypeOverride, bufferSizeForBinding);
+            newEntry.bindingLayout = makeBindingLayout(entry.bindingMember, bufferTypeOverride, bufferSizeForBinding);
 
             entries.append(WTF::move(newEntry));
         }
@@ -1057,28 +1033,21 @@ NSString* Device::addPipelineLayouts(Vector<Vector<WGPUBindGroupLayoutEntry>>& p
     return nil;
 }
 
-Ref<PipelineLayout> Device::generatePipelineLayout(const Vector<Vector<WGPUBindGroupLayoutEntry>> &bindGroupEntries)
+Ref<PipelineLayout> Device::generatePipelineLayout(const Vector<Vector<ResolvedBindGroupLayoutEntry>>& bindGroupEntries)
 {
-    Vector<WGPUBindGroupLayout> bindGroupLayouts;
-    Vector<Ref<WebGPU::Metal::BindGroupLayout>> bindGroupLayoutsRefs;
-    bindGroupLayoutsRefs.reserveInitialCapacity(bindGroupEntries.size());
+    Vector<Ref<WebGPU::BindGroupLayout>> bindGroupLayouts;
     bindGroupLayouts.reserveInitialCapacity(bindGroupEntries.size());
     for (auto& entries : bindGroupEntries) {
-        WGPUBindGroupLayoutDescriptor bindGroupLayoutDescriptor = { };
-        bindGroupLayoutDescriptor.label = toAPI("getBindGroup() generated layout"_s);
-        bindGroupLayoutDescriptor.entryCount = entries.size();
-        bindGroupLayoutDescriptor.entries = entries.size() ? &entries[0] : nullptr;
-        auto bindGroupLayout = createBindGroupLayout(bindGroupLayoutDescriptor, true);
+        auto layoutEntries = entries;
+        auto bindGroupLayout = createBindGroupLayout("getBindGroup() generated layout"_s, WTF::move(layoutEntries), true);
         if (!bindGroupLayout->isValid())
             return PipelineLayout::createInvalid(*this);
-        bindGroupLayoutsRefs.append(WTF::move(bindGroupLayout));
-        bindGroupLayouts.append(&bindGroupLayoutsRefs[bindGroupLayoutsRefs.size() - 1].get());
+        bindGroupLayouts.append(WTF::move(bindGroupLayout));
     }
 
-    auto generatedPipelineLayout = createPipelineLayout(WGPUPipelineLayoutDescriptor {
-        .label = toAPI("generated pipeline layout"_s),
-        .bindGroupLayoutCount = static_cast<uint32_t>(bindGroupLayouts.size()),
-        .bindGroupLayouts = bindGroupLayouts.size() ? &bindGroupLayouts[0] : nullptr
+    auto generatedPipelineLayout = createPipelineLayout(WebGPU::PipelineLayoutDescriptor {
+        .label = "generated pipeline layout"_s,
+        .bindGroupLayouts = bindGroupLayouts.span(),
     }, true);
 
     return generatedPipelineLayout;
@@ -1561,7 +1530,7 @@ void Device::createRenderPipeline(const WGPURenderPipelineDescriptor& descriptor
     auto& deviceLimits = limits();
 
     RefPtr<PipelineLayout> pipelineLayout;
-    Vector<Vector<WGPUBindGroupLayoutEntry>> bindGroupEntries;
+    Vector<Vector<ResolvedBindGroupLayoutEntry>> bindGroupEntries;
     if (pipelineToReplace) {
         pipelineLayout = &pipelineToReplace->pipelineLayout();
         if (!isValidToUseWithDevice(*pipelineLayout, *this))

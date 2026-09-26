@@ -1236,12 +1236,26 @@ void wgpuDeviceRelease(WGPUDevice device)
 
 WGPUBindGroup wgpuDeviceCreateBindGroup(WGPUDevice device, const WGPUBindGroupDescriptor* descriptor)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createBindGroup(*descriptor));
+    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
+    WebGPU::Metal::BindGroupDescriptorStorage storage;
+    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor, storage);
+    if (!apiDescriptor) {
+        protectedDevice->generateAValidationError("GPUBindGroupDescriptor has no layout or an entry without exactly one resource"_s);
+        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::BindGroup::createInvalid(protectedDevice));
+    }
+    return WebGPU::Metal::releaseToAPI(protectedDevice->createBindGroup(*apiDescriptor));
 }
 
 WGPUBindGroupLayout wgpuDeviceCreateBindGroupLayout(WGPUDevice device, const WGPUBindGroupLayoutDescriptor* descriptor)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createBindGroupLayout(*descriptor));
+    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
+    WebGPU::Metal::BindGroupLayoutDescriptorStorage storage;
+    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor, storage);
+    if (!apiDescriptor) {
+        protectedDevice->generateAValidationError("GPUBindGroupLayoutDescriptor has an invalid enum value or visibility bit"_s);
+        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::BindGroupLayout::createInvalid(protectedDevice));
+    }
+    return WebGPU::Metal::releaseToAPI(protectedDevice->createBindGroupLayout(*apiDescriptor));
 }
 
 WGPUXRBinding wgpuDeviceCreateXRBinding(WGPUDevice device)
@@ -1299,7 +1313,14 @@ void wgpuDeviceCreateComputePipelineAsyncWithBlock(WGPUDevice device, WGPUComput
 
 WGPUPipelineLayout wgpuDeviceCreatePipelineLayout(WGPUDevice device, const WGPUPipelineLayoutDescriptor* descriptor)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createPipelineLayout(*descriptor, !descriptor->bindGroupLayouts));
+    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
+    WebGPU::Metal::PipelineLayoutDescriptorStorage storage;
+    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor, storage);
+    if (!apiDescriptor) {
+        protectedDevice->generateAValidationError("GPUPipelineLayoutDescriptor has a null bind group layout"_s);
+        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::PipelineLayout::createInvalid(protectedDevice));
+    }
+    return WebGPU::Metal::releaseToAPI(protectedDevice->createPipelineLayout(*apiDescriptor, !apiDescriptor->bindGroupLayouts));
 }
 
 WGPUQuerySet wgpuDeviceCreateQuerySet(WGPUDevice device, const WGPUQuerySetDescriptor* descriptor)

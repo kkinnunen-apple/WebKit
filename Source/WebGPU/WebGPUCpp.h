@@ -44,8 +44,10 @@
 #include <span>
 #include <wtf/Forward.h>
 #include <wtf/OptionSet.h>
+#include <wtf/Ref.h>
 #include <wtf/SwiftBridging.h>
 #include <wtf/ThreadSafeWeakPtr.h>
+#include <wtf/Variant.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebGPU {
@@ -541,6 +543,34 @@ struct Limits {
     uint32_t maxStorageTexturesInVertexStage { 0 };
 };
 
+class Adapter;
+class BindGroup;
+class BindGroupLayout;
+class Buffer;
+class CommandBuffer;
+class CommandEncoder;
+class ComputePassEncoder;
+class ComputePipeline;
+class Device;
+class ExternalTexture;
+class Instance;
+class PipelineLayout;
+class PresentationContext;
+class QuerySet;
+class Queue;
+class RenderBundle;
+class RenderBundleEncoder;
+class RenderPassEncoder;
+class RenderPipeline;
+class Sampler;
+class ShaderModule;
+class Texture;
+class TextureView;
+class XRBinding;
+class XRProjectionLayer;
+class XRSubImage;
+class XRView;
+
 // Descriptors are call parameters only. Implementations must not store them.
 
 // https://gpuweb.github.io/gpuweb/#dictdef-gpubufferdescriptor
@@ -600,33 +630,85 @@ struct TextureViewDescriptor {
     OptionSet<TextureUsage> usage; // Empty: the usage of the texture.
 };
 
-class Adapter;
-class BindGroup;
-class BindGroupLayout;
-class Buffer;
-class CommandBuffer;
-class CommandEncoder;
-class ComputePassEncoder;
-class ComputePipeline;
-class Device;
-class ExternalTexture;
-class Instance;
-class PipelineLayout;
-class PresentationContext;
-class QuerySet;
-class Queue;
-class RenderBundle;
-class RenderBundleEncoder;
-class RenderPassEncoder;
-class RenderPipeline;
-class Sampler;
-class ShaderModule;
-class Texture;
-class TextureView;
-class XRBinding;
-class XRProjectionLayer;
-class XRSubImage;
-class XRView;
+// https://gpuweb.github.io/gpuweb/#dictdef-gpubufferbindinglayout
+struct BufferBindingLayout {
+    BufferBindingType type { BufferBindingType::Uniform };
+    bool hasDynamicOffset { false };
+    uint64_t minBindingSize { 0 };
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpusamplerbindinglayout
+struct SamplerBindingLayout {
+    SamplerBindingType type { SamplerBindingType::Filtering };
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gputexturebindinglayout
+struct TextureBindingLayout {
+    TextureSampleType sampleType { TextureSampleType::Float };
+    TextureViewDimension viewDimension { TextureViewDimension::_2d };
+    bool multisampled { false };
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpustoragetexturebindinglayout
+struct StorageTextureBindingLayout {
+    StorageTextureAccess access { StorageTextureAccess::WriteOnly };
+    TextureFormat format { TextureFormat::R8unorm };
+    TextureViewDimension viewDimension { TextureViewDimension::_2d };
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpuexternaltexturebindinglayout
+struct ExternalTextureBindingLayout {
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpubindgrouplayoutentry
+// A valid entry has exactly one of the binding layout members. The implementation validates this,
+// as the specification requires.
+struct BindGroupLayoutEntry {
+    uint32_t binding { 0 };
+    OptionSet<ShaderStage> visibility;
+    std::optional<BufferBindingLayout> buffer;
+    std::optional<SamplerBindingLayout> sampler;
+    std::optional<TextureBindingLayout> texture;
+    std::optional<StorageTextureBindingLayout> storageTexture;
+    std::optional<ExternalTextureBindingLayout> externalTexture;
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpubindgrouplayoutdescriptor
+struct BindGroupLayoutDescriptor {
+    String label;
+    std::span<const BindGroupLayoutEntry> entries; // Borrowed for the duration of the call.
+} SWIFT_NONESCAPABLE;
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpupipelinelayoutdescriptor
+struct PipelineLayoutDescriptor {
+    String label;
+    // Borrowed for the duration of the call. std::nullopt makes a layout that the pipeline
+    // generates from its shaders.
+    std::optional<std::span<const Ref<BindGroupLayout>>> bindGroupLayouts;
+} SWIFT_NONESCAPABLE;
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpubufferbinding
+struct BufferBinding {
+    Ref<Buffer> buffer;
+    uint64_t offset { 0 };
+    std::optional<uint64_t> size; // std::nullopt: the rest of the buffer after the offset.
+};
+
+// https://gpuweb.github.io/gpuweb/#typedefdef-gpubindingresource
+using BindingResource = Variant<Ref<Sampler>, Ref<Texture>, Ref<TextureView>, BufferBinding, Ref<ExternalTexture>>;
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpubindgroupentry
+struct BindGroupEntry {
+    uint32_t binding { 0 };
+    BindingResource resource;
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpubindgroupdescriptor
+struct BindGroupDescriptor {
+    String label;
+    Ref<BindGroupLayout> layout;
+    std::span<const BindGroupEntry> entries; // Borrowed for the duration of the call.
+} SWIFT_NONESCAPABLE;
 
 } // namespace WebGPU
 
