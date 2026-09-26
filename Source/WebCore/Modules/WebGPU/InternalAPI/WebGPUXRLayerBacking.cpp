@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2023 Apple Inc. All rights reserved.
+ * Copyright (C) 2026 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -24,48 +24,28 @@
  */
 
 #include "config.h"
-#include "WebGPUXRSubImageImpl.h"
+#include "WebGPUXRLayerBacking.h"
 
-#if HAVE(WEBGPU_IMPLEMENTATION) && ENABLE(WEBGPU)
+#include <wtf/TZoneMallocInlines.h>
 
-#include "WebGPUConvertToBackingContext.h"
-#include "WebGPUDevice.h"
-#include "WebGPUTexture.h"
-#include <WebGPU/WebGPUCppBridge.h>
+namespace WebCore {
 
-namespace WebCore::WebGPU {
+WTF_MAKE_TZONE_ALLOCATED_IMPL(WebGPUXRLayerBacking);
 
-XRSubImageImpl::XRSubImageImpl(WebGPUPtr<WGPUXRSubImage>&& backing, ConvertToBackingContext& convertToBackingContext)
-    : m_backing(backing)
-    , m_convertToBackingContext(convertToBackingContext)
+#if PLATFORM(COCOA)
+void WebGPUXRLayerBacking::startFrame(size_t frameIndex, MachSendRight&& colorBuffer, MachSendRight&& depthBuffer, MachSendRight&& completionSyncEvent, size_t reusableTextureIndex, PlatformXR::RateMapDescription&& rateMap)
 {
+#if ENABLE(WEBXR)
+    m_projectionLayer->startFrame(frameIndex, WTF::move(colorBuffer), WTF::move(depthBuffer), WTF::move(completionSyncEvent), reusableTextureIndex, rateMap.screenSize.width(), rateMap.screenSize.height(), WTF::move(rateMap.horizontalSamplesLeft), WTF::move(rateMap.horizontalSamplesRight), WTF::move(rateMap.verticalSamples));
+#else
+    UNUSED_PARAM(frameIndex);
+    UNUSED_PARAM(colorBuffer);
+    UNUSED_PARAM(depthBuffer);
+    UNUSED_PARAM(completionSyncEvent);
+    UNUSED_PARAM(reusableTextureIndex);
+    UNUSED_PARAM(rateMap);
+#endif
 }
+#endif
 
-XRSubImageImpl::~XRSubImageImpl() = default;
-
-RefPtr<Texture> XRSubImageImpl::colorTexture()
-{
-    auto texturePtr = wgpuXRSubImageGetColorTexture(m_backing.get());
-    if (!texturePtr)
-        return nullptr;
-
-    return &::WebGPU::fromAPI(texturePtr);
-}
-
-RefPtr<Texture> XRSubImageImpl::depthStencilTexture()
-{
-    auto texturePtr = wgpuXRSubImageGetDepthStencilTexture(m_backing.get());
-    if (!texturePtr)
-        return nullptr;
-
-    return &::WebGPU::fromAPI(texturePtr);
-}
-
-RefPtr<Texture> XRSubImageImpl::motionVectorTexture()
-{
-    return nullptr;
-}
-
-} // namespace WebCore::WebGPU
-
-#endif // HAVE(WEBGPU_IMPLEMENTATION) && ENABLE(WEBGPU)
+} // namespace WebCore

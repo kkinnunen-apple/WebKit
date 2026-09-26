@@ -33,11 +33,12 @@
 #include "GPUDeviceLostInfo.h"
 #include "GPUError.h"
 #include "GPUErrorFilter.h"
-#include "GPURenderPipeline.h"
 #include "GPUQueue.h"
+#include "GPURenderPipeline.h"
 #include "JSDOMPromiseDeferredForward.h"
 #include "ScriptExecutionContext.h"
 #include "WebGPUDevice.h"
+#include "WebGPUXRBinding.h"
 #include <optional>
 #include <wtf/CurrentThread.h>
 #include <wtf/HashSet.h>
@@ -87,10 +88,6 @@ class HTMLVideoElement;
 class WebXRSession;
 class XRGPUBinding;
 template<typename T> struct UniquelyAnnotatedDescriptor;
-
-namespace WebGPU {
-class XRBinding;
-}
 
 class GPUDevice : public RefCounted<GPUDevice>, public ActiveDOMObject, public EventTarget {
     WTF_MAKE_TZONE_ALLOCATED(GPUDevice);

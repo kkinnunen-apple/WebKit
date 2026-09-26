@@ -51,6 +51,12 @@ RemoteXRViewProxy::~RemoteXRViewProxy()
     UNUSED_VARIABLE(sendResult);
 }
 
+bool RemoteXRViewProxy::isValid() const
+{
+    // The Web Process cannot know. RemoteGPU::isValid() answers it for tests.
+    RELEASE_ASSERT_NOT_REACHED();
+}
+
 } // namespace WebKit::WebGPU
 
 #endif // ENABLE(GPU_PROCESS)

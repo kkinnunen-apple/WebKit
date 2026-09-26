@@ -116,7 +116,7 @@ public:
 
     RefPtr<WebGPU::BindGroup> createBindGroup(const WebGPU::BindGroupDescriptor&) final;
     RefPtr<WebGPU::BindGroupLayout> createBindGroupLayout(const WebGPU::BindGroupLayoutDescriptor&) final;
-    Ref<XRBinding> createXRBinding();
+    RefPtr<WebGPU::XRBinding> createXRBinding() final;
     Ref<XRSubImage> createXRSubImage();
     Ref<XRView> createXRView();
     RefPtr<WebGPU::Buffer> createBuffer(const WebGPU::BufferDescriptor&) final;

@@ -51,6 +51,10 @@
 #include <WebCore/WebGPUSampler.h>
 #include <WebCore/WebGPUShaderModule.h>
 #include <WebCore/WebGPUTexture.h>
+#include <WebCore/WebGPUXRBinding.h>
+#include <WebCore/WebGPUXRProjectionLayer.h>
+#include <WebCore/WebGPUXRSubImage.h>
+#include <WebCore/WebGPUXRView.h>
 #include <functional>
 #include <wtf/HashMap.h>
 #include <wtf/Ref.h>
@@ -60,10 +64,6 @@
 namespace WebCore::WebGPU {
 class CompositorIntegration;
 class GPU;
-class XRBinding;
-class XRProjectionLayer;
-class XRSubImage;
-class XRView;
 }
 
 namespace WebKit {
@@ -163,10 +163,10 @@ public:
     RefPtr<WebCore::WebGPU::ShaderModule> convertShaderModuleFromBacking(WebGPUIdentifier) final;
     RefPtr<WebCore::WebGPU::Texture> convertTextureFromBacking(WebGPUIdentifier) final;
     RefPtr<WebCore::WebGPU::TextureView> convertTextureViewFromBacking(WebGPUIdentifier) final;
-    WeakPtr<WebCore::WebGPU::XRBinding> convertXRBindingFromBacking(WebGPUIdentifier) final;
-    WeakPtr<WebCore::WebGPU::XRSubImage> convertXRSubImageFromBacking(WebGPUIdentifier) final;
-    WeakPtr<WebCore::WebGPU::XRProjectionLayer> convertXRProjectionLayerFromBacking(WebGPUIdentifier) final;
-    WeakPtr<WebCore::WebGPU::XRView> createXRViewFromBacking(WebGPUIdentifier) final;
+    RefPtr<WebCore::WebGPU::XRBinding> convertXRBindingFromBacking(WebGPUIdentifier) final;
+    RefPtr<WebCore::WebGPU::XRSubImage> convertXRSubImageFromBacking(WebGPUIdentifier) final;
+    RefPtr<WebCore::WebGPU::XRProjectionLayer> convertXRProjectionLayerFromBacking(WebGPUIdentifier) final;
+    RefPtr<WebCore::WebGPU::XRView> createXRViewFromBacking(WebGPUIdentifier) final;
 
     struct ExistsAndValid {
         bool exists { false };

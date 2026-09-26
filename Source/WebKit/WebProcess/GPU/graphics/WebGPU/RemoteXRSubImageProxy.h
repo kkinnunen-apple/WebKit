@@ -55,6 +55,11 @@ public:
     RemoteGPUProxy& parent() { return m_parent; }
     RemoteGPUProxy& root() { return m_parent; }
 
+    RefPtr<WebCore::WebGPU::Texture> colorTexture() final;
+    RefPtr<WebCore::WebGPU::Texture> depthStencilTexture() final;
+    void setLabel(String&&) final { }
+    bool isValid() const final;
+
 private:
     friend class DowncastConvertToBackingContext;
 
@@ -65,12 +70,7 @@ private:
     RemoteXRSubImageProxy& operator=(const RemoteXRSubImageProxy&) = delete;
     RemoteXRSubImageProxy& operator=(RemoteXRSubImageProxy&&) = delete;
 
-    bool isRemoteXRSubImageProxy() const final { return true; }
-
     WebGPUIdentifier backing() const { return m_backing; }
-    RefPtr<WebCore::WebGPU::Texture> colorTexture() final;
-    RefPtr<WebCore::WebGPU::Texture> depthStencilTexture() final;
-    RefPtr<WebCore::WebGPU::Texture> motionVectorTexture() final;
 
     template<typename T>
     [[nodiscard]] IPC::Error send(T&& message)
@@ -92,9 +92,5 @@ private:
 };
 
 } // namespace WebKit::WebGPU
-
-SPECIALIZE_TYPE_TRAITS_BEGIN(WebKit::WebGPU::RemoteXRSubImageProxy)
-    static bool isType(const WebCore::WebGPU::XRSubImage& image) { return image.isRemoteXRSubImageProxy(); }
-SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // ENABLE(GPU_PROCESS)

@@ -66,16 +66,10 @@ RefPtr<WebCore::WebGPU::XRProjectionLayer> RemoteXRBindingProxy::createProjectio
     return result;
 }
 
-RefPtr<WebCore::WebGPU::XRSubImage> RemoteXRBindingProxy::getSubImage(WebCore::WebGPU::XRProjectionLayer&, WebCore::WebXRFrame&, std::optional<WebCore::WebGPU::XREye>/* = "none"*/)
-{
-    RELEASE_ASSERT_NOT_REACHED();
-    return nullptr;
-}
-
 RefPtr<WebCore::WebGPU::XRSubImage> RemoteXRBindingProxy::getViewSubImage(WebCore::WebGPU::XRProjectionLayer& projectionLayer)
 {
     auto identifier = WebGPUIdentifier::generate();
-    auto sendResult = send(Messages::RemoteXRBinding::GetViewSubImage(downcast<RemoteXRProjectionLayerProxy>(projectionLayer).backing(), identifier));
+    auto sendResult = send(Messages::RemoteXRBinding::GetViewSubImage(static_cast<RemoteXRProjectionLayerProxy&>(projectionLayer).backing(), identifier));
     if (sendResult != IPC::Error::NoError)
         return nullptr;
 
@@ -83,9 +77,10 @@ RefPtr<WebCore::WebGPU::XRSubImage> RemoteXRBindingProxy::getViewSubImage(WebCor
     return result;
 }
 
-WebCore::WebGPU::TextureFormat RemoteXRBindingProxy::getPreferredColorFormat()
+bool RemoteXRBindingProxy::isValid() const
 {
-    return WebCore::WebGPU::TextureFormat::Bgra8unorm;
+    // The Web Process cannot know. RemoteGPU::isValid() answers it for tests.
+    RELEASE_ASSERT_NOT_REACHED();
 }
 
 } // namespace WebKit::WebGPU

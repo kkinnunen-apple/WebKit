@@ -8366,20 +8366,12 @@
 		0D68A4162C631A5F0062C559 /* XRGPUSubImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XRGPUSubImage.h; sourceTree = "<group>"; };
 		0D68A4172C631A5F0062C559 /* XRGPUSubImage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = XRGPUSubImage.cpp; sourceTree = "<group>"; };
 		0D68A4182C631A5F0062C559 /* XRGPUSubImage.idl */ = {isa = PBXFileReference; lastKnownFileType = text; path = XRGPUSubImage.idl; sourceTree = "<group>"; };
-		0D6D0AA82C6ADA050073F63D /* WebGPUXRViewImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUXRViewImpl.h; sourceTree = "<group>"; };
-		0D6D0AA92C6ADA050073F63D /* WebGPUXRViewImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUXRViewImpl.cpp; sourceTree = "<group>"; };
 		0D6D0AAA2C6ADA390073F63D /* WebGPUXRView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUXRView.h; sourceTree = "<group>"; };
 		0D767CC42E450AFE00D323F7 /* XRCanvasConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XRCanvasConfiguration.h; sourceTree = "<group>"; };
 		0D84C2F328E6935C0059F63D /* NavigatorUserActivation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigatorUserActivation.h; sourceTree = "<group>"; };
 		0D84C2F528E69F250059F63D /* NavigatorUserActivation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NavigatorUserActivation.cpp; sourceTree = "<group>"; };
-		0D943BF52C6532AA00D33BA5 /* WebGPUXRBindingImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUXRBindingImpl.h; sourceTree = "<group>"; };
-		0D943BF62C6532AA00D33BA5 /* WebGPUXRBindingImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUXRBindingImpl.cpp; sourceTree = "<group>"; };
 		0D943BF72C6532B900D33BA5 /* WebGPUXRBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUXRBinding.h; sourceTree = "<group>"; };
-		0D943BF92C65451B00D33BA5 /* WebGPUXRProjectionLayerImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUXRProjectionLayerImpl.h; sourceTree = "<group>"; };
-		0D943BFA2C65451B00D33BA5 /* WebGPUXRProjectionLayerImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUXRProjectionLayerImpl.cpp; sourceTree = "<group>"; };
 		0D943BFB2C65452300D33BA5 /* WebGPUXRProjectionLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUXRProjectionLayer.h; sourceTree = "<group>"; };
-		0D943C022C6555AC00D33BA5 /* WebGPUXRSubImageImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUXRSubImageImpl.h; sourceTree = "<group>"; };
-		0D943C032C6555AC00D33BA5 /* WebGPUXRSubImageImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUXRSubImageImpl.cpp; sourceTree = "<group>"; };
 		0D943C042C6555CF00D33BA5 /* WebGPUXRSubImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUXRSubImage.h; sourceTree = "<group>"; };
 		0D943C0B2C6559DE00D33BA5 /* WebGPUXREye.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUXREye.h; sourceTree = "<group>"; };
 		0DA55D9528E678F6004A6758 /* UserActivation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserActivation.cpp; sourceTree = "<group>"; };
@@ -26858,14 +26850,6 @@
 				1CFAE2DB2A4D7A1B0004AE37 /* WebGPUImpl.cpp */,
 				1CFAE2EC2A4D7A200004AE37 /* WebGPUImpl.h */,
 				1CFAE2D62A4D7A1A0004AE37 /* WebGPUPtr.h */,
-				0D943BF62C6532AA00D33BA5 /* WebGPUXRBindingImpl.cpp */,
-				0D943BF52C6532AA00D33BA5 /* WebGPUXRBindingImpl.h */,
-				0D943BFA2C65451B00D33BA5 /* WebGPUXRProjectionLayerImpl.cpp */,
-				0D943BF92C65451B00D33BA5 /* WebGPUXRProjectionLayerImpl.h */,
-				0D943C032C6555AC00D33BA5 /* WebGPUXRSubImageImpl.cpp */,
-				0D943C022C6555AC00D33BA5 /* WebGPUXRSubImageImpl.h */,
-				0D6D0AA92C6ADA050073F63D /* WebGPUXRViewImpl.cpp */,
-				0D6D0AA82C6ADA050073F63D /* WebGPUXRViewImpl.h */,
 			);
 			path = Implementation;
 			sourceTree = "<group>";

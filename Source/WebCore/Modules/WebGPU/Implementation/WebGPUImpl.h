@@ -52,6 +52,9 @@
 #include "WebGPUShaderModule.h"
 #include "WebGPUTexture.h"
 #include "WebGPUTextureView.h"
+#include "WebGPUXRBinding.h"
+#include "WebGPUXRProjectionLayer.h"
+#include "WebGPUXRSubImage.h"
 #include <WebGPU/WebGPU.h>
 #include <WebGPU/WebGPUExt.h>
 #include <wtf/CompletionHandler.h>
@@ -69,9 +72,6 @@ namespace WebCore::WebGPU {
 
 class CompositorIntegration;
 class ConvertToBackingContext;
-class XRBinding;
-class XRProjectionLayer;
-class XRSubImage;
 
 class GPUImpl final : public GPU, public RefCounted<GPUImpl> {
     WTF_MAKE_TZONE_ALLOCATED(GPUImpl);
@@ -93,7 +93,6 @@ public:
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
     void updateExternalTexture(Device&, const ExternalTexture&, const WebCore::MediaPlayerIdentifier&) final;
 #endif
-    RefPtr<XRBinding> createXRBinding(Device&) final;
 
 private:
     friend class DowncastConvertToBackingContext;

@@ -61,7 +61,6 @@ public:
     RemoteGPUProxy& root() { return m_parent->root(); }
 
     // Called by RemoteGPUProxy, which implements the device commands that take WebCore sources.
-    RefPtr<WebCore::WebGPU::XRBinding> createXRBinding();
     RefPtr<WebCore::WebGPU::ExternalTexture> importExternalTexture(const WebCore::WebGPU::ExternalTextureDescriptor&);
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
     void updateExternalTexture(const WebCore::WebGPU::ExternalTexture&, const WebCore::MediaPlayerIdentifier&);
@@ -92,6 +91,7 @@ public:
     RefPtr<WebCore::WebGPU::CommandEncoder> createCommandEncoder(const WebCore::WebGPU::CommandEncoderDescriptor&) final;
     RefPtr<WebCore::WebGPU::RenderBundleEncoder> createRenderBundleEncoder(const ::WebGPU::RenderBundleEncoderDescriptor&) final;
     RefPtr<WebCore::WebGPU::QuerySet> createQuerySet(const WebCore::WebGPU::QuerySetDescriptor&) final;
+    RefPtr<WebCore::WebGPU::XRBinding> createXRBinding() final;
 
     void pushErrorScope(WebCore::WebGPU::ErrorFilter) final;
     void popErrorScope(CompletionHandler<void(bool, std::optional<::WebGPU::Error>&&)>&&) final;

@@ -82,7 +82,6 @@ public:
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
     void updateExternalTexture(WebCore::WebGPU::Device&, const WebCore::WebGPU::ExternalTexture&, const WebCore::MediaPlayerIdentifier&) final;
 #endif
-    RefPtr<WebCore::WebGPU::XRBinding> createXRBinding(WebCore::WebGPU::Device&) final;
     WebGPUIdentifier backing() const { return m_backing; }
     RefPtr<WebKit::Mesh> NODELETE createModelBacking(unsigned width, unsigned height, WebModel::ImageAsset&& diffuseTexture, WebModel::ImageAsset&& specularTexture, bool standardDynamicRange, CompletionHandler<void(Vector<MachSendRight>&&)>&&);
 

@@ -33,6 +33,7 @@
 #include <WebCore/AlphaPremultiplication.h>
 #include <WebCore/RenderingResourceIdentifier.h>
 #include <WebCore/WebGPUIntegralTypes.h>
+#include <WebCore/WebGPUXRSubImage.h>
 #include <wtf/Ref.h>
 #include <wtf/WeakRef.h>
 #include <wtf/text/WTFString.h>
@@ -45,10 +46,6 @@
 namespace WebCore {
 class ColorSpace;
 class ImageBuffer;
-}
-
-namespace WebCore::WebGPU {
-class XRSubImage;
 }
 
 namespace IPC {

@@ -25,65 +25,15 @@
 
 #pragma once
 
-#include <WebCore/WebGPUDevice.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUTextureFormat.h>
 #include <WebCore/WebGPUTextureUsage.h>
 #include <WebCore/WebGPUXREye.h>
-#include <WebCore/WebGPUXRLayerBacking.h>
 #include <WebCore/WebGPUXRSubImage.h>
-
-#include <wtf/Platform.h>
-#include <wtf/Ref.h>
-#include <wtf/RefCountedAndCanMakeWeakPtr.h>
-#include <wtf/WeakPtr.h>
-
-namespace WTF {
-class MachSendRight;
-}
-
-namespace WebCore {
-class WebXRRigidTransform;
-}
-
-namespace PlatformXR {
-struct RateMapDescription;
-}
 
 namespace WebCore::WebGPU {
 
-class XRGPUSubImage;
-class XRProjectionLayer;
-class XRFrame;
-class XRView;
-
-struct XRProjectionLayerInit {
-    TextureFormat colorFormat;
-    std::optional<TextureFormat> depthStencilFormat;
-    TextureUsageFlags textureUsage { TextureUsage::RenderAttachment };
-    double scaleFactor { 1.0 };
-};
-
-class XRProjectionLayer : public XRLayerBacking {
-public:
-    virtual ~XRProjectionLayer() = default;
-
-    virtual bool ignoreDepthValues() const = 0;
-    virtual std::optional<float> fixedFoveation() const = 0;
-    virtual void setFixedFoveation(std::optional<float>) = 0;
-    virtual WebXRRigidTransform* deltaPose() const = 0;
-    virtual void setDeltaPose(WebXRRigidTransform*) = 0;
-
-    virtual bool isRemoteXRProjectionLayerProxy() const { return false; }
-    virtual bool isXRProjectionLayerImpl() const { return false; }
-
-protected:
-    XRProjectionLayer() = default;
-
-private:
-    XRProjectionLayer(const XRProjectionLayer&) = delete;
-    XRProjectionLayer(XRProjectionLayer&&) = delete;
-    XRProjectionLayer& operator=(const XRProjectionLayer&) = delete;
-    XRProjectionLayer& operator=(XRProjectionLayer&&) = delete;
-};
+using XRProjectionLayer = ::WebGPU::XRProjectionLayer;
+using XRProjectionLayerInit = ::WebGPU::XRProjectionLayerDescriptor;
 
 } // namespace WebCore::WebGPU

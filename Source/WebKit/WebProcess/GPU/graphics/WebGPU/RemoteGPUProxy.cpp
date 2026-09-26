@@ -275,11 +275,6 @@ void RemoteGPUProxy::updateExternalTexture(WebCore::WebGPU::Device& device, cons
 }
 #endif
 
-RefPtr<WebCore::WebGPU::XRBinding> RemoteGPUProxy::createXRBinding(WebCore::WebGPU::Device& device)
-{
-    return static_cast<WebGPU::RemoteDeviceProxy&>(device).createXRBinding();
-}
-
 void RemoteGPUProxy::paintToCanvas(WebCore::NativeImage&, const WebCore::IntSize&, WebCore::GraphicsContext&)
 {
     ASSERT_NOT_REACHED();
