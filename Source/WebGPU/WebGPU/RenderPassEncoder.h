@@ -87,17 +87,19 @@ public:
     void drawIndirect(Buffer& indirectBuffer, uint64_t indirectOffset);
     void endOcclusionQuery();
     void endPass();
-    void executeBundles(Vector<Ref<RenderBundle>>&& bundles);
+    void executeBundles(std::span<const Ref<WebGPU::RenderBundle>>);
     void insertDebugMarker(String&& markerLabel);
     void popDebugGroup();
     void pushDebugGroup(String&& groupLabel);
-    void setBindGroup(uint32_t groupIndex, const BindGroup*, std::optional<Vector<uint32_t>>&&);
-    void setBlendConstant(const WGPUColor&);
-    void setIndexBuffer(Buffer&, WGPUIndexFormat, uint64_t offset, uint64_t size);
+    // std::nullopt dynamic offsets are not validated against the bind group layout.
+    void setBindGroup(uint32_t groupIndex, const BindGroup*, std::optional<std::span<const uint32_t>> dynamicOffsets);
+    void setBlendConstant(const WebGPU::Color&);
+    // A std::nullopt size is the rest of the buffer after the offset.
+    void setIndexBuffer(Buffer&, WebGPU::IndexFormat, uint64_t offset, std::optional<uint64_t> size);
     void setPipeline(const RenderPipeline&);
     void setScissorRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
     void setStencilReference(uint32_t);
-    void setVertexBuffer(uint32_t slot, const Buffer*, uint64_t offset, uint64_t size);
+    void setVertexBuffer(uint32_t slot, const Buffer*, uint64_t offset, std::optional<uint64_t> size);
     void setViewport(float x, float y, float width, float height, float minDepth, float maxDepth);
     void setLabel(String&&) final;
 
@@ -222,7 +224,7 @@ private:
     std::array<uint32_t, 32> m_maxDynamicOffsetAtIndex;
     NSString* m_lastErrorString { nil };
     MTLRenderPassDescriptor* m_metalDescriptor { nil };
-    std::optional<WGPUColor> m_blendColor;
+    std::optional<WebGPU::Color> m_blendColor;
     std::optional<MTLScissorRect> m_scissorRect;
     std::optional<uint32_t> m_stencilReferenceValue;
     float m_depthClearValue { 0 };

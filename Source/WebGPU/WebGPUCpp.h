@@ -717,6 +717,22 @@ struct RenderPassDescriptor {
     size_t colorAttachmentCount() const { return colorAttachments.size(); }
 } SWIFT_NONCOPYABLE SWIFT_NONESCAPABLE;
 
+// https://gpuweb.github.io/gpuweb/#dictdef-gpurenderbundleencoderdescriptor
+struct RenderBundleEncoderDescriptor {
+    String label;
+    // Borrowed for the duration of the call. std::nullopt: no color attachment in that slot.
+    std::span<const std::optional<TextureFormat>> colorFormats;
+    std::optional<TextureFormat> depthStencilFormat;
+    uint32_t sampleCount { 1 };
+    bool depthReadOnly { false };
+    bool stencilReadOnly { false };
+} SWIFT_NONESCAPABLE;
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gpurenderbundledescriptor
+struct RenderBundleDescriptor {
+    String label;
+};
+
 // https://gpuweb.github.io/gpuweb/#dictdef-gputexelcopybufferlayout
 struct TexelCopyBufferLayout {
     uint64_t offset { 0 };

@@ -1380,7 +1380,15 @@ WGPUQuerySet wgpuDeviceCreateQuerySet(WGPUDevice device, const WGPUQuerySetDescr
 
 WGPURenderBundleEncoder wgpuDeviceCreateRenderBundleEncoder(WGPUDevice device, const WGPURenderBundleEncoderDescriptor* descriptor)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createRenderBundleEncoder(*descriptor));
+    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
+    WebGPU::Metal::RenderBundleEncoderDescriptorStorage storage;
+    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor, storage);
+    if (!apiDescriptor) {
+        NSString *error = @"GPURenderBundleEncoderDescriptor has an invalid texture format";
+        protectedDevice->generateAValidationError(error);
+        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::RenderBundleEncoder::createInvalid(protectedDevice, error));
+    }
+    return WebGPU::Metal::releaseToAPI(protectedDevice->createRenderBundleEncoder(*apiDescriptor));
 }
 
 WGPURenderPipeline wgpuDeviceCreateRenderPipeline(WGPUDevice device, const WGPURenderPipelineDescriptor* descriptor)
