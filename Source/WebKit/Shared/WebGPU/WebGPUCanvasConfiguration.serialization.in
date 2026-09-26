@@ -30,4 +30,6 @@
     WebCore::WebGPU::CanvasToneMappingMode toneMappingMode
     WebCore::WebGPU::CanvasAlphaMode compositingAlphaMode
     bool reportValidationErrors
+    uint32_t width
+    uint32_t height
 }

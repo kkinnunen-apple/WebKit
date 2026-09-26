@@ -33,7 +33,7 @@
 #include "WebGPUImageCopyExternalImage.h"
 #include "WebGPUImageCopyTextureTagged.h"
 #include "WebGPUPresentationContextDescriptor.h"
-#include "WebGPUPresentationContextImpl.h"
+#include "WebGPUPresentationContext.h"
 #include "WebGPUXRBindingImpl.h"
 #include <WebCore/ColorSpace.h>
 #include <WebCore/GraphicsContext.h>
@@ -115,7 +115,7 @@ RefPtr<PresentationContext> GPUImpl::createPresentationContext(const Presentatio
         .label = { },
     };
 
-    auto result = PresentationContextImpl::create(adoptWebGPU(wgpuInstanceCreateSurface(m_backing.get(), &surfaceDescriptor)), m_convertToBackingContext);
+    Ref<PresentationContext> result = adoptRef(::WebGPU::fromAPI(wgpuInstanceCreateSurface(m_backing.get(), &surfaceDescriptor)));
     compositorIntegration->setPresentationContext(result);
     return result;
 }
@@ -143,25 +143,6 @@ static ::WebGPU::VideoFrameRotation NODELETE convertToAPI(VideoFrameRotation rot
     return ::WebGPU::VideoFrameRotation::None;
 }
 #endif
-
-static ::WebGPU::PredefinedColorSpace NODELETE convertToAPI(PredefinedColorSpace colorSpace)
-{
-    switch (colorSpace) {
-    case PredefinedColorSpace::SRGB:
-        return ::WebGPU::PredefinedColorSpace::SRGB;
-    case PredefinedColorSpace::SRGBLinear:
-        return ::WebGPU::PredefinedColorSpace::SRGBLinear;
-#if ENABLE(PREDEFINED_COLOR_SPACE_DISPLAY_P3)
-    case PredefinedColorSpace::DisplayP3:
-        return ::WebGPU::PredefinedColorSpace::DisplayP3;
-    case PredefinedColorSpace::DisplayP3Linear:
-        return ::WebGPU::PredefinedColorSpace::DisplayP3Linear;
-#endif
-    }
-
-    ASSERT_NOT_REACHED();
-    return ::WebGPU::PredefinedColorSpace::SRGB;
-}
 
 // The IOSurface format an accelerated ImageBuffer of this pixel format is backed by, expressed as the
 // equivalent texture format, plus whether its alpha channel holds meaningful data. std::nullopt for
@@ -376,8 +357,7 @@ bool GPUImpl::isValid(const PipelineLayout& pipelineLayout) const
 
 bool GPUImpl::isValid(const PresentationContext& presentationContext) const
 {
-    WGPUSurface wgpuPresentationContext = m_convertToBackingContext.get().convertToBacking(presentationContext);
-    return wgpuPresentationContextIsValid(wgpuPresentationContext);
+    return presentationContext.isValid();
 }
 
 bool GPUImpl::isValid(const QuerySet& querySet) const

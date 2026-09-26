@@ -60,6 +60,7 @@
 #include "WebGPUPipelineLayout.h"
 #include "WebGPUPowerPreference.h"
 #include "WebGPUPredefinedColorSpace.h"
+#include "WebGPUPresentationContext.h"
 #include "WebGPUPrimitiveTopology.h"
 #include "WebGPUQuerySet.h"
 #include "WebGPUQueryType.h"
@@ -129,7 +130,6 @@ inline WGPUStringView toBackingStringView(ASCIILiteral literal)
 class CompositorIntegration;
 class CompositorIntegrationImpl;
 class GPU;
-class PresentationContext;
 class XRBinding;
 class XRProjectionLayer;
 class XRSubImage;

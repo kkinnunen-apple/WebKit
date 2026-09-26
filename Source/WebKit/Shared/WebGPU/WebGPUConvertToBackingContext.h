@@ -67,6 +67,7 @@
 #include <WebCore/WebGPUOrigin3D.h>
 #include <WebCore/WebGPUPipelineLayout.h>
 #include <WebCore/WebGPUPipelineLayoutDescriptor.h>
+#include <WebCore/WebGPUPresentationContext.h>
 #include <WebCore/WebGPUPrimitiveState.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPUQueue.h>
@@ -106,7 +107,6 @@ struct ObjectDescriptorBase;
 class OutOfMemoryError;
 struct PipelineDescriptorBase;
 struct CanvasConfiguration;
-class PresentationContext;
 struct PresentationContextDescriptor;
 struct ProgrammableStage;
 struct RenderBundleEncoderDescriptor;
@@ -199,7 +199,7 @@ public:
     std::optional<BlendState> NODELETE convertToBacking(const WebCore::WebGPU::BlendState&);
     std::optional<BufferBinding> convertToBacking(const WebCore::WebGPU::BufferBinding&);
     std::optional<BufferBindingLayout> NODELETE convertToBacking(const WebCore::WebGPU::BufferBindingLayout&);
-    std::optional<CanvasConfiguration> convertToBacking(const WebCore::WebGPU::CanvasConfiguration&);
+    std::optional<CanvasConfiguration> convertToBacking(const ::WebGPU::CanvasConfiguration&);
     std::optional<ColorTargetState> convertToBacking(const ::WebGPU::ColorTargetState&);
     std::optional<ComputePassDescriptor> convertToBacking(const WebCore::WebGPU::ComputePassDescriptor&);
     std::optional<ComputePipelineDescriptor> convertToBacking(const ::WebGPU::ComputePipelineDescriptor&);

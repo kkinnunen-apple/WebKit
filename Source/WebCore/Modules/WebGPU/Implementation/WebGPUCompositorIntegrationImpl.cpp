@@ -84,8 +84,7 @@ Vector<MachSendRight> CompositorIntegrationImpl::recreateRenderBuffers(int width
     m_alphaMode = alphaMode;
 
     if (RefPtr presentationContext = m_presentationContext) {
-        static_cast<PresentationContext*>(presentationContext.get())->unconfigure();
-        presentationContext->setSize(width, height);
+        presentationContext->unconfigure();
     }
 
     constexpr int max2DTextureSize = 16384;
@@ -133,7 +132,7 @@ void CompositorIntegrationImpl::withDisplayBufferAsNativeImage(uint32_t bufferIn
     RefPtr<NativeImage> displayImage;
     bool isIOSurfaceSupportedFormat = false;
     if (RefPtr presentationContextPtr = m_presentationContext)
-        displayImage = presentationContextPtr->getMetalTextureAsNativeImage(bufferIndex, isIOSurfaceSupportedFormat);
+        displayImage = NativeImage::create(presentationContextPtr->getTextureAsNativeImage(bufferIndex, isIOSurfaceSupportedFormat));
 
     if (!displayImage) {
         if (!isIOSurfaceSupportedFormat)

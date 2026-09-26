@@ -26,9 +26,50 @@
 #pragma once
 
 #include <WebCore/PredefinedColorSpace.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
 using PredefinedColorSpace = WebCore::PredefinedColorSpace;
+
+constexpr ::WebGPU::PredefinedColorSpace convertToAPI(PredefinedColorSpace colorSpace)
+{
+    switch (colorSpace) {
+    case PredefinedColorSpace::SRGB:
+        return ::WebGPU::PredefinedColorSpace::SRGB;
+    case PredefinedColorSpace::SRGBLinear:
+        return ::WebGPU::PredefinedColorSpace::SRGBLinear;
+#if ENABLE(PREDEFINED_COLOR_SPACE_DISPLAY_P3)
+    case PredefinedColorSpace::DisplayP3:
+        return ::WebGPU::PredefinedColorSpace::DisplayP3;
+    case PredefinedColorSpace::DisplayP3Linear:
+        return ::WebGPU::PredefinedColorSpace::DisplayP3Linear;
+#endif
+    }
+    return ::WebGPU::PredefinedColorSpace::SRGB;
+}
+
+constexpr PredefinedColorSpace convertFromAPI(::WebGPU::PredefinedColorSpace colorSpace)
+{
+    switch (colorSpace) {
+    case ::WebGPU::PredefinedColorSpace::SRGB:
+        return PredefinedColorSpace::SRGB;
+    case ::WebGPU::PredefinedColorSpace::SRGBLinear:
+        return PredefinedColorSpace::SRGBLinear;
+    case ::WebGPU::PredefinedColorSpace::DisplayP3:
+#if ENABLE(PREDEFINED_COLOR_SPACE_DISPLAY_P3)
+        return PredefinedColorSpace::DisplayP3;
+#else
+        return PredefinedColorSpace::SRGB;
+#endif
+    case ::WebGPU::PredefinedColorSpace::DisplayP3Linear:
+#if ENABLE(PREDEFINED_COLOR_SPACE_DISPLAY_P3)
+        return PredefinedColorSpace::DisplayP3Linear;
+#else
+        return PredefinedColorSpace::SRGBLinear;
+#endif
+    }
+    return PredefinedColorSpace::SRGB;
+}
 
 } // namespace WebCore::WebGPU

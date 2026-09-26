@@ -40,6 +40,7 @@
 #include "WebGPUDevice.h"
 #include "WebGPUExternalTexture.h"
 #include "WebGPUPipelineLayout.h"
+#include "WebGPUPresentationContext.h"
 #include "WebGPUPtr.h"
 #include "WebGPUQuerySet.h"
 #include "WebGPUQueue.h"
@@ -68,7 +69,6 @@ namespace WebCore::WebGPU {
 
 class CompositorIntegration;
 class ConvertToBackingContext;
-class PresentationContext;
 class XRBinding;
 class XRProjectionLayer;
 class XRSubImage;

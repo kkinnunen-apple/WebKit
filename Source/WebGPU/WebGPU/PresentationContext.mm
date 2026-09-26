@@ -61,9 +61,14 @@ void PresentationContext::present(uint32_t)
 {
 }
 
-Texture* PresentationContext::getCurrentTexture(uint32_t)
+Texture* PresentationContext::currentTexture(uint32_t)
 {
     return nullptr;
+}
+
+RefPtr<WebGPU::Texture> PresentationContext::getCurrentTexture(uint32_t frameIndex)
+{
+    return currentTexture(frameIndex);
 }
 
 TextureView* PresentationContext::getCurrentTextureView()
@@ -107,7 +112,7 @@ double wgpuSurfaceGetLastFrameGPUCostSeconds(WGPUSurface surface)
 
 WGPUTexture wgpuSwapChainGetCurrentTexture(WGPUSwapChain swapChain, uint32_t index)
 {
-    return protect(WebGPU::Metal::fromAPI(swapChain))->getCurrentTexture(index);
+    return protect(WebGPU::Metal::fromAPI(swapChain))->currentTexture(index);
 }
 
 WGPUTextureView wgpuSwapChainGetCurrentTextureView(WGPUSwapChain swapChain)

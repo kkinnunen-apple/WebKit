@@ -25,47 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUTexture.h>
-#include <wtf/CompletionHandler.h>
-#include <wtf/Ref.h>
-#include <wtf/RefCountedAndCanMakeWeakPtr.h>
-#include <wtf/WeakPtr.h>
-#include <wtf/text/WTFString.h>
-
-namespace WTF {
-class MachSendRight;
-}
-
-namespace WebCore {
-class NativeImage;
-}
 
 namespace WebCore::WebGPU {
 
-struct CanvasConfiguration;
-
-class PresentationContext : public RefCountedAndCanMakeWeakPtr<PresentationContext> {
-public:
-    virtual ~PresentationContext() = default;
-
-    [[nodiscard]] virtual bool configure(const CanvasConfiguration&) = 0;
-    virtual void unconfigure() = 0;
-    virtual void present(uint32_t frameIndex, bool = false) = 0;
-
-    virtual RefPtr<Texture> getCurrentTexture(uint32_t) = 0;
-    virtual RefPtr<WebCore::NativeImage> getMetalTextureAsNativeImage(uint32_t bufferIndex, bool& isIOSurfaceSupportedFormat) = 0;
-
-    virtual bool isRemotePresentationContextProxy() const { return false; }
-    virtual bool isPresentationContextImpl() const { return false; }
-
-protected:
-    PresentationContext() = default;
-
-private:
-    PresentationContext(const PresentationContext&) = delete;
-    PresentationContext(PresentationContext&&) = delete;
-    PresentationContext& operator=(const PresentationContext&) = delete;
-    PresentationContext& operator=(PresentationContext&&) = delete;
-};
+using PresentationContext = ::WebGPU::PresentationContext;
 
 } // namespace WebCore::WebGPU

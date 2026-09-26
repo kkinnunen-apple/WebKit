@@ -48,7 +48,7 @@ public:
     void unconfigure() override;
 
     void present(uint32_t) override;
-    Texture* getCurrentTexture(uint32_t) override;
+    Texture* currentTexture(uint32_t) override;
     TextureView* getCurrentTextureView() override;
 
     Seconds lastFrameGPUCost() const override { return m_lastDrainedFrameGPUCost; }

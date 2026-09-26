@@ -37,6 +37,7 @@
 #include <WebCore/WebGPUExtent3D.h>
 #include <WebCore/WebGPUExternalTexture.h>
 #include <WebCore/WebGPUPipelineLayout.h>
+#include <WebCore/WebGPUPresentationContext.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPUQueue.h>
 #include <WebCore/WebGPURenderBundle.h>
@@ -70,7 +71,6 @@ namespace WebCore::WebGPU {
 class CompositorIntegration;
 class GPU;
 class GPUImpl;
-class PresentationContext;
 class XRBinding;
 class XRProjectionLayer;
 class XRSubImage;
