@@ -270,6 +270,12 @@ void RemoteGPU::paintNativeImageToImageBuffer(WebCore::NativeImage& nativeImage,
     semaphore.wait();
 }
 
+RefPtr<WebCore::WebGPU::GPU> RemoteGPU::backing()
+{
+    assertIsCurrent(workQueue());
+    return m_backing;
+}
+
 RefPtr<WebCore::ImageBuffer> RemoteGPU::imageBuffer(WebCore::RenderingResourceIdentifier imageBufferIdentifier)
 {
     assertIsCurrent(workQueue());

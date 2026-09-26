@@ -32,6 +32,7 @@
 #include <WebCore/WebGPUCommandEncoder.h>
 #include <WebCore/WebGPUComputePassEncoder.h>
 #include <WebCore/WebGPUComputePipeline.h>
+#include <WebCore/WebGPUExtent3D.h>
 #include <WebCore/WebGPUExternalTexture.h>
 #include <WebCore/WebGPUPipelineLayout.h>
 #include <WebCore/WebGPUQuerySet.h>
@@ -54,6 +55,7 @@ namespace WebCore {
 class NativeImage;
 class IntSize;
 class GraphicsContext;
+class VideoFrame;
 }
 
 namespace WebCore::WebGPU {
@@ -70,6 +72,8 @@ class XRProjectionLayer;
 class XRSubImage;
 class XRView;
 
+struct ImageCopyExternalImage;
+struct ImageCopyTextureTagged;
 struct PresentationContextDescriptor;
 
 class GPU : public AbstractRefCounted {
@@ -82,6 +86,10 @@ public:
 
     virtual RefPtr<CompositorIntegration> createCompositorIntegration() = 0;
     virtual void paintToCanvas(WebCore::NativeImage&, const WebCore::IntSize&, WebCore::GraphicsContext&) = 0;
+
+    // The queue commands that take WebCore sources, which the WebGPU implementations cannot see.
+    virtual void copyExternalImageToTexture(Queue&, const ImageCopyExternalImage& source, const ImageCopyTextureTagged& destination, const Extent3D& copySize) = 0;
+    virtual RefPtr<WebCore::NativeImage> nativeImage(Queue&, WebCore::VideoFrame&) = 0;
     virtual bool isValid(const CompositorIntegration&) const = 0;
     virtual bool isValid(const Buffer&) const = 0;
     virtual bool isValid(const Adapter&) const = 0;

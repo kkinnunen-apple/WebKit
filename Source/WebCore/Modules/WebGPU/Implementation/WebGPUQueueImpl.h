@@ -47,6 +47,10 @@ public:
 
     virtual ~QueueImpl();
 
+    // Called by GPUImpl, which implements the queue commands that take WebCore sources.
+    void copyExternalImageToTexture(const ImageCopyExternalImage& source, const ImageCopyTextureTagged& destination, const Extent3D& copySize);
+    RefPtr<WebCore::NativeImage> NODELETE getNativeImage(WebCore::VideoFrame&);
+
 private:
     friend class DowncastConvertToBackingContext;
 
@@ -90,13 +94,7 @@ private:
         const ImageDataLayout&,
         const Extent3D& size) final;
 
-    void copyExternalImageToTexture(
-        const ImageCopyExternalImage& source,
-        const ImageCopyTextureTagged& destination,
-        const Extent3D& copySize) final;
-
     void setLabelInternal(const String&) final;
-    RefPtr<WebCore::NativeImage> NODELETE getNativeImage(WebCore::VideoFrame&) final;
 
     WebGPUPtr<WGPUQueue> m_backing;
     const Ref<ConvertToBackingContext> m_convertToBackingContext;

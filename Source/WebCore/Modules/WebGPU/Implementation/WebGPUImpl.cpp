@@ -32,6 +32,7 @@
 #include "WebGPUCompositorIntegrationImpl.h"
 #include "WebGPUPresentationContextDescriptor.h"
 #include "WebGPUPresentationContextImpl.h"
+#include "WebGPUQueueImpl.h"
 #include <WebCore/GraphicsContext.h>
 #include <WebCore/IntSize.h>
 #include <WebCore/NativeImage.h>
@@ -116,6 +117,16 @@ RefPtr<PresentationContext> GPUImpl::createPresentationContext(const Presentatio
 RefPtr<CompositorIntegration> GPUImpl::createCompositorIntegration()
 {
     return CompositorIntegrationImpl::create(m_convertToBackingContext);
+}
+
+void GPUImpl::copyExternalImageToTexture(Queue& queue, const ImageCopyExternalImage& source, const ImageCopyTextureTagged& destination, const Extent3D& copySize)
+{
+    downcast<QueueImpl>(queue).copyExternalImageToTexture(source, destination, copySize);
+}
+
+RefPtr<WebCore::NativeImage> GPUImpl::nativeImage(Queue& queue, WebCore::VideoFrame& videoFrame)
+{
+    return downcast<QueueImpl>(queue).getNativeImage(videoFrame);
 }
 
 void GPUImpl::paintToCanvas(WebCore::NativeImage& image, const WebCore::IntSize& canvasSize, WebCore::GraphicsContext& context)

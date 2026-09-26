@@ -32,6 +32,7 @@
 #include "GPUSupportedLimits.h"
 #include "JSDOMPromiseDeferredForward.h"
 #include "ScriptExecutionContext.h"
+#include "WebGPU.h"
 #include "WebGPUAdapter.h"
 #include <optional>
 #include <wtf/Ref.h>
@@ -42,9 +43,9 @@ namespace WebCore {
 
 class GPUAdapter : public RefCounted<GPUAdapter> {
 public:
-    static Ref<GPUAdapter> create(Ref<WebGPU::Adapter>&& backing)
+    static Ref<GPUAdapter> create(Ref<WebGPU::Adapter>&& backing, Ref<WebGPU::GPU>&& gpu)
     {
-        return adoptRef(*new GPUAdapter(WTF::move(backing)));
+        return adoptRef(*new GPUAdapter(WTF::move(backing), WTF::move(gpu)));
     }
 
     String NODELETE name() const;
@@ -61,9 +62,11 @@ public:
     const WebGPU::Adapter& backing() const { return m_backing; }
 
 private:
-    GPUAdapter(Ref<WebGPU::Adapter>&& backing);
+    GPUAdapter(Ref<WebGPU::Adapter>&& backing, Ref<WebGPU::GPU>&&);
 
     const Ref<WebGPU::Adapter> m_backing;
+    // The root, which has the commands that take WebCore sources.
+    const Ref<WebGPU::GPU> m_gpu;
     const Ref<GPUSupportedFeatures> m_features;
     const Ref<GPUSupportedLimits> m_limits;
     const Ref<GPUAdapterInfo> m_info;
