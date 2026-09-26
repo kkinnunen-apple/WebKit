@@ -1224,6 +1224,9 @@ void Device::makeSubmitInvalidClearingEncoders(TrackedResourceContainer& command
 
 #pragma mark WGPU Stubs
 
+static constexpr auto invalidComputePipelineDescriptorMessage = "GPUComputePipelineDescriptor has no shader module"_s;
+static constexpr auto invalidRenderPipelineDescriptorMessage = "GPURenderPipelineDescriptor has no shader module or an invalid enum value or color write mask bit"_s;
+
 void NODELETE wgpuDeviceAddRef(WGPUDevice device)
 {
     WebGPU::Metal::fromAPI(device).ref();
@@ -1281,14 +1284,56 @@ WGPUCommandEncoder wgpuDeviceCreateCommandEncoder(WGPUDevice device, const WGPUC
 
 WGPUComputePipeline wgpuDeviceCreateComputePipeline(WGPUDevice device, const WGPUComputePipelineDescriptor* descriptor)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createComputePipeline(*descriptor).first);
+    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
+    WebGPU::Metal::ComputePipelineDescriptorStorage storage;
+    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor, storage);
+    if (!apiDescriptor) {
+        protectedDevice->generateAValidationError(invalidComputePipelineDescriptorMessage);
+        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::ComputePipeline::createInvalid(protectedDevice));
+    }
+    return WebGPU::Metal::releaseToAPI(protectedDevice->createComputePipeline(*apiDescriptor));
+}
+
+// The C API reports a failed asynchronous pipeline creation with a status and no pipeline.
+template<typename T>
+static auto createPipelineAsyncCompletion(Function<void(WGPUCreatePipelineAsyncStatus, T*, String&&)>&& callback)
+{
+    return [callback = WTF::move(callback)](auto&& pipeline) mutable {
+        if (!pipeline)
+            return callback(WGPUCreatePipelineAsyncStatus_ValidationError, nullptr, WTF::move(pipeline.error().message));
+        callback(WGPUCreatePipelineAsyncStatus_Success, WebGPU::Metal::releaseToAPI(WTF::move(*pipeline)), { });
+    };
+}
+
+// Reports a descriptor that did not convert, for the asynchronous pipeline creations.
+static void reportInvalidPipelineDescriptor(WebGPU::Metal::Device& device, ASCIILiteral message, auto&& callback)
+{
+    if (RefPtr instance = device.instance()) {
+        instance->scheduleWork([callback = WTF::move(callback), message]() mutable {
+            callback(WGPUCreatePipelineAsyncStatus_ValidationError, nullptr, message);
+        });
+        return;
+    }
+    callback(WGPUCreatePipelineAsyncStatus_ValidationError, nullptr, message);
+}
+
+static void createComputePipelineAsync(WGPUDevice device, const WGPUComputePipelineDescriptor& descriptor, WGPUComputePipeline pipelineToReplace, Function<void(WGPUCreatePipelineAsyncStatus, WGPUComputePipeline, String&&)>&& callback)
+{
+    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
+    WebGPU::Metal::ComputePipelineDescriptorStorage storage;
+    auto apiDescriptor = WebGPU::Metal::fromAPI(descriptor, storage);
+    if (!apiDescriptor)
+        return reportInvalidPipelineDescriptor(protectedDevice, invalidComputePipelineDescriptorMessage, WTF::move(callback));
+    if (pipelineToReplace)
+        protectedDevice->createComputePipelineWithPipelineLayoutFromPipelineAsync(*apiDescriptor, protect(WebGPU::Metal::fromAPI(pipelineToReplace)), createPipelineAsyncCompletion(WTF::move(callback)));
+    else
+        protectedDevice->createComputePipelineAsync(*apiDescriptor, createPipelineAsyncCompletion(WTF::move(callback)));
 }
 
 void wgpuDeviceCreateComputePipelineWithPipelineLayoutFromPipelineAsync(WGPUDevice device, const WGPUComputePipelineDescriptor* descriptor, WGPUComputePipeline pipelineToReplace, WGPUCreateComputePipelineAsyncCallback callback, void* userdata)
 {
-    Ref protectedPipelineToReplace = WebGPU::Metal::fromAPI(pipelineToReplace);
-    protect(WebGPU::Metal::fromAPI(device))->createComputePipelineWithPipelineLayoutFromPipelineAsync(*descriptor, protectedPipelineToReplace, [callback, userdata](WGPUCreatePipelineAsyncStatus status, Ref<WebGPU::Metal::ComputePipeline>&& pipeline, String&& message) {
-        callback(status, status == WGPUCreatePipelineAsyncStatus_Success ? WebGPU::Metal::releaseToAPI(WTF::move(pipeline)) : nullptr, WTF::move(message), userdata);
+    createComputePipelineAsync(device, *descriptor, pipelineToReplace, [callback, userdata](WGPUCreatePipelineAsyncStatus status, WGPUComputePipeline pipeline, String&& message) {
+        callback(status, pipeline, WTF::move(message), userdata);
     });
 }
 
@@ -1299,15 +1344,15 @@ void wgpuDevicePauseErrorReporting(WGPUDevice device, WGPUBool pauseErrors)
 
 void wgpuDeviceCreateComputePipelineAsync(WGPUDevice device, const WGPUComputePipelineDescriptor* descriptor, WGPUCreateComputePipelineAsyncCallback callback, void* userdata)
 {
-    protect(WebGPU::Metal::fromAPI(device))->createComputePipelineAsync(*descriptor, [callback, userdata](WGPUCreatePipelineAsyncStatus status, Ref<WebGPU::Metal::ComputePipeline>&& pipeline, String&& message) {
-        callback(status, WebGPU::Metal::releaseToAPI(WTF::move(pipeline)), WTF::move(message), userdata);
+    createComputePipelineAsync(device, *descriptor, nullptr, [callback, userdata](WGPUCreatePipelineAsyncStatus status, WGPUComputePipeline pipeline, String&& message) {
+        callback(status, pipeline, WTF::move(message), userdata);
     });
 }
 
 void wgpuDeviceCreateComputePipelineAsyncWithBlock(WGPUDevice device, WGPUComputePipelineDescriptor const * descriptor, WGPUCreateComputePipelineAsyncBlockCallback callback)
 {
-    protect(WebGPU::Metal::fromAPI(device))->createComputePipelineAsync(*descriptor, [callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPUCreatePipelineAsyncStatus status, Ref<WebGPU::Metal::ComputePipeline>&& pipeline, String&& message) {
-        callback(status, WebGPU::Metal::releaseToAPI(WTF::move(pipeline)), WTF::move(message));
+    createComputePipelineAsync(device, *descriptor, nullptr, [callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPUCreatePipelineAsyncStatus status, WGPUComputePipeline pipeline, String&& message) {
+        callback(status, pipeline, WTF::move(message));
     });
 }
 
@@ -1340,28 +1385,47 @@ WGPURenderBundleEncoder wgpuDeviceCreateRenderBundleEncoder(WGPUDevice device, c
 
 WGPURenderPipeline wgpuDeviceCreateRenderPipeline(WGPUDevice device, const WGPURenderPipelineDescriptor* descriptor)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createRenderPipeline(*descriptor).first);
+    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
+    WebGPU::Metal::RenderPipelineDescriptorStorage storage;
+    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor, storage);
+    if (!apiDescriptor) {
+        protectedDevice->generateAValidationError(invalidRenderPipelineDescriptorMessage);
+        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::RenderPipeline::createInvalid(protectedDevice));
+    }
+    return WebGPU::Metal::releaseToAPI(protectedDevice->createRenderPipeline(*apiDescriptor));
+}
+
+static void createRenderPipelineAsync(WGPUDevice device, const WGPURenderPipelineDescriptor& descriptor, WGPURenderPipeline pipelineToReplace, Function<void(WGPUCreatePipelineAsyncStatus, WGPURenderPipeline, String&&)>&& callback)
+{
+    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
+    WebGPU::Metal::RenderPipelineDescriptorStorage storage;
+    auto apiDescriptor = WebGPU::Metal::fromAPI(descriptor, storage);
+    if (!apiDescriptor)
+        return reportInvalidPipelineDescriptor(protectedDevice, invalidRenderPipelineDescriptorMessage, WTF::move(callback));
+    if (pipelineToReplace)
+        protectedDevice->createRenderPipelineWithPipelineLayoutFromPipelineAsync(*apiDescriptor, protect(WebGPU::Metal::fromAPI(pipelineToReplace)), createPipelineAsyncCompletion(WTF::move(callback)));
+    else
+        protectedDevice->createRenderPipelineAsync(*apiDescriptor, createPipelineAsyncCompletion(WTF::move(callback)));
 }
 
 void wgpuDeviceCreateRenderPipelineWithPipelineLayoutFromPipelineAsync(WGPUDevice device, const WGPURenderPipelineDescriptor* descriptor, WGPURenderPipeline pipelineToReplace, WGPUCreateRenderPipelineAsyncCallback callback, void* userdata)
 {
-    Ref protectedPipelineToReplace = WebGPU::Metal::fromAPI(pipelineToReplace);
-    protect(WebGPU::Metal::fromAPI(device))->createRenderPipelineWithPipelineLayoutFromPipelineAsync(*descriptor, protectedPipelineToReplace, [callback, userdata](WGPUCreatePipelineAsyncStatus status, Ref<WebGPU::Metal::RenderPipeline>&& pipeline, String&& message) {
-        callback(status, status == WGPUCreatePipelineAsyncStatus_Success ? WebGPU::Metal::releaseToAPI(WTF::move(pipeline)) : nullptr, WTF::move(message), userdata);
+    createRenderPipelineAsync(device, *descriptor, pipelineToReplace, [callback, userdata](WGPUCreatePipelineAsyncStatus status, WGPURenderPipeline pipeline, String&& message) {
+        callback(status, pipeline, WTF::move(message), userdata);
     });
 }
 
 void wgpuDeviceCreateRenderPipelineAsync(WGPUDevice device, const WGPURenderPipelineDescriptor* descriptor, WGPUCreateRenderPipelineAsyncCallback callback, void* userdata)
 {
-    protect(WebGPU::Metal::fromAPI(device))->createRenderPipelineAsync(*descriptor, [callback, userdata](WGPUCreatePipelineAsyncStatus status, Ref<WebGPU::Metal::RenderPipeline>&& pipeline, String&& message) {
-        callback(status, WebGPU::Metal::releaseToAPI(WTF::move(pipeline)), WTF::move(message), userdata);
+    createRenderPipelineAsync(device, *descriptor, nullptr, [callback, userdata](WGPUCreatePipelineAsyncStatus status, WGPURenderPipeline pipeline, String&& message) {
+        callback(status, pipeline, WTF::move(message), userdata);
     });
 }
 
 void wgpuDeviceCreateRenderPipelineAsyncWithBlock(WGPUDevice device, WGPURenderPipelineDescriptor const * descriptor, WGPUCreateRenderPipelineAsyncBlockCallback callback)
 {
-    protect(WebGPU::Metal::fromAPI(device))->createRenderPipelineAsync(*descriptor, [callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPUCreatePipelineAsyncStatus status, Ref<WebGPU::Metal::RenderPipeline>&& pipeline, String&& message) {
-        callback(status, WebGPU::Metal::releaseToAPI(WTF::move(pipeline)), WTF::move(message));
+    createRenderPipelineAsync(device, *descriptor, nullptr, [callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPUCreatePipelineAsyncStatus status, WGPURenderPipeline pipeline, String&& message) {
+        callback(status, pipeline, WTF::move(message));
     });
 }
 
