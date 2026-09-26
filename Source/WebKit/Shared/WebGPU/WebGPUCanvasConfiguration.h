@@ -49,6 +49,8 @@ struct CanvasConfiguration {
     WebCore::WebGPU::CanvasToneMappingMode toneMappingMode { WebCore::WebGPU::CanvasToneMappingMode::Standard };
     WebCore::WebGPU::CanvasAlphaMode compositingAlphaMode { WebCore::WebGPU::CanvasAlphaMode::Opaque };
     bool reportValidationErrors { true };
+    uint32_t width { 0 };
+    uint32_t height { 0 };
 };
 
 } // namespace WebKit::WebGPU

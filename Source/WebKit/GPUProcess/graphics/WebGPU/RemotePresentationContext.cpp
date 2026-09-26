@@ -67,8 +67,7 @@ void RemotePresentationContext::configure(const WebGPU::CanvasConfiguration& can
     if (!convertedConfiguration)
         return;
 
-    bool success = protect(m_backing)->configure(*convertedConfiguration);
-    ASSERT_UNUSED(success, success);
+    protect(m_backing)->configure(*convertedConfiguration);
 }
 
 void RemotePresentationContext::unconfigure()

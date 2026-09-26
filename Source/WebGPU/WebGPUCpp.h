@@ -46,6 +46,7 @@
 #include <wtf/Forward.h>
 #include <wtf/OptionSet.h>
 #include <wtf/Ref.h>
+#include <wtf/Seconds.h>
 #include <wtf/SwiftBridging.h>
 #include <wtf/ThreadSafeWeakPtr.h>
 #include <wtf/Variant.h>
@@ -55,6 +56,7 @@
 #if PLATFORM(COCOA)
 #include <wtf/RetainPtr.h>
 
+typedef struct CGImage* CGImageRef;
 typedef struct __CVBuffer* CVPixelBufferRef;
 typedef struct __IOSurface* IOSurfaceRef;
 #endif
@@ -1439,6 +1441,17 @@ class PresentationContext : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakP
 public:
     virtual ~PresentationContext() = default;
 
+    virtual void configure(const CanvasConfiguration&) = 0;
+    virtual void unconfigure() = 0;
+    virtual void present(uint32_t frameIndex) = 0;
+    virtual RefPtr<Texture> getCurrentTexture(uint32_t frameIndex) = 0;
+    // The GPU time of the last frame that finished.
+    virtual Seconds lastFrameGPUCost() const = 0;
+#if PLATFORM(COCOA)
+    // The contents of a render buffer. isIOSurfaceSupportedFormat is false when its format cannot be
+    // read back that way.
+    virtual RetainPtr<CGImageRef> getTextureAsNativeImage(uint32_t bufferIndex, bool& isIOSurfaceSupportedFormat) = 0;
+#endif
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 

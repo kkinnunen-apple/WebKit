@@ -134,7 +134,7 @@ WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::PresentationContext& presentationContext)
 {
-    return downcast<RemotePresentationContextProxy>(presentationContext).backing();
+    return static_cast<const RemotePresentationContextProxy&>(presentationContext).backing();
 }
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::QuerySet& querySet)

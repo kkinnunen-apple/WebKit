@@ -47,14 +47,14 @@ RemotePresentationContextProxy::RemotePresentationContextProxy(RemoteGPUProxy& p
 
 RemotePresentationContextProxy::~RemotePresentationContextProxy() = default;
 
-bool RemotePresentationContextProxy::configure(const WebCore::WebGPU::CanvasConfiguration& canvasConfiguration)
+void RemotePresentationContextProxy::configure(const ::WebGPU::CanvasConfiguration& canvasConfiguration)
 {
     auto convertedConfiguration = m_convertToBackingContext->convertToBacking(canvasConfiguration);
     if (!convertedConfiguration)
-        return false;
+        return;
 
     auto sendResult = send(Messages::RemotePresentationContext::Configure(*convertedConfiguration));
-    return sendResult == IPC::Error::NoError;
+    UNUSED_VARIABLE(sendResult);
 }
 
 void RemotePresentationContextProxy::unconfigure()
@@ -84,16 +84,26 @@ RefPtr<WebCore::WebGPU::Texture> RemotePresentationContextProxy::getCurrentTextu
     return m_currentTexture[frameIndex];
 }
 
-void RemotePresentationContextProxy::present(uint32_t frameIndex, bool presentToGPUProcess)
+void RemotePresentationContextProxy::present(uint32_t frameIndex)
 {
-    if (presentToGPUProcess) {
-        auto sendResult = send(Messages::RemotePresentationContext::Present(frameIndex));
-        UNUSED_VARIABLE(sendResult);
-    }
+    auto sendResult = send(Messages::RemotePresentationContext::Present(frameIndex));
+    UNUSED_VARIABLE(sendResult);
 }
 
-RefPtr<WebCore::NativeImage> RemotePresentationContextProxy::getMetalTextureAsNativeImage(uint32_t, bool&)
+Seconds RemotePresentationContextProxy::lastFrameGPUCost() const
 {
+    // RemoteCompositorIntegrationProxy reports the cost of a frame to the Web Process.
+    RELEASE_ASSERT_NOT_REACHED();
+}
+
+RetainPtr<CGImageRef> RemotePresentationContextProxy::getTextureAsNativeImage(uint32_t, bool&)
+{
+    RELEASE_ASSERT_NOT_REACHED();
+}
+
+bool RemotePresentationContextProxy::isValid() const
+{
+    // The Web Process cannot know. RemoteGPU::isValid() answers it for tests.
     RELEASE_ASSERT_NOT_REACHED();
 }
 

@@ -485,7 +485,7 @@ void PresentationContextIOSurface::present(uint32_t currentIndex)
     RELEASE_ASSERT(m_inFlightFrames.size() <= m_maximumInFlightFrames);
 }
 
-Texture* PresentationContextIOSurface::getCurrentTexture(uint32_t currentIndex)
+Texture* PresentationContextIOSurface::currentTexture(uint32_t currentIndex)
 {
     if (m_ioSurfaces.count != m_renderBuffers.size() || m_renderBuffers.size() <= currentIndex) {
         if (RefPtr device = m_device)

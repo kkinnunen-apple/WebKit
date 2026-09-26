@@ -30,7 +30,7 @@
 #include "WebGPUCompositorIntegration.h"
 #include "WebGPUDevice.h"
 
-#include "WebGPUPresentationContextImpl.h"
+#include "WebGPUPresentationContext.h"
 #include <WebCore/IOSurface.h>
 #include <WebGPU/WebGPU.h>
 #include <wtf/CompletionHandler.h>
@@ -62,7 +62,7 @@ public:
 
     virtual ~CompositorIntegrationImpl();
 
-    void setPresentationContext(PresentationContextImpl& presentationContext)
+    void setPresentationContext(PresentationContext& presentationContext)
     {
         ASSERT(!m_presentationContext);
         m_presentationContext = presentationContext;
@@ -106,7 +106,7 @@ private:
 
     WTF::Function<void(CompletionHandler<void()>&&)> m_onSubmittedWorkScheduledCallback;
 
-    RefPtr<PresentationContextImpl> m_presentationContext;
+    RefPtr<PresentationContext> m_presentationContext;
     const Ref<ConvertToBackingContext> m_convertToBackingContext;
     ThreadSafeWeakPtr<Device> m_device;
 };

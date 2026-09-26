@@ -39,7 +39,6 @@
 #include "WebGPUExternalTexture.h"
 #include "WebGPUImpl.h"
 #include "WebGPUPipelineLayout.h"
-#include "WebGPUPresentationContextImpl.h"
 #include "WebGPUQuerySet.h"
 #include "WebGPURenderBundle.h"
 #include "WebGPURenderBundleEncoder.h"
@@ -122,7 +121,7 @@ WGPUPipelineLayout DowncastConvertToBackingContext::convertToBacking(const Pipel
 
 WGPUSurface DowncastConvertToBackingContext::convertToBacking(const PresentationContext& presentationContext)
 {
-    return downcast<PresentationContextImpl>(presentationContext).backing();
+    return ::WebGPU::toAPI(const_cast<PresentationContext&>(presentationContext));
 }
 
 WGPUQuerySet DowncastConvertToBackingContext::convertToBacking(const QuerySet& querySet)
