@@ -48,7 +48,7 @@
 #include "WebGPURenderBundleImpl.h"
 #include "WebGPURenderPassEncoderImpl.h"
 #include "WebGPURenderPipelineImpl.h"
-#include "WebGPUSamplerImpl.h"
+#include "WebGPUSampler.h"
 #include "WebGPUShaderModuleImpl.h"
 #include "WebGPUTextureImpl.h"
 #include "WebGPUTextureViewImpl.h"
@@ -56,6 +56,7 @@
 #include "WebGPUXRProjectionLayerImpl.h"
 #include "WebGPUXRSubImageImpl.h"
 #include "WebGPUXRViewImpl.h"
+#include <WebGPU/WebGPUCppBridge.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebCore::WebGPU {
@@ -159,7 +160,7 @@ WGPURenderPipeline DowncastConvertToBackingContext::convertToBacking(const Rende
 
 WGPUSampler DowncastConvertToBackingContext::convertToBacking(const Sampler& sampler)
 {
-    return downcast<SamplerImpl>(sampler).backing();
+    return ::WebGPU::toAPI(const_cast<Sampler&>(sampler));
 }
 
 WGPUShaderModule DowncastConvertToBackingContext::convertToBacking(const ShaderModule& shaderModule)

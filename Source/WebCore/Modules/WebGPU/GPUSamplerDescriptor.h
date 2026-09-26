@@ -41,7 +41,7 @@ struct GPUSamplerDescriptor : public GPUObjectDescriptorBase {
     WebGPU::SamplerDescriptor convertToBacking() const
     {
         return {
-            { label },
+            label,
             WebCore::convertToBacking(addressModeU),
             WebCore::convertToBacking(addressModeV),
             WebCore::convertToBacking(addressModeW),

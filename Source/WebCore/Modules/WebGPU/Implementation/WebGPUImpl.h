@@ -30,6 +30,7 @@
 #include "WebGPU.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUPtr.h"
+#include "WebGPUSampler.h"
 #include <WebGPU/WebGPU.h>
 #include <WebGPU/WebGPUExt.h>
 #include <wtf/CompletionHandler.h>
@@ -65,7 +66,6 @@ class RenderBundleEncoder;
 class RenderBundle;
 class RenderPassEncoder;
 class RenderPipeline;
-class Sampler;
 class ShaderModule;
 class Texture;
 class TextureView;

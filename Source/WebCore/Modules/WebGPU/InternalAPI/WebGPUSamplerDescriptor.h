@@ -27,24 +27,11 @@
 
 #include <WebCore/WebGPUAddressMode.h>
 #include <WebCore/WebGPUCompareFunction.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUFilterMode.h>
-#include <WebCore/WebGPUObjectDescriptorBase.h>
-#include <cstdint>
-#include <optional>
 
 namespace WebCore::WebGPU {
 
-struct SamplerDescriptor : public ObjectDescriptorBase {
-    AddressMode addressModeU { AddressMode::ClampToEdge };
-    AddressMode addressModeV { AddressMode::ClampToEdge };
-    AddressMode addressModeW { AddressMode::ClampToEdge };
-    FilterMode magFilter { FilterMode::Nearest };
-    FilterMode minFilter { FilterMode::Nearest };
-    MipmapFilterMode mipmapFilter { MipmapFilterMode::Nearest };
-    float lodMinClamp { 0 };
-    float lodMaxClamp { 32 };
-    std::optional<CompareFunction> compare;
-    uint16_t maxAnisotropy { 1 };
-};
+using SamplerDescriptor = ::WebGPU::SamplerDescriptor;
 
 } // namespace WebCore::WebGPU

@@ -242,8 +242,7 @@ bool GPUImpl::isValid(const RenderPipeline& renderPipeline) const
 
 bool GPUImpl::isValid(const Sampler& sampler) const
 {
-    WGPUSampler wgpuSampler = m_convertToBackingContext.get().convertToBacking(sampler);
-    return wgpuSamplerIsValid(wgpuSampler);
+    return sampler.isValid();
 }
 
 bool GPUImpl::isValid(const ShaderModule& shaderModule) const

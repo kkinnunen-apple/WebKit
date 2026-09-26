@@ -378,7 +378,6 @@ Shared/WebGPU/WebGPURenderPassTimestampWrites.cpp
 Shared/WebGPU/WebGPURenderPipelineDescriptor.cpp
 Shared/WebGPU/WebGPURequestAdapterOptions.cpp
 Shared/WebGPU/WebGPUSamplerBindingLayout.cpp
-Shared/WebGPU/WebGPUSamplerDescriptor.cpp
 Shared/WebGPU/WebGPUShaderModuleCompilationHint.cpp
 Shared/WebGPU/WebGPUShaderModuleDescriptor.cpp
 Shared/WebGPU/WebGPUStencilFaceState.cpp

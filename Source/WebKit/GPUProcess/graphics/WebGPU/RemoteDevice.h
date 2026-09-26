@@ -34,6 +34,7 @@
 #include "StreamMessageReceiver.h"
 #include "WebGPUError.h"
 #include "WebGPUIdentifier.h"
+#include "WebGPUSamplerDescriptor.h"
 #include <WebCore/MediaPlayerIdentifier.h>
 #include <WebCore/WebGPUDeviceLostReason.h>
 #include <WebCore/WebGPUErrorFilter.h>
@@ -83,7 +84,6 @@ struct PipelineLayoutDescriptor;
 struct QuerySetDescriptor;
 struct RenderBundleEncoderDescriptor;
 struct RenderPipelineDescriptor;
-struct SamplerDescriptor;
 struct ShaderModuleDescriptor;
 struct TextureDescriptor;
 }

@@ -68,7 +68,7 @@ std::optional<WebCore::WebGPU::BindGroupEntry> ConvertFromBackingContext::conver
 {
     switch (bindGroupEntry.type) {
     case BindingResourceType::Sampler: {
-        WeakPtr sampler = convertSamplerFromBacking(bindGroupEntry.identifier);
+        RefPtr sampler = convertSamplerFromBacking(bindGroupEntry.identifier);
         if (!sampler)
             return std::nullopt;
         return { { bindGroupEntry.binding, { *sampler } } };

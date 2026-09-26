@@ -163,10 +163,7 @@ void RemoteDevice::createTexture(const WebGPU::TextureDescriptor& descriptor, We
 void RemoteDevice::createSampler(const WebGPU::SamplerDescriptor& descriptor, WebGPUIdentifier identifier)
 {
     Ref objectHeap = m_objectHeap.get();
-    auto convertedDescriptor = objectHeap->convertFromBacking(descriptor);
-    MESSAGE_CHECK(convertedDescriptor);
-
-    auto sampler = m_backing->createSampler(*convertedDescriptor);
+    auto sampler = m_backing->createSampler(descriptor);
     MESSAGE_CHECK(sampler);
     auto remoteSampler = RemoteSampler::create(*sampler, objectHeap, protect(m_streamConnection), protect(m_gpu), identifier);
     objectHeap->addObject(identifier, remoteSampler);
