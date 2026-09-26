@@ -31,8 +31,9 @@
 #include "WebGPUBindGroup.h"
 #include "WebGPUBuffer.h"
 #include "WebGPUConvertToBackingContext.h"
-#include "WebGPURenderBundleImpl.h"
+#include "WebGPURenderBundle.h"
 #include "WebGPURenderPipelineImpl.h"
+#include <WebGPU/WebGPUCppBridge.h>
 #include <WebGPU/WebGPUExt.h>
 #include <wtf/TZoneMallocInlines.h>
 
@@ -125,7 +126,7 @@ RefPtr<RenderBundle> RenderBundleEncoderImpl::finish(const RenderBundleDescripto
         .label = label,
     };
 
-    return RenderBundleImpl::create(adoptWebGPU(wgpuRenderBundleEncoderFinish(m_backing.get(), &backingDescriptor)), m_convertToBackingContext);
+    return adoptRef(::WebGPU::fromAPI(wgpuRenderBundleEncoderFinish(m_backing.get(), &backingDescriptor)));
 }
 
 void RenderBundleEncoderImpl::setLabelInternal(const String& label)

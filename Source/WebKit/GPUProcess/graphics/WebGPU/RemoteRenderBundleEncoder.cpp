@@ -173,10 +173,7 @@ void RemoteRenderBundleEncoder::insertDebugMarker(String&& markerLabel)
 void RemoteRenderBundleEncoder::finish(const WebGPU::RenderBundleDescriptor& descriptor, WebGPUIdentifier identifier)
 {
     Ref objectHeap = m_objectHeap.get();
-    auto convertedDescriptor = objectHeap->convertFromBacking(descriptor);
-    MESSAGE_CHECK(convertedDescriptor);
-
-    auto renderBundle = protect(m_backing)->finish(*convertedDescriptor);
+    auto renderBundle = protect(m_backing)->finish(descriptor);
     MESSAGE_CHECK(renderBundle);
     auto remoteRenderBundle = RemoteRenderBundle::create(*renderBundle, objectHeap, protect(m_streamConnection), protect(m_gpu), identifier);
     objectHeap->addObject(identifier, remoteRenderBundle);

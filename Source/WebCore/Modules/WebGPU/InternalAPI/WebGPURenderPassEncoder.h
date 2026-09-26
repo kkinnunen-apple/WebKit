@@ -31,6 +31,7 @@
 #include <WebCore/WebGPUIndexFormat.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <WebCore/WebGPUQuerySet.h>
+#include <WebCore/WebGPURenderBundle.h>
 #include <cstdint>
 #include <functional>
 #include <optional>
@@ -42,7 +43,6 @@
 
 namespace WebCore::WebGPU {
 
-class RenderBundle;
 class RenderPipeline;
 
 class RenderPassEncoder : public RefCountedAndCanMakeWeakPtr<RenderPassEncoder> {

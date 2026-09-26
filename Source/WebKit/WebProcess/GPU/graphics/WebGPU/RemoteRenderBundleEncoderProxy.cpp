@@ -158,12 +158,8 @@ void RemoteRenderBundleEncoderProxy::insertDebugMarker(String&& markerLabel)
 RefPtr<WebCore::WebGPU::RenderBundle> RemoteRenderBundleEncoderProxy::finish(const WebCore::WebGPU::RenderBundleDescriptor& descriptor)
 {
     Ref convertToBackingContext = m_convertToBackingContext;
-    auto convertedDescriptor = convertToBackingContext->convertToBacking(descriptor);
-    if (!convertedDescriptor)
-        return nullptr;
-
     auto identifier = WebGPUIdentifier::generate();
-    auto sendResult = send(Messages::RemoteRenderBundleEncoder::Finish(*convertedDescriptor, identifier));
+    auto sendResult = send(Messages::RemoteRenderBundleEncoder::Finish(descriptor, identifier));
     if (sendResult != IPC::Error::NoError)
         return nullptr;
 

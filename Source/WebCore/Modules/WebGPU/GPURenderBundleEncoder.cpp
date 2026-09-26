@@ -156,11 +156,12 @@ static WebGPU::RenderBundleDescriptor NODELETE convertToBacking(const std::optio
 
 ExceptionOr<Ref<GPURenderBundle>> GPURenderBundleEncoder::finish(const std::optional<GPURenderBundleDescriptor>& renderBundleDescriptor)
 {
-    RefPtr bundle = m_backing->finish(convertToBacking(renderBundleDescriptor));
+    auto backingDescriptor = convertToBacking(renderBundleDescriptor);
+    RefPtr bundle = m_backing->finish(backingDescriptor);
     m_currentPipeline = nullptr;
     if (!bundle)
         return Exception { ExceptionCode::InvalidStateError, "GPURenderBundleEncoder.finish: Unable to finish."_s };
-    return GPURenderBundle::create(bundle.releaseNonNull(), *this);
+    return GPURenderBundle::create(bundle.releaseNonNull(), WTF::move(backingDescriptor.label), *this);
 }
 
 }
