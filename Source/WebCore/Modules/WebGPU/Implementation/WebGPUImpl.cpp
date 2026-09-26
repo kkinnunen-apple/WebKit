@@ -28,7 +28,6 @@
 
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
-#include "WebGPUAdapterImpl.h"
 #include "WebGPUCompositorIntegrationImpl.h"
 #include "WebGPUExternalTextureDescriptor.h"
 #include "WebGPUImageCopyExternalImage.h"
@@ -42,6 +41,7 @@
 #include <WebCore/ImageBuffer.h>
 #include <WebCore/IntSize.h>
 #include <WebCore/NativeImage.h>
+#include <WebGPU/WebGPUCppBridge.h>
 #include <WebGPU/WebGPUExt.h>
 #include <wtf/BlockPtr.h>
 #include <wtf/TZoneMallocInlines.h>
@@ -81,9 +81,9 @@ void GPUImpl::requestAdapter(const RequestAdapterOptions& options, CompletionHan
         .xrCompatible = options.xrCompatible,
     };
 
-    auto blockPtr = makeBlockPtr([convertToBackingContext = convertToBackingContext.copyRef(), callback = WTF::move(callback)](WGPURequestAdapterStatus status, WGPUAdapter adapter, const char*) mutable {
+    auto blockPtr = makeBlockPtr([callback = WTF::move(callback)](WGPURequestAdapterStatus status, WGPUAdapter adapter, const char*) mutable {
         if (status == WGPURequestAdapterStatus_Success)
-            callback(AdapterImpl::create(adoptWebGPU(adapter), convertToBackingContext));
+            callback(adoptRef(::WebGPU::fromAPI(adapter)));
         else
             callback(nullptr);
     });
@@ -326,8 +326,7 @@ bool GPUImpl::isValid(const Buffer& buffer) const
 
 bool GPUImpl::isValid(const Adapter& adapter) const
 {
-    WGPUAdapter wgpuAdapter = m_convertToBackingContext.get().convertToBacking(adapter);
-    return wgpuAdapterIsValid(wgpuAdapter);
+    return adapter.isValid();
 }
 
 bool GPUImpl::isValid(const BindGroup& bindGroup) const

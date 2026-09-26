@@ -86,44 +86,7 @@ void RemoteAdapter::requestDevice(const WebGPU::DeviceDescriptor& descriptor, We
         auto remoteDevice = RemoteDevice::create(*gpuConnectionToWebProcess, gpu, device, objectHeap, WTF::move(streamConnection), identifier, queueIdentifier);
         objectHeap->addObject(identifier, remoteDevice);
         objectHeap->addObject(queueIdentifier, remoteDevice->queue());
-        auto& limits = device->limits();
-        callback(device->features(), WebGPU::SupportedLimits {
-            limits.maxTextureDimension1D,
-            limits.maxTextureDimension2D,
-            limits.maxTextureDimension3D,
-            limits.maxTextureArrayLayers,
-            limits.maxBindGroups,
-            limits.maxBindGroupsPlusVertexBuffers,
-            limits.maxBindingsPerBindGroup,
-            limits.maxDynamicUniformBuffersPerPipelineLayout,
-            limits.maxDynamicStorageBuffersPerPipelineLayout,
-            limits.maxSampledTexturesPerShaderStage,
-            limits.maxSamplersPerShaderStage,
-            limits.maxStorageBuffersPerShaderStage,
-            limits.maxStorageTexturesPerShaderStage,
-            limits.maxUniformBuffersPerShaderStage,
-            limits.maxUniformBufferBindingSize,
-            limits.maxStorageBufferBindingSize,
-            limits.minUniformBufferOffsetAlignment,
-            limits.minStorageBufferOffsetAlignment,
-            limits.maxVertexBuffers,
-            limits.maxBufferSize,
-            limits.maxVertexAttributes,
-            limits.maxVertexBufferArrayStride,
-            limits.maxInterStageShaderVariables,
-            limits.maxColorAttachments,
-            limits.maxColorAttachmentBytesPerSample,
-            limits.maxComputeWorkgroupStorageSize,
-            limits.maxComputeInvocationsPerWorkgroup,
-            limits.maxComputeWorkgroupSizeX,
-            limits.maxComputeWorkgroupSizeY,
-            limits.maxComputeWorkgroupSizeZ,
-            limits.maxComputeWorkgroupsPerDimension,
-            limits.maxStorageBuffersInFragmentStage,
-            limits.maxStorageTexturesInFragmentStage,
-            limits.maxStorageBuffersInVertexStage,
-            limits.maxStorageTexturesInVertexStage,
-        });
+        callback(device->features(), WebGPU::convertToBacking(device->limits()));
     });
 }
 

@@ -180,45 +180,13 @@ void RemoteGPUProxy::requestAdapter(const WebCore::WebGPU::RequestAdapterOptions
         return;
     }
 
-    Ref resultSupportedFeatures = WebCore::WebGPU::SupportedFeatures::create(WTF::move(response->features.features));
-    Ref resultSupportedLimits = WebCore::WebGPU::SupportedLimits::create(
-        response->limits.maxTextureDimension1D,
-        response->limits.maxTextureDimension2D,
-        response->limits.maxTextureDimension3D,
-        response->limits.maxTextureArrayLayers,
-        response->limits.maxBindGroups,
-        response->limits.maxBindGroupsPlusVertexBuffers,
-        response->limits.maxBindingsPerBindGroup,
-        response->limits.maxDynamicUniformBuffersPerPipelineLayout,
-        response->limits.maxDynamicStorageBuffersPerPipelineLayout,
-        response->limits.maxSampledTexturesPerShaderStage,
-        response->limits.maxSamplersPerShaderStage,
-        response->limits.maxStorageBuffersPerShaderStage,
-        response->limits.maxStorageTexturesPerShaderStage,
-        response->limits.maxUniformBuffersPerShaderStage,
-        response->limits.maxUniformBufferBindingSize,
-        response->limits.maxStorageBufferBindingSize,
-        response->limits.minUniformBufferOffsetAlignment,
-        response->limits.minStorageBufferOffsetAlignment,
-        response->limits.maxVertexBuffers,
-        response->limits.maxBufferSize,
-        response->limits.maxVertexAttributes,
-        response->limits.maxVertexBufferArrayStride,
-        response->limits.maxInterStageShaderVariables,
-        response->limits.maxColorAttachments,
-        response->limits.maxColorAttachmentBytesPerSample,
-        response->limits.maxComputeWorkgroupStorageSize,
-        response->limits.maxComputeInvocationsPerWorkgroup,
-        response->limits.maxComputeWorkgroupSizeX,
-        response->limits.maxComputeWorkgroupSizeY,
-        response->limits.maxComputeWorkgroupSizeZ,
-        response->limits.maxComputeWorkgroupsPerDimension,
-        response->limits.maxStorageBuffersInFragmentStage,
-        response->limits.maxStorageTexturesInFragmentStage,
-        response->limits.maxStorageBuffersInVertexStage,
-        response->limits.maxStorageTexturesInVertexStage
-    );
-    callback(WebGPU::RemoteAdapterProxy::create(WTF::move(response->name), WTF::move(resultSupportedFeatures), WTF::move(resultSupportedLimits), response->isFallbackAdapter, options.xrCompatible, *this, m_convertToBackingContext, identifier, response->subgroupMinSize, response->subgroupMaxSize));
+    ::WebGPU::AdapterInfo info {
+        .name = WTF::move(response->name),
+        .isFallbackAdapter = response->isFallbackAdapter,
+        .subgroupMinSize = response->subgroupMinSize,
+        .subgroupMaxSize = response->subgroupMaxSize,
+    };
+    callback(WebGPU::RemoteAdapterProxy::create(WTF::move(response->features), WebGPU::convertFromBacking(response->limits), WTF::move(info), options.xrCompatible, *this, m_convertToBackingContext, identifier));
 }
 
 RefPtr<WebKit::Mesh> RemoteGPUProxy::createModelBacking(unsigned width, unsigned height, WebModel::ImageAsset&& diffuseTexture, WebModel::ImageAsset&& specularTexture, bool standardDynamicRange, CompletionHandler<void(Vector<MachSendRight>&&)>&& callback)

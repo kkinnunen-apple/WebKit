@@ -71,7 +71,6 @@
 #include "JSDOMPromiseDeferred.h"
 #include "JSGPUComputePipeline.h"
 #include "JSGPUDeviceLostInfo.h"
-#include "JSGPUFeatureName.h"
 #include "JSGPUInternalError.h"
 #include "JSGPUOutOfMemoryError.h"
 #include "JSGPUPipelineError.h"
@@ -116,13 +115,6 @@ Ref<GPUDevice> GPUDevice::create(ScriptExecutionContext* scriptExecutionContext,
     return device;
 }
 
-static Ref<WebGPU::SupportedFeatures> supportedFeatures(const Vector<::WebGPU::FeatureName>& features)
-{
-    return WebGPU::SupportedFeatures::create(features.map([](auto feature) -> String {
-        return convertEnumerationToString(convertFromBacking(feature));
-    }));
-}
-
 GPUDevice::GPUDevice(ScriptExecutionContext* scriptExecutionContext, Ref<WebGPU::Device>&& backing, Ref<WebGPU::GPU>&& gpu, String&& queueLabel, GPUAdapterInfo& adapterInfo)
     : ActiveDOMObject { scriptExecutionContext }
     , m_lostPromise(makeUniqueRef<LostPromise>())
@@ -130,7 +122,7 @@ GPUDevice::GPUDevice(ScriptExecutionContext* scriptExecutionContext, Ref<WebGPU:
     , m_backing(WTF::move(backing))
     , m_queue(GPUQueue::create(m_backing->queue(), m_gpu.copyRef(), *this))
     , m_autoPipelineLayout(createAutoPipelineLayout())
-    , m_features(GPUSupportedFeatures::create(supportedFeatures(m_backing->features())))
+    , m_features(GPUSupportedFeatures::create(m_backing->features()))
     , m_limits(GPUSupportedLimits::create(WebGPU::SupportedLimits::create(m_backing->limits())))
     , m_adapterInfo(adapterInfo)
     , m_owningThreadUID(currentThreadID())

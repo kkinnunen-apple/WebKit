@@ -27,6 +27,7 @@
 
 #include "IDLTypes.h"
 #include "JSDOMSetLike.h"
+#include "WebGPUFeatureName.h"
 #include "WebGPUSupportedFeatures.h"
 #include <wtf/RefCounted.h>
 #include <wtf/Vector.h>
@@ -40,6 +41,7 @@ public:
     {
         return adoptRef(*new GPUSupportedFeatures(WTF::move(backing)));
     }
+    static Ref<GPUSupportedFeatures> create(const Vector<::WebGPU::FeatureName>&);
 
     void initializeSetLike(DOMSetAdapter&) const;
 

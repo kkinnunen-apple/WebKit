@@ -594,6 +594,48 @@ struct Limits {
     uint32_t maxStorageTexturesInVertexStage { 0 };
 };
 
+// https://gpuweb.github.io/gpuweb/#limit-default
+constexpr Limits defaultLimits()
+{
+    return {
+        .maxTextureDimension1D = 8192,
+        .maxTextureDimension2D = 8192,
+        .maxTextureDimension3D = 2048,
+        .maxTextureArrayLayers = 256,
+        .maxBindGroups = 4,
+        .maxBindGroupsPlusVertexBuffers = 24,
+        .maxBindingsPerBindGroup = 1000,
+        .maxDynamicUniformBuffersPerPipelineLayout = 8,
+        .maxDynamicStorageBuffersPerPipelineLayout = 4,
+        .maxSampledTexturesPerShaderStage = 16,
+        .maxSamplersPerShaderStage = 16,
+        .maxStorageBuffersPerShaderStage = 8,
+        .maxStorageTexturesPerShaderStage = 4,
+        .maxUniformBuffersPerShaderStage = 12,
+        .maxUniformBufferBindingSize = 65536,
+        .maxStorageBufferBindingSize = 134217728,
+        .minUniformBufferOffsetAlignment = 256,
+        .minStorageBufferOffsetAlignment = 256,
+        .maxVertexBuffers = 8,
+        .maxBufferSize = 268435456,
+        .maxVertexAttributes = 16,
+        .maxVertexBufferArrayStride = 2048,
+        .maxInterStageShaderVariables = 16,
+        .maxColorAttachments = 8,
+        .maxColorAttachmentBytesPerSample = 32,
+        .maxComputeWorkgroupStorageSize = 16384,
+        .maxComputeInvocationsPerWorkgroup = 256,
+        .maxComputeWorkgroupSizeX = 256,
+        .maxComputeWorkgroupSizeY = 256,
+        .maxComputeWorkgroupSizeZ = 64,
+        .maxComputeWorkgroupsPerDimension = 65535,
+        .maxStorageBuffersInFragmentStage = 8,
+        .maxStorageTexturesInFragmentStage = 4,
+        .maxStorageBuffersInVertexStage = 8,
+        .maxStorageTexturesInVertexStage = 4,
+    };
+}
+
 class Adapter;
 class BindGroup;
 class BindGroupLayout;
@@ -1176,6 +1218,12 @@ class Adapter : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<Adapter> 
 public:
     virtual ~Adapter() = default;
 
+    virtual Vector<FeatureName> features() const = 0;
+    virtual const Limits& limits() const = 0;
+    virtual AdapterInfo info() = 0;
+    virtual bool isXRCompatible() const = 0;
+    // Completes with nullptr when the device cannot be created. An adapter creates one device.
+    virtual void requestDevice(const DeviceDescriptor&, CompletionHandler<void(RefPtr<Device>&&)>&&) = 0;
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 

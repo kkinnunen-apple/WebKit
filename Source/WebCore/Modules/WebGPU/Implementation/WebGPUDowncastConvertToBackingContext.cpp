@@ -28,7 +28,6 @@
 
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
-#include "WebGPUAdapterImpl.h"
 #include "WebGPUBindGroup.h"
 #include "WebGPUBindGroupLayout.h"
 #include "WebGPUBuffer.h"
@@ -63,7 +62,7 @@ WTF_MAKE_TZONE_ALLOCATED_IMPL(DowncastConvertToBackingContext);
 
 WGPUAdapter DowncastConvertToBackingContext::convertToBacking(const Adapter& adapter)
 {
-    return downcast<AdapterImpl>(adapter).backing();
+    return ::WebGPU::toAPI(const_cast<Adapter&>(adapter));
 }
 
 WGPUBindGroup DowncastConvertToBackingContext::convertToBacking(const BindGroup& bindGroup)

@@ -123,7 +123,7 @@ bool Adapter::hasFeature(WGPUFeatureName feature)
     return m_capabilities.features.contains(feature);
 }
 
-void Adapter::requestDevice(const WebGPU::DeviceDescriptor& descriptor, CompletionHandler<void(RefPtr<Device>&&)>&& callback)
+void Adapter::requestDevice(const WebGPU::DeviceDescriptor& descriptor, CompletionHandler<void(RefPtr<WebGPU::Device>&&)>&& callback)
 {
     // The adapter can only request one device.
     if (m_deviceRequested) {
@@ -225,10 +225,10 @@ static void requestDevice(WGPUAdapter adapter, const WGPUDeviceDescriptor& descr
     auto apiDescriptor = WebGPU::Metal::fromAPI(descriptor, storage);
     if (!apiDescriptor)
         return callback(WGPURequestDeviceStatus_Error, nullptr, "Device does not support requested features");
-    protectedAdapter->requestDevice(*apiDescriptor, [callback = WTF::move(callback)](RefPtr<WebGPU::Metal::Device>&& device) {
+    protectedAdapter->requestDevice(*apiDescriptor, [callback = WTF::move(callback)](RefPtr<WebGPU::Device>&& device) {
         if (!device)
             return callback(WGPURequestDeviceStatus_Error, nullptr, "Device could not be created");
-        callback(WGPURequestDeviceStatus_Success, WebGPU::Metal::releaseToAPI(device.releaseNonNull()), "");
+        callback(WGPURequestDeviceStatus_Success, WebGPU::Metal::releaseToAPIAs<WebGPU::Metal::Device>(WTF::move(device)), "");
     });
 }
 

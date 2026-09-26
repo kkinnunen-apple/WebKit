@@ -25,9 +25,19 @@
 
 #include "config.h"
 #include "GPUSupportedFeatures.h"
+
+#include "GPUFeatureName.h"
 #include "IDLTypes.h"
+#include "JSGPUFeatureName.h"
 
 namespace WebCore {
+
+Ref<GPUSupportedFeatures> GPUSupportedFeatures::create(const Vector<::WebGPU::FeatureName>& features)
+{
+    return create(WebGPU::SupportedFeatures::create(features.map([](auto feature) -> String {
+        return convertEnumerationToString(convertFromBacking(feature));
+    })));
+}
 
 void GPUSupportedFeatures::initializeSetLike(DOMSetAdapter& set) const
 {

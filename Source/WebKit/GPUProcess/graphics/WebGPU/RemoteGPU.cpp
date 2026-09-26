@@ -174,46 +174,8 @@ void RemoteGPU::requestAdapter(const WebGPU::RequestAdapterOptions& options, Web
         auto remoteAdapter = RemoteAdapter::create(*gpuConnectionToWebProcess, gpu, *adapter, objectHeap, WTF::move(streamConnection), identifier);
         objectHeap->addObject(identifier, remoteAdapter);
 
-        auto name = adapter->name();
-        Ref features = adapter->features();
-        Ref limits = adapter->limits();
-        callback({ { WTF::move(name), WebGPU::SupportedFeatures { features->features() }, WebGPU::SupportedLimits {
-            limits->maxTextureDimension1D(),
-            limits->maxTextureDimension2D(),
-            limits->maxTextureDimension3D(),
-            limits->maxTextureArrayLayers(),
-            limits->maxBindGroups(),
-            limits->maxBindGroupsPlusVertexBuffers(),
-            limits->maxBindingsPerBindGroup(),
-            limits->maxDynamicUniformBuffersPerPipelineLayout(),
-            limits->maxDynamicStorageBuffersPerPipelineLayout(),
-            limits->maxSampledTexturesPerShaderStage(),
-            limits->maxSamplersPerShaderStage(),
-            limits->maxStorageBuffersPerShaderStage(),
-            limits->maxStorageTexturesPerShaderStage(),
-            limits->maxUniformBuffersPerShaderStage(),
-            limits->maxUniformBufferBindingSize(),
-            limits->maxStorageBufferBindingSize(),
-            limits->minUniformBufferOffsetAlignment(),
-            limits->minStorageBufferOffsetAlignment(),
-            limits->maxVertexBuffers(),
-            limits->maxBufferSize(),
-            limits->maxVertexAttributes(),
-            limits->maxVertexBufferArrayStride(),
-            limits->maxInterStageShaderVariables(),
-            limits->maxColorAttachments(),
-            limits->maxColorAttachmentBytesPerSample(),
-            limits->maxComputeWorkgroupStorageSize(),
-            limits->maxComputeInvocationsPerWorkgroup(),
-            limits->maxComputeWorkgroupSizeX(),
-            limits->maxComputeWorkgroupSizeY(),
-            limits->maxComputeWorkgroupSizeZ(),
-            limits->maxComputeWorkgroupsPerDimension(),
-            limits->maxStorageBuffersInFragmentStage(),
-            limits->maxStorageTexturesInFragmentStage(),
-            limits->maxStorageBuffersInVertexStage(),
-            limits->maxStorageTexturesInVertexStage(),
-        }, adapter->isFallbackAdapter(), adapter->subgroupMinSize(), adapter->subgroupMaxSize() } });
+        auto info = adapter->info();
+        callback({ { WTF::move(info.name), adapter->features(), WebGPU::convertToBacking(adapter->limits()), info.isFallbackAdapter, info.subgroupMinSize, info.subgroupMaxSize } });
     });
 }
 

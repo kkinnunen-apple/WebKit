@@ -38,6 +38,7 @@
 #include "WebGPUOrigin3D.h"
 #include "WebGPURenderPassTimestampWrites.h"
 #include "WebGPUTextureViewDescriptor.h"
+#include <WebCore/WebGPUAdapter.h>
 #include <WebCore/WebGPUBindGroup.h>
 #include <WebCore/WebGPUBindGroupDescriptor.h>
 #include <WebCore/WebGPUBindGroupLayout.h>
@@ -88,7 +89,6 @@
 
 namespace WebCore::WebGPU {
 
-class Adapter;
 struct CanvasConfiguration;
 struct ColorTargetState;
 class CompositorIntegration;
@@ -204,7 +204,7 @@ public:
     std::optional<ComputePassDescriptor> convertToBacking(const WebCore::WebGPU::ComputePassDescriptor&);
     std::optional<ComputePipelineDescriptor> convertToBacking(const ::WebGPU::ComputePipelineDescriptor&);
     std::optional<DepthStencilState> convertToBacking(const ::WebGPU::DepthStencilState&);
-    std::optional<DeviceDescriptor> convertToBacking(const WebCore::WebGPU::DeviceDescriptor&);
+    std::optional<DeviceDescriptor> convertToBacking(const ::WebGPU::DeviceDescriptor&);
     std::optional<Error> convertToBacking(const WebCore::WebGPU::Error&);
     std::optional<ExternalTextureBindingLayout> NODELETE convertToBacking(const WebCore::WebGPU::ExternalTextureBindingLayout&);
     std::optional<ExternalTextureDescriptor> convertToBacking(const WebCore::WebGPU::ExternalTextureDescriptor&);
@@ -239,7 +239,6 @@ public:
     std::optional<StencilFaceState> NODELETE convertToBacking(const WebCore::WebGPU::StencilFaceState&);
     std::optional<StorageTextureBindingLayout> NODELETE convertToBacking(const WebCore::WebGPU::StorageTextureBindingLayout&);
     std::optional<SupportedFeatures> convertToBacking(const WebCore::WebGPU::SupportedFeatures&);
-    std::optional<SupportedLimits> NODELETE convertToBacking(const WebCore::WebGPU::SupportedLimits&);
     std::optional<TextureBindingLayout> NODELETE convertToBacking(const WebCore::WebGPU::TextureBindingLayout&);
     std::optional<TextureDescriptor> convertToBacking(const WebCore::WebGPU::TextureDescriptor&);
     std::optional<ValidationError> NODELETE convertToBacking(const WebCore::WebGPU::ValidationError&);
