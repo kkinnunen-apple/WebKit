@@ -25,11 +25,10 @@
 
 #pragma once
 
-#include <WebCore/WebGPUObjectDescriptorBase.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-struct RenderBundleDescriptor : public ObjectDescriptorBase {
-};
+using RenderBundleDescriptor = ::WebGPU::RenderBundleDescriptor;
 
 } // namespace WebCore::WebGPU

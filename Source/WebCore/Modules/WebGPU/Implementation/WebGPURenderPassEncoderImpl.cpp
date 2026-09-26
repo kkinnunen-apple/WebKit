@@ -32,7 +32,7 @@
 #include "WebGPUBuffer.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUQuerySet.h"
-#include "WebGPURenderBundleImpl.h"
+#include "WebGPURenderBundle.h"
 #include "WebGPURenderPipelineImpl.h"
 #include <WebGPU/WebGPUExt.h>
 #include <wtf/TZoneMallocInlines.h>

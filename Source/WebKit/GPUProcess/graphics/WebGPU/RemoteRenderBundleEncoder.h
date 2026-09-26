@@ -30,6 +30,7 @@
 #include "RemoteGPU.h"
 #include "StreamMessageReceiver.h"
 #include "WebGPUIdentifier.h"
+#include "WebGPURenderBundleDescriptor.h"
 #include <WebCore/WebGPUIndexFormat.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <wtf/Ref.h>
@@ -52,7 +53,6 @@ class GPUConnectionToWebProcess;
 
 namespace WebGPU {
 class ObjectHeap;
-struct RenderBundleDescriptor;
 }
 
 class RemoteRenderBundleEncoder final : public IPC::StreamMessageReceiver {

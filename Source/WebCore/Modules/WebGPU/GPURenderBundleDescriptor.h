@@ -34,7 +34,7 @@ struct GPURenderBundleDescriptor : public GPUObjectDescriptorBase {
     WebGPU::RenderBundleDescriptor convertToBacking() const
     {
         return {
-            { label },
+            .label = label,
         };
     }
 };

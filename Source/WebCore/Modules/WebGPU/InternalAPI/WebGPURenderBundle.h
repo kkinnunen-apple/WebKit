@@ -25,40 +25,10 @@
 
 #pragma once
 
-#include <wtf/Ref.h>
-#include <wtf/RefCountedAndCanMakeWeakPtr.h>
-#include <wtf/WeakPtr.h>
-#include <wtf/text/WTFString.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-class RenderBundle : public RefCountedAndCanMakeWeakPtr<RenderBundle> {
-public:
-    virtual ~RenderBundle() = default;
-
-    String label() const { return m_label; }
-
-    void setLabel(String&& label)
-    {
-        m_label = WTF::move(label);
-        setLabelInternal(m_label);
-    }
-
-    virtual bool isRemoteRenderBundleProxy() const { return false; }
-    virtual bool isRenderBundleImpl() const { return false; }
-
-protected:
-    RenderBundle() = default;
-
-private:
-    RenderBundle(const RenderBundle&) = delete;
-    RenderBundle(RenderBundle&&) = delete;
-    RenderBundle& operator=(const RenderBundle&) = delete;
-    RenderBundle& operator=(RenderBundle&&) = delete;
-
-    virtual void setLabelInternal(const String&) = 0;
-
-    String m_label;
-};
+using RenderBundle = ::WebGPU::RenderBundle;
 
 } // namespace WebCore::WebGPU

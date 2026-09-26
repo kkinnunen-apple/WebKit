@@ -32,6 +32,7 @@
 #include <WebCore/WebGPUExternalTexture.h>
 #include <WebCore/WebGPUPipelineLayout.h>
 #include <WebCore/WebGPUQuerySet.h>
+#include <WebCore/WebGPURenderBundle.h>
 #include <WebCore/WebGPURequestAdapterOptions.h>
 #include <WebCore/WebGPUSampler.h>
 #include <WebCore/WebGPUShaderModule.h>
@@ -62,7 +63,6 @@ class GPUImpl;
 class PresentationContext;
 class Queue;
 class RenderBundleEncoder;
-class RenderBundle;
 class RenderPassEncoder;
 class RenderPipeline;
 class XRBinding;

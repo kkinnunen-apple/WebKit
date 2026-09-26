@@ -37,6 +37,7 @@
 #include "WebGPUPipelineLayout.h"
 #include "WebGPUPtr.h"
 #include "WebGPUQuerySet.h"
+#include "WebGPURenderBundle.h"
 #include "WebGPUSampler.h"
 #include "WebGPUShaderModule.h"
 #include "WebGPUTexture.h"
@@ -66,7 +67,6 @@ class Device;
 class PresentationContext;
 class Queue;
 class RenderBundleEncoder;
-class RenderBundle;
 class RenderPassEncoder;
 class RenderPipeline;
 class XRBinding;

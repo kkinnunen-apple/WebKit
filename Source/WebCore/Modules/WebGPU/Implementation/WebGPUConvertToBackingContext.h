@@ -58,6 +58,7 @@
 #include "WebGPUPrimitiveTopology.h"
 #include "WebGPUQuerySet.h"
 #include "WebGPUQueryType.h"
+#include "WebGPURenderBundle.h"
 #include "WebGPUSampler.h"
 #include "WebGPUSamplerBindingType.h"
 #include "WebGPUShaderModule.h"
@@ -127,7 +128,6 @@ class GPU;
 class PresentationContext;
 class Queue;
 class RenderBundleEncoder;
-class RenderBundle;
 class RenderPassEncoder;
 class RenderPipeline;
 class XRBinding;
