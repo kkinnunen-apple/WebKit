@@ -127,7 +127,7 @@ func commandEncoderCopyBufferToBuffer(
 @_expose(Cxx)
 func commandEncoderBeginRenderPass(
     _ commandEncoder: WebGPU.Metal.CommandEncoder,
-    descriptor: WGPURenderPassDescriptor,
+    descriptor: borrowing WebGPU.RenderPassDescriptor,
 ) -> CxxBridging.RefRenderPassEncoder {
     commandEncoder.beginRenderPass(descriptor: descriptor)
 }
@@ -135,7 +135,7 @@ func commandEncoderBeginRenderPass(
 @_expose(Cxx)
 func commandEncoderBeginComputePass(
     _ commandEncoder: WebGPU.Metal.CommandEncoder,
-    descriptor: WGPUComputePassDescriptor,
+    descriptor: WebGPU.ComputePassDescriptor,
 ) -> CxxBridging.RefComputePassEncoder {
     commandEncoder.beginComputePass(descriptor: descriptor)
 }
@@ -174,45 +174,9 @@ func commandEncoderClearTextureIfNeeded(_ commandEncoder: WebGPU.Metal.CommandEn
 @_expose(Cxx)
 func commandEncoderFinish(
     _ commandEncoder: WebGPU.Metal.CommandEncoder,
-    descriptor: WGPUCommandBufferDescriptor
+    descriptor: WebGPU.CommandBufferDescriptor
 ) -> CxxBridging.RefCommandBuffer {
     commandEncoder.finish(descriptor: descriptor)
-}
-
-extension WGPURenderPassColorAttachment {
-    var depthSlice: UInt32? {
-        __depthSlice == WGPU_DEPTH_SLICE_UNDEFINED ? nil : __depthSlice
-    }
-}
-
-extension WebGPU.Metal.TextureOrTextureView {
-    init(_ attachment: WGPURenderPassColorAttachment?) {
-        if let view = attachment?.view {
-            self.init(WebGPU.Metal.fromAPI(view))
-            return
-        }
-
-        if let texture = attachment?.texture {
-            self.init(WebGPU.Metal.fromAPI(texture))
-            return
-        }
-
-        fatalError()
-    }
-
-    init(_ attachment: WGPURenderPassDepthStencilAttachment?) {
-        if let view = attachment?.view {
-            self.init(WebGPU.Metal.fromAPI(view))
-            return
-        }
-
-        if let texture = attachment?.texture {
-            self.init(WebGPU.Metal.fromAPI(texture))
-            return
-        }
-
-        fatalError()
-    }
 }
 
 extension WebGPU.Metal.CommandEncoder {
@@ -234,7 +198,7 @@ extension WebGPU.Metal.CommandEncoder {
         return nil
     }
 
-    func finish(descriptor: WGPUCommandBufferDescriptor) -> CxxBridging.RefCommandBuffer {
+    func finish(descriptor: WebGPU.CommandBufferDescriptor) -> CxxBridging.RefCommandBuffer {
         if !isValid() || (m_existingCommandEncoder != nil && m_existingCommandEncoder !== m_blitCommandEncoder) {
             setEncoderState(WebGPU.Metal.CommandsMixin.EncoderState.Ended)
             discardCommandBuffer()
@@ -968,9 +932,8 @@ extension WebGPU.Metal.CommandEncoder {
         return nil
     }
 
-    private func errorValidatingRenderPassDescriptor(descriptor: WGPURenderPassDescriptor) -> String? {
-        if let wgpuOcclusionQuery = descriptor.occlusionQuerySet {
-            let occlusionQuery = WebGPU.Metal.fromAPI(wgpuOcclusionQuery)
+    private func errorValidatingRenderPassDescriptor(descriptor: borrowing WebGPU.RenderPassDescriptor) -> String? {
+        if let occlusionQuery = WebGPU.Metal.metalOrNull(descriptor.occlusionQuerySet) {
             if !CxxBridging.isValidToUseWithQuerySetCommandEncoder(occlusionQuery, self) {
                 return "occlusion query does not match the device"
             }
@@ -978,20 +941,24 @@ extension WebGPU.Metal.CommandEncoder {
                 return "occlusion query type is not occlusion"
             }
         }
-        let collection = CollectionOfOne(descriptor)
-        let descriptorSpan = collection.span
-        if let timestampWrites = wgpuGetRenderPassDescriptorTimestampWrites(descriptorSpan)?[0] {
+        if let timestampWrites = Optional(fromCxx: descriptor.timestampWrites) {
             return errorValidatingTimestampWrites(timestampWrites: timestampWrites)
         }
         return nil
     }
 
-    private func errorValidatingTimestampWrites(timestampWrites: WGPUPassTimestampWrites) -> String? {
+    // WGPU_QUERY_SET_INDEX_UNDEFINED for std::nullopt.
+    private func writeIndex(_ timestampWrites: WebGPU.PassTimestampWrites, beginning: Bool) -> UInt32 {
+        let index = beginning ? timestampWrites.beginningOfPassWriteIndex : timestampWrites.endOfPassWriteIndex
+        return Optional(fromCxx: index) ?? UInt32(WGPU_QUERY_SET_INDEX_UNDEFINED)
+    }
+
+    private func errorValidatingTimestampWrites(timestampWrites: WebGPU.PassTimestampWrites) -> String? {
         if !m_device.ptr().hasFeature(WGPUFeatureName_TimestampQuery) {
             return "device does not have timestamp query feature"
         }
 
-        let querySet = WebGPU.Metal.fromAPI(timestampWrites.querySet)
+        let querySet = WebGPU.Metal.metal(timestampWrites.querySet)
         if querySet.type() != WGPUQueryType_Timestamp {
             return "query type is not timestamp but \(querySet.type())"
         }
@@ -1001,34 +968,35 @@ extension WebGPU.Metal.CommandEncoder {
         }
 
         let querySetCount = querySet.count()
-        let beginningOfPassWriteIndex = timestampWriteIndex(writeIndex: timestampWrites.beginningOfPassWriteIndex)
-        let endOfPassWriteIndex = timestampWriteIndex(writeIndex: timestampWrites.endOfPassWriteIndex)
+        let rawBeginningOfPassWriteIndex = writeIndex(timestampWrites, beginning: true)
+        let rawEndOfPassWriteIndex = writeIndex(timestampWrites, beginning: false)
+        let beginningOfPassWriteIndex = timestampWriteIndex(writeIndex: rawBeginningOfPassWriteIndex)
+        let endOfPassWriteIndex = timestampWriteIndex(writeIndex: rawEndOfPassWriteIndex)
         if beginningOfPassWriteIndex >= querySetCount || endOfPassWriteIndex >= querySetCount
-            || timestampWrites.beginningOfPassWriteIndex == timestampWrites.endOfPassWriteIndex
+            || rawBeginningOfPassWriteIndex == rawEndOfPassWriteIndex
         {
             return
-                "writeIndices mismatch: beginningOfPassWriteIndex(\(beginningOfPassWriteIndex) >= querySetCount(\(querySetCount) || endOfPassWriteIndex(\(endOfPassWriteIndex)) >= querySetCount(\(querySetCount)) || timestampWrite.beginningOfPassWriteIndex(\(timestampWrites.beginningOfPassWriteIndex) == timestampWrite.endOfPassWriteIndex(\(timestampWrites.endOfPassWriteIndex))"
+                "writeIndices mismatch: beginningOfPassWriteIndex(\(beginningOfPassWriteIndex) >= querySetCount(\(querySetCount) || endOfPassWriteIndex(\(endOfPassWriteIndex)) >= querySetCount(\(querySetCount)) || timestampWrite.beginningOfPassWriteIndex(\(rawBeginningOfPassWriteIndex) == timestampWrite.endOfPassWriteIndex(\(rawEndOfPassWriteIndex))"
         }
 
         return nil
     }
 
-    private func errorValidatingComputePassDescriptor(descriptor: WGPUComputePassDescriptor) -> String? {
-        let collection = CollectionOfOne(descriptor)
-        if let timestampWrites = wgpuGetComputePassDescriptorTimestampWrites(collection.span)?[0] {
+    private func errorValidatingComputePassDescriptor(descriptor: WebGPU.ComputePassDescriptor) -> String? {
+        if let timestampWrites = Optional(fromCxx: descriptor.timestampWrites) {
             return errorValidatingTimestampWrites(timestampWrites: timestampWrites)
         }
         return nil
     }
 
-    private func loadAction(loadOp: WGPULoadOp, readOnly: UInt32 = 0) -> MTLLoadAction {
+    private func loadAction(loadOp: WGPULoadOp, readOnly: Bool = false) -> MTLLoadAction {
         switch loadOp {
         case WGPULoadOp_Load:
             return .load
         case WGPULoadOp_Clear:
             return .clear
         case WGPULoadOp_Undefined:
-            return readOnly != 0 ? .load : .dontCare
+            return readOnly ? .load : .dontCare
         case WGPULoadOp_Force32:
             assertionFailure()
             return .dontCare
@@ -1059,10 +1027,8 @@ extension WebGPU.Metal.CommandEncoder {
         texture.textureType == .type2DMultisample || texture.textureType == .type2DMultisampleArray
     }
 
-    func beginRenderPass(descriptor: WGPURenderPassDescriptor) -> CxxBridging.RefRenderPassEncoder {
-        let collection = CollectionOfOne(descriptor)
-        let descriptorSpan = collection.span
-        let maxDrawCount = descriptorSpan[0].maxDrawCount
+    func beginRenderPass(descriptor: borrowing WebGPU.RenderPassDescriptor) -> CxxBridging.RefRenderPassEncoder {
+        let maxDrawCount = Optional(fromCxx: descriptor.maxDrawCount) ?? UInt64.max
 
         guard prepareTheEncoderState() else {
             self.generateInvalidEncoderStateError()
@@ -1082,26 +1048,26 @@ extension WebGPU.Metal.CommandEncoder {
 
         let mtlDescriptor = MTLRenderPassDescriptor()
         var counterSampleBuffer = WebGPU.Metal.QuerySet.CounterSampleBuffer()
-        if let wgpuTimestampWrites = wgpuGetRenderPassDescriptorTimestampWrites(descriptorSpan)?[0] {
-            let wgpuQuerySet = wgpuTimestampWrites.querySet
-            let timestampsWrites = WebGPU.Metal.fromAPI(wgpuQuerySet)
+        let optionalTimestampWrites = Optional(fromCxx: descriptor.timestampWrites)
+        if let timestampWrites = optionalTimestampWrites {
+            let timestampsWrites = WebGPU.Metal.metal(timestampWrites.querySet)
             counterSampleBuffer = timestampsWrites.counterSampleBufferWithOffset()
             timestampsWrites.setCommandEncoder(self)
         }
 
         if m_device.ptr().enableEncoderTimestamps() || counterSampleBuffer.buffer != nil {
             if let buffer = counterSampleBuffer.buffer {
-                // FIXME: (rdar://170907276) Prove that the result of `wgpuGetRenderPassDescriptorTimestampWrites` can never be nil.
+                // FIXME: (rdar://170907276) Prove that `optionalTimestampWrites` can never be nil.
                 // swift-format-ignore: NeverForceUnwrap
-                let timestampWrites = wgpuGetRenderPassDescriptorTimestampWrites(descriptorSpan)![0]
+                let timestampWrites = optionalTimestampWrites!
                 mtlDescriptor.sampleBufferAttachments[0].sampleBuffer = buffer
                 mtlDescriptor.sampleBufferAttachments[0].startOfVertexSampleIndex = timestampWriteIndex(
-                    writeIndex: timestampWrites.beginningOfPassWriteIndex,
+                    writeIndex: writeIndex(timestampWrites, beginning: true),
                     defaultValue: MTLCounterDontSample,
                     offset: counterSampleBuffer.offset
                 )
                 mtlDescriptor.sampleBufferAttachments[0].endOfVertexSampleIndex = timestampWriteIndex(
-                    writeIndex: timestampWrites.endOfPassWriteIndex,
+                    writeIndex: writeIndex(timestampWrites, beginning: false),
                     defaultValue: MTLCounterDontSample,
                     offset: counterSampleBuffer.offset
                 )
@@ -1120,7 +1086,7 @@ extension WebGPU.Metal.CommandEncoder {
             }
         }
 
-        guard descriptor.colorAttachmentCount <= 8 else {
+        guard descriptor.colorAttachmentCount() <= 8 else {
             return WebGPU.Metal.RenderPassEncoder.createInvalid(self, m_device.ptr(), "color attachment count is > 8")
         }
 
@@ -1137,14 +1103,13 @@ extension WebGPU.Metal.CommandEncoder {
         var depthSlices: [UInt64: Set<UInt64>] = [:]
         // FIXME: it shouldn't be necessary to pass colorAttachmentCount here
         var compositorTextureSlice: UInt32 = 0
-        if descriptor.colorAttachmentCount != 0 {
-            let attachments = wgpuGetRenderPassDescriptorColorAttachments(descriptorSpan, descriptor.colorAttachmentCount)
-            for i in 0..<attachments.count {
-                let attachment = attachments[i]
-
-                if attachment.view == nil && attachment.texture == nil {
+        if descriptor.colorAttachmentCount() != 0 {
+            for i in 0..<descriptor.colorAttachmentCount() {
+                // An empty slot has no attachment.
+                guard let attachment = Optional(fromCxx: WebGPU.Metal.resolvedColorAttachment(descriptor, i)) else {
                     continue
                 }
+                let optionalResolveTarget = Optional(fromCxx: attachment.resolveTarget)
 
                 // MTLRenderPassColorAttachmentDescriptorArray is bounds-checked internally, so this is guaranteed to be non-nil.
                 // swift-format-ignore: NeverForceUnwrap
@@ -1157,7 +1122,7 @@ extension WebGPU.Metal.CommandEncoder {
                     alpha: attachment.clearValue.a
                 )
 
-                var texture = WebGPU.Metal.TextureOrTextureView(attachment)
+                var texture = attachment.view
                 if !CxxBridging.isValidToUseWith(texture, self) {
                     return WebGPU.Metal.RenderPassEncoder.createInvalid(self, m_device.ptr(), "device mismatch")
                 }
@@ -1207,7 +1172,7 @@ extension WebGPU.Metal.CommandEncoder {
                 mtlAttachment.slice = 0
                 var depthSliceOrArrayLayer: UInt64 = 0
                 // FIXME: (rdar://170907318) This should be changed to `if let` when possible.
-                if var depthSlice = attachment.depthSlice {
+                if var depthSlice = Optional(fromCxx: attachment.depthSlice) {
                     if !texture.is3DTexture() {
                         return WebGPU.Metal.RenderPassEncoder.createInvalid(self, m_device.ptr(), "depthSlice specified on 2D texture")
                     }
@@ -1246,7 +1211,7 @@ extension WebGPU.Metal.CommandEncoder {
                 mtlAttachment.loadAction = loadAction(loadOp: attachment.loadOp)
                 mtlAttachment.storeAction = storeAction(
                     storeOp: attachment.storeOp,
-                    hasResolveTarget: attachment.resolveTarget != nil || attachment.resolveTexture != nil
+                    hasResolveTarget: optionalResolveTarget != nil
                 )
 
                 zeroColorTargets = false
@@ -1256,11 +1221,8 @@ extension WebGPU.Metal.CommandEncoder {
                 }
 
                 var compositorTexture = texture
-                if attachment.resolveTarget != nil || attachment.resolveTexture != nil {
-                    var resolveTarget =
-                        attachment.resolveTarget != nil
-                        ? WebGPU.Metal.TextureOrTextureView(WebGPU.Metal.fromAPI(attachment.resolveTarget))
-                        : WebGPU.Metal.TextureOrTextureView(WebGPU.Metal.fromAPI(attachment.resolveTexture))
+                // FIXME: (rdar://170907318) This should be changed to `if let` when possible.
+                if var resolveTarget = optionalResolveTarget {
                     compositorTexture = resolveTarget
 
                     if !CxxBridging.isValidToUseWith(resolveTarget, self) {
@@ -1304,13 +1266,8 @@ extension WebGPU.Metal.CommandEncoder {
                     attachmentsToClear[i as NSNumber] = textureWithResolve
                     texture.setPreviouslyCleared()
                     // FIXME: (rdar://170907318) This should be changed to `if let` when possible.
-                    if var resolveTarget = attachment.resolveTarget {
-                        // FIXME: rdar://138042799 remove default argument.
-                        WebGPU.Metal.fromAPI(resolveTarget).setPreviouslyCleared(0, 0)
-                    }
-                    // FIXME: (rdar://170907318) This should be changed to `if let` when possible.
-                    if var resolveTexture = attachment.resolveTexture {
-                        WebGPU.Metal.fromAPI(resolveTexture).setPreviouslyCleared()
+                    if var resolveTarget = optionalResolveTarget {
+                        resolveTarget.setPreviouslyCleared()
                     }
                 }
             }
@@ -1322,11 +1279,9 @@ extension WebGPU.Metal.CommandEncoder {
         var hasDepthComponent = false
         var depthStencilAttachmentToClear: (any MTLTexture)? = nil
         var depthAttachmentToClear = false
-        let optionalAttachment = wgpuGetRenderPassDescriptorDepthStencilAttachment(descriptorSpan)?[0]
-        if optionalAttachment != nil {
-            // swift-format-ignore: NeverForceUnwrap
-            let attachment = optionalAttachment!
-            let textureView = WebGPU.Metal.TextureOrTextureView(attachment)
+        let optionalDepthStencilAttachment = Optional(fromCxx: WebGPU.Metal.resolvedDepthStencilAttachment(descriptor))
+        if let attachment = optionalDepthStencilAttachment {
+            let textureView = attachment.view
             if !CxxBridging.isValidToUseWith(textureView, self) {
                 return WebGPU.Metal.RenderPassEncoder.createInvalid(self, m_device.ptr(), "depth stencil texture device mismatch")
             }
@@ -1365,7 +1320,7 @@ extension WebGPU.Metal.CommandEncoder {
                 return WebGPU.Metal.RenderPassEncoder.createInvalid(self, m_device.ptr(), "depth stencil texture is not renderable")
             }
 
-            depthReadOnly = attachment.depthReadOnly != 0
+            depthReadOnly = attachment.depthReadOnly
             if hasDepthComponent {
                 // This is safe because the `depthAttachment` property is `null_resettable` in Objective C.
                 // swift-format-ignore: NeverForceUnwrap
@@ -1429,12 +1384,12 @@ extension WebGPU.Metal.CommandEncoder {
         }
 
         var stencilAttachmentToClear = false
-        if let attachment = wgpuGetRenderPassDescriptorDepthStencilAttachment(descriptorSpan)?[0] {
+        if let attachment = optionalDepthStencilAttachment {
             // This is safe because the `stencilAttachment` property is `null_resettable` in Objective C.
             // swift-format-ignore: NeverForceUnwrap
             let mtlAttachment = mtlDescriptor.stencilAttachment!
-            stencilReadOnly = attachment.stencilReadOnly != 0
-            var textureView = WebGPU.Metal.TextureOrTextureView(attachment)
+            stencilReadOnly = attachment.stencilReadOnly
+            var textureView = attachment.view
             if hasStencilComponent {
                 mtlAttachment.texture = textureView.texture()
             }
@@ -1470,8 +1425,7 @@ extension WebGPU.Metal.CommandEncoder {
 
         var visibilityResultBufferSize: UInt = 0
         var visibilityResultBuffer: (any MTLBuffer)? = nil
-        if let wgpuOcclusionQuery = descriptor.occlusionQuerySet {
-            let occlusionQuery = WebGPU.Metal.fromAPI(wgpuOcclusionQuery)
+        if let occlusionQuery = WebGPU.Metal.metalOrNull(descriptor.occlusionQuerySet) {
             occlusionQuery.setCommandEncoder(self)
             if occlusionQuery.type() != WGPUQueryType_Occlusion {
                 return WebGPU.Metal.RenderPassEncoder.createInvalid(
@@ -1486,9 +1440,7 @@ extension WebGPU.Metal.CommandEncoder {
         }
 
         if attachmentsToClear.count != 0 || depthStencilAttachmentToClear != nil {
-            let attachment = wgpuGetRenderPassDescriptorDepthStencilAttachment(descriptorSpan)?[0]
-            if attachment != nil && depthStencilAttachmentToClear != nil {
-                var texture = WebGPU.Metal.TextureOrTextureView(attachment)
+            if var texture = optionalDepthStencilAttachment?.view, depthStencilAttachmentToClear != nil {
                 texture.setPreviouslyCleared()
             }
 
@@ -2580,8 +2532,8 @@ extension WebGPU.Metal.CommandEncoder {
         }
     }
 
-    func beginComputePass(descriptor: WGPUComputePassDescriptor) -> CxxBridging.RefComputePassEncoder {
-        let collection = CollectionOfOne(descriptor)
+    func beginComputePass(descriptor: WebGPU.ComputePassDescriptor) -> CxxBridging.RefComputePassEncoder {
+        let optionalTimestampWrites = Optional(fromCxx: descriptor.timestampWrites)
 
         guard prepareTheEncoderState() else {
             self.generateInvalidEncoderStateError()
@@ -2613,27 +2565,27 @@ extension WebGPU.Metal.CommandEncoder {
         let computePassDescriptor = MTLComputePassDescriptor()
         computePassDescriptor.dispatchType = .serial
         var counterSampleBuffer = WebGPU.Metal.QuerySet.CounterSampleBuffer()
-        if let wgpuTimestampWrites = wgpuGetComputePassDescriptorTimestampWrites(collection.span)?[0] {
-            let timestampsWrites = WebGPU.Metal.fromAPI(wgpuTimestampWrites.querySet)
+        if let timestampWrites = optionalTimestampWrites {
+            let timestampsWrites = WebGPU.Metal.metal(timestampWrites.querySet)
             counterSampleBuffer = timestampsWrites.counterSampleBufferWithOffset()
             timestampsWrites.setCommandEncoder(self)
         }
 
         if m_device.ptr().enableEncoderTimestamps() || counterSampleBuffer.buffer != nil {
-            // FIXME: (rdar://170907276) Prove that the result of `wgpuGetComputePassDescriptorTimestampWrites` can never be nil.
+            // FIXME: (rdar://170907276) Prove that `optionalTimestampWrites` can never be nil.
             // swift-format-ignore: NeverForceUnwrap
-            let timestampWrites = wgpuGetComputePassDescriptorTimestampWrites(collection.span)![0]
+            let timestampWrites = optionalTimestampWrites!
             computePassDescriptor.sampleBufferAttachments[0].sampleBuffer =
                 counterSampleBuffer.buffer ?? m_device.ptr().timestampsBuffer(m_commandBuffer, 2)
 
             computePassDescriptor.sampleBufferAttachments[0].startOfEncoderSampleIndex = timestampWriteIndex(
-                writeIndex: timestampWrites.beginningOfPassWriteIndex,
+                writeIndex: writeIndex(timestampWrites, beginning: true),
                 defaultValue: MTLCounterDontSample,
                 offset: counterSampleBuffer.offset
             )
 
             computePassDescriptor.sampleBufferAttachments[0].endOfEncoderSampleIndex = timestampWriteIndex(
-                writeIndex: timestampWrites.endOfPassWriteIndex,
+                writeIndex: writeIndex(timestampWrites, beginning: false),
                 defaultValue: MTLCounterDontSample,
                 offset: counterSampleBuffer.offset
             )

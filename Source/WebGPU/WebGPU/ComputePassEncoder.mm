@@ -52,7 +52,7 @@ if (!m_computeCommandEncoder || !m_parentEncoder->isValid() || !protect(m_parent
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(ComputePassEncoder);
 
-ComputePassEncoder::ComputePassEncoder(id<MTLComputeCommandEncoder> computeCommandEncoder, const WGPUComputePassDescriptor&, CommandEncoder& parentEncoder, Device& device)
+ComputePassEncoder::ComputePassEncoder(id<MTLComputeCommandEncoder> computeCommandEncoder, const WebGPU::ComputePassDescriptor&, CommandEncoder& parentEncoder, Device& device)
     : m_computeCommandEncoder(computeCommandEncoder)
     , m_device(device)
     , m_parentEncoder(parentEncoder)

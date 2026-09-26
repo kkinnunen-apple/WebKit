@@ -853,6 +853,12 @@ constexpr WGPUStorageTextureAccess toAPI(WebGPU::StorageTextureAccess value)
     RELEASE_ASSERT_NOT_REACHED();
 }
 
+// std::nullopt is WGPULoadOp_Undefined.
+constexpr WGPULoadOp toAPI(std::optional<WebGPU::LoadOp> value)
+{
+    return value ? toAPI(*value) : WGPULoadOp_Undefined;
+}
+
 constexpr std::optional<WebGPU::StoreOp> fromAPI(WGPUStoreOp value)
 {
     switch (value) {
@@ -2469,6 +2475,135 @@ inline std::optional<WebGPU::RenderPipelineDescriptor> fromAPI(const WGPURenderP
             .alphaToCoverageEnabled = !!descriptor.multisample.alphaToCoverageEnabled,
         },
         .fragment = WTF::move(fragment),
+    };
+}
+
+// std::nullopt is WGPUStoreOp_Undefined.
+constexpr WGPUStoreOp toAPI(std::optional<WebGPU::StoreOp> value)
+{
+    return value ? toAPI(*value) : WGPUStoreOp_Undefined;
+}
+
+constexpr WebGPU::Color fromAPI(const WGPUColor& color)
+{
+    return { .r = color.r, .g = color.g, .b = color.b, .a = color.a };
+}
+
+// WGPU_QUERY_SET_INDEX_UNDEFINED is std::nullopt.
+inline std::optional<WebGPU::PassTimestampWrites> fromAPI(const WGPUPassTimestampWrites& timestampWrites)
+{
+    if (!timestampWrites.querySet)
+        return std::nullopt;
+    auto writeIndex = [](uint32_t value) {
+        return value == WGPU_QUERY_SET_INDEX_UNDEFINED ? std::nullopt : std::optional { value };
+    };
+    return WebGPU::PassTimestampWrites {
+        .querySet = WebGPU::fromAPI(timestampWrites.querySet),
+        .beginningOfPassWriteIndex = writeIndex(timestampWrites.beginningOfPassWriteIndex),
+        .endOfPassWriteIndex = writeIndex(timestampWrites.endOfPassWriteIndex),
+    };
+}
+
+inline std::optional<WebGPU::ComputePassDescriptor> fromAPI(const WGPUComputePassDescriptor& descriptor)
+{
+    std::optional<WebGPU::PassTimestampWrites> timestampWrites;
+    if (auto* wgpuTimestampWrites = descriptor.timestampWrites) {
+        timestampWrites = fromAPI(*wgpuTimestampWrites);
+        if (!timestampWrites)
+            return std::nullopt;
+    }
+    return WebGPU::ComputePassDescriptor {
+        .label = descriptor.label,
+        .timestampWrites = WTF::move(timestampWrites),
+    };
+}
+
+// A view takes precedence over a texture. Neither is std::nullopt.
+inline std::optional<WebGPU::RenderPassAttachmentView> renderPassAttachmentViewFromAPI(WGPUTextureView view, WGPUTexture texture)
+{
+    if (view)
+        return WebGPU::RenderPassAttachmentView { Ref { WebGPU::fromAPI(view) } };
+    if (texture)
+        return WebGPU::RenderPassAttachmentView { Ref { WebGPU::fromAPI(texture) } };
+    return std::nullopt;
+}
+
+// _Undefined is std::nullopt.
+template<typename T>
+inline std::optional<std::optional<T>> optionalOpFromAPI(auto value, auto undefinedValue)
+{
+    if (value == undefinedValue)
+        return std::optional<T> { };
+    auto result = fromAPI(value);
+    if (!result)
+        return std::nullopt;
+    return std::optional<T> { *result };
+}
+
+struct RenderPassDescriptorStorage {
+    Vector<std::optional<WebGPU::RenderPassColorAttachment>> colorAttachments;
+};
+
+inline std::optional<WebGPU::RenderPassDescriptor> fromAPI(const WGPURenderPassDescriptor& descriptor, RenderPassDescriptorStorage& storage LIFETIME_BOUND)
+{
+    // A color attachment without a view and a texture is an empty slot.
+    storage.colorAttachments.clear();
+    for (auto& attachment : unsafeMakeSpan(descriptor.colorAttachments, descriptor.colorAttachmentCount)) {
+        auto view = renderPassAttachmentViewFromAPI(attachment.view, attachment.texture);
+        if (!view) {
+            storage.colorAttachments.append(std::nullopt);
+            continue;
+        }
+        auto loadOp = fromAPI(attachment.loadOp);
+        auto storeOp = fromAPI(attachment.storeOp);
+        if (!loadOp || !storeOp)
+            return std::nullopt;
+        storage.colorAttachments.append(WebGPU::RenderPassColorAttachment {
+            .view = WTF::move(*view),
+            .depthSlice = attachment.depthSlice == WGPU_DEPTH_SLICE_UNDEFINED ? std::nullopt : std::optional { attachment.depthSlice },
+            .resolveTarget = renderPassAttachmentViewFromAPI(attachment.resolveTarget, attachment.resolveTexture),
+            .clearValue = fromAPI(attachment.clearValue),
+            .loadOp = *loadOp,
+            .storeOp = *storeOp,
+        });
+    }
+
+    std::optional<WebGPU::RenderPassDepthStencilAttachment> depthStencilAttachment;
+    if (auto* attachment = descriptor.depthStencilAttachment) {
+        auto view = renderPassAttachmentViewFromAPI(attachment->view, attachment->texture);
+        auto depthLoadOp = optionalOpFromAPI<WebGPU::LoadOp>(attachment->depthLoadOp, WGPULoadOp_Undefined);
+        auto depthStoreOp = optionalOpFromAPI<WebGPU::StoreOp>(attachment->depthStoreOp, WGPUStoreOp_Undefined);
+        auto stencilLoadOp = optionalOpFromAPI<WebGPU::LoadOp>(attachment->stencilLoadOp, WGPULoadOp_Undefined);
+        auto stencilStoreOp = optionalOpFromAPI<WebGPU::StoreOp>(attachment->stencilStoreOp, WGPUStoreOp_Undefined);
+        if (!view || !depthLoadOp || !depthStoreOp || !stencilLoadOp || !stencilStoreOp)
+            return std::nullopt;
+        depthStencilAttachment = WebGPU::RenderPassDepthStencilAttachment {
+            .view = WTF::move(*view),
+            .depthClearValue = attachment->depthClearValue,
+            .depthLoadOp = *depthLoadOp,
+            .depthStoreOp = *depthStoreOp,
+            .depthReadOnly = !!attachment->depthReadOnly,
+            .stencilClearValue = attachment->stencilClearValue,
+            .stencilLoadOp = *stencilLoadOp,
+            .stencilStoreOp = *stencilStoreOp,
+            .stencilReadOnly = !!attachment->stencilReadOnly,
+        };
+    }
+
+    std::optional<WebGPU::PassTimestampWrites> timestampWrites;
+    if (auto* wgpuTimestampWrites = descriptor.timestampWrites) {
+        timestampWrites = fromAPI(*wgpuTimestampWrites);
+        if (!timestampWrites)
+            return std::nullopt;
+    }
+
+    return WebGPU::RenderPassDescriptor {
+        .label = fromAPI(descriptor.label),
+        .colorAttachments = storage.colorAttachments.span(),
+        .depthStencilAttachment = WTF::move(depthStencilAttachment),
+        .occlusionQuerySet = descriptor.occlusionQuerySet ? RefPtr { &WebGPU::fromAPI(descriptor.occlusionQuerySet) } : nullptr,
+        .timestampWrites = WTF::move(timestampWrites),
+        .maxDrawCount = descriptor.maxDrawCount,
     };
 }
 

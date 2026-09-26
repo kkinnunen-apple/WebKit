@@ -86,6 +86,11 @@ inline ExternalTexture& metal(WebGPU::ExternalTexture& externalTexture)
     return static_cast<ExternalTexture&>(externalTexture);
 }
 
+inline QuerySet& metal(WebGPU::QuerySet& querySet)
+{
+    return static_cast<QuerySet&>(querySet);
+}
+
 inline Sampler& metal(WebGPU::Sampler& sampler)
 {
     return static_cast<Sampler&>(sampler);
@@ -106,6 +111,16 @@ inline TextureView& metal(WebGPU::TextureView& textureView)
 inline Buffer& metal(const Ref<WebGPU::Buffer>& buffer)
 {
     return metal(buffer.get());
+}
+
+inline QuerySet& metal(const Ref<WebGPU::QuerySet>& querySet)
+{
+    return metal(querySet.get());
+}
+
+inline QuerySet* metalOrNull(const RefPtr<WebGPU::QuerySet>& querySet)
+{
+    return querySet ? &metal(*querySet) : nullptr;
 }
 
 inline Texture& metal(const Ref<WebGPU::Texture>& texture)
@@ -269,11 +284,6 @@ inline std::span<const WGPUTextureFormat> colorFormatsSpan(const WGPURenderBundl
 inline std::span<const WGPUFeatureName> requiredFeaturesSpan(const WGPUDeviceDescriptor& descriptor)
 {
     return unsafeMakeSpan(descriptor.requiredFeatures, descriptor.requiredFeatureCount);
-}
-
-inline std::span<const WGPURenderPassColorAttachment> colorAttachmentsSpan(const WGPURenderPassDescriptor& descriptor)
-{
-    return unsafeMakeSpan(descriptor.colorAttachments, descriptor.colorAttachmentCount);
 }
 
 template<typename R, typename... Args>

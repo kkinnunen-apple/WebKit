@@ -55,7 +55,7 @@ struct BindableResources;
 class ComputePassEncoder final : public WebGPU::ComputePassEncoder, public WGPUComputePassEncoderImpl, public CommandsMixin {
     WTF_MAKE_TZONE_ALLOCATED(ComputePassEncoder);
 public:
-    static Ref<ComputePassEncoder> create(id<MTLComputeCommandEncoder> computeCommandEncoder, const WGPUComputePassDescriptor& descriptor, CommandEncoder& parentEncoder, Device& device)
+    static Ref<ComputePassEncoder> create(id<MTLComputeCommandEncoder> computeCommandEncoder, const WebGPU::ComputePassDescriptor& descriptor, CommandEncoder& parentEncoder, Device& device)
     {
         return adoptRef(*new ComputePassEncoder(computeCommandEncoder, descriptor, parentEncoder, device));
     }
@@ -93,7 +93,7 @@ public:
     void markEncoderStateWasNotOpen() { m_encoderStateWasNotOpen = true; }
 
 private:
-    ComputePassEncoder(id<MTLComputeCommandEncoder>, const WGPUComputePassDescriptor&, CommandEncoder&, Device&);
+    ComputePassEncoder(id<MTLComputeCommandEncoder>, const WebGPU::ComputePassDescriptor&, CommandEncoder&, Device&);
     ComputePassEncoder(CommandEncoder&, Device&, NSString*);
 
     bool NODELETE validatePopDebugGroup() const;

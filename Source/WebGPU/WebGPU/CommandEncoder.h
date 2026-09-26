@@ -89,8 +89,8 @@ public:
 
     ~CommandEncoder();
 
-    Ref<ComputePassEncoder> beginComputePass(const WGPUComputePassDescriptor&) HAS_SWIFTCXX_THUNK;
-    Ref<RenderPassEncoder> beginRenderPass(const WGPURenderPassDescriptor&) HAS_SWIFTCXX_THUNK;
+    Ref<ComputePassEncoder> beginComputePass(const WebGPU::ComputePassDescriptor&) HAS_SWIFTCXX_THUNK;
+    Ref<RenderPassEncoder> beginRenderPass(const WebGPU::RenderPassDescriptor&) HAS_SWIFTCXX_THUNK;
     void copyBufferToBuffer(const Buffer& source, uint64_t sourceOffset, Buffer& destination, uint64_t destinationOffset, uint64_t size) HAS_SWIFTCXX_THUNK;
     void copyBufferToTexture(const WebGPU::TexelCopyBufferInfo& source, const WebGPU::TexelCopyTextureInfo& destination, const WebGPU::Extent3D& copySize) HAS_SWIFTCXX_THUNK;
     void copyTextureToBuffer(const WebGPU::TexelCopyTextureInfo& source, const WebGPU::TexelCopyBufferInfo& destination, const WebGPU::Extent3D& copySize) HAS_SWIFTCXX_THUNK;
@@ -98,7 +98,7 @@ public:
     void runClearEncoder(NSMutableDictionary<NSNumber*, TextureAndClearColor*> *attachmentsToClear, id<MTLTexture> depthStencilAttachmentToClear, bool depthAttachmentToClear, bool stencilAttachmentToClear, float depthClearValue = 0, uint32_t stencilClearValue = 0, id<MTLRenderCommandEncoder> existingEncoder = nil) HAS_SWIFTCXX_THUNK;
     // std::nullopt is the rest of the buffer after the offset.
     void clearBuffer(Buffer&, uint64_t offset, std::optional<uint64_t> size);
-    Ref<CommandBuffer> finish(const WGPUCommandBufferDescriptor&) HAS_SWIFTCXX_THUNK;
+    Ref<CommandBuffer> finish(const WebGPU::CommandBufferDescriptor&) HAS_SWIFTCXX_THUNK;
     void insertDebugMarker(String&& markerLabel);
     void popDebugGroup();
     void pushDebugGroup(String&& groupLabel);
@@ -169,8 +169,8 @@ private:
 
     NSString * _Nullable validateFinishError() const;
     NSString * _Nullable errorValidatingCopyBufferToBuffer(const Buffer& source, uint64_t sourceOffset, const Buffer& destination, uint64_t destinationOffset, uint64_t size);
-    NSString * _Nullable errorValidatingComputePassDescriptor(const WGPUComputePassDescriptor&) const;
-    NSString * _Nullable errorValidatingRenderPassDescriptor(const WGPURenderPassDescriptor&) const;
+    NSString * _Nullable errorValidatingComputePassDescriptor(const WebGPU::ComputePassDescriptor&) const;
+    NSString * _Nullable errorValidatingRenderPassDescriptor(const WebGPU::RenderPassDescriptor&) const;
     NSString * _Nullable errorValidatingImageCopyBuffer(const WebGPU::TexelCopyBufferInfo&) const;
     NSString * _Nullable errorValidatingCopyBufferToTexture(const WebGPU::TexelCopyBufferInfo&, const WebGPU::TexelCopyTextureInfo&, const WebGPU::Extent3D&) const;
     NSString * _Nullable errorValidatingCopyTextureToBuffer(const WebGPU::TexelCopyTextureInfo&, const WebGPU::TexelCopyBufferInfo&, const WebGPU::Extent3D&) const;
