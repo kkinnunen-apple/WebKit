@@ -37,7 +37,7 @@ namespace WebCore {
 
 class GPUSupportedFeatures : public RefCounted<GPUSupportedFeatures> {
 public:
-    static Ref<GPUSupportedFeatures> create(Ref<WebGPU::SupportedFeatures>&& backing)
+    static Ref<GPUSupportedFeatures> create(Ref<WebGPUSupportedFeatures>&& backing)
     {
         return adoptRef(*new GPUSupportedFeatures(WTF::move(backing)));
     }
@@ -45,16 +45,16 @@ public:
 
     void initializeSetLike(DOMSetAdapter&) const;
 
-    WebGPU::SupportedFeatures& backing() { return m_backing; }
-    const WebGPU::SupportedFeatures& backing() const { return m_backing; }
+    WebGPUSupportedFeatures& backing() { return m_backing; }
+    const WebGPUSupportedFeatures& backing() const { return m_backing; }
 
 private:
-    GPUSupportedFeatures(Ref<WebGPU::SupportedFeatures>&& backing)
+    GPUSupportedFeatures(Ref<WebGPUSupportedFeatures>&& backing)
         : m_backing(WTF::move(backing))
     {
     }
 
-    const Ref<WebGPU::SupportedFeatures> m_backing;
+    const Ref<WebGPUSupportedFeatures> m_backing;
 };
 
 }

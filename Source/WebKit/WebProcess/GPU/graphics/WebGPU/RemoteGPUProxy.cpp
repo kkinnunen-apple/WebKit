@@ -251,7 +251,7 @@ RefPtr<WebCore::WebGPUCompositorIntegration> RemoteGPUProxy::createCompositorInt
     return WebGPU::RemoteCompositorIntegrationProxy::create(*this, m_convertToBackingContext, identifier);
 }
 
-void RemoteGPUProxy::copyExternalImageToTexture(WebCore::WebGPU::Queue& queue, const WebCore::WebGPUExternalImageSource& source, const WebCore::WebGPU::ImageCopyTextureTagged& destination, const WebCore::WebGPU::Extent3D& copySize)
+void RemoteGPUProxy::copyExternalImageToTexture(WebCore::WebGPU::Queue& queue, const WebCore::WebGPUExternalImageSource& source, const WebCore::WebGPUImageCopyTextureTagged& destination, const WebCore::WebGPU::Extent3D& copySize)
 {
     // Every WebCore::WebGPU::Queue in the Web Process is a RemoteQueueProxy.
     static_cast<WebGPU::RemoteQueueProxy&>(queue).copyExternalImageToTexture(source, destination, copySize);
@@ -262,7 +262,7 @@ RefPtr<WebCore::NativeImage> RemoteGPUProxy::nativeImage(WebCore::WebGPU::Queue&
     return static_cast<WebGPU::RemoteQueueProxy&>(queue).getNativeImage(videoFrame);
 }
 
-RefPtr<WebCore::WebGPU::ExternalTexture> RemoteGPUProxy::importExternalTexture(WebCore::WebGPU::Device& device, const WebCore::WebGPU::ExternalTextureDescriptor& descriptor)
+RefPtr<WebCore::WebGPU::ExternalTexture> RemoteGPUProxy::importExternalTexture(WebCore::WebGPU::Device& device, const WebCore::WebGPUExternalTextureDescriptor& descriptor)
 {
     // Every WebCore::WebGPU::Device in the Web Process is a RemoteDeviceProxy.
     return static_cast<WebGPU::RemoteDeviceProxy&>(device).importExternalTexture(descriptor);

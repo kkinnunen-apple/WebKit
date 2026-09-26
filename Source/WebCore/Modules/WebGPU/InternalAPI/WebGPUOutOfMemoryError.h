@@ -28,22 +28,22 @@
 #include <wtf/Ref.h>
 #include <wtf/RefCounted.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-class OutOfMemoryError : public RefCounted<OutOfMemoryError> {
+class WebGPUOutOfMemoryError : public RefCounted<WebGPUOutOfMemoryError> {
 public:
-    static Ref<OutOfMemoryError> create()
+    static Ref<WebGPUOutOfMemoryError> create()
     {
-        return adoptRef(*new OutOfMemoryError());
+        return adoptRef(*new WebGPUOutOfMemoryError());
     }
 
 private:
-    OutOfMemoryError() = default;
+    WebGPUOutOfMemoryError() = default;
 
-    OutOfMemoryError(const OutOfMemoryError&) = delete;
-    OutOfMemoryError(OutOfMemoryError&&) = delete;
-    OutOfMemoryError& operator=(const OutOfMemoryError&) = delete;
-    OutOfMemoryError& operator=(OutOfMemoryError&&) = delete;
+    WebGPUOutOfMemoryError(const WebGPUOutOfMemoryError&) = delete;
+    WebGPUOutOfMemoryError(WebGPUOutOfMemoryError&&) = delete;
+    WebGPUOutOfMemoryError& operator=(const WebGPUOutOfMemoryError&) = delete;
+    WebGPUOutOfMemoryError& operator=(WebGPUOutOfMemoryError&&) = delete;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

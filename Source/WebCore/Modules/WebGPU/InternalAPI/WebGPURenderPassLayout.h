@@ -31,12 +31,12 @@
 #include <optional>
 #include <wtf/Vector.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct RenderPassLayout : public ObjectDescriptorBase {
-    Vector<std::optional<TextureFormat>> colorFormats;
-    std::optional<TextureFormat> depthStencilFormat;
-    Size32 sampleCount { 1 };
+struct WebGPURenderPassLayout : public WebGPUObjectDescriptorBase {
+    Vector<std::optional<WebGPU::TextureFormat>> colorFormats;
+    std::optional<WebGPU::TextureFormat> depthStencilFormat;
+    WebGPU::Size32 sampleCount { 1 };
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

@@ -48,7 +48,7 @@ GPUAdapter::GPUAdapter(Ref<WebGPU::Adapter>&& backing, Ref<WebGPUIntegration>&& 
     , m_gpu(WTF::move(gpu))
     , m_adapterInfo(m_backing->info())
     , m_features(GPUSupportedFeatures::create(m_backing->features()))
-    , m_limits(GPUSupportedLimits::create(WebGPU::SupportedLimits::create(m_backing->limits())))
+    , m_limits(GPUSupportedLimits::create(WebGPUSupportedLimits::create(m_backing->limits())))
     , m_info(GPUAdapterInfo::create(name(), m_adapterInfo.subgroupMinSize, m_adapterInfo.subgroupMaxSize))
 {
 }
@@ -68,7 +68,7 @@ bool GPUAdapter::isFallbackAdapter() const
     return m_adapterInfo.isFallbackAdapter;
 }
 
-static WebGPU::DeviceDescriptor convertToBacking(const std::optional<GPUDeviceDescriptor>& options)
+static WebGPUDeviceDescriptor convertToBacking(const std::optional<GPUDeviceDescriptor>& options)
 {
     if (!options)
         return { };
@@ -161,7 +161,7 @@ static bool NODELETE setAlignmentIntegerValue(uint32_t& limitValue, uint64_t i, 
 
 // The limits of the device that the descriptor asks for: the default limits, raised to the ones it
 // names. std::nullopt when it names one that is unknown, or better than the adapter supports.
-static std::optional<::WebGPU::Limits> requiredLimits(const WebGPU::DeviceDescriptor& descriptor, const ::WebGPU::Limits& supportedLimits)
+static std::optional<::WebGPU::Limits> requiredLimits(const WebGPUDeviceDescriptor& descriptor, const ::WebGPU::Limits& supportedLimits)
 {
     auto limits = ::WebGPU::defaultLimits();
 
@@ -252,7 +252,7 @@ static std::optional<::WebGPU::Limits> requiredLimits(const WebGPU::DeviceDescri
 }
 
 // The features that the descriptor asks for, with the ones that they imply.
-static Vector<WebGPU::FeatureName> requiredFeatures(const WebGPU::DeviceDescriptor& descriptor)
+static Vector<WebGPU::FeatureName> requiredFeatures(const WebGPUDeviceDescriptor& descriptor)
 {
     auto features = descriptor.requiredFeatures;
 

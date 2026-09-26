@@ -29,39 +29,39 @@
 #include <wtf/RefCounted.h>
 #include <wtf/text/WTFString.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-class InternalError final : public RefCounted<InternalError> {
+class WebGPUInternalError final : public RefCounted<WebGPUInternalError> {
 public:
-    static Ref<InternalError> create(String&& message)
+    static Ref<WebGPUInternalError> create(String&& message)
     {
-        return adoptRef(*new InternalError(WTF::move(message)));
+        return adoptRef(*new WebGPUInternalError(WTF::move(message)));
     }
 
-    static Ref<InternalError> create(const String& message)
+    static Ref<WebGPUInternalError> create(const String& message)
     {
-        return adoptRef(*new InternalError(message));
+        return adoptRef(*new WebGPUInternalError(message));
     }
 
     const String& message() const LIFETIME_BOUND { return m_message; }
 
 private:
-    InternalError(String&& message)
+    WebGPUInternalError(String&& message)
         : m_message(WTF::move(message))
     {
     }
 
-    InternalError(const String& message)
+    WebGPUInternalError(const String& message)
         : m_message(message)
     {
     }
 
-    InternalError(const InternalError&) = delete;
-    InternalError(InternalError&&) = delete;
-    InternalError& operator=(const InternalError&) = delete;
-    InternalError& operator=(InternalError&&) = delete;
+    WebGPUInternalError(const WebGPUInternalError&) = delete;
+    WebGPUInternalError(WebGPUInternalError&&) = delete;
+    WebGPUInternalError& operator=(const WebGPUInternalError&) = delete;
+    WebGPUInternalError& operator=(WebGPUInternalError&&) = delete;
 
     String m_message;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

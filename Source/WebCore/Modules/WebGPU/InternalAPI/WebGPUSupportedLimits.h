@@ -30,11 +30,11 @@
 #include <wtf/Ref.h>
 #include <wtf/RefCounted.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-class SupportedLimits final : public RefCounted<SupportedLimits> {
+class WebGPUSupportedLimits final : public RefCounted<WebGPUSupportedLimits> {
 public:
-    static Ref<SupportedLimits> create(const ::WebGPU::Limits& limits)
+    static Ref<WebGPUSupportedLimits> create(const ::WebGPU::Limits& limits)
     {
         return create(
             limits.maxTextureDimension1D,
@@ -74,7 +74,7 @@ public:
             limits.maxStorageTexturesInVertexStage);
     }
 
-    static Ref<SupportedLimits> create(
+    static Ref<WebGPUSupportedLimits> create(
         uint32_t maxTextureDimension1D,
         uint32_t maxTextureDimension2D,
         uint32_t maxTextureDimension3D,
@@ -111,7 +111,7 @@ public:
         uint32_t maxStorageBuffersInVertexStage,
         uint32_t maxStorageTexturesInVertexStage)
     {
-        return adoptRef(*new SupportedLimits(
+        return adoptRef(*new WebGPUSupportedLimits(
             maxTextureDimension1D,
             maxTextureDimension2D,
             maxTextureDimension3D,
@@ -149,9 +149,9 @@ public:
             maxStorageTexturesInVertexStage));
     }
 
-    static Ref<SupportedLimits> clone(const SupportedLimits& limits)
+    static Ref<WebGPUSupportedLimits> clone(const WebGPUSupportedLimits& limits)
     {
-        return adoptRef(*new SupportedLimits(
+        return adoptRef(*new WebGPUSupportedLimits(
             limits.maxTextureDimension1D(),
             limits.maxTextureDimension2D(),
             limits.maxTextureDimension3D(),
@@ -226,7 +226,7 @@ public:
     uint32_t maxStorageTexturesInVertexStage() const { return m_maxStorageTexturesInVertexStage; }
 
 private:
-    SupportedLimits(
+    WebGPUSupportedLimits(
         uint32_t maxTextureDimension1D,
         uint32_t maxTextureDimension2D,
         uint32_t maxTextureDimension3D,
@@ -300,10 +300,10 @@ private:
     {
     }
 
-    SupportedLimits(const SupportedLimits&) = delete;
-    SupportedLimits(SupportedLimits&&) = delete;
-    SupportedLimits& operator=(const SupportedLimits&) = delete;
-    SupportedLimits& operator=(SupportedLimits&&) = delete;
+    WebGPUSupportedLimits(const WebGPUSupportedLimits&) = delete;
+    WebGPUSupportedLimits(WebGPUSupportedLimits&&) = delete;
+    WebGPUSupportedLimits& operator=(const WebGPUSupportedLimits&) = delete;
+    WebGPUSupportedLimits& operator=(WebGPUSupportedLimits&&) = delete;
 
     uint32_t m_maxTextureDimension1D { 0 };
     uint32_t m_maxTextureDimension2D { 0 };
@@ -342,4 +342,4 @@ private:
     uint32_t m_maxStorageTexturesInVertexStage { 0 };
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

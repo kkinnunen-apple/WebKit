@@ -68,7 +68,7 @@ std::optional<WebCore::WebGPUExternalImageSource> ConvertFromBackingContext::con
     // the pixel buffer the backing queue wraps, and read the display transform off the frame the
     // pixel buffer came from; a decoded frame is opaque, so its alpha needs neither premultiplying
     // nor undoing.
-    return { { imageCopyExternalImage.origin, imageCopyExternalImage.flipY, nullptr, true, WebCore::WebGPU::VideoSourceIdentifier { pixelBuffer }, rotation, isMirrored } };
+    return { { imageCopyExternalImage.origin, imageCopyExternalImage.flipY, nullptr, true, WebCore::WebGPUVideoSourceIdentifier { pixelBuffer }, rotation, isMirrored } };
 }
 #endif
 

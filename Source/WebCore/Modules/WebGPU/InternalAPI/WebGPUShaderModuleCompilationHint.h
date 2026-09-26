@@ -29,10 +29,10 @@
 #include <wtf/Ref.h>
 #include <wtf/WeakRef.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct ShaderModuleCompilationHint {
-    Ref<PipelineLayout> pipelineLayout;
+struct WebGPUShaderModuleCompilationHint {
+    Ref<WebGPU::PipelineLayout> pipelineLayout;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

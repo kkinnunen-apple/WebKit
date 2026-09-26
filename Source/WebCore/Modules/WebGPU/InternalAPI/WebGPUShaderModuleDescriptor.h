@@ -29,12 +29,12 @@
 #include <WebCore/WebGPUShaderModuleCompilationHint.h>
 #include <wtf/text/WTFString.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct ShaderModuleDescriptor : public ObjectDescriptorBase {
+struct WebGPUShaderModuleDescriptor : public WebGPUObjectDescriptorBase {
     String code;
     // JSC::Strong<JSC::JSObject> sourceMap;
-    Vector<KeyValuePair<String, ShaderModuleCompilationHint>> hints;
+    Vector<KeyValuePair<String, WebGPUShaderModuleCompilationHint>> hints;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

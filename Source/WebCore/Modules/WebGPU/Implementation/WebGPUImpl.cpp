@@ -153,7 +153,7 @@ static std::optional<SourceTextureFormat> NODELETE sourceTextureFormat(PixelForm
     return std::nullopt;
 }
 
-void WebGPUIntegrationImpl::copyExternalImageToTexture(Queue& queue, const WebGPUExternalImageSource& source, const ImageCopyTextureTagged& destination, const Extent3D& copySize)
+void WebGPUIntegrationImpl::copyExternalImageToTexture(Queue& queue, const WebGPUExternalImageSource& source, const WebGPUImageCopyTextureTagged& destination, const Extent3D& copySize)
 {
     ::WebGPU::ImageCopyExternalImage backingSource {
         .origin = source.origin.value_or(Origin2D { }),
@@ -223,7 +223,7 @@ RefPtr<WebCore::NativeImage> WebGPUIntegrationImpl::nativeImage(Queue&, WebCore:
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-RefPtr<ExternalTexture> WebGPUIntegrationImpl::importExternalTexture(Device& device, const ExternalTextureDescriptor& descriptor)
+RefPtr<ExternalTexture> WebGPUIntegrationImpl::importExternalTexture(Device& device, const WebGPUExternalTextureDescriptor& descriptor)
 {
     auto* pixelBuffer = std::get_if<RetainPtr<CVPixelBufferRef>>(&descriptor.videoBacking);
     return device.importExternalTexture({

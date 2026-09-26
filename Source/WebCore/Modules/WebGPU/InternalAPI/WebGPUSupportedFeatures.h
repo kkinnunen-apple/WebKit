@@ -29,44 +29,44 @@
 #include <wtf/Vector.h>
 #include <wtf/text/WTFString.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-class SupportedFeatures final : public RefCounted<SupportedFeatures> {
+class WebGPUSupportedFeatures final : public RefCounted<WebGPUSupportedFeatures> {
 public:
-    static Ref<SupportedFeatures> create(Vector<String>&& features)
+    static Ref<WebGPUSupportedFeatures> create(Vector<String>&& features)
     {
-        return adoptRef(*new SupportedFeatures(WTF::move(features)));
+        return adoptRef(*new WebGPUSupportedFeatures(WTF::move(features)));
     }
 
-    static Ref<SupportedFeatures> create(const Vector<String>& features)
+    static Ref<WebGPUSupportedFeatures> create(const Vector<String>& features)
     {
-        return adoptRef(*new SupportedFeatures(features));
+        return adoptRef(*new WebGPUSupportedFeatures(features));
     }
 
-    static Ref<SupportedFeatures> clone(const SupportedFeatures& features)
+    static Ref<WebGPUSupportedFeatures> clone(const WebGPUSupportedFeatures& features)
     {
-        return adoptRef(*new SupportedFeatures(Vector<String>(features.features())));
+        return adoptRef(*new WebGPUSupportedFeatures(Vector<String>(features.features())));
     }
 
     const Vector<String>& features() const LIFETIME_BOUND { return m_features; }
 
 private:
-    SupportedFeatures(Vector<String>&& features)
+    WebGPUSupportedFeatures(Vector<String>&& features)
         : m_features(WTF::move(features))
     {
     }
 
-    SupportedFeatures(const Vector<String>& features)
+    WebGPUSupportedFeatures(const Vector<String>& features)
         : m_features(features)
     {
     }
 
-    SupportedFeatures(const SupportedFeatures&) = delete;
-    SupportedFeatures(SupportedFeatures&&) = delete;
-    SupportedFeatures& operator=(const SupportedFeatures&) = delete;
-    SupportedFeatures& operator=(SupportedFeatures&&) = delete;
+    WebGPUSupportedFeatures(const WebGPUSupportedFeatures&) = delete;
+    WebGPUSupportedFeatures(WebGPUSupportedFeatures&&) = delete;
+    WebGPUSupportedFeatures& operator=(const WebGPUSupportedFeatures&) = delete;
+    WebGPUSupportedFeatures& operator=(WebGPUSupportedFeatures&&) = delete;
 
     Vector<String> m_features;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

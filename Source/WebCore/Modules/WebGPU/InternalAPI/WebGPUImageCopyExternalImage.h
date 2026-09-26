@@ -48,7 +48,7 @@ struct WebGPUExternalImageSource {
     // Set in place of imageBuffer when the source is a video element or a WebCodecs frame. The
     // decoded frame already lives in the GPU process, so it is named rather than read back, the
     // same way importExternalTexture() names one.
-    std::optional<WebGPU::VideoSourceIdentifier> videoSource;
+    std::optional<WebGPUVideoSourceIdentifier> videoSource;
 #if ENABLE(VIDEO)
     // How that frame has to be transformed to be presented, which its pixels are not stored with:
     // a horizontal mirror if videoSourceIsMirrored, then a clockwise rotation. A frame a media

@@ -33,14 +33,14 @@
 #include <WebCore/WebGPUVertexState.h>
 #include <optional>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct RenderPipelineDescriptor : public PipelineDescriptorBase {
-    VertexState vertex;
-    std::optional<PrimitiveState> primitive;
-    std::optional<DepthStencilState> depthStencil;
-    std::optional<MultisampleState> multisample;
-    std::optional<FragmentState> fragment;
+struct WebGPURenderPipelineDescriptor : public WebGPUPipelineDescriptorBase {
+    WebGPUVertexState vertex;
+    std::optional<WebGPU::PrimitiveState> primitive;
+    std::optional<WebGPUDepthStencilState> depthStencil;
+    std::optional<WebGPU::MultisampleState> multisample;
+    std::optional<WebGPUFragmentState> fragment;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

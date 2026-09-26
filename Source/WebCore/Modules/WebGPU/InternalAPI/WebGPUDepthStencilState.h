@@ -31,23 +31,23 @@
 #include <WebCore/WebGPUTextureFormat.h>
 #include <optional>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct DepthStencilState {
-    TextureFormat format { TextureFormat::R8unorm };
+struct WebGPUDepthStencilState {
+    WebGPU::TextureFormat format { WebGPU::TextureFormat::R8unorm };
 
     std::optional<bool> depthWriteEnabled;
-    std::optional<CompareFunction> depthCompare;
+    std::optional<WebGPU::CompareFunction> depthCompare;
 
-    StencilFaceState stencilFront;
-    StencilFaceState stencilBack;
+    WebGPU::StencilFaceState stencilFront;
+    WebGPU::StencilFaceState stencilBack;
 
-    std::optional<StencilValue> stencilReadMask;
-    std::optional<StencilValue> stencilWriteMask;
+    std::optional<WebGPU::StencilValue> stencilReadMask;
+    std::optional<WebGPU::StencilValue> stencilWriteMask;
 
-    DepthBias depthBias { 0 };
+    WebGPU::DepthBias depthBias { 0 };
     float depthBiasSlopeScale { 0 };
     float depthBiasClamp { 0 };
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

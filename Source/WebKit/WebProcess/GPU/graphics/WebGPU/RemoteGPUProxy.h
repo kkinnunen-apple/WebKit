@@ -76,9 +76,9 @@ public:
     void deref() const final { return ThreadSafeRefCounted<RemoteGPUProxy>::deref(); }
 
     void paintToCanvas(WebCore::NativeImage&, const WebCore::IntSize&, WebCore::GraphicsContext&) final;
-    void copyExternalImageToTexture(WebCore::WebGPU::Queue&, const WebCore::WebGPUExternalImageSource& source, const WebCore::WebGPU::ImageCopyTextureTagged& destination, const WebCore::WebGPU::Extent3D& copySize) final;
+    void copyExternalImageToTexture(WebCore::WebGPU::Queue&, const WebCore::WebGPUExternalImageSource& source, const WebCore::WebGPUImageCopyTextureTagged& destination, const WebCore::WebGPU::Extent3D& copySize) final;
     RefPtr<WebCore::NativeImage> nativeImage(WebCore::WebGPU::Queue&, WebCore::VideoFrame&) final;
-    RefPtr<WebCore::WebGPU::ExternalTexture> importExternalTexture(WebCore::WebGPU::Device&, const WebCore::WebGPU::ExternalTextureDescriptor&) final;
+    RefPtr<WebCore::WebGPU::ExternalTexture> importExternalTexture(WebCore::WebGPU::Device&, const WebCore::WebGPUExternalTextureDescriptor&) final;
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
     void updateExternalTexture(WebCore::WebGPU::Device&, const WebCore::WebGPU::ExternalTexture&, const WebCore::MediaPlayerIdentifier&) final;
 #endif

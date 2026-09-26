@@ -34,17 +34,17 @@
 #include <wtf/Vector.h>
 #include <wtf/WeakRef.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct CanvasConfiguration {
-    Ref<Device> device;
-    TextureFormat format { TextureFormat::R8unorm };
-    TextureUsageFlags usage { TextureUsage::RenderAttachment };
-    Vector<TextureFormat> viewFormats;
+struct WebGPUCanvasConfiguration {
+    Ref<WebGPU::Device> device;
+    WebGPU::TextureFormat format { WebGPU::TextureFormat::R8unorm };
+    WebGPU::TextureUsageFlags usage { WebGPU::TextureUsage::RenderAttachment };
+    Vector<WebGPU::TextureFormat> viewFormats;
     PredefinedColorSpace colorSpace { PredefinedColorSpace::SRGB };
-    CanvasToneMappingMode toneMappingMode { CanvasToneMappingMode::Standard };
-    CanvasAlphaMode compositingAlphaMode { CanvasAlphaMode::Opaque };
+    WebGPU::CanvasToneMappingMode toneMappingMode { WebGPU::CanvasToneMappingMode::Standard };
+    WebGPU::CanvasAlphaMode compositingAlphaMode { WebGPU::CanvasAlphaMode::Opaque };
     bool reportValidationErrors { true };
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

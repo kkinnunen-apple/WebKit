@@ -39,7 +39,7 @@ namespace WebCore {
 
 Lock GPURenderPipeline::s_instancesLock;
 
-Ref<GPURenderPipeline> GPURenderPipeline::create(Ref<WebGPU::RenderPipeline>&& backing, uint64_t uniqueId, GPUDevice* device, WebGPU::RenderPipelineDescriptor&& descriptor, const WebGPU::ShaderModuleDescriptor& vertexShaderModuleDescriptor, std::optional<WebGPU::ShaderModuleDescriptor>&& fragmentShaderModuleDescriptor, bool sharesVertexFragmentShader)
+Ref<GPURenderPipeline> GPURenderPipeline::create(Ref<WebGPU::RenderPipeline>&& backing, uint64_t uniqueId, GPUDevice* device, WebGPURenderPipelineDescriptor&& descriptor, const WebGPUShaderModuleDescriptor& vertexShaderModuleDescriptor, std::optional<WebGPUShaderModuleDescriptor>&& fragmentShaderModuleDescriptor, bool sharesVertexFragmentShader)
 {
     Ref result = adoptRef(*new GPURenderPipeline(WTF::move(backing), uniqueId, device, WTF::move(descriptor), vertexShaderModuleDescriptor, WTF::move(fragmentShaderModuleDescriptor), sharesVertexFragmentShader));
 
@@ -72,7 +72,7 @@ void GPURenderPipeline::willDestroyDevice(GPUDevice& device)
     }
 }
 
-GPURenderPipeline::GPURenderPipeline(Ref<WebGPU::RenderPipeline>&& backing, uint64_t uniqueId, GPUDevice* device, WebGPU::RenderPipelineDescriptor&& descriptor, const WebGPU::ShaderModuleDescriptor& vertexShaderModuleDescriptor, std::optional<WebGPU::ShaderModuleDescriptor>&& fragmentShaderModuleDescriptor, bool sharesVertexFragmentShader)
+GPURenderPipeline::GPURenderPipeline(Ref<WebGPU::RenderPipeline>&& backing, uint64_t uniqueId, GPUDevice* device, WebGPURenderPipelineDescriptor&& descriptor, const WebGPUShaderModuleDescriptor& vertexShaderModuleDescriptor, std::optional<WebGPUShaderModuleDescriptor>&& fragmentShaderModuleDescriptor, bool sharesVertexFragmentShader)
     : m_backing(WTF::move(backing))
     , m_uniqueId(uniqueId)
     , m_descriptor(WTF::move(descriptor))
@@ -169,7 +169,7 @@ void GPURenderPipeline::createPipelineForInspectorHighlight(unsigned canvasColor
         return;
     }
 
-    RefPtr vertexShaderModule = WebGPU::createShaderModule(device->backing(), m_vertexShaderModuleDescriptor);
+    RefPtr vertexShaderModule = WebCore::createShaderModule(device->backing(), m_vertexShaderModuleDescriptor);
     if (!vertexShaderModule) {
         completionHandler(nullptr);
         return;
@@ -179,7 +179,7 @@ void GPURenderPipeline::createPipelineForInspectorHighlight(unsigned canvasColor
     if (m_sharesVertexFragmentShader)
         fragmentShaderModule = vertexShaderModule;
     else
-        fragmentShaderModule = WebGPU::createShaderModule(device->backing(), *m_fragmentShaderModuleDescriptor);
+        fragmentShaderModule = WebCore::createShaderModule(device->backing(), *m_fragmentShaderModuleDescriptor);
     if (!fragmentShaderModule) {
         completionHandler(nullptr);
         return;
@@ -219,7 +219,7 @@ void GPURenderPipeline::createPipelineForInspectorHighlight(unsigned canvasColor
         return;
     }
 
-    WebGPU::createRenderPipelineWithPipelineLayoutFromPipelineAsync(device->backing(), descriptor, m_backing, [completionHandler = WTF::move(completionHandler)](Expected<Ref<WebGPU::RenderPipeline>, ::WebGPU::PipelineError>&& pipeline) mutable {
+    WebCore::createRenderPipelineWithPipelineLayoutFromPipelineAsync(device->backing(), descriptor, m_backing, [completionHandler = WTF::move(completionHandler)](Expected<Ref<WebGPU::RenderPipeline>, ::WebGPU::PipelineError>&& pipeline) mutable {
         completionHandler(pipeline ? RefPtr { WTF::move(*pipeline) } : nullptr);
     });
 }
@@ -250,7 +250,7 @@ void GPURenderPipeline::updateShader(const String& source, bool updateVertexShad
     }
 
     device->backing().pauseAllErrorReporting(true);
-    RefPtr vertexShaderModule = WebGPU::createShaderModule(device->backing(), vertexShaderModuleDescriptor);
+    RefPtr vertexShaderModule = WebCore::createShaderModule(device->backing(), vertexShaderModuleDescriptor);
     if (!vertexShaderModule) {
         device->backing().pauseAllErrorReporting(false);
         completionHandler(false);
@@ -262,7 +262,7 @@ void GPURenderPipeline::updateShader(const String& source, bool updateVertexShad
         if (m_sharesVertexFragmentShader)
             fragmentShaderModule = vertexShaderModule;
         else
-            fragmentShaderModule = WebGPU::createShaderModule(device->backing(), *fragmentShaderModuleDescriptor);
+            fragmentShaderModule = WebCore::createShaderModule(device->backing(), *fragmentShaderModuleDescriptor);
         if (!fragmentShaderModule) {
             device->backing().pauseAllErrorReporting(false);
             completionHandler(false);
@@ -281,7 +281,7 @@ void GPURenderPipeline::updateShader(const String& source, bool updateVertexShad
         descriptor.fragment->module = *fragmentShaderModule;
     }
 
-    WebGPU::createRenderPipelineWithPipelineLayoutFromPipelineAsync(device->backing(), descriptor, m_backing, [weakThis = WeakPtr { *this }, descriptor, vertexShaderModuleDescriptor = WTF::move(vertexShaderModuleDescriptor), fragmentShaderModuleDescriptor = WTF::move(fragmentShaderModuleDescriptor), completionHandler = WTF::move(completionHandler)](Expected<Ref<WebGPU::RenderPipeline>, ::WebGPU::PipelineError>&& pipeline) mutable {
+    WebCore::createRenderPipelineWithPipelineLayoutFromPipelineAsync(device->backing(), descriptor, m_backing, [weakThis = WeakPtr { *this }, descriptor, vertexShaderModuleDescriptor = WTF::move(vertexShaderModuleDescriptor), fragmentShaderModuleDescriptor = WTF::move(fragmentShaderModuleDescriptor), completionHandler = WTF::move(completionHandler)](Expected<Ref<WebGPU::RenderPipeline>, ::WebGPU::PipelineError>&& pipeline) mutable {
         RefPtr protectedThis { weakThis };
         if (!protectedThis) {
             completionHandler(false);

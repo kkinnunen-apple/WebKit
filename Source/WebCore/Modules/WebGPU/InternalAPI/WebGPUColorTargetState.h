@@ -30,13 +30,13 @@
 #include <WebCore/WebGPUTextureFormat.h>
 #include <optional>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct ColorTargetState {
-    TextureFormat format { TextureFormat::R8unorm };
+struct WebGPUColorTargetState {
+    WebGPU::TextureFormat format { WebGPU::TextureFormat::R8unorm };
 
-    std::optional<BlendState> blend;
-    ColorWriteFlags writeMask { ColorWriteFlags_All };
+    std::optional<WebGPU::BlendState> blend;
+    WebGPU::ColorWriteFlags writeMask { WebGPU::ColorWriteFlags_All };
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

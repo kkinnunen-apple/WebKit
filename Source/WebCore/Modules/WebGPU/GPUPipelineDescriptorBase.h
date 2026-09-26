@@ -81,7 +81,7 @@ template<typename T> struct UniquelyAnnotatedDescriptor {
 };
 
 struct GPUPipelineDescriptorBase : public GPUObjectDescriptorBase {
-    WebGPU::PipelineDescriptorBase convertToBacking(const Ref<GPUPipelineLayout>& autoLayout) const
+    WebGPUPipelineDescriptorBase convertToBacking(const Ref<GPUPipelineLayout>& autoLayout) const
     {
         return {
             { label },

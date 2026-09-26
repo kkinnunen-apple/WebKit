@@ -147,7 +147,7 @@ RefPtr<WebCore::WebGPU::Sampler> RemoteDeviceProxy::createSampler(const WebCore:
     return result;
 }
 
-RefPtr<WebCore::WebGPU::ExternalTexture> RemoteDeviceProxy::importExternalTexture(const WebCore::WebGPU::ExternalTextureDescriptor& descriptor)
+RefPtr<WebCore::WebGPU::ExternalTexture> RemoteDeviceProxy::importExternalTexture(const WebCore::WebGPUExternalTextureDescriptor& descriptor)
 {
     auto identifier = WebGPUIdentifier::generate();
 

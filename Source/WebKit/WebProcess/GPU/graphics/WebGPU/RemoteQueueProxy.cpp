@@ -126,7 +126,7 @@ void RemoteQueueProxy::copyExternalImageToTexture(const ::WebGPU::ImageCopyExter
 
 void RemoteQueueProxy::copyExternalImageToTexture(
     const WebCore::WebGPUExternalImageSource& source,
-    const WebCore::WebGPU::ImageCopyTextureTagged& destination,
+    const WebCore::WebGPUImageCopyTextureTagged& destination,
     const WebCore::WebGPU::Extent3D& copySize)
 {
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
@@ -162,7 +162,7 @@ void RemoteQueueProxy::copyExternalImageToTexture(
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
 void RemoteQueueProxy::copyExternalImageFromVideoFrameToTexture(
     const WebCore::WebGPUExternalImageSource& source,
-    const WebCore::WebGPU::ImageCopyTextureTagged& destination,
+    const WebCore::WebGPUImageCopyTextureTagged& destination,
     const WebCore::WebGPU::Extent3D& copySize)
 {
     Ref convertToBackingContext = m_convertToBackingContext;

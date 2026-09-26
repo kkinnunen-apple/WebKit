@@ -733,7 +733,7 @@ struct GPUResidentSource {
     bool premultipliedAlpha { true };
     // Set instead of imageBuffer when the source is a video: a decoded frame is not an ImageBuffer,
     // it is a CVPixelBuffer the GPU process already holds.
-    std::optional<WebGPU::VideoSourceIdentifier> videoSource { };
+    std::optional<WebGPUVideoSourceIdentifier> videoSource { };
 
     bool isGPUResident() const { return imageBuffer || videoSource; }
 };

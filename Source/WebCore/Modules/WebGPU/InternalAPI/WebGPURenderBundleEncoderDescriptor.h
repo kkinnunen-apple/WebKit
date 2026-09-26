@@ -27,11 +27,11 @@
 
 #include <WebCore/WebGPURenderPassLayout.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct RenderBundleEncoderDescriptor : public RenderPassLayout {
+struct WebGPURenderBundleEncoderDescriptor : public WebGPURenderPassLayout {
     bool depthReadOnly { false };
     bool stencilReadOnly { false };
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

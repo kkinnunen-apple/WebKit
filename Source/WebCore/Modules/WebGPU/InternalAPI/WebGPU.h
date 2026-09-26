@@ -72,12 +72,9 @@ class VideoFrame;
 class WebGPUCompositorIntegration;
 
 struct WebGPUExternalImageSource;
+struct WebGPUExternalTextureDescriptor;
+struct WebGPUImageCopyTextureTagged;
 struct WebGPUPresentationContextDescriptor;
-
-namespace WebGPU {
-struct ExternalTextureDescriptor;
-struct ImageCopyTextureTagged;
-}
 
 // The root of WebGPU in WebCore. It creates the adapters and has the commands that take WebCore
 // types, which the WebGPU implementations cannot see.
@@ -93,10 +90,10 @@ public:
     virtual void paintToCanvas(NativeImage&, const IntSize&, GraphicsContext&) = 0;
 
     // The queue commands that take WebCore sources.
-    virtual void copyExternalImageToTexture(WebGPU::Queue&, const WebGPUExternalImageSource& source, const WebGPU::ImageCopyTextureTagged& destination, const WebGPU::Extent3D& copySize) = 0;
+    virtual void copyExternalImageToTexture(WebGPU::Queue&, const WebGPUExternalImageSource& source, const WebGPUImageCopyTextureTagged& destination, const WebGPU::Extent3D& copySize) = 0;
     virtual RefPtr<NativeImage> nativeImage(WebGPU::Queue&, VideoFrame&) = 0;
     // The device commands that take WebCore sources.
-    virtual RefPtr<WebGPU::ExternalTexture> importExternalTexture(WebGPU::Device&, const WebGPU::ExternalTextureDescriptor&) = 0;
+    virtual RefPtr<WebGPU::ExternalTexture> importExternalTexture(WebGPU::Device&, const WebGPUExternalTextureDescriptor&) = 0;
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
     virtual void updateExternalTexture(WebGPU::Device&, const WebGPU::ExternalTexture&, const MediaPlayerIdentifier&) = 0;
 #endif

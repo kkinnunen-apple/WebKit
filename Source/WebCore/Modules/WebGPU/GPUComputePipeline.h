@@ -45,7 +45,7 @@ class WeakPtrImplWithEventTargetData;
 
 class GPUComputePipeline : public RefCountedAndCanMakeWeakPtr<GPUComputePipeline> {
 public:
-    static Ref<GPUComputePipeline> create(Ref<WebGPU::ComputePipeline>&&, uint64_t uniqueId, GPUDevice*, WebGPU::ComputePipelineDescriptor&&, const WebGPU::ShaderModuleDescriptor&);
+    static Ref<GPUComputePipeline> create(Ref<WebGPU::ComputePipeline>&&, uint64_t uniqueId, GPUDevice*, WebGPUComputePipelineDescriptor&&, const WebGPUShaderModuleDescriptor&);
 
     ~GPUComputePipeline();
 
@@ -68,15 +68,15 @@ public:
     bool hasActiveInspectorCanvasCallTracer() const;
 
 private:
-    GPUComputePipeline(Ref<WebGPU::ComputePipeline>&&, uint64_t uniqueId, GPUDevice*, WebGPU::ComputePipelineDescriptor&&, const WebGPU::ShaderModuleDescriptor&);
+    GPUComputePipeline(Ref<WebGPU::ComputePipeline>&&, uint64_t uniqueId, GPUDevice*, WebGPUComputePipelineDescriptor&&, const WebGPUShaderModuleDescriptor&);
 
     static Lock s_instancesLock;
 
     Ref<WebGPU::ComputePipeline> m_backing;
     const uint64_t m_uniqueId;
     WeakPtr<GPUDevice, WeakPtrImplWithEventTargetData> m_device;
-    WebGPU::ComputePipelineDescriptor m_descriptor;
-    WebGPU::ShaderModuleDescriptor m_shaderModuleDescriptor;
+    WebGPUComputePipelineDescriptor m_descriptor;
+    WebGPUShaderModuleDescriptor m_shaderModuleDescriptor;
 };
 
 }

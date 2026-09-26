@@ -83,9 +83,9 @@ public:
     virtual ~WebGPUIntegrationImpl();
 
     void paintToCanvas(WebCore::NativeImage&, const WebCore::IntSize&, WebCore::GraphicsContext&) final;
-    void copyExternalImageToTexture(Queue&, const WebGPUExternalImageSource& source, const ImageCopyTextureTagged& destination, const Extent3D& copySize) final;
+    void copyExternalImageToTexture(Queue&, const WebGPUExternalImageSource& source, const WebGPUImageCopyTextureTagged& destination, const Extent3D& copySize) final;
     RefPtr<WebCore::NativeImage> nativeImage(Queue&, WebCore::VideoFrame&) final;
-    RefPtr<ExternalTexture> importExternalTexture(Device&, const ExternalTextureDescriptor&) final;
+    RefPtr<ExternalTexture> importExternalTexture(Device&, const WebGPUExternalTextureDescriptor&) final;
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
     void updateExternalTexture(Device&, const ExternalTexture&, const WebCore::MediaPlayerIdentifier&) final;
 #endif

@@ -27,10 +27,10 @@
 
 #include <wtf/text/WTFString.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-struct ObjectDescriptorBase {
+struct WebGPUObjectDescriptorBase {
     String label;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

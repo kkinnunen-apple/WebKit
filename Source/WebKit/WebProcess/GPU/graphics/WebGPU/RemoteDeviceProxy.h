@@ -61,7 +61,7 @@ public:
     RemoteGPUProxy& root() { return m_parent->root(); }
 
     // Called by RemoteGPUProxy, which implements the device commands that take WebCore sources.
-    RefPtr<WebCore::WebGPU::ExternalTexture> importExternalTexture(const WebCore::WebGPU::ExternalTextureDescriptor&);
+    RefPtr<WebCore::WebGPU::ExternalTexture> importExternalTexture(const WebCore::WebGPUExternalTextureDescriptor&);
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
     void updateExternalTexture(const WebCore::WebGPU::ExternalTexture&, const WebCore::MediaPlayerIdentifier&);
 #endif
