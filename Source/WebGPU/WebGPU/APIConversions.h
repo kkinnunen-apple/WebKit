@@ -81,6 +81,11 @@ inline Buffer& metal(WebGPU::Buffer& buffer)
     return static_cast<Buffer&>(buffer);
 }
 
+inline Device& metal(WebGPU::Device& device)
+{
+    return static_cast<Device&>(device);
+}
+
 inline ExternalTexture& metal(WebGPU::ExternalTexture& externalTexture)
 {
     return static_cast<ExternalTexture&>(externalTexture);

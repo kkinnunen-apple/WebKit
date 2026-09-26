@@ -1424,7 +1424,7 @@ WGPUSampler wgpuDeviceCreateSampler(WGPUDevice device, const WGPUSamplerDescript
 
 WGPUExternalTexture wgpuDeviceImportExternalTexture(WGPUDevice device, const WGPUExternalTextureDescriptor* descriptor)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createExternalTexture(*descriptor));
+    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->importExternalTexture(WebGPU::Metal::fromAPI(*descriptor)));
 }
 
 WGPUShaderModule wgpuDeviceCreateShaderModule(WGPUDevice device, const WGPUShaderModuleDescriptor* descriptor)
@@ -1441,7 +1441,13 @@ WGPUShaderModule wgpuDeviceCreateShaderModule(WGPUDevice device, const WGPUShade
 
 WGPUSwapChain wgpuDeviceCreateSwapChain(WGPUDevice device, WGPUSurface surface, const WGPUSwapChainDescriptor* descriptor)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createSwapChain(protect(WebGPU::Metal::fromAPI(surface)), *descriptor));
+    Ref presentationContext = WebGPU::Metal::fromAPI(surface);
+    WebGPU::Metal::CanvasConfigurationStorage storage;
+    if (auto configuration = WebGPU::Metal::fromAPI(device, *descriptor, storage))
+        presentationContext->configure(*configuration);
+    else if (descriptor->reportValidationErrors)
+        protect(WebGPU::Metal::fromAPI(device))->generateAValidationError("GPUCanvasConfiguration has an invalid enum value or usage bit"_s);
+    return WebGPU::Metal::releaseToAPI(WTF::move(presentationContext));
 }
 
 WGPUTexture wgpuDeviceCreateTexture(WGPUDevice device, const WGPUTextureDescriptor* descriptor)
