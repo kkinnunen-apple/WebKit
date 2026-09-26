@@ -27,6 +27,7 @@
 
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
+#include "WebGPUAdapter.h"
 #include "WebGPUAddressMode.h"
 #include "WebGPUBindGroup.h"
 #include "WebGPUBindGroupLayout.h"
@@ -125,7 +126,6 @@ inline WGPUStringView toBackingStringView(ASCIILiteral literal)
     return { literal.characters(), literal.length() };
 }
 
-class Adapter;
 class CompositorIntegration;
 class CompositorIntegrationImpl;
 class GPU;

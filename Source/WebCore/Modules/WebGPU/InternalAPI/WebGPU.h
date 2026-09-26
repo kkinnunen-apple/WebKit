@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <WebCore/WebGPUAdapter.h>
 #include <WebCore/WebGPUBindGroup.h>
 #include <WebCore/WebGPUBindGroupLayout.h>
 #include <WebCore/WebGPUBuffer.h>
@@ -66,7 +67,6 @@ class VideoFrame;
 
 namespace WebCore::WebGPU {
 
-class Adapter;
 class CompositorIntegration;
 class GPU;
 class GPUImpl;

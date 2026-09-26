@@ -716,45 +716,7 @@ bool includesUnsupportedFeatures(const Vector<WGPUFeatureName>& target, const Ve
 
 Limits defaultLimits()
 {
-    // https://gpuweb.github.io/gpuweb/#limit-default
-
-    return {
-        .maxTextureDimension1D =    8192,
-        .maxTextureDimension2D =    8192,
-        .maxTextureDimension3D =    2048,
-        .maxTextureArrayLayers =    256,
-        .maxBindGroups =    4,
-        .maxBindGroupsPlusVertexBuffers = 24,
-        .maxBindingsPerBindGroup = 1000,
-        .maxDynamicUniformBuffersPerPipelineLayout =    8,
-        .maxDynamicStorageBuffersPerPipelineLayout =    4,
-        .maxSampledTexturesPerShaderStage =    16,
-        .maxSamplersPerShaderStage =    16,
-        .maxStorageBuffersPerShaderStage =    8,
-        .maxStorageTexturesPerShaderStage =    4,
-        .maxUniformBuffersPerShaderStage =    12,
-        .maxUniformBufferBindingSize =    65536,
-        .maxStorageBufferBindingSize =    134217728,
-        .minUniformBufferOffsetAlignment =    256,
-        .minStorageBufferOffsetAlignment =    256,
-        .maxVertexBuffers =    8,
-        .maxBufferSize = defaultMaxBufferSize,
-        .maxVertexAttributes =    16,
-        .maxVertexBufferArrayStride =    2048,
-        .maxInterStageShaderVariables = 16,
-        .maxColorAttachments = 8,
-        .maxColorAttachmentBytesPerSample = 32,
-        .maxComputeWorkgroupStorageSize =    16384,
-        .maxComputeInvocationsPerWorkgroup =    256,
-        .maxComputeWorkgroupSizeX =    256,
-        .maxComputeWorkgroupSizeY =    256,
-        .maxComputeWorkgroupSizeZ =    64,
-        .maxComputeWorkgroupsPerDimension =    65535,
-        .maxStorageBuffersInFragmentStage = 8,
-        .maxStorageTexturesInFragmentStage = 4,
-        .maxStorageBuffersInVertexStage = 8,
-        .maxStorageTexturesInVertexStage = 4,
-    };
+    return WebGPU::defaultLimits();
 }
 
 std::optional<HardwareCapabilities> hardwareCapabilities(id<MTLDevice> device)

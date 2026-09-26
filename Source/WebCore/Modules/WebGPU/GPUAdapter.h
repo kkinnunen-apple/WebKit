@@ -67,6 +67,7 @@ private:
     const Ref<WebGPU::Adapter> m_backing;
     // The root, which has the commands that take WebCore sources.
     const Ref<WebGPU::GPU> m_gpu;
+    const ::WebGPU::AdapterInfo m_adapterInfo;
     const Ref<GPUSupportedFeatures> m_features;
     const Ref<GPUSupportedLimits> m_limits;
     const Ref<GPUAdapterInfo> m_info;

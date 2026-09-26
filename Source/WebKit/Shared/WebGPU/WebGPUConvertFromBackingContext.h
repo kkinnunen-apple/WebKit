@@ -38,6 +38,7 @@
 #include "WebGPUOrigin3D.h"
 #include "WebGPURenderPassTimestampWrites.h"
 #include "WebGPUTextureViewDescriptor.h"
+#include <WebCore/WebGPUAdapter.h>
 #include <WebCore/WebGPUBindGroup.h>
 #include <WebCore/WebGPUBindGroupDescriptor.h>
 #include <WebCore/WebGPUBindGroupLayout.h>
@@ -98,7 +99,6 @@ enum class VideoFrameRotation : uint16_t;
 
 namespace WebCore::WebGPU {
 
-class Adapter;
 struct CanvasConfiguration;
 struct ColorTargetState;
 class CompositorIntegration;
@@ -222,7 +222,7 @@ public:
     std::optional<WebCore::WebGPU::ComputePassDescriptor> convertFromBacking(const ComputePassDescriptor&);
     std::optional<::WebGPU::ComputePipelineDescriptor> convertFromBacking(const ComputePipelineDescriptor&, Vector<::WebGPU::ConstantEntry>& constantsStorage, bool allowMissingPipelineLayout = false);
     std::optional<::WebGPU::DepthStencilState> convertFromBacking(const DepthStencilState&);
-    std::optional<WebCore::WebGPU::DeviceDescriptor> convertFromBacking(const DeviceDescriptor&);
+    std::optional<::WebGPU::DeviceDescriptor> convertFromBacking(const DeviceDescriptor&);
     std::optional<WebCore::WebGPU::Error> convertFromBacking(const Error&);
     std::optional<WebCore::WebGPU::ExternalTextureBindingLayout> NODELETE convertFromBacking(const ExternalTextureBindingLayout&);
 #if ENABLE(VIDEO) && PLATFORM(COCOA)
@@ -264,7 +264,6 @@ public:
     std::optional<WebCore::WebGPU::StencilFaceState> NODELETE convertFromBacking(const StencilFaceState&);
     std::optional<WebCore::WebGPU::StorageTextureBindingLayout> NODELETE convertFromBacking(const StorageTextureBindingLayout&);
     RefPtr<WebCore::WebGPU::SupportedFeatures> convertFromBacking(const SupportedFeatures&);
-    RefPtr<WebCore::WebGPU::SupportedLimits> convertFromBacking(const SupportedLimits&);
     std::optional<WebCore::WebGPU::TextureBindingLayout> NODELETE convertFromBacking(const TextureBindingLayout&);
     std::optional<WebCore::WebGPU::TextureDescriptor> convertFromBacking(const TextureDescriptor&);
     RefPtr<WebCore::WebGPU::ValidationError> convertFromBacking(const ValidationError&);
@@ -272,7 +271,7 @@ public:
     std::optional<::WebGPU::VertexBufferLayout> convertFromBacking(const VertexBufferLayout&, Vector<::WebGPU::VertexAttribute>& attributesStorage);
     std::optional<::WebGPU::VertexState> convertFromBacking(const VertexState&, RenderPipelineDescriptorStorage&);
 
-    virtual WeakPtr<WebCore::WebGPU::Adapter> convertAdapterFromBacking(WebGPUIdentifier) = 0;
+    virtual RefPtr<WebCore::WebGPU::Adapter> convertAdapterFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::BindGroup> convertBindGroupFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::BindGroupLayout> convertBindGroupLayoutFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::Buffer> convertBufferFromBacking(WebGPUIdentifier) = 0;

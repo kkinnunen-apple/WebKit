@@ -30,16 +30,13 @@
 #include "RemoteGPU.h"
 #include "StreamMessageReceiver.h"
 #include "WebGPUIdentifier.h"
+#include <WebCore/WebGPUAdapter.h>
 #include <WebCore/WebGPUFeatureName.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Ref.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/ThreadSafeWeakPtr.h>
 #include <wtf/WeakRef.h>
-
-namespace WebCore::WebGPU {
-class Adapter;
-}
 
 namespace IPC {
 class StreamServerConnection;
