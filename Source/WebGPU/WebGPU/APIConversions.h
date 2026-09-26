@@ -281,11 +281,6 @@ inline std::span<const WGPUShaderModuleCompilationHint> hintsSpan(const WGPUShad
     return unsafeMakeSpan(descriptor.hints, descriptor.hintCount);
 }
 
-inline std::span<const WGPUTextureFormat> viewFormatsSpan(const WGPUTextureDescriptor& descriptor)
-{
-    return unsafeMakeSpan(descriptor.viewFormats, descriptor.viewFormatCount);
-}
-
 inline std::span<const WGPUVertexAttribute> attributesSpan(const WGPUVertexBufferLayout& layout)
 {
     return unsafeMakeSpan(layout.attributes, layout.attributeCount);

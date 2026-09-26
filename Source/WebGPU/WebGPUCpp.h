@@ -41,6 +41,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <span>
 #include <wtf/Forward.h>
 #include <wtf/OptionSet.h>
 #include <wtf/SwiftBridging.h>
@@ -570,6 +571,33 @@ struct SamplerDescriptor {
     float lodMaxClamp { 32 };
     std::optional<CompareFunction> compare; // std::nullopt: not a comparison sampler.
     uint16_t maxAnisotropy { 1 };
+};
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gputexturedescriptor
+struct TextureDescriptor {
+    String label;
+    OptionSet<TextureUsage> usage;
+    TextureDimension dimension { TextureDimension::_2d };
+    Extent3D size;
+    TextureFormat format { TextureFormat::R8unorm };
+    uint32_t mipLevelCount { 1 };
+    uint32_t sampleCount { 1 };
+    std::span<const TextureFormat> viewFormats; // Borrowed for the duration of the call.
+} SWIFT_NONESCAPABLE;
+
+// https://gpuweb.github.io/gpuweb/#dictdef-gputextureviewdescriptor
+// The std::nullopt members take their values from the texture, as described in
+// https://gpuweb.github.io/gpuweb/#abstract-opdef-resolving-gputextureviewdescriptor-defaults.
+struct TextureViewDescriptor {
+    String label;
+    std::optional<TextureFormat> format;
+    std::optional<TextureViewDimension> dimension;
+    uint32_t baseMipLevel { 0 };
+    std::optional<uint32_t> mipLevelCount;
+    uint32_t baseArrayLayer { 0 };
+    std::optional<uint32_t> arrayLayerCount;
+    TextureAspect aspect { TextureAspect::All };
+    OptionSet<TextureUsage> usage; // Empty: the usage of the texture.
 };
 
 class Adapter;

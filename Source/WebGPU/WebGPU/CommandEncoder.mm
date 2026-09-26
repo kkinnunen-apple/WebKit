@@ -620,7 +620,7 @@ Ref<RenderPassEncoder> CommandEncoder::beginRenderPass(const WGPURenderPassDescr
 
         bool textureIsDestroyed = texture.isDestroyed();
         if (!textureIsDestroyed) {
-            if (!(texture.usage() & WGPUTextureUsage_RenderAttachment) || !Texture::isColorRenderableFormat(textureFormat, m_device))
+            if (!texture.usage().contains(WebGPU::TextureUsage::RenderAttachment) || !Texture::isColorRenderableFormat(textureFormat, m_device))
                 return RenderPassEncoder::createInvalid(*this, m_device, @"color attachment is not renderable");
 
             if (!isRenderableTextureView(texture, attachment.loadOp, attachment.storeOp))
@@ -988,7 +988,7 @@ NSString* CommandEncoder::errorValidatingCopyBufferToTexture(const WGPUTexelCopy
     if (NSString* error = Texture::errorValidatingImageCopyTexture(destination, copySize))
         return ERROR_STRING(error);
 
-    if (!(destinationTexture->usage() & WGPUTextureUsage_CopyDst))
+    if (!destinationTexture->usage().contains(WebGPU::TextureUsage::CopyDestination))
         return ERROR_STRING(@"destination usage does not contain CopyDst");
 
     if (destinationTexture->sampleCount() != 1)
@@ -1296,7 +1296,7 @@ NSString* CommandEncoder::errorValidatingCopyTextureToBuffer(const WGPUTexelCopy
     if (NSString* error = Texture::errorValidatingImageCopyTexture(source, copySize))
         return ERROR_STRING(error);
 
-    if (!(sourceTexture->usage() & WGPUTextureUsage_CopySrc))
+    if (!sourceTexture->usage().contains(WebGPU::TextureUsage::CopySource))
         return ERROR_STRING(@"sourceTexture usage does not contain CopySrc");
 
     if (sourceTexture->sampleCount() != 1)
@@ -1369,7 +1369,7 @@ void CommandEncoder::clearTextureIfNeeded(Texture& texture, NSUInteger mipLevel,
     // A transient texture is memoryless, so it cannot be the destination of a blit. Its contents
     // never exist outside of the render pass which produces them, and every render pass using it
     // has to clear it, so there is nothing to lazily initialize here.
-    if (texture.usage() & WGPUTextureUsage_Transient)
+    if (texture.usage().contains(WebGPU::TextureUsage::Transient))
         return;
 
     texture.setPreviouslyCleared(mipLevel, slice);
@@ -1839,13 +1839,13 @@ NSString* CommandEncoder::errorValidatingCopyTextureToTexture(const WGPUTexelCop
     if (NSString* error = Texture::errorValidatingImageCopyTexture(source, copySize))
         return ERROR_STRING(error);
 
-    if (!(sourceTexture->usage() & WGPUTextureUsage_CopySrc))
+    if (!sourceTexture->usage().contains(WebGPU::TextureUsage::CopySource))
         return ERROR_STRING(@"source texture usage does not contain CopySrc");
 
     if (NSString* error = Texture::errorValidatingImageCopyTexture(destination, copySize))
         return ERROR_STRING(error);
 
-    if (!(destinationTexture->usage() & WGPUTextureUsage_CopyDst))
+    if (!destinationTexture->usage().contains(WebGPU::TextureUsage::CopyDestination))
         return ERROR_STRING(@"destination texture usage does not contain CopyDst");
 
     if (sourceTexture->sampleCount() != destinationTexture->sampleCount())

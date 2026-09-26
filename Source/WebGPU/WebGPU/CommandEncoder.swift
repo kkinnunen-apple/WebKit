@@ -332,7 +332,7 @@ extension WebGPU.Metal.CommandEncoder {
         // A transient texture is memoryless, so it cannot be the destination of a blit. Its contents
         // never exist outside of the render pass which produces them, and every render pass using it
         // has to clear it, so there is nothing to lazily initialize here.
-        if (texture.usage() & WGPUTextureUsage_Transient) != 0 {
+        if texture.usage().contains(WebGPU.TextureUsage.Transient) {
             return
         }
 
@@ -725,7 +725,7 @@ extension WebGPU.Metal.CommandEncoder {
             return errorString(error)
         }
 
-        if sourceTexture.usage() & WGPUTextureUsage_CopySrc == 0 {
+        if !sourceTexture.usage().contains(WebGPU.TextureUsage.CopySource) {
             return errorString("source texture usage does not contain CopySrc")
         }
 
@@ -733,7 +733,7 @@ extension WebGPU.Metal.CommandEncoder {
             return errorString(error)
         }
 
-        if destinationTexture.usage() & WGPUTextureUsage_CopyDst == 0 {
+        if !destinationTexture.usage().contains(WebGPU.TextureUsage.CopyDestination) {
             return errorString("destination texture usage does not contain CopyDst")
         }
 
@@ -819,7 +819,7 @@ extension WebGPU.Metal.CommandEncoder {
             return errorString(error)
         }
 
-        if sourceTexture.usage() & WGPUTextureUsage_CopySrc == 0 {
+        if !sourceTexture.usage().contains(WebGPU.TextureUsage.CopySource) {
             return errorString("sourceTexture usage does not contain CopySrc")
         }
 
@@ -918,7 +918,7 @@ extension WebGPU.Metal.CommandEncoder {
             return errorString(error)
         }
 
-        if destinationTexture.usage() & WGPUTextureUsage_CopyDst == 0 {
+        if !destinationTexture.usage().contains(WebGPU.TextureUsage.CopyDestination) {
             return errorString("destination usage does not contain CopyDst")
         }
 
@@ -1183,7 +1183,7 @@ extension WebGPU.Metal.CommandEncoder {
 
                 let textureIsDestroyed = texture.isDestroyed()
                 if !textureIsDestroyed {
-                    if (texture.usage() & WGPUTextureUsage_RenderAttachment) == 0
+                    if !texture.usage().contains(WebGPU.TextureUsage.RenderAttachment)
                         || !WebGPU.Metal.Texture.isColorRenderableFormat(textureFormat, m_device.ptr())
                     {
                         return WebGPU.Metal.RenderPassEncoder.createInvalid(self, m_device.ptr(), "color attachment is not renderable")

@@ -31,6 +31,7 @@
 #import <optional>
 #import <wtf/OptionSet.h>
 #import <wtf/StdLibExtras.h>
+#import <wtf/Vector.h>
 #import <wtf/text/WTFString.h>
 
 // Conversions between the WebGPU C API (webgpu.h) and the WebGPU C++ API: enums, flags, strings and
@@ -38,6 +39,11 @@
 // as the _Undefined values and unknown bits, and for descriptors that contain such a value.
 // The descriptor conversions are the conversions of the C API entry points, so they do not depend
 // on the implementation.
+//
+// C++ API descriptors borrow their arrays as spans. A descriptor conversion that has to convert the
+// elements of an array takes a caller-owned XDescriptorStorage, stores the converted elements in it
+// and returns a descriptor whose spans point into it. The storage has to outlive every use of the
+// descriptor, and it must not be modified while the descriptor is in use.
 
 namespace WebGPU::Metal {
 
@@ -1809,6 +1815,16 @@ constexpr WGPUTextureUsage toAPI(OptionSet<WebGPU::TextureUsage> value)
     return result;
 }
 
+constexpr WebGPU::Extent3D fromAPI(const WGPUExtent3D& extent)
+{
+    return { .width = extent.width, .height = extent.height, .depthOrArrayLayers = extent.depthOrArrayLayers };
+}
+
+constexpr WGPUExtent3D toAPI(const WebGPU::Extent3D& extent)
+{
+    return { .width = extent.width, .height = extent.height, .depthOrArrayLayers = extent.depthOrArrayLayers };
+}
+
 inline std::optional<WebGPU::BufferDescriptor> fromAPI(const WGPUBufferDescriptor& descriptor)
 {
     auto usage = bufferUsageFromAPI(descriptor.usage);
@@ -1876,6 +1892,74 @@ inline std::optional<WebGPU::SamplerDescriptor> fromAPI(const WGPUSamplerDescrip
         .lodMaxClamp = descriptor.lodMaxClamp,
         .compare = compare,
         .maxAnisotropy = descriptor.maxAnisotropy,
+    };
+}
+
+struct TextureDescriptorStorage {
+    Vector<WebGPU::TextureFormat> viewFormats;
+};
+
+inline std::optional<WebGPU::TextureDescriptor> fromAPI(const WGPUTextureDescriptor& descriptor, TextureDescriptorStorage& storage LIFETIME_BOUND)
+{
+    auto usage = textureUsageFromAPI(descriptor.usage);
+    auto dimension = fromAPI(descriptor.dimension);
+    auto format = fromAPI(descriptor.format);
+    if (!usage || !dimension || !format)
+        return std::nullopt;
+
+    storage.viewFormats.clear();
+    for (auto viewFormat : unsafeMakeSpan(descriptor.viewFormats, descriptor.viewFormatCount)) {
+        auto apiViewFormat = fromAPI(viewFormat);
+        if (!apiViewFormat)
+            return std::nullopt;
+        storage.viewFormats.append(*apiViewFormat);
+    }
+
+    return WebGPU::TextureDescriptor {
+        .label = fromAPI(descriptor.label),
+        .usage = *usage,
+        .dimension = *dimension,
+        .size = fromAPI(descriptor.size),
+        .format = *format,
+        .mipLevelCount = descriptor.mipLevelCount,
+        .sampleCount = descriptor.sampleCount,
+        .viewFormats = storage.viewFormats.span(),
+    };
+}
+
+inline std::optional<WebGPU::TextureViewDescriptor> fromAPI(const WGPUTextureViewDescriptor& descriptor)
+{
+    // WGPUTextureFormat_Undefined, WGPUTextureViewDimension_Undefined, WGPU_MIP_LEVEL_COUNT_UNDEFINED
+    // and WGPU_ARRAY_LAYER_COUNT_UNDEFINED mean that the value comes from the texture.
+    std::optional<WebGPU::TextureFormat> format;
+    if (descriptor.format != WGPUTextureFormat_Undefined) {
+        format = fromAPI(descriptor.format);
+        if (!format)
+            return std::nullopt;
+    }
+
+    std::optional<WebGPU::TextureViewDimension> dimension;
+    if (descriptor.dimension != WGPUTextureViewDimension_Undefined) {
+        dimension = fromAPI(descriptor.dimension);
+        if (!dimension)
+            return std::nullopt;
+    }
+
+    auto aspect = fromAPI(descriptor.aspect);
+    auto usage = textureUsageFromAPI(descriptor.usage);
+    if (!aspect || !usage)
+        return std::nullopt;
+
+    return WebGPU::TextureViewDescriptor {
+        .label = fromAPI(descriptor.label),
+        .format = format,
+        .dimension = dimension,
+        .baseMipLevel = descriptor.baseMipLevel,
+        .mipLevelCount = descriptor.mipLevelCount == WGPU_MIP_LEVEL_COUNT_UNDEFINED ? std::nullopt : std::optional<uint32_t> { descriptor.mipLevelCount },
+        .baseArrayLayer = descriptor.baseArrayLayer,
+        .arrayLayerCount = descriptor.arrayLayerCount == WGPU_ARRAY_LAYER_COUNT_UNDEFINED ? std::nullopt : std::optional<uint32_t> { descriptor.arrayLayerCount },
+        .aspect = *aspect,
+        .usage = *usage,
     };
 }
 
