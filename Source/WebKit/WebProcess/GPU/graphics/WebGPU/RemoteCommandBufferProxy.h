@@ -48,6 +48,9 @@ public:
 
     RemoteGPUProxy& root() const { return m_root; }
 
+    void setLabel(String&&) final;
+    bool isValid() const final;
+
 private:
     friend class DowncastConvertToBackingContext;
 
@@ -58,8 +61,6 @@ private:
     RemoteCommandBufferProxy& operator=(const RemoteCommandBufferProxy&) = delete;
     RemoteCommandBufferProxy& operator=(RemoteCommandBufferProxy&&) = delete;
 
-    bool isRemoteCommandBufferProxy() const final { return true; }
-
     WebGPUIdentifier backing() const { return m_backing; }
     
     template<typename T>
@@ -68,17 +69,11 @@ private:
         return protect(root().streamClientConnection())->send(std::forward<T>(message), backing());
     }
 
-    void setLabelInternal(const String&) final;
-
     WebGPUIdentifier m_backing;
     const Ref<ConvertToBackingContext> m_convertToBackingContext;
     const Ref<RemoteGPUProxy> m_root;
 };
 
 } // namespace WebKit::WebGPU
-
-SPECIALIZE_TYPE_TRAITS_BEGIN(WebKit::WebGPU::RemoteCommandBufferProxy)
-    static bool isType(const WebCore::WebGPU::CommandBuffer& buffer) { return buffer.isRemoteCommandBufferProxy(); }
-SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // ENABLE(GPU_PROCESS)

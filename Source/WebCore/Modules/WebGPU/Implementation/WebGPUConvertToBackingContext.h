@@ -37,6 +37,7 @@
 #include "WebGPUBufferUsage.h"
 #include "WebGPUColor.h"
 #include "WebGPUColorWrite.h"
+#include "WebGPUCommandBuffer.h"
 #include "WebGPUCompareFunction.h"
 #include "WebGPUCompilationMessageType.h"
 #include "WebGPUCullMode.h"
@@ -116,7 +117,6 @@ inline WGPUStringView toBackingStringView(ASCIILiteral literal)
 }
 
 class Adapter;
-class CommandBuffer;
 class CommandEncoder;
 class CompositorIntegration;
 class CompositorIntegrationImpl;

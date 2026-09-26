@@ -46,6 +46,7 @@
 #include <WebCore/WebGPUBuffer.h>
 #include <WebCore/WebGPUBufferBindingLayout.h>
 #include <WebCore/WebGPUColor.h>
+#include <WebCore/WebGPUCommandBuffer.h>
 #include <WebCore/WebGPUComputePassTimestampWrites.h>
 #include <WebCore/WebGPUError.h>
 #include <WebCore/WebGPUExtent3D.h>
@@ -86,8 +87,6 @@ namespace WebCore::WebGPU {
 class Adapter;
 struct CanvasConfiguration;
 struct ColorTargetState;
-class CommandBuffer;
-struct CommandBufferDescriptor;
 class CommandEncoder;
 struct CommandEncoderDescriptor;
 class CompositorIntegration;
@@ -153,7 +152,6 @@ struct BufferBinding;
 struct BufferBindingLayout;
 struct CanvasConfiguration;
 struct ColorTargetState;
-struct CommandBufferDescriptor;
 struct CommandEncoderDescriptor;
 struct ComputePassDescriptor;
 struct ComputePipelineDescriptor;
@@ -217,7 +215,6 @@ public:
     std::optional<WebCore::WebGPU::BufferBindingLayout> NODELETE convertFromBacking(const BufferBindingLayout&);
     std::optional<WebCore::WebGPU::CanvasConfiguration> convertFromBacking(const CanvasConfiguration&);
     std::optional<WebCore::WebGPU::ColorTargetState> convertFromBacking(const ColorTargetState&);
-    std::optional<WebCore::WebGPU::CommandBufferDescriptor> convertFromBacking(const CommandBufferDescriptor&);
     std::optional<WebCore::WebGPU::CommandEncoderDescriptor> convertFromBacking(const CommandEncoderDescriptor&);
     std::optional<WebCore::WebGPU::ComputePassDescriptor> convertFromBacking(const ComputePassDescriptor&);
     std::optional<WebCore::WebGPU::ComputePassTimestampWrites> convertFromBacking(const ComputePassTimestampWrites&);
@@ -278,7 +275,7 @@ public:
     virtual RefPtr<WebCore::WebGPU::BindGroup> convertBindGroupFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::BindGroupLayout> convertBindGroupLayoutFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::Buffer> convertBufferFromBacking(WebGPUIdentifier) = 0;
-    virtual WeakPtr<WebCore::WebGPU::CommandBuffer> convertCommandBufferFromBacking(WebGPUIdentifier) = 0;
+    virtual RefPtr<WebCore::WebGPU::CommandBuffer> convertCommandBufferFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::CommandEncoder> convertCommandEncoderFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::CompositorIntegration> convertCompositorIntegrationFromBacking(WebGPUIdentifier) = 0;
     virtual WeakPtr<WebCore::WebGPU::ComputePassEncoder> convertComputePassEncoderFromBacking(WebGPUIdentifier) = 0;

@@ -155,8 +155,7 @@ bool GPUImpl::isValid(const BindGroupLayout& bindGroupLayout) const
 
 bool GPUImpl::isValid(const CommandBuffer& commandBuffer) const
 {
-    WGPUCommandBuffer wgpuCommandBuffer = m_convertToBackingContext.get().convertToBacking(commandBuffer);
-    return wgpuCommandBufferIsValid(wgpuCommandBuffer);
+    return commandBuffer.isValid();
 }
 
 bool GPUImpl::isValid(const CommandEncoder& commandEncoder) const

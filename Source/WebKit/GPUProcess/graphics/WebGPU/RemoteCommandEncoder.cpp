@@ -220,10 +220,7 @@ void RemoteCommandEncoder::resolveQuerySet(
 void RemoteCommandEncoder::finish(const WebGPU::CommandBufferDescriptor& descriptor, WebGPUIdentifier identifier)
 {
     Ref objectHeap = m_objectHeap.get();
-    auto convertedDescriptor = objectHeap->convertFromBacking(descriptor);
-    MESSAGE_CHECK(convertedDescriptor);
-
-    auto commandBuffer = protect(m_backing)->finish(*convertedDescriptor);
+    auto commandBuffer = protect(m_backing)->finish(descriptor);
     MESSAGE_CHECK(commandBuffer);
     auto remoteCommandBuffer = RemoteCommandBuffer::create(*commandBuffer, objectHeap, protect(m_streamConnection), protect(m_gpu), identifier);
     objectHeap->addObject(identifier, remoteCommandBuffer);

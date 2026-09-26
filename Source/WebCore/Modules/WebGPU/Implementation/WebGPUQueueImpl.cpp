@@ -29,7 +29,7 @@
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
 #include "WebGPUBuffer.h"
-#include "WebGPUCommandBufferImpl.h"
+#include "WebGPUCommandBuffer.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUTexture.h"
 #include <WebCore/ColorSpace.h>

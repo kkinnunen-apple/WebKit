@@ -25,40 +25,10 @@
 
 #pragma once
 
-#include <wtf/Ref.h>
-#include <wtf/RefCountedAndCanMakeWeakPtr.h>
-#include <wtf/WeakPtr.h>
-#include <wtf/text/WTFString.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-class CommandBuffer : public RefCountedAndCanMakeWeakPtr<CommandBuffer> {
-public:
-    virtual ~CommandBuffer() = default;
-
-    String label() const { return m_label; }
-
-    void setLabel(String&& label)
-    {
-        m_label = WTF::move(label);
-        setLabelInternal(m_label);
-    }
-
-    virtual bool isRemoteCommandBufferProxy() const { return false; }
-    virtual bool isCommandBufferImpl() const { return false; }
-
-protected:
-    CommandBuffer() = default;
-
-private:
-    CommandBuffer(const CommandBuffer&) = delete;
-    CommandBuffer(CommandBuffer&&) = delete;
-    CommandBuffer& operator=(const CommandBuffer&) = delete;
-    CommandBuffer& operator=(CommandBuffer&&) = delete;
-
-    virtual void setLabelInternal(const String&) = 0;
-
-    String m_label;
-};
+using CommandBuffer = ::WebGPU::CommandBuffer;
 
 } // namespace WebCore::WebGPU

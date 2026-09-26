@@ -84,7 +84,7 @@ WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::CommandBuffer& commandBuffer)
 {
-    return downcast<RemoteCommandBufferProxy>(commandBuffer).backing();
+    return static_cast<const RemoteCommandBufferProxy&>(commandBuffer).backing();
 }
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::CommandEncoder& commandEncoder)

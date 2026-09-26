@@ -29,13 +29,14 @@
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
 #include "WebGPUBuffer.h"
-#include "WebGPUCommandBufferImpl.h"
+#include "WebGPUCommandBuffer.h"
 #include "WebGPUComputePassEncoderImpl.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUQuerySet.h"
 #include "WebGPURenderPassEncoderImpl.h"
 #include "WebGPUTexture.h"
 #include "WebGPUTextureView.h"
+#include <WebGPU/WebGPUCppBridge.h>
 #include <WebGPU/WebGPUExt.h>
 #include <wtf/TZoneMalloc.h>
 
@@ -280,7 +281,7 @@ RefPtr<CommandBuffer> CommandEncoderImpl::finish(const CommandBufferDescriptor& 
         .label = descriptor.label,
     };
 
-    return CommandBufferImpl::create(adoptWebGPU(wgpuCommandEncoderFinish(m_backing.get(), &backingDescriptor)), m_convertToBackingContext);
+    return adoptRef(::WebGPU::fromAPI(wgpuCommandEncoderFinish(m_backing.get(), &backingDescriptor)));
 }
 
 void CommandEncoderImpl::setLabelInternal(const String& label)

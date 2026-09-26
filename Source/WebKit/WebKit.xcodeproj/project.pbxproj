@@ -4584,7 +4584,6 @@
 		1C98C09D27462678002CCB78 /* WebGPUImageCopyTextureTagged.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUImageCopyTextureTagged.cpp; sourceTree = "<group>"; };
 		1C98C09E27462679002CCB78 /* WebGPURenderPassTimestampWrites.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPURenderPassTimestampWrites.cpp; sourceTree = "<group>"; };
 		1C98C09F27462679002CCB78 /* WebGPUPipelineDescriptorBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUPipelineDescriptorBase.cpp; sourceTree = "<group>"; };
-		1C98C0A227462679002CCB78 /* WebGPUCommandBufferDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUCommandBufferDescriptor.cpp; sourceTree = "<group>"; };
 		1C98C0A32746267A002CCB78 /* WebGPUImageDataLayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUImageDataLayout.cpp; sourceTree = "<group>"; };
 		1C98C0A52746267A002CCB78 /* WebGPUBufferBindingLayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUBufferBindingLayout.cpp; sourceTree = "<group>"; };
 		1C98C0A62746267A002CCB78 /* WebGPUBlendState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUBlendState.cpp; sourceTree = "<group>"; };
@@ -11683,7 +11682,6 @@
 				1C98C0B32746267C002CCB78 /* WebGPUColorTargetState.cpp */,
 				1CB7467927439CB200F19874 /* WebGPUColorTargetState.h */,
 				02789EF928D4055700F77E40 /* WebGPUColorTargetState.serialization.in */,
-				1C98C0A227462679002CCB78 /* WebGPUCommandBufferDescriptor.cpp */,
 				1CB7468327439CB500F19874 /* WebGPUCommandBufferDescriptor.h */,
 				5CBA4AE029020A4500F70CCD /* WebGPUCommandBufferDescriptor.serialization.in */,
 				1C98C0BD2746267E002CCB78 /* WebGPUCommandEncoderDescriptor.cpp */,

@@ -192,10 +192,11 @@ static WebGPU::CommandBufferDescriptor NODELETE convertToBacking(const std::opti
 
 ExceptionOr<Ref<GPUCommandBuffer>> GPUCommandEncoder::finish(const std::optional<GPUCommandBufferDescriptor>& commandBufferDescriptor)
 {
-    RefPtr buffer = protect(backing())->finish(convertToBacking(commandBufferDescriptor));
+    auto backingDescriptor = convertToBacking(commandBufferDescriptor);
+    RefPtr buffer = protect(backing())->finish(backingDescriptor);
     if (!buffer)
         return Exception { ExceptionCode::InvalidStateError, "GPUCommandEncoder.finish: Unable to finish."_s };
-    auto result = GPUCommandBuffer::create(buffer.releaseNonNull(), *this);
+    auto result = GPUCommandBuffer::create(buffer.releaseNonNull(), WTF::move(backingDescriptor.label), *this);
     if (RefPtr device = m_device) {
         m_overrideLabel = label();
         m_backing = device->backing().invalidCommandEncoder();

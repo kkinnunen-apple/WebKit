@@ -206,18 +206,13 @@ void RemoteCommandEncoderProxy::resolveQuerySet(
 
 RefPtr<WebCore::WebGPU::CommandBuffer> RemoteCommandEncoderProxy::finish(const WebCore::WebGPU::CommandBufferDescriptor& descriptor)
 {
-    auto convertedDescriptor = m_convertToBackingContext->convertToBacking(descriptor);
-
-    if (!convertedDescriptor)
-        return nullptr;
-
     auto identifier = WebGPUIdentifier::generate();
-    auto sendResult = send(Messages::RemoteCommandEncoder::Finish(*convertedDescriptor, identifier));
+    auto sendResult = send(Messages::RemoteCommandEncoder::Finish(descriptor, identifier));
     if (sendResult != IPC::Error::NoError)
         return nullptr;
 
     auto result = RemoteCommandBufferProxy::create(m_root, m_convertToBackingContext, identifier);
-    result->setLabel(WTF::move(convertedDescriptor->label));
+    result->setLabel(String { descriptor.label });
     return result;
 }
 
