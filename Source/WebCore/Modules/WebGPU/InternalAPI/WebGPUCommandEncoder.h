@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <WebCore/WebGPUBuffer.h>
 #include <WebCore/WebGPUCommandBuffer.h>
 #include <WebCore/WebGPUCommandBufferDescriptor.h>
 #include <WebCore/WebGPUComputePassDescriptor.h>
@@ -44,7 +45,6 @@
 
 namespace WebCore::WebGPU {
 
-class Buffer;
 
 class CommandEncoder : public RefCountedAndCanMakeWeakPtr<CommandEncoder> {
 public:

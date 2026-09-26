@@ -28,7 +28,7 @@
 
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
-#include "WebGPUBufferImpl.h"
+#include "WebGPUBuffer.h"
 #include "WebGPUCommandBufferImpl.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUTextureImpl.h"

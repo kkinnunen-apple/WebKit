@@ -31,7 +31,7 @@
 #include "WebGPUAdapterImpl.h"
 #include "WebGPUBindGroupImpl.h"
 #include "WebGPUBindGroupLayoutImpl.h"
-#include "WebGPUBufferImpl.h"
+#include "WebGPUBuffer.h"
 #include "WebGPUCommandBufferImpl.h"
 #include "WebGPUCommandEncoderImpl.h"
 #include "WebGPUCompositorIntegrationImpl.h"
@@ -80,7 +80,7 @@ WGPUBindGroupLayout DowncastConvertToBackingContext::convertToBacking(const Bind
 
 WGPUBuffer DowncastConvertToBackingContext::convertToBacking(const Buffer& buffer)
 {
-    return downcast<BufferImpl>(buffer).backing();
+    return ::WebGPU::toAPI(const_cast<Buffer&>(buffer));
 }
 
 WGPUCommandBuffer DowncastConvertToBackingContext::convertToBacking(const CommandBuffer& commandBuffer)

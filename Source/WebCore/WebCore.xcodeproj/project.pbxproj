@@ -10167,12 +10167,10 @@
 		1CFAE2F12A4D7A220004AE37 /* WebGPUAdapterImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUAdapterImpl.h; sourceTree = "<group>"; };
 		1CFAE2F22A4D7A220004AE37 /* WebGPUConvertToBackingContext.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUConvertToBackingContext.cpp; sourceTree = "<group>"; };
 		1CFAE2F32A4D7A220004AE37 /* WebGPURenderPipelineImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPURenderPipelineImpl.h; sourceTree = "<group>"; };
-		1CFAE2F42A4D7A230004AE37 /* WebGPUBufferImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUBufferImpl.cpp; sourceTree = "<group>"; };
 		1CFAE2F52A4D7A230004AE37 /* WebGPUTextureImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUTextureImpl.h; sourceTree = "<group>"; };
 		1CFAE2F62A4D7A230004AE37 /* WebGPUBindGroupImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUBindGroupImpl.h; sourceTree = "<group>"; };
 		1CFAE2F72A4D7A230004AE37 /* WebGPURenderBundleImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPURenderBundleImpl.h; sourceTree = "<group>"; };
 		1CFAE2F82A4D7A240004AE37 /* WebGPUCreateImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUCreateImpl.h; sourceTree = "<group>"; };
-		1CFAE2F92A4D7A240004AE37 /* WebGPUBufferImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUBufferImpl.h; sourceTree = "<group>"; };
 		1CFAE2FA2A4D7A240004AE37 /* WebGPUCreateImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUCreateImpl.cpp; sourceTree = "<group>"; };
 		1CFAE2FB2A4D7A250004AE37 /* WebGPUCommandBufferImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUCommandBufferImpl.h; sourceTree = "<group>"; };
 		1CFAE2FC2A4D7A250004AE37 /* WebGPUTextureViewImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebGPUTextureViewImpl.h; sourceTree = "<group>"; };
@@ -26893,8 +26891,6 @@
 				1CFAE2F62A4D7A230004AE37 /* WebGPUBindGroupImpl.h */,
 				1CFAE2DF2A4D7A1C0004AE37 /* WebGPUBindGroupLayoutImpl.cpp */,
 				1CFAE2E22A4D7A1D0004AE37 /* WebGPUBindGroupLayoutImpl.h */,
-				1CFAE2F42A4D7A230004AE37 /* WebGPUBufferImpl.cpp */,
-				1CFAE2F92A4D7A240004AE37 /* WebGPUBufferImpl.h */,
 				1CFAE2CB2A4D7A170004AE37 /* WebGPUCommandBufferImpl.cpp */,
 				1CFAE2FB2A4D7A250004AE37 /* WebGPUCommandBufferImpl.h */,
 				1CFAE2EF2A4D7A210004AE37 /* WebGPUCommandEncoderImpl.cpp */,

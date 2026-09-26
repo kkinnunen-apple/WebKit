@@ -127,17 +127,13 @@ RefPtr<WebCore::WebGPU::XRBinding> RemoteDeviceProxy::createXRBinding()
 
 RefPtr<WebCore::WebGPU::Buffer> RemoteDeviceProxy::createBuffer(const WebCore::WebGPU::BufferDescriptor& descriptor)
 {
-    auto convertedDescriptor = m_convertToBackingContext->convertToBacking(descriptor);
-    if (!convertedDescriptor)
-        return nullptr;
-
     auto identifier = WebGPUIdentifier::generate();
-    auto sendResult = send(Messages::RemoteDevice::CreateBuffer(*convertedDescriptor, identifier));
+    auto sendResult = send(Messages::RemoteDevice::CreateBuffer(descriptor, identifier));
     if (sendResult != IPC::Error::NoError)
         return nullptr;
 
-    auto result = RemoteBufferProxy::create(*this, m_convertToBackingContext, identifier, convertedDescriptor->mappedAtCreation);
-    result->setLabel(WTF::move(convertedDescriptor->label));
+    auto result = RemoteBufferProxy::create(*this, m_convertToBackingContext, identifier, descriptor.mappedAtCreation);
+    result->setLabel(String { descriptor.label });
     return result;
 }
 

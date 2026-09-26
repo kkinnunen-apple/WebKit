@@ -50,6 +50,18 @@ public:
     RemoteDeviceProxy& parent() { return m_parent; }
     RemoteGPUProxy& root() { return m_parent->root(); }
 
+    void mapAsync(WebCore::WebGPU::MapModeFlags, WebCore::WebGPU::Size64 offset, std::optional<WebCore::WebGPU::Size64> sizeForMap, CompletionHandler<void(bool)>&&) final;
+    void getMappedRange(WebCore::WebGPU::Size64 offset, std::optional<WebCore::WebGPU::Size64>, NOESCAPE const Function<void(std::span<uint8_t>)>&) final;
+    std::span<uint8_t> getBufferContents() final;
+    void unmap() final;
+    void copyFrom(std::span<const uint8_t>, size_t offset) final;
+
+    void destroy() final;
+    void generateAValidationError() final;
+
+    void setLabel(String&&) final;
+    bool isValid() const final;
+
 private:
     friend class DowncastConvertToBackingContext;
 
@@ -59,8 +71,6 @@ private:
     RemoteBufferProxy(RemoteBufferProxy&&) = delete;
     RemoteBufferProxy& operator=(const RemoteBufferProxy&) = delete;
     RemoteBufferProxy& operator=(RemoteBufferProxy&&) = delete;
-
-    bool isRemoteBufferProxy() const final { return true; }
 
     WebGPUIdentifier backing() const { return m_backing; }
     
@@ -80,17 +90,6 @@ private:
         return protect(root().streamClientConnection())->sendWithAsyncReply(std::forward<T>(message), std::forward<C>(completionHandler), backing());
     }
 
-    void mapAsync(WebCore::WebGPU::MapModeFlags, WebCore::WebGPU::Size64 offset, std::optional<WebCore::WebGPU::Size64> sizeForMap, CompletionHandler<void(bool)>&&) final;
-    void getMappedRange(WebCore::WebGPU::Size64 offset, std::optional<WebCore::WebGPU::Size64>, NOESCAPE const Function<void(std::span<uint8_t>)>&) final;
-    std::span<uint8_t> getBufferContents() final;
-    void unmap() final;
-    void copyFrom(std::span<const uint8_t>, size_t offset) final;
-
-    void destroy() final;
-    void generateAValidationError() final;
-
-    void setLabelInternal(const String&) final;
-
     WebGPUIdentifier m_backing;
     const Ref<ConvertToBackingContext> m_convertToBackingContext;
     const Ref<RemoteDeviceProxy> m_parent;
@@ -98,9 +97,5 @@ private:
 };
 
 } // namespace WebKit::WebGPU
-
-SPECIALIZE_TYPE_TRAITS_BEGIN(WebKit::WebGPU::RemoteBufferProxy)
-    static bool isType(const WebCore::WebGPU::Buffer& buffer) { return buffer.isRemoteBufferProxy(); }
-SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // ENABLE(GPU_PROCESS)

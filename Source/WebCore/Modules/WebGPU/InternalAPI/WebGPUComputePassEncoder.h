@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <WebCore/WebGPUBuffer.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <cstdint>
@@ -38,7 +39,6 @@
 namespace WebCore::WebGPU {
 
 class BindGroup;
-class Buffer;
 class ComputePipeline;
 
 class ComputePassEncoder : public RefCountedAndCanMakeWeakPtr<ComputePassEncoder> {

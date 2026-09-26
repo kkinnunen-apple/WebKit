@@ -30,6 +30,7 @@
 #include "WebGPUAddressMode.h"
 #include "WebGPUBlendFactor.h"
 #include "WebGPUBlendOperation.h"
+#include "WebGPUBuffer.h"
 #include "WebGPUBufferBindingType.h"
 #include "WebGPUBufferUsage.h"
 #include "WebGPUColor.h"
@@ -110,7 +111,6 @@ inline WGPUStringView toBackingStringView(ASCIILiteral literal)
 class Adapter;
 class BindGroup;
 class BindGroupLayout;
-class Buffer;
 class CommandBuffer;
 class CommandEncoder;
 class CompositorIntegration;

@@ -82,7 +82,7 @@ void RemoteRenderBundleEncoder::setPipeline(WebGPUIdentifier renderPipeline)
 
 void RemoteRenderBundleEncoder::setIndexBuffer(WebGPUIdentifier buffer, WebCore::WebGPU::IndexFormat indexFormat, WebCore::WebGPU::Size64 offset, std::optional<WebCore::WebGPU::Size64> size)
 {
-    RefPtr convertedBuffer = protect(m_objectHeap)->convertBufferFromBacking(buffer).get();
+    RefPtr convertedBuffer = protect(m_objectHeap)->convertBufferFromBacking(buffer);
     ASSERT(convertedBuffer);
     if (!convertedBuffer)
         return;
@@ -92,7 +92,7 @@ void RemoteRenderBundleEncoder::setIndexBuffer(WebGPUIdentifier buffer, WebCore:
 
 void RemoteRenderBundleEncoder::setVertexBuffer(WebCore::WebGPU::Index32 slot, WebGPUIdentifier buffer, WebCore::WebGPU::Size64 offset, std::optional<WebCore::WebGPU::Size64> size)
 {
-    RefPtr convertedBuffer = protect(m_objectHeap)->convertBufferFromBacking(buffer).get();
+    RefPtr convertedBuffer = protect(m_objectHeap)->convertBufferFromBacking(buffer);
     ASSERT(convertedBuffer);
     if (!convertedBuffer)
         return;
@@ -121,7 +121,7 @@ void RemoteRenderBundleEncoder::drawIndexed(WebCore::WebGPU::Size32 indexCount, 
 
 void RemoteRenderBundleEncoder::drawIndirect(WebGPUIdentifier indirectBuffer, WebCore::WebGPU::Size64 indirectOffset)
 {
-    RefPtr convertedIndirectBuffer = protect(m_objectHeap)->convertBufferFromBacking(indirectBuffer).get();
+    RefPtr convertedIndirectBuffer = protect(m_objectHeap)->convertBufferFromBacking(indirectBuffer);
     ASSERT(convertedIndirectBuffer);
     if (!convertedIndirectBuffer)
         return;
@@ -131,7 +131,7 @@ void RemoteRenderBundleEncoder::drawIndirect(WebGPUIdentifier indirectBuffer, We
 
 void RemoteRenderBundleEncoder::drawIndexedIndirect(WebGPUIdentifier indirectBuffer, WebCore::WebGPU::Size64 indirectOffset)
 {
-    RefPtr convertedIndirectBuffer = protect(m_objectHeap)->convertBufferFromBacking(indirectBuffer).get();
+    RefPtr convertedIndirectBuffer = protect(m_objectHeap)->convertBufferFromBacking(indirectBuffer);
     ASSERT(convertedIndirectBuffer);
     if (!convertedIndirectBuffer)
         return;

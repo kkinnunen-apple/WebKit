@@ -815,7 +815,6 @@ list(REMOVE_ITEM WebCore_PRIVATE_FRAMEWORK_HEADERS
     Modules/WebGPU/Implementation/WebGPUAdapterImpl.h
     Modules/WebGPU/Implementation/WebGPUBindGroupImpl.h
     Modules/WebGPU/Implementation/WebGPUBindGroupLayoutImpl.h
-    Modules/WebGPU/Implementation/WebGPUBufferImpl.h
     Modules/WebGPU/Implementation/WebGPUCommandBufferImpl.h
     Modules/WebGPU/Implementation/WebGPUCommandEncoderImpl.h
     Modules/WebGPU/Implementation/WebGPUCompositorIntegrationImpl.h

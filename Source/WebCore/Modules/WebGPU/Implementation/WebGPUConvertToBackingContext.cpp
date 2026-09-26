@@ -790,7 +790,9 @@ WGPUBufferUsage ConvertToBackingContext::convertBufferUsageFlagsToBacking(Buffer
     static_assert(compare(BufferUsage::Indirect, WGPUBufferUsage_Indirect), "BufferUsageFlags mismatch");
     static_assert(compare(BufferUsage::QueryResolve, WGPUBufferUsage_QueryResolve), "BufferUsageFlags mismatch");
 
-    return static_cast<WGPUBufferUsage>(bufferUsageFlags);
+
+    // BufferUsage::Invalid is not a WGPUBufferUsage bit, so the C API rejects it.
+    return bufferUsageFlags.toRaw();
 }
 
 static constexpr bool NODELETE compare(auto a, auto b)

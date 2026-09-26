@@ -30,6 +30,7 @@
 #include "ScopedActiveMessageReceiveQueue.h"
 #include "WebGPUConvertFromBackingContext.h"
 #include "WebGPUIdentifier.h"
+#include <WebCore/WebGPUBuffer.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPUSampler.h>
 #include <functional>
@@ -42,7 +43,6 @@ namespace WebCore::WebGPU {
 class Adapter;
 class BindGroup;
 class BindGroupLayout;
-class Buffer;
 class CommandBuffer;
 class CommandEncoder;
 class CompositorIntegration;
@@ -144,7 +144,7 @@ public:
     WeakPtr<WebCore::WebGPU::Adapter> convertAdapterFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::BindGroup> convertBindGroupFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::BindGroupLayout> convertBindGroupLayoutFromBacking(WebGPUIdentifier) final;
-    WeakPtr<WebCore::WebGPU::Buffer> convertBufferFromBacking(WebGPUIdentifier) final;
+    RefPtr<WebCore::WebGPU::Buffer> convertBufferFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::CommandBuffer> convertCommandBufferFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::CommandEncoder> convertCommandEncoderFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::CompositorIntegration> convertCompositorIntegrationFromBacking(WebGPUIdentifier) final;

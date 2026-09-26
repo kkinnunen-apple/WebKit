@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <WebCore/WebGPUBuffer.h>
 #include <WebCore/WebGPUCommandBuffer.h>
 #include <WebCore/WebGPUExtent3D.h>
 #include <WebCore/WebGPUImageCopyExternalImage.h>
@@ -49,7 +50,6 @@ class VideoFrame;
 
 namespace WebCore::WebGPU {
 
-class Buffer;
 
 class Queue : public RefCountedAndCanMakeWeakPtr<Queue> {
 public:

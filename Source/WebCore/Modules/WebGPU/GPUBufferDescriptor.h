@@ -37,10 +37,10 @@ struct GPUBufferDescriptor : public GPUObjectDescriptorBase {
     WebGPU::BufferDescriptor convertToBacking() const
     {
         return {
-            { label },
-            size,
-            convertBufferUsageFlagsToBacking(usage),
-            mappedAtCreation,
+            .label = label,
+            .usage = convertBufferUsageFlagsToBacking(usage),
+            .size = size,
+            .mappedAtCreation = mappedAtCreation,
         };
     }
 

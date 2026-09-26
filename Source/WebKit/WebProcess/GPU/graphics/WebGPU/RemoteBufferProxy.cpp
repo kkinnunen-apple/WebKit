@@ -122,10 +122,16 @@ void RemoteBufferProxy::generateAValidationError()
     UNUSED_VARIABLE(sendResult);
 }
 
-void RemoteBufferProxy::setLabelInternal(const String& label)
+void RemoteBufferProxy::setLabel(String&& label)
 {
-    auto sendResult = send(Messages::RemoteBuffer::SetLabel(label));
+    auto sendResult = send(Messages::RemoteBuffer::SetLabel(WTF::move(label)));
     UNUSED_VARIABLE(sendResult);
+}
+
+bool RemoteBufferProxy::isValid() const
+{
+    // The Web Process cannot know. RemoteGPU::isValid() answers it for tests.
+    RELEASE_ASSERT_NOT_REACHED();
 }
 
 } // namespace WebKit::WebGPU

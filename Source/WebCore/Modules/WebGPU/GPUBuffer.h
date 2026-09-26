@@ -50,9 +50,9 @@ template<typename> class ExceptionOr;
 
 class GPUBuffer : public RefCountedAndCanMakeWeakPtr<GPUBuffer> {
 public:
-    static Ref<GPUBuffer> create(Ref<WebGPU::Buffer>&& backing, size_t bufferSize, GPUBufferUsageFlags usage, bool mappedAtCreation, GPUDevice& device)
+    static Ref<GPUBuffer> create(Ref<WebGPU::Buffer>&& backing, size_t bufferSize, GPUBufferUsageFlags usage, bool mappedAtCreation, String&& label, GPUDevice& device)
     {
-        return adoptRef(*new GPUBuffer(WTF::move(backing), bufferSize, usage, mappedAtCreation, device));
+        return adoptRef(*new GPUBuffer(WTF::move(backing), bufferSize, usage, mappedAtCreation, WTF::move(label), device));
     }
 
     String NODELETE label() const;
@@ -80,10 +80,11 @@ public:
     bool hasActiveInspectorCanvasCallTracer() const;
 
 private:
-    GPUBuffer(Ref<WebGPU::Buffer>&&, size_t, GPUBufferUsageFlags, bool, GPUDevice&);
+    GPUBuffer(Ref<WebGPU::Buffer>&&, size_t, GPUBufferUsageFlags, bool, String&& label, GPUDevice&);
     void internalUnmap(ScriptExecutionContext&);
 
     const Ref<WebGPU::Buffer> m_backing;
+    String m_label;
     struct ArrayBufferWithOffset {
         RefPtr<JSC::ArrayBuffer> buffer;
         size_t offset { 0 };

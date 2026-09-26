@@ -32,6 +32,6 @@
 namespace WebCore::WebGPU {
 
 using BufferUsage = ::WebGPU::BufferUsage;
-using BufferUsageFlags = std::underlying_type_t<BufferUsage>;
+using BufferUsageFlags = OptionSet<BufferUsage>;
 
 } // namespace WebCore::WebGPU

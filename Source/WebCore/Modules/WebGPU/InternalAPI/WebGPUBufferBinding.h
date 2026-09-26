@@ -34,7 +34,7 @@
 namespace WebCore::WebGPU {
 
 struct BufferBinding {
-    WeakRef<Buffer> buffer;
+    Ref<Buffer> buffer;
     Size64 offset { 0 };
     std::optional<Size64> size;
 };

@@ -83,9 +83,8 @@ static bool NODELETE validateCreateBuffer(const Device& device, const WebGPU::Bu
     if (!validateDescriptor(device, descriptor))
         return false;
 
-    // The C API conversion already rejected unknown usage bits.
     auto usage = descriptor.usage;
-    if (usage.isEmpty())
+    if (usage.isEmpty() || usage.contains(WebGPU::BufferUsage::Invalid))
         return false;
 
     if (usage.contains(WebGPU::BufferUsage::MapRead) && !usage.containsOnly({ WebGPU::BufferUsage::CopyDestination, WebGPU::BufferUsage::MapRead }))
@@ -294,7 +293,7 @@ void Buffer::getMappedRange(uint64_t offset, std::optional<uint64_t> size, NOESC
 std::span<uint8_t> Buffer::getMappedRangeSpan(uint64_t offset, std::optional<uint64_t> size)
 {
     // https://gpuweb.github.io/gpuweb/#dom-gpubuffer-getmappedrange
-    size_t rangeSize = size ? *size : computeRangeSize(currentSize(), offset);
+    size_t rangeSize = size ? *size : computeRangeSize(initialSize(), offset);
 
 #if ENABLE(WEBGPU_SWIFT)
     if (isWebGPUSwiftEnabled())
@@ -366,7 +365,7 @@ void Buffer::mapAsync(OptionSet<WebGPU::MapMode> mode, uint64_t offset, std::opt
 {
     // https://gpuweb.github.io/gpuweb/#dom-gpubuffer-mapasync
 
-    size_t rangeSize = size ? *size : computeRangeSize(currentSize(), offset);
+    size_t rangeSize = size ? *size : computeRangeSize(initialSize(), offset);
 
     Ref device = m_device;
 
@@ -438,6 +437,11 @@ void Buffer::unmap()
 void Buffer::setLabel(String&& label)
 {
     m_buffer.label = label.createNSString().get();
+}
+
+void Buffer::generateAValidationError()
+{
+    generateAValidationError("Buffer state was not unmapped"_s);
 }
 
 void Buffer::generateAValidationError(String&& message)
@@ -707,7 +711,7 @@ void wgpuBufferUnmap(WGPUBuffer buffer)
 
 void wgpuBufferGenerateAValidationError(WGPUBuffer buffer)
 {
-    protect(WebGPU::Metal::fromAPI(buffer))->generateAValidationError("Buffer state was not unmapped"_s);
+    protect(WebGPU::Metal::fromAPI(buffer))->generateAValidationError();
 }
 
 void wgpuBufferSetLabel(WGPUBuffer buffer, WGPUStringView label)
