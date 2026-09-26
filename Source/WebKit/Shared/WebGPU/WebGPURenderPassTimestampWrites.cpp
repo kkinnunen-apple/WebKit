@@ -37,10 +37,7 @@ namespace WebKit::WebGPU {
 
 std::optional<RenderPassTimestampWrites> ConvertToBackingContext::convertToBacking(const WebCore::WebGPU::RenderPassTimestampWrites& renderPassTimestampWrite)
 {
-    if (!renderPassTimestampWrite.querySet)
-        return std::nullopt;
-
-    auto querySet = convertToBacking(*protect(renderPassTimestampWrite.querySet));
+    auto querySet = convertToBacking(protect(renderPassTimestampWrite.querySet).get());
 
     return { { querySet, renderPassTimestampWrite.beginningOfPassWriteIndex, renderPassTimestampWrite.endOfPassWriteIndex } };
 }
@@ -51,7 +48,7 @@ std::optional<WebCore::WebGPU::RenderPassTimestampWrites> ConvertFromBackingCont
     if (!querySet)
         return std::nullopt;
 
-    return { { querySet, renderPassTimestampWrite.beginningOfPassWriteIndex, renderPassTimestampWrite.endOfPassWriteIndex } };
+    return { { querySet.releaseNonNull(), renderPassTimestampWrite.beginningOfPassWriteIndex, renderPassTimestampWrite.endOfPassWriteIndex } };
 }
 
 } // namespace WebKit

@@ -216,10 +216,16 @@ RefPtr<WebCore::WebGPU::CommandBuffer> RemoteCommandEncoderProxy::finish(const W
     return result;
 }
 
-void RemoteCommandEncoderProxy::setLabelInternal(const String& label)
+void RemoteCommandEncoderProxy::setLabel(String&& label)
 {
-    auto sendResult = send(Messages::RemoteCommandEncoder::SetLabel(label));
+    auto sendResult = send(Messages::RemoteCommandEncoder::SetLabel(WTF::move(label)));
     UNUSED_VARIABLE(sendResult);
+}
+
+bool RemoteCommandEncoderProxy::isValid() const
+{
+    // The Web Process cannot know. RemoteGPU::isValid() answers it for tests.
+    RELEASE_ASSERT_NOT_REACHED();
 }
 
 } // namespace WebKit::WebGPU

@@ -34,6 +34,7 @@
 #include <WebCore/WebGPUBindGroupLayout.h>
 #include <WebCore/WebGPUBuffer.h>
 #include <WebCore/WebGPUCommandBuffer.h>
+#include <WebCore/WebGPUCommandEncoder.h>
 #include <WebCore/WebGPUComputePassEncoder.h>
 #include <WebCore/WebGPUComputePipeline.h>
 #include <WebCore/WebGPUExternalTexture.h>
@@ -54,7 +55,6 @@
 
 namespace WebCore::WebGPU {
 class Adapter;
-class CommandEncoder;
 class CompositorIntegration;
 class Device;
 class GPU;
@@ -145,7 +145,7 @@ public:
     RefPtr<WebCore::WebGPU::BindGroupLayout> convertBindGroupLayoutFromBacking(WebGPUIdentifier) final;
     RefPtr<WebCore::WebGPU::Buffer> convertBufferFromBacking(WebGPUIdentifier) final;
     RefPtr<WebCore::WebGPU::CommandBuffer> convertCommandBufferFromBacking(WebGPUIdentifier) final;
-    WeakPtr<WebCore::WebGPU::CommandEncoder> convertCommandEncoderFromBacking(WebGPUIdentifier) final;
+    RefPtr<WebCore::WebGPU::CommandEncoder> convertCommandEncoderFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPU::CompositorIntegration> convertCompositorIntegrationFromBacking(WebGPUIdentifier) final;
     RefPtr<WebCore::WebGPU::ComputePassEncoder> convertComputePassEncoderFromBacking(WebGPUIdentifier) final;
     RefPtr<WebCore::WebGPU::ComputePipeline> convertComputePipelineFromBacking(WebGPUIdentifier) final;

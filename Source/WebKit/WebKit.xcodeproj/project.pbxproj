@@ -4599,10 +4599,8 @@
 		1C98C0BA2746267D002CCB78 /* WebGPUExternalTextureDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUExternalTextureDescriptor.cpp; sourceTree = "<group>"; };
 		1C98C0BB2746267E002CCB78 /* WebGPURenderPassDepthStencilAttachment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPURenderPassDepthStencilAttachment.cpp; sourceTree = "<group>"; };
 		1C98C0BC2746267E002CCB78 /* WebGPUFragmentState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUFragmentState.cpp; sourceTree = "<group>"; };
-		1C98C0BD2746267E002CCB78 /* WebGPUCommandEncoderDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUCommandEncoderDescriptor.cpp; sourceTree = "<group>"; };
 		1C98C0C02746267E002CCB78 /* WebGPUError.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUError.cpp; sourceTree = "<group>"; };
 		1C98C0C12746267F002CCB78 /* WebGPUOutOfMemoryError.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUOutOfMemoryError.cpp; sourceTree = "<group>"; };
-		1C98C0C22746267F002CCB78 /* WebGPUComputePassTimestampWrites.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUComputePassTimestampWrites.cpp; sourceTree = "<group>"; };
 		1C98C0C32746267F002CCB78 /* WebGPURenderPassLayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPURenderPassLayout.cpp; sourceTree = "<group>"; };
 		1C98C0C42746267F002CCB78 /* WebGPUExternalTextureBindingLayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUExternalTextureBindingLayout.cpp; sourceTree = "<group>"; };
 		1C98C0C52746267F002CCB78 /* WebGPUBlendComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebGPUBlendComponent.cpp; sourceTree = "<group>"; };
@@ -11686,7 +11684,6 @@
 				02789EF928D4055700F77E40 /* WebGPUColorTargetState.serialization.in */,
 				1CB7468327439CB500F19874 /* WebGPUCommandBufferDescriptor.h */,
 				5CBA4AE029020A4500F70CCD /* WebGPUCommandBufferDescriptor.serialization.in */,
-				1C98C0BD2746267E002CCB78 /* WebGPUCommandEncoderDescriptor.cpp */,
 				1CB7469227439CB900F19874 /* WebGPUCommandEncoderDescriptor.h */,
 				5CBA4AC929020A4100F70CCD /* WebGPUCommandEncoderDescriptor.serialization.in */,
 				1C98C07B2744B416002CCB78 /* WebGPUCompilationMessage.h */,
@@ -11694,7 +11691,6 @@
 				1C98C0D227462681002CCB78 /* WebGPUComputePassDescriptor.cpp */,
 				1CB7469727439CBA00F19874 /* WebGPUComputePassDescriptor.h */,
 				5CBA4AC529020A4000F70CCD /* WebGPUComputePassDescriptor.serialization.in */,
-				1C98C0C22746267F002CCB78 /* WebGPUComputePassTimestampWrites.cpp */,
 				1CB7468927439CB600F19874 /* WebGPUComputePassTimestampWrites.h */,
 				02789EFB28D42E9900F77E40 /* WebGPUComputePassTimestampWrites.serialization.in */,
 				1C98C0C727462680002CCB78 /* WebGPUComputePipelineDescriptor.cpp */,

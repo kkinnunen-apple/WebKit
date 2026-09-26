@@ -36,24 +36,16 @@ namespace WebKit::WebGPU {
 
 std::optional<ComputePassDescriptor> ConvertToBackingContext::convertToBacking(const WebCore::WebGPU::ComputePassDescriptor& computePassDescriptor)
 {
-    auto base = convertToBacking(static_cast<const WebCore::WebGPU::ObjectDescriptorBase&>(computePassDescriptor));
-    if (!base)
-        return std::nullopt;
-
     auto timestampWrites = computePassDescriptor.timestampWrites ? convertToBacking(*computePassDescriptor.timestampWrites) : std::nullopt;
 
-    return { { WTF::move(*base), timestampWrites } };
+    return { { { computePassDescriptor.label }, timestampWrites } };
 }
 
 std::optional<WebCore::WebGPU::ComputePassDescriptor> ConvertFromBackingContext::convertFromBacking(const ComputePassDescriptor& computePassDescriptor)
 {
-    auto base = convertFromBacking(static_cast<const ObjectDescriptorBase&>(computePassDescriptor));
-    if (!base)
-        return std::nullopt;
-
     auto timestampWrites = computePassDescriptor.timestampWrites ? convertFromBacking(*computePassDescriptor.timestampWrites) : std::nullopt;
 
-    return { { WTF::move(*base), timestampWrites } };
+    return WebCore::WebGPU::ComputePassDescriptor { .label = computePassDescriptor.label, .timestampWrites = WTF::move(timestampWrites) };
 }
 
 } // namespace WebKit

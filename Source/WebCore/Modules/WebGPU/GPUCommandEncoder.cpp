@@ -57,8 +57,9 @@ static uint8_t canvasColorAttachmentMaskForDescriptor(const GPURenderPassDescrip
     return result;
 }
 
-GPUCommandEncoder::GPUCommandEncoder(Ref<WebGPU::CommandEncoder>&& backing, GPUDevice& device)
+GPUCommandEncoder::GPUCommandEncoder(Ref<WebGPU::CommandEncoder>&& backing, String&& label, GPUDevice& device)
     : m_backing(WTF::move(backing))
+    , m_label(WTF::move(label))
     , m_device(device)
 {
 }
@@ -76,18 +77,20 @@ GPUDevice* GPUCommandEncoder::device() const
 
 String GPUCommandEncoder::label() const
 {
-    return m_overrideLabel ? *m_overrideLabel : m_backing->label();
+    return m_overrideLabel ? *m_overrideLabel : m_label;
 }
 
 void GPUCommandEncoder::setLabel(String&& label)
 {
+    m_label = label;
     protect(backing())->setLabel(WTF::move(label));
 }
 
 ExceptionOr<Ref<GPURenderPassEncoder>> GPUCommandEncoder::beginRenderPass(const GPURenderPassDescriptor& renderPassDescriptor)
 {
     auto canvasColorAttachmentMask = canvasColorAttachmentMaskForDescriptor(renderPassDescriptor);
-    RefPtr encoder = protect(backing())->beginRenderPass(renderPassDescriptor.convertToBacking());
+    Vector<std::optional<WebGPU::RenderPassColorAttachment>> colorAttachments;
+    RefPtr encoder = protect(backing())->beginRenderPass(renderPassDescriptor.convertToBacking(colorAttachments));
     if (!encoder)
         return Exception { ExceptionCode::InvalidStateError, "GPUCommandEncoder.beginRenderPass: Unable to begin render pass."_s };
     return GPURenderPassEncoder::create(encoder.releaseNonNull(), String { renderPassDescriptor.label }, *this, canvasColorAttachmentMask);

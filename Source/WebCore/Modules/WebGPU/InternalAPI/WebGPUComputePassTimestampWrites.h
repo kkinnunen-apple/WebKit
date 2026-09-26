@@ -25,18 +25,12 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <WebCore/WebGPUQuerySet.h>
-#include <wtf/Ref.h>
-#include <wtf/Vector.h>
-#include <wtf/WeakPtr.h>
 
 namespace WebCore::WebGPU {
 
-struct ComputePassTimestampWrites {
-    RefPtr<QuerySet> querySet;
-    Size32 beginningOfPassWriteIndex { kQuerySetIndexUndefined };
-    Size32 endOfPassWriteIndex { kQuerySetIndexUndefined };
-};
+using ComputePassTimestampWrites = ::WebGPU::PassTimestampWrites;
 
 } // namespace WebCore::WebGPU

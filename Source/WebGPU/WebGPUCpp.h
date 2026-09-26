@@ -1241,6 +1241,21 @@ class CommandEncoder : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<Co
 public:
     virtual ~CommandEncoder() = default;
 
+    virtual RefPtr<RenderPassEncoder> beginRenderPass(const RenderPassDescriptor&) = 0;
+    // std::nullopt is a descriptor with all members at their defaults.
+    virtual RefPtr<ComputePassEncoder> beginComputePass(const std::optional<ComputePassDescriptor>&) = 0;
+    virtual void copyBufferToBuffer(const Buffer& source, uint64_t sourceOffset, const Buffer& destination, uint64_t destinationOffset, uint64_t size) = 0;
+    virtual void copyBufferToTexture(const TexelCopyBufferInfo& source, const TexelCopyTextureInfo& destination, const Extent3D& copySize) = 0;
+    virtual void copyTextureToBuffer(const TexelCopyTextureInfo& source, const TexelCopyBufferInfo& destination, const Extent3D& copySize) = 0;
+    virtual void copyTextureToTexture(const TexelCopyTextureInfo& source, const TexelCopyTextureInfo& destination, const Extent3D& copySize) = 0;
+    // A std::nullopt size is the rest of the buffer after the offset.
+    virtual void clearBuffer(const Buffer&, uint64_t offset = 0, std::optional<uint64_t> size = std::nullopt) = 0;
+    virtual void pushDebugGroup(String&& groupLabel) = 0;
+    virtual void popDebugGroup() = 0;
+    virtual void insertDebugMarker(String&& markerLabel) = 0;
+    virtual void writeTimestamp(const QuerySet&, uint32_t queryIndex) = 0;
+    virtual void resolveQuerySet(const QuerySet&, uint32_t firstQuery, uint32_t queryCount, const Buffer& destination, uint64_t destinationOffset) = 0;
+    virtual RefPtr<CommandBuffer> finish(const CommandBufferDescriptor&) = 0;
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 

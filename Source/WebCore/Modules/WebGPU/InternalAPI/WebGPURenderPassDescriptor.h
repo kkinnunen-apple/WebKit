@@ -25,23 +25,16 @@
 
 #pragma once
 
-#include <WebCore/WebGPUObjectDescriptorBase.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURenderPassColorAttachment.h>
 #include <WebCore/WebGPURenderPassDepthStencilAttachment.h>
 #include <WebCore/WebGPURenderPassTimestampWrites.h>
 #include <optional>
 #include <wtf/Vector.h>
-#include <wtf/WeakPtr.h>
 
 namespace WebCore::WebGPU {
 
-struct RenderPassDescriptor : public ObjectDescriptorBase {
-    Vector<std::optional<RenderPassColorAttachment>> colorAttachments;
-    std::optional<RenderPassDepthStencilAttachment> depthStencilAttachment;
-    RefPtr<QuerySet> occlusionQuerySet;
-    std::optional<RenderPassTimestampWrites> timestampWrites;
-    std::optional<uint64_t> maxDrawCount;
-};
+using RenderPassDescriptor = ::WebGPU::RenderPassDescriptor;
 
 } // namespace WebCore::WebGPU

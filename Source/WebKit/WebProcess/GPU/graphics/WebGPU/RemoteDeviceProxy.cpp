@@ -393,21 +393,14 @@ void RemoteDeviceProxy::createRenderPipelineWithPipelineLayoutFromPipelineAsync(
 
 RefPtr<WebCore::WebGPU::CommandEncoder> RemoteDeviceProxy::createCommandEncoder(const std::optional<WebCore::WebGPU::CommandEncoderDescriptor>& descriptor)
 {
-    std::optional<CommandEncoderDescriptor> convertedDescriptor;
-    if (descriptor) {
-        convertedDescriptor = m_convertToBackingContext->convertToBacking(*descriptor);
-        if (!convertedDescriptor)
-            return nullptr;
-    }
-
     auto identifier = WebGPUIdentifier::generate();
-    auto sendResult = send(Messages::RemoteDevice::CreateCommandEncoder(WTF::move(convertedDescriptor), identifier));
+    auto sendResult = send(Messages::RemoteDevice::CreateCommandEncoder(descriptor, identifier));
     if (sendResult != IPC::Error::NoError)
         return nullptr;
 
     auto result = RemoteCommandEncoderProxy::create(protect(root()), m_convertToBackingContext, identifier);
-    if (convertedDescriptor)
-        result->setLabel(WTF::move(convertedDescriptor->label));
+    if (descriptor)
+        result->setLabel(String { descriptor->label });
     return result;
 }
 

@@ -33,6 +33,7 @@
 #include "SharedVideoFrame.h"
 #include "StreamMessageReceiver.h"
 #include "WebGPUBufferDescriptor.h"
+#include "WebGPUCommandEncoderDescriptor.h"
 #include "WebGPUError.h"
 #include "WebGPUIdentifier.h"
 #include "WebGPUQuerySetDescriptor.h"
@@ -77,7 +78,6 @@ struct SharedVideoFrame;
 namespace WebGPU {
 struct BindGroupDescriptor;
 struct BindGroupLayoutDescriptor;
-struct CommandEncoderDescriptor;
 struct ComputePipelineDescriptor;
 struct ExternalTextureDescriptor;
 class ObjectHeap;

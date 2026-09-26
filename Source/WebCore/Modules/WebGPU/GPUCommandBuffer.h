@@ -27,15 +27,12 @@
 
 #include "GPUCommandEncoder.h"
 #include "WebGPUCommandBuffer.h"
+#include "WebGPUCommandEncoder.h"
 #include <wtf/Ref.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {
-
-namespace WebGPU {
-class CommandEncoder;
-}
 
 class GPUDevice;
 

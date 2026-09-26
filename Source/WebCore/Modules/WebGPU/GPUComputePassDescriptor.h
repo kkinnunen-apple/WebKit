@@ -35,8 +35,8 @@ struct GPUComputePassDescriptor : public GPUObjectDescriptorBase {
     WebGPU::ComputePassDescriptor convertToBacking() const
     {
         return {
-            { label },
-            timestampWrites ? std::optional { timestampWrites->convertToBacking() } : std::nullopt,
+            .label = label,
+            .timestampWrites = timestampWrites ? std::optional { timestampWrites->convertToBacking() } : std::nullopt,
         };
     }
 

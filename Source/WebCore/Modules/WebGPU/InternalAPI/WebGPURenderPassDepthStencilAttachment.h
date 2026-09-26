@@ -25,48 +25,16 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <WebCore/WebGPULoadOp.h>
 #include <WebCore/WebGPUStoreOp.h>
 #include <WebCore/WebGPUTexture.h>
 #include <WebCore/WebGPUTextureView.h>
-#include <wtf/Ref.h>
-#include <wtf/WeakRef.h>
 
 namespace WebCore::WebGPU {
 
-
-using RenderPassDepthAttachmentView = Variant<const Ref<Texture>, const Ref<TextureView>>;
-
-struct RenderPassDepthStencilAttachment {
-    RenderPassDepthAttachmentView view;
-
-    float depthClearValue { 0 };
-    std::optional<LoadOp> depthLoadOp;
-    std::optional<StoreOp> depthStoreOp;
-    bool depthReadOnly { false };
-
-    StencilValue stencilClearValue { 0 };
-    std::optional<LoadOp> stencilLoadOp;
-    std::optional<StoreOp> stencilStoreOp;
-    bool stencilReadOnly { false };
-
-    Texture* texture() const
-    {
-        return WTF::switchOn(view, [&](const Ref<Texture>& texture) -> Texture* {
-            return texture.ptr();
-        }, [&](const Ref<TextureView>&) -> Texture* {
-            return nullptr;
-        });
-    }
-    TextureView* textureView() const
-    {
-        return WTF::switchOn(view, [&](const Ref<Texture>&) -> TextureView* {
-            return nullptr;
-        }, [&](const Ref<TextureView>& textureView) -> TextureView* {
-            return textureView.ptr();
-        });
-    }
-};
+using RenderPassDepthAttachmentView = ::WebGPU::RenderPassAttachmentView;
+using RenderPassDepthStencilAttachment = ::WebGPU::RenderPassDepthStencilAttachment;
 
 } // namespace WebCore::WebGPU
