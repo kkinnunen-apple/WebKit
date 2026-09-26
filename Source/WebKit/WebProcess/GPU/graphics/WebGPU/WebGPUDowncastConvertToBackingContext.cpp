@@ -139,7 +139,7 @@ WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::QuerySet& querySet)
 {
-    return downcast<RemoteQuerySetProxy>(querySet).backing();
+    return static_cast<const RemoteQuerySetProxy&>(querySet).backing();
 }
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::Queue& queue)

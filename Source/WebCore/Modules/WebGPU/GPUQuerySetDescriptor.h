@@ -39,7 +39,7 @@ struct GPUQuerySetDescriptor : public GPUObjectDescriptorBase {
     WebGPU::QuerySetDescriptor convertToBacking() const
     {
         return {
-            { label },
+            label,
             WebCore::convertToBacking(type),
             count,
         };

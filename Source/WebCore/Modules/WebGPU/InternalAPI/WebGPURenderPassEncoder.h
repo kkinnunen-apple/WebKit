@@ -28,6 +28,7 @@
 #include <WebCore/WebGPUColor.h>
 #include <WebCore/WebGPUIndexFormat.h>
 #include <WebCore/WebGPUIntegralTypes.h>
+#include <WebCore/WebGPUQuerySet.h>
 #include <cstdint>
 #include <functional>
 #include <optional>
@@ -41,7 +42,6 @@ namespace WebCore::WebGPU {
 
 class BindGroup;
 class Buffer;
-class QuerySet;
 class RenderBundle;
 class RenderPipeline;
 

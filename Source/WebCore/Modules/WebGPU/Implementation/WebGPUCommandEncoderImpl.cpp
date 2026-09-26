@@ -32,7 +32,7 @@
 #include "WebGPUCommandBufferImpl.h"
 #include "WebGPUComputePassEncoderImpl.h"
 #include "WebGPUConvertToBackingContext.h"
-#include "WebGPUQuerySetImpl.h"
+#include "WebGPUQuerySet.h"
 #include "WebGPURenderPassEncoderImpl.h"
 #include "WebGPUTextureImpl.h"
 #include "WebGPUTextureViewImpl.h"

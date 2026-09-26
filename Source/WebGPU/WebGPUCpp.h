@@ -1312,6 +1312,7 @@ class QuerySet : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<QuerySet
 public:
     virtual ~QuerySet() = default;
 
+    virtual void destroy() = 0;
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 

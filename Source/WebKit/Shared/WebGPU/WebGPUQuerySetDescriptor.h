@@ -27,18 +27,12 @@
 
 #if ENABLE(GPU_PROCESS)
 
-#include "WebGPUObjectDescriptorBase.h"
-#include <WebCore/WebGPUIntegralTypes.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUQueryType.h>
-#include <optional>
-#include <wtf/Vector.h>
 
 namespace WebKit::WebGPU {
 
-struct QuerySetDescriptor : public ObjectDescriptorBase {
-    WebCore::WebGPU::QueryType type { WebCore::WebGPU::QueryType::Occlusion };
-    WebCore::WebGPU::Size32 count { 0 };
-};
+using QuerySetDescriptor = ::WebGPU::QuerySetDescriptor;
 
 } // namespace WebKit::WebGPU
 

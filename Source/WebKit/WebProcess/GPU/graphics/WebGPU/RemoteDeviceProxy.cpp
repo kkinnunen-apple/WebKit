@@ -433,17 +433,13 @@ RefPtr<WebCore::WebGPU::RenderBundleEncoder> RemoteDeviceProxy::createRenderBund
 
 RefPtr<WebCore::WebGPU::QuerySet> RemoteDeviceProxy::createQuerySet(const WebCore::WebGPU::QuerySetDescriptor& descriptor)
 {
-    auto convertedDescriptor = m_convertToBackingContext->convertToBacking(descriptor);
-    if (!convertedDescriptor)
-        return nullptr;
-
     auto identifier = WebGPUIdentifier::generate();
-    auto sendResult = send(Messages::RemoteDevice::CreateQuerySet(*convertedDescriptor, identifier));
+    auto sendResult = send(Messages::RemoteDevice::CreateQuerySet(descriptor, identifier));
     if (sendResult != IPC::Error::NoError)
         return nullptr;
 
     auto result = RemoteQuerySetProxy::create(*this, m_convertToBackingContext, identifier);
-    result->setLabel(WTF::move(convertedDescriptor->label));
+    result->setLabel(String { descriptor.label });
     return result;
 }
 

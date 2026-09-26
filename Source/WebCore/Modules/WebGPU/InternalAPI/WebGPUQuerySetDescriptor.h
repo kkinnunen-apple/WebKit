@@ -25,16 +25,11 @@
 
 #pragma once
 
-#include <WebCore/WebGPUIntegralTypes.h>
-#include <WebCore/WebGPUObjectDescriptorBase.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUQueryType.h>
-#include <wtf/Vector.h>
 
 namespace WebCore::WebGPU {
 
-struct QuerySetDescriptor : public ObjectDescriptorBase {
-    QueryType type { QueryType::Occlusion };
-    Size32 count { 0 };
-};
+using QuerySetDescriptor = ::WebGPU::QuerySetDescriptor;
 
 } // namespace WebCore::WebGPU

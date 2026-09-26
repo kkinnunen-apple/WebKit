@@ -164,7 +164,6 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     Modules/WebGPU/Implementation/WebGPUPipelineLayoutImpl.h
     Modules/WebGPU/Implementation/WebGPUPresentationContextImpl.h
     Modules/WebGPU/Implementation/WebGPUPtr.h
-    Modules/WebGPU/Implementation/WebGPUQuerySetImpl.h
     Modules/WebGPU/Implementation/WebGPUQueueImpl.h
     Modules/WebGPU/Implementation/WebGPURenderBundleEncoderImpl.h
     Modules/WebGPU/Implementation/WebGPURenderBundleImpl.h

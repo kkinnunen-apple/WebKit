@@ -48,6 +48,7 @@
 #include <WebCore/WebGPUOrigin2D.h>
 #include <WebCore/WebGPUOrigin3D.h>
 #include <WebCore/WebGPUPrimitiveState.h>
+#include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURenderPassTimestampWrites.h>
 #include <WebCore/WebGPUSampler.h>
 #include <WebCore/WebGPUSamplerBindingLayout.h>
@@ -103,8 +104,6 @@ struct CanvasConfiguration;
 class PresentationContext;
 struct PresentationContextDescriptor;
 struct ProgrammableStage;
-class QuerySet;
-struct QuerySetDescriptor;
 class Queue;
 class RenderBundle;
 struct RenderBundleDescriptor;
@@ -179,7 +178,6 @@ struct PresentationContextDescriptor;
 struct CanvasConfiguration;
 struct PrimitiveState;
 struct ProgrammableStage;
-struct QuerySetDescriptor;
 class RemoteCompositorIntegrationProxy;
 struct RenderBundleDescriptor;
 struct RenderBundleEncoderDescriptor;
@@ -249,7 +247,6 @@ public:
     std::optional<PresentationContextDescriptor> convertToBacking(const WebCore::WebGPU::PresentationContextDescriptor&);
     std::optional<PrimitiveState> NODELETE convertToBacking(const WebCore::WebGPU::PrimitiveState&);
     std::optional<ProgrammableStage> convertToBacking(const WebCore::WebGPU::ProgrammableStage&);
-    std::optional<QuerySetDescriptor> convertToBacking(const WebCore::WebGPU::QuerySetDescriptor&);
     std::optional<RenderBundleDescriptor> convertToBacking(const WebCore::WebGPU::RenderBundleDescriptor&);
     std::optional<RenderBundleEncoderDescriptor> convertToBacking(const WebCore::WebGPU::RenderBundleEncoderDescriptor&);
     std::optional<RenderPassColorAttachment> convertToBacking(const WebCore::WebGPU::RenderPassColorAttachment&);

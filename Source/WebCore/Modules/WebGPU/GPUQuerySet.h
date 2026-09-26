@@ -65,6 +65,7 @@ private:
 
     const Ref<WebGPU::QuerySet> m_backing;
     const GPUQuerySetDescriptor m_descriptor;
+    String m_label;
     WeakPtr<GPUDevice, WeakPtrImplWithEventTargetData> m_device;
 };
 

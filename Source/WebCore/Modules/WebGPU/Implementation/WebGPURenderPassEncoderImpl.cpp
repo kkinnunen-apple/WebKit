@@ -31,7 +31,7 @@
 #include "WebGPUBindGroupImpl.h"
 #include "WebGPUBufferImpl.h"
 #include "WebGPUConvertToBackingContext.h"
-#include "WebGPUQuerySetImpl.h"
+#include "WebGPUQuerySet.h"
 #include "WebGPURenderBundleImpl.h"
 #include "WebGPURenderPipelineImpl.h"
 #include <WebGPU/WebGPUExt.h>

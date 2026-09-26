@@ -30,6 +30,7 @@
 #include "WebGPU.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUPtr.h"
+#include "WebGPUQuerySet.h"
 #include "WebGPUSampler.h"
 #include <WebGPU/WebGPU.h>
 #include <WebGPU/WebGPUExt.h>
@@ -60,7 +61,6 @@ class Device;
 class ExternalTexture;
 class PipelineLayout;
 class PresentationContext;
-class QuerySet;
 class Queue;
 class RenderBundleEncoder;
 class RenderBundle;

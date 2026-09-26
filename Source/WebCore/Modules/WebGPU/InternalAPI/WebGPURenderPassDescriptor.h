@@ -39,7 +39,7 @@ namespace WebCore::WebGPU {
 struct RenderPassDescriptor : public ObjectDescriptorBase {
     Vector<std::optional<RenderPassColorAttachment>> colorAttachments;
     std::optional<RenderPassDepthStencilAttachment> depthStencilAttachment;
-    WeakPtr<QuerySet> occlusionQuerySet;
+    RefPtr<QuerySet> occlusionQuerySet;
     std::optional<RenderPassTimestampWrites> timestampWrites;
     std::optional<uint64_t> maxDrawCount;
 };

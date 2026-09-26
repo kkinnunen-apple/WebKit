@@ -33,6 +33,7 @@
 #include <WebCore/WebGPUImageCopyBuffer.h>
 #include <WebCore/WebGPUImageCopyTexture.h>
 #include <WebCore/WebGPUIntegralTypes.h>
+#include <WebCore/WebGPUQuerySet.h>
 #include <WebCore/WebGPURenderPassDescriptor.h>
 #include <WebCore/WebGPURenderPassEncoder.h>
 #include <optional>
@@ -44,7 +45,6 @@
 namespace WebCore::WebGPU {
 
 class Buffer;
-class QuerySet;
 
 class CommandEncoder : public RefCountedAndCanMakeWeakPtr<CommandEncoder> {
 public:

@@ -33,10 +33,8 @@
 
 namespace WebCore::WebGPU {
 
-class QuerySet;
-
 struct RenderPassTimestampWrites {
-    WeakPtr<QuerySet> querySet;
+    RefPtr<QuerySet> querySet;
     Size32 beginningOfPassWriteIndex { kQuerySetIndexUndefined };
     Size32 endOfPassWriteIndex { kQuerySetIndexUndefined };
 };
