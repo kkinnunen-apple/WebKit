@@ -27,6 +27,7 @@
 
 #import <WebGPU/WebGPU.h>
 #import <WebGPU/WebGPUCpp.h>
+#import <WebGPU/WebGPUCppBridge.h>
 #import <WebGPU/WebGPUExt.h>
 #import <optional>
 #import <wtf/OptionSet.h>
@@ -44,6 +45,9 @@
 // elements of an array takes a caller-owned XDescriptorStorage, stores the converted elements in it
 // and returns a descriptor whose spans point into it. The storage has to outlive every use of the
 // descriptor, and it must not be modified while the descriptor is in use.
+//
+// Handles in descriptors resolve to the C++ API objects through the transition bridge
+// (WebGPUCppBridge.h), so the conversions do not depend on the implementation that created them.
 
 namespace WebGPU::Metal {
 
@@ -1960,6 +1964,166 @@ inline std::optional<WebGPU::TextureViewDescriptor> fromAPI(const WGPUTextureVie
         .arrayLayerCount = descriptor.arrayLayerCount == WGPU_ARRAY_LAYER_COUNT_UNDEFINED ? std::nullopt : std::optional<uint32_t> { descriptor.arrayLayerCount },
         .aspect = *aspect,
         .usage = *usage,
+    };
+}
+
+inline std::optional<WebGPU::BindGroupLayoutEntry> fromAPI(const WGPUBindGroupLayoutEntry& entry)
+{
+    auto visibility = shaderStageFromAPI(entry.visibility);
+    if (!visibility)
+        return std::nullopt;
+
+    WebGPU::BindGroupLayoutEntry result {
+        .binding = entry.binding,
+        .visibility = *visibility,
+    };
+
+    // A binding layout is present when its members are not _Undefined. An external texture binding
+    // layout is a texture binding layout with WGPUTextureSampleType_ExternalTexture.
+    // entry.metalBinding and entry.buffer.bufferSizeForBinding are only used by the layouts that
+    // the implementation generates, so they are not converted.
+    if (entry.buffer.type != WGPUBufferBindingType_Undefined) {
+        auto type = fromAPI(entry.buffer.type);
+        if (!type)
+            return std::nullopt;
+        result.buffer = WebGPU::BufferBindingLayout {
+            .type = *type,
+            .hasDynamicOffset = !!entry.buffer.hasDynamicOffset,
+            .minBindingSize = entry.buffer.minBindingSize,
+        };
+    }
+
+    if (entry.sampler.type != WGPUSamplerBindingType_Undefined) {
+        auto type = fromAPI(entry.sampler.type);
+        if (!type)
+            return std::nullopt;
+        result.sampler = WebGPU::SamplerBindingLayout { .type = *type };
+    }
+
+    if (entry.texture.sampleType == WGPUTextureSampleType_ExternalTexture)
+        result.externalTexture = WebGPU::ExternalTextureBindingLayout { };
+    else if (entry.texture.sampleType != WGPUTextureSampleType_Undefined && entry.texture.viewDimension != WGPUTextureViewDimension_Undefined) {
+        auto sampleType = fromAPI(entry.texture.sampleType);
+        auto viewDimension = fromAPI(entry.texture.viewDimension);
+        if (!sampleType || !viewDimension)
+            return std::nullopt;
+        result.texture = WebGPU::TextureBindingLayout {
+            .sampleType = *sampleType,
+            .viewDimension = *viewDimension,
+            .multisampled = !!entry.texture.multisampled,
+        };
+    }
+
+    if (entry.storageTexture.access != WGPUStorageTextureAccess_Undefined && entry.storageTexture.format != WGPUTextureFormat_Undefined && entry.storageTexture.viewDimension != WGPUTextureViewDimension_Undefined) {
+        auto access = fromAPI(entry.storageTexture.access);
+        auto format = fromAPI(entry.storageTexture.format);
+        auto viewDimension = fromAPI(entry.storageTexture.viewDimension);
+        if (!access || !format || !viewDimension)
+            return std::nullopt;
+        result.storageTexture = WebGPU::StorageTextureBindingLayout {
+            .access = *access,
+            .format = *format,
+            .viewDimension = *viewDimension,
+        };
+    }
+
+    return result;
+}
+
+struct BindGroupLayoutDescriptorStorage {
+    Vector<WebGPU::BindGroupLayoutEntry> entries;
+};
+
+inline std::optional<WebGPU::BindGroupLayoutDescriptor> fromAPI(const WGPUBindGroupLayoutDescriptor& descriptor, BindGroupLayoutDescriptorStorage& storage LIFETIME_BOUND)
+{
+    storage.entries.clear();
+    for (auto& entry : unsafeMakeSpan(descriptor.entries, descriptor.entryCount)) {
+        auto apiEntry = fromAPI(entry);
+        if (!apiEntry)
+            return std::nullopt;
+        storage.entries.append(WTF::move(*apiEntry));
+    }
+
+    return WebGPU::BindGroupLayoutDescriptor {
+        .label = fromAPI(descriptor.label),
+        .entries = storage.entries.span(),
+    };
+}
+
+struct PipelineLayoutDescriptorStorage {
+    Vector<Ref<WebGPU::BindGroupLayout>> bindGroupLayouts;
+};
+
+inline std::optional<WebGPU::PipelineLayoutDescriptor> fromAPI(const WGPUPipelineLayoutDescriptor& descriptor, PipelineLayoutDescriptorStorage& storage LIFETIME_BOUND)
+{
+    // A null bindGroupLayouts is a layout that the pipeline generates from its shaders.
+    std::optional<std::span<const Ref<WebGPU::BindGroupLayout>>> bindGroupLayouts;
+    storage.bindGroupLayouts.clear();
+    if (descriptor.bindGroupLayouts) {
+        for (auto bindGroupLayout : unsafeMakeSpan(descriptor.bindGroupLayouts, descriptor.bindGroupLayoutCount)) {
+            if (!bindGroupLayout)
+                return std::nullopt;
+            storage.bindGroupLayouts.append(WebGPU::fromAPI(bindGroupLayout));
+        }
+        bindGroupLayouts = storage.bindGroupLayouts.span();
+    }
+
+    return WebGPU::PipelineLayoutDescriptor {
+        .label = fromAPI(descriptor.label),
+        .bindGroupLayouts = bindGroupLayouts,
+    };
+}
+
+inline std::optional<WebGPU::BindGroupEntry> fromAPI(const WGPUBindGroupEntry& entry)
+{
+    // Exactly one of the resource handles has to be set.
+    if (!!entry.buffer + !!entry.sampler + !!entry.texture + !!entry.textureView + !!entry.externalTexture != 1)
+        return std::nullopt;
+
+    auto resource = [&]() -> WebGPU::BindingResource {
+        if (entry.buffer) {
+            return WebGPU::BufferBinding {
+                .buffer = WebGPU::fromAPI(entry.buffer),
+                .offset = entry.offset,
+                .size = entry.size == WGPU_WHOLE_SIZE ? std::nullopt : std::optional<uint64_t> { entry.size },
+            };
+        }
+        if (entry.sampler)
+            return Ref { WebGPU::fromAPI(entry.sampler) };
+        if (entry.texture)
+            return Ref { WebGPU::fromAPI(entry.texture) };
+        if (entry.textureView)
+            return Ref { WebGPU::fromAPI(entry.textureView) };
+        return Ref { WebGPU::fromAPI(entry.externalTexture) };
+    }();
+
+    return WebGPU::BindGroupEntry {
+        .binding = entry.binding,
+        .resource = WTF::move(resource),
+    };
+}
+
+struct BindGroupDescriptorStorage {
+    Vector<WebGPU::BindGroupEntry> entries;
+};
+
+inline std::optional<WebGPU::BindGroupDescriptor> fromAPI(const WGPUBindGroupDescriptor& descriptor, BindGroupDescriptorStorage& storage LIFETIME_BOUND)
+{
+    if (!descriptor.layout)
+        return std::nullopt;
+
+    storage.entries.clear();
+    for (auto& entry : unsafeMakeSpan(descriptor.entries, descriptor.entryCount)) {
+        auto apiEntry = fromAPI(entry);
+        if (!apiEntry)
+            return std::nullopt;
+        storage.entries.append(WTF::move(*apiEntry));
+    }
+
+    return WebGPU::BindGroupDescriptor {
+        .label = fromAPI(descriptor.label),
+        .layout = WebGPU::fromAPI(descriptor.layout),
+        .entries = storage.entries.span(),
     };
 }
 

@@ -59,6 +59,38 @@
 
 namespace WebGPU::Metal {
 
+// A process has only one implementation of the C++ API, so the C++ API objects that WebGPU::Metal
+// receives are WebGPU::Metal objects.
+inline BindGroupLayout& metal(WebGPU::BindGroupLayout& bindGroupLayout)
+{
+    return static_cast<BindGroupLayout&>(bindGroupLayout);
+}
+
+inline Buffer& metal(WebGPU::Buffer& buffer)
+{
+    return static_cast<Buffer&>(buffer);
+}
+
+inline ExternalTexture& metal(WebGPU::ExternalTexture& externalTexture)
+{
+    return static_cast<ExternalTexture&>(externalTexture);
+}
+
+inline Sampler& metal(WebGPU::Sampler& sampler)
+{
+    return static_cast<Sampler&>(sampler);
+}
+
+inline Texture& metal(WebGPU::Texture& texture)
+{
+    return static_cast<Texture&>(texture);
+}
+
+inline TextureView& metal(WebGPU::TextureView& textureView)
+{
+    return static_cast<TextureView&>(textureView);
+}
+
 // FIXME: It would be cool if we didn't have to list all these overloads, but instead could do something like bridge_cast() in WTF.
 
 inline Adapter& fromAPI(WGPUAdapter adapter)
@@ -241,24 +273,9 @@ inline WGPUStringView toAPI(ASCIILiteral literal)
     return { literal.characters(), literal.length() };
 }
 
-inline std::span<const WGPUBindGroupLayout> bindGroupLayoutsSpan(const WGPUPipelineLayoutDescriptor& descriptor)
-{
-    return unsafeMakeSpan(descriptor.bindGroupLayouts, descriptor.bindGroupLayoutCount);
-}
-
 inline std::span<const WGPUTextureFormat> colorFormatsSpan(const WGPURenderBundleEncoderDescriptor& descriptor)
 {
     return unsafeMakeSpan(descriptor.colorFormats, descriptor.colorFormatCount);
-}
-
-inline std::span<const WGPUBindGroupEntry> entriesSpan(const WGPUBindGroupDescriptor& descriptor)
-{
-    return unsafeMakeSpan(descriptor.entries, descriptor.entryCount);
-}
-
-inline std::span<const WGPUBindGroupLayoutEntry> entriesSpan(const WGPUBindGroupLayoutDescriptor& descriptor)
-{
-    return unsafeMakeSpan(descriptor.entries, descriptor.entryCount);
 }
 
 inline std::span<const WGPUConstantEntry> constantsSpan(const WGPUComputeState& state)
