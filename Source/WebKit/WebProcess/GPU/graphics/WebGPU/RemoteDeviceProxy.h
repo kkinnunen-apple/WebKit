@@ -55,6 +55,13 @@ public:
 
     RemoteAdapterProxy& parent() const { return m_parent; }
     RemoteGPUProxy& root() { return m_parent->root(); }
+
+    // Called by RemoteGPUProxy, which implements the device commands that take WebCore sources.
+    RefPtr<WebCore::WebGPU::XRBinding> createXRBinding();
+    RefPtr<WebCore::WebGPU::ExternalTexture> importExternalTexture(const WebCore::WebGPU::ExternalTextureDescriptor&);
+#if PLATFORM(COCOA) && ENABLE(VIDEO)
+    void updateExternalTexture(const WebCore::WebGPU::ExternalTexture&, const WebCore::MediaPlayerIdentifier&);
+#endif
     WebGPUIdentifier backing() const { return m_backing; }
 
 private:
@@ -82,14 +89,9 @@ private:
 
     void destroy() final;
 
-    RefPtr<WebCore::WebGPU::XRBinding> createXRBinding() final;
     RefPtr<WebCore::WebGPU::Buffer> createBuffer(const WebCore::WebGPU::BufferDescriptor&) final;
     RefPtr<WebCore::WebGPU::Texture> createTexture(const WebCore::WebGPU::TextureDescriptor&) final;
     RefPtr<WebCore::WebGPU::Sampler> createSampler(const WebCore::WebGPU::SamplerDescriptor&) final;
-    RefPtr<WebCore::WebGPU::ExternalTexture> importExternalTexture(const WebCore::WebGPU::ExternalTextureDescriptor&) final;
-#if PLATFORM(COCOA) && ENABLE(VIDEO)
-    void updateExternalTexture(const WebCore::WebGPU::ExternalTexture&, const WebCore::MediaPlayerIdentifier&) final;
-#endif
 
     RefPtr<WebCore::WebGPU::BindGroupLayout> createBindGroupLayout(const WebCore::WebGPU::BindGroupLayoutDescriptor&) final;
     RefPtr<WebCore::WebGPU::PipelineLayout> createPipelineLayout(const WebCore::WebGPU::PipelineLayoutDescriptor&) final;

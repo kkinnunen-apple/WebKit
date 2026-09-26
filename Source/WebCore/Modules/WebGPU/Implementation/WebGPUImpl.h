@@ -89,6 +89,11 @@ public:
     void paintToCanvas(WebCore::NativeImage&, const WebCore::IntSize&, WebCore::GraphicsContext&) final;
     void copyExternalImageToTexture(Queue&, const ImageCopyExternalImage& source, const ImageCopyTextureTagged& destination, const Extent3D& copySize) final;
     RefPtr<WebCore::NativeImage> nativeImage(Queue&, WebCore::VideoFrame&) final;
+    RefPtr<ExternalTexture> importExternalTexture(Device&, const ExternalTextureDescriptor&) final;
+#if PLATFORM(COCOA) && ENABLE(VIDEO)
+    void updateExternalTexture(Device&, const ExternalTexture&, const WebCore::MediaPlayerIdentifier&) final;
+#endif
+    RefPtr<XRBinding> createXRBinding(Device&) final;
 
 private:
     friend class DowncastConvertToBackingContext;

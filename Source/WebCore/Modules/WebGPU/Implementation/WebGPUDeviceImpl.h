@@ -51,6 +51,10 @@ public:
     virtual ~DeviceImpl();
     void setLastUncapturedError(WGPUErrorType, char const*);
 
+    // Called by GPUImpl, which implements the device commands that take WebCore sources.
+    RefPtr<XRBinding> createXRBinding();
+    RefPtr<ExternalTexture> importExternalTexture(const ExternalTextureDescriptor&);
+
 private:
     friend class DowncastConvertToBackingContext;
 
@@ -68,12 +72,9 @@ private:
 
     void destroy() final;
 
-    RefPtr<XRBinding> createXRBinding() final;
     RefPtr<Buffer> createBuffer(const BufferDescriptor&) final;
     RefPtr<Texture> createTexture(const TextureDescriptor&) final;
     RefPtr<Sampler> createSampler(const SamplerDescriptor&) final;
-    RefPtr<ExternalTexture> importExternalTexture(const ExternalTextureDescriptor&) final;
-    void NODELETE updateExternalTexture(const WebCore::WebGPU::ExternalTexture&, const WebCore::MediaPlayerIdentifier&) final;
 
     RefPtr<BindGroupLayout> createBindGroupLayout(const BindGroupLayoutDescriptor&) final;
     RefPtr<PipelineLayout> createPipelineLayout(const PipelineLayoutDescriptor&) final;

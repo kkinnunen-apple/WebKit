@@ -33,6 +33,7 @@
 #include "ModelConvertToBackingContext.h"
 #include "RemoteAdapterProxy.h"
 #include "RemoteCompositorIntegrationProxy.h"
+#include "RemoteDeviceProxy.h"
 #include "RemoteGPU.h"
 #include "RemoteGPUMessages.h"
 #include "RemoteGPUProxyMessages.h"
@@ -46,6 +47,7 @@
 #include <WebCore/WebGPUPresentationContextDescriptor.h>
 #include <WebCore/WebGPUSupportedFeatures.h>
 #include <WebCore/WebGPUSupportedLimits.h>
+#include <WebCore/WebGPUXRBinding.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebKit {
@@ -290,6 +292,24 @@ void RemoteGPUProxy::copyExternalImageToTexture(WebCore::WebGPU::Queue& queue, c
 RefPtr<WebCore::NativeImage> RemoteGPUProxy::nativeImage(WebCore::WebGPU::Queue& queue, WebCore::VideoFrame& videoFrame)
 {
     return static_cast<WebGPU::RemoteQueueProxy&>(queue).getNativeImage(videoFrame);
+}
+
+RefPtr<WebCore::WebGPU::ExternalTexture> RemoteGPUProxy::importExternalTexture(WebCore::WebGPU::Device& device, const WebCore::WebGPU::ExternalTextureDescriptor& descriptor)
+{
+    // Every WebCore::WebGPU::Device in the Web Process is a RemoteDeviceProxy.
+    return static_cast<WebGPU::RemoteDeviceProxy&>(device).importExternalTexture(descriptor);
+}
+
+#if PLATFORM(COCOA) && ENABLE(VIDEO)
+void RemoteGPUProxy::updateExternalTexture(WebCore::WebGPU::Device& device, const WebCore::WebGPU::ExternalTexture& externalTexture, const WebCore::MediaPlayerIdentifier& mediaPlayerIdentifier)
+{
+    static_cast<WebGPU::RemoteDeviceProxy&>(device).updateExternalTexture(externalTexture, mediaPlayerIdentifier);
+}
+#endif
+
+RefPtr<WebCore::WebGPU::XRBinding> RemoteGPUProxy::createXRBinding(WebCore::WebGPU::Device& device)
+{
+    return static_cast<WebGPU::RemoteDeviceProxy&>(device).createXRBinding();
 }
 
 void RemoteGPUProxy::paintToCanvas(WebCore::NativeImage&, const WebCore::IntSize&, WebCore::GraphicsContext&)

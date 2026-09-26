@@ -30,6 +30,8 @@
 
 #include "WebGPUAdapterImpl.h"
 #include "WebGPUCompositorIntegrationImpl.h"
+#include "WebGPUDeviceImpl.h"
+#include "WebGPUExternalTextureDescriptor.h"
 #include "WebGPUImageCopyExternalImage.h"
 #include "WebGPUImageCopyTextureTagged.h"
 #include "WebGPUPresentationContextDescriptor.h"
@@ -274,6 +276,24 @@ RefPtr<WebCore::NativeImage> GPUImpl::nativeImage(Queue&, WebCore::VideoFrame&)
 {
     // Only RemoteGPUProxy resolves a video frame to an image, through its video frame object heap.
     RELEASE_ASSERT_NOT_REACHED();
+}
+
+RefPtr<ExternalTexture> GPUImpl::importExternalTexture(Device& device, const ExternalTextureDescriptor& descriptor)
+{
+    return downcast<DeviceImpl>(device).importExternalTexture(descriptor);
+}
+
+#if PLATFORM(COCOA) && ENABLE(VIDEO)
+void GPUImpl::updateExternalTexture(Device&, const ExternalTexture&, const WebCore::MediaPlayerIdentifier&)
+{
+    // Only RemoteGPUProxy names a media player; the GPU process resolves it to a pixel buffer.
+    RELEASE_ASSERT_NOT_REACHED();
+}
+#endif
+
+RefPtr<XRBinding> GPUImpl::createXRBinding(Device& device)
+{
+    return downcast<DeviceImpl>(device).createXRBinding();
 }
 
 void GPUImpl::paintToCanvas(WebCore::NativeImage& image, const WebCore::IntSize& canvasSize, WebCore::GraphicsContext& context)
