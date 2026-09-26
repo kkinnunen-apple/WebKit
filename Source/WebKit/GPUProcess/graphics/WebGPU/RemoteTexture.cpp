@@ -66,15 +66,8 @@ void RemoteTexture::stopListeningForIPC()
 
 void RemoteTexture::createView(const std::optional<WebGPU::TextureViewDescriptor>& descriptor, WebGPUIdentifier identifier)
 {
-    std::optional<WebCore::WebGPU::TextureViewDescriptor> convertedDescriptor;
     Ref objectHeap = m_objectHeap.get();
-
-    if (descriptor) {
-        auto resultDescriptor = objectHeap->convertFromBacking(*descriptor);
-        MESSAGE_CHECK(resultDescriptor);
-        convertedDescriptor = WTF::move(resultDescriptor);
-    }
-    auto textureView = protect(m_backing)->createView(convertedDescriptor);
+    auto textureView = protect(m_backing)->createView(descriptor);
     MESSAGE_CHECK(textureView);
     auto remoteTextureView = RemoteTextureView::create(textureView.releaseNonNull(), objectHeap, protect(m_streamConnection), protect(m_gpu), identifier);
     objectHeap->addObject(identifier, remoteTextureView);

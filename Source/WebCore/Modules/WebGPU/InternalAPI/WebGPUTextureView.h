@@ -25,40 +25,10 @@
 
 #pragma once
 
-#include <wtf/Ref.h>
-#include <wtf/RefCountedAndCanMakeWeakPtr.h>
-#include <wtf/WeakPtr.h>
-#include <wtf/text/WTFString.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebCore::WebGPU {
 
-class TextureView : public RefCountedAndCanMakeWeakPtr<TextureView> {
-public:
-    virtual ~TextureView() = default;
-
-    String label() const { return m_label; }
-
-    void setLabel(String&& label)
-    {
-        m_label = WTF::move(label);
-        setLabelInternal(m_label);
-    }
-
-    virtual bool isRemoteTextureViewProxy() const { return false; }
-    virtual bool isTextureViewImpl() const { return false; }
-
-protected:
-    TextureView() = default;
-
-private:
-    TextureView(const TextureView&) = delete;
-    TextureView(TextureView&&) = delete;
-    TextureView& operator=(const TextureView&) = delete;
-    TextureView& operator=(TextureView&&) = delete;
-
-    virtual void setLabelInternal(const String&) = 0;
-
-    String m_label;
-};
+using TextureView = ::WebGPU::TextureView;
 
 } // namespace WebCore::WebGPU

@@ -50,8 +50,8 @@
 #include "WebGPURenderPipelineImpl.h"
 #include "WebGPUSampler.h"
 #include "WebGPUShaderModuleImpl.h"
-#include "WebGPUTextureImpl.h"
-#include "WebGPUTextureViewImpl.h"
+#include "WebGPUTexture.h"
+#include "WebGPUTextureView.h"
 #include "WebGPUXRBindingImpl.h"
 #include "WebGPUXRProjectionLayerImpl.h"
 #include "WebGPUXRSubImageImpl.h"
@@ -170,12 +170,12 @@ WGPUShaderModule DowncastConvertToBackingContext::convertToBacking(const ShaderM
 
 WGPUTexture DowncastConvertToBackingContext::convertToBacking(const Texture& texture)
 {
-    return downcast<TextureImpl>(texture).backing();
+    return ::WebGPU::toAPI(const_cast<Texture&>(texture));
 }
 
 WGPUTextureView DowncastConvertToBackingContext::convertToBacking(const TextureView& textureView)
 {
-    return downcast<TextureViewImpl>(textureView).backing();
+    return ::WebGPU::toAPI(const_cast<TextureView&>(textureView));
 }
 
 CompositorIntegrationImpl& DowncastConvertToBackingContext::convertToBacking(CompositorIntegration& compositorIntegration)

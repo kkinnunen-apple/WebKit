@@ -25,49 +25,13 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
+#include <WebCore/WebGPUTextureView.h>
+#include <WebCore/WebGPUTextureViewDescriptor.h>
 #include <optional>
-#include <wtf/Ref.h>
-#include <wtf/RefCountedAndCanMakeWeakPtr.h>
-#include <wtf/WeakPtr.h>
-#include <wtf/text/WTFString.h>
 
 namespace WebCore::WebGPU {
 
-class TextureView;
-struct TextureViewDescriptor;
-
-class Texture : public RefCountedAndCanMakeWeakPtr<Texture> {
-public:
-    virtual ~Texture() = default;
-
-    String label() const { return m_label; }
-
-    void setLabel(String&& label)
-    {
-        m_label = WTF::move(label);
-        setLabelInternal(m_label);
-    }
-
-    virtual RefPtr<TextureView> createView(const std::optional<TextureViewDescriptor>&) = 0;
-
-    virtual void destroy() = 0;
-    virtual void undestroy() = 0;
-
-    virtual bool isRemoteTextureProxy() const { return false; }
-    virtual bool isTextureImpl() const { return false; }
-
-protected:
-    Texture() = default;
-
-private:
-    Texture(const Texture&) = delete;
-    Texture(Texture&&) = delete;
-    Texture& operator=(const Texture&) = delete;
-    Texture& operator=(Texture&&) = delete;
-
-    virtual void setLabelInternal(const String&) = 0;
-
-    String m_label;
-};
+using Texture = ::WebGPU::Texture;
 
 } // namespace WebCore::WebGPU

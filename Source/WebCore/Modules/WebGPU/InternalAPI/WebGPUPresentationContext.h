@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <WebCore/WebGPUTexture.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Ref.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
@@ -42,7 +43,6 @@ class NativeImage;
 namespace WebCore::WebGPU {
 
 struct CanvasConfiguration;
-class Texture;
 
 class PresentationContext : public RefCountedAndCanMakeWeakPtr<PresentationContext> {
 public:

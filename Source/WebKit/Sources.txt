@@ -384,7 +384,6 @@ Shared/WebGPU/WebGPUSupportedFeatures.cpp
 Shared/WebGPU/WebGPUSupportedLimits.cpp
 Shared/WebGPU/WebGPUTextureBindingLayout.cpp
 Shared/WebGPU/WebGPUTextureDescriptor.cpp
-Shared/WebGPU/WebGPUTextureViewDescriptor.cpp
 Shared/WebGPU/WebGPUValidationError.cpp
 Shared/WebGPU/WebGPUVertexAttribute.cpp
 Shared/WebGPU/WebGPUVertexBufferLayout.cpp

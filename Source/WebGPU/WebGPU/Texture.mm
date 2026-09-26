@@ -3295,7 +3295,7 @@ static MTLPixelFormat NODELETE resolvedPixelFormat(MTLPixelFormat viewPixelForma
     }
 }
 
-Ref<TextureView> Texture::createView(const std::optional<WebGPU::TextureViewDescriptor>& optionalDescriptor)
+RefPtr<WebGPU::TextureView> Texture::createView(const std::optional<WebGPU::TextureViewDescriptor>& optionalDescriptor)
 {
     auto device = m_device;
 
@@ -3659,6 +3659,11 @@ ASCIILiteral Texture::formatToString(WGPUTextureFormat format)
     case WGPUTextureFormat_Force32:
         return "invalid format"_s;
     }
+}
+
+void Texture::undestroy()
+{
+    recreateIfNeeded();
 }
 
 void Texture::destroy()
@@ -4254,7 +4259,9 @@ WGPUTextureView wgpuTextureCreateView(WGPUTexture texture, const WGPUTextureView
             return WebGPU::Metal::releaseToAPI(WebGPU::Metal::TextureView::createInvalid(protectedTexture, device));
         }
     }
-    return WebGPU::Metal::releaseToAPI(protectedTexture->createView(apiDescriptor));
+    // Every WebGPU::TextureView that a WebGPU::Metal::Texture creates is a WebGPU::Metal::TextureView.
+    Ref view = static_cast<WebGPU::Metal::TextureView&>(*protectedTexture->createView(apiDescriptor));
+    return WebGPU::Metal::releaseToAPI(WTF::move(view));
 }
 
 void wgpuTextureDestroy(WGPUTexture texture)
@@ -4264,7 +4271,7 @@ void wgpuTextureDestroy(WGPUTexture texture)
 
 void wgpuTextureUndestroy(WGPUTexture texture)
 {
-    protect(WebGPU::Metal::fromAPI(texture))->recreateIfNeeded();
+    protect(WebGPU::Metal::fromAPI(texture))->undestroy();
 }
 
 void wgpuTextureSetLabel(WGPUTexture texture, WGPUStringView label)

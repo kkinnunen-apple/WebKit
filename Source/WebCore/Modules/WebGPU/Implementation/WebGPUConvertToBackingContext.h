@@ -59,11 +59,13 @@
 #include "WebGPUStencilOperation.h"
 #include "WebGPUStorageTextureAccess.h"
 #include "WebGPUStoreOp.h"
+#include "WebGPUTexture.h"
 #include "WebGPUTextureAspect.h"
 #include "WebGPUTextureDimension.h"
 #include "WebGPUTextureFormat.h"
 #include "WebGPUTextureSampleType.h"
 #include "WebGPUTextureUsage.h"
+#include "WebGPUTextureView.h"
 #include "WebGPUTextureViewDimension.h"
 #include "WebGPUVertexFormat.h"
 #include "WebGPUVertexStepMode.h"
@@ -128,8 +130,6 @@ class RenderBundle;
 class RenderPassEncoder;
 class RenderPipeline;
 class ShaderModule;
-class Texture;
-class TextureView;
 class XRBinding;
 class XRProjectionLayer;
 class XRSubImage;

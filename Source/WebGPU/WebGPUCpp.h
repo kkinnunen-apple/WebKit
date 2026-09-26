@@ -1415,6 +1415,11 @@ class Texture : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<Texture> 
 public:
     virtual ~Texture() = default;
 
+    // std::nullopt is a descriptor with all members at their defaults.
+    virtual RefPtr<TextureView> createView(const std::optional<TextureViewDescriptor>&) = 0;
+    virtual void destroy() = 0;
+    // Recreates a destroyed canvas texture, for the frame that reuses it.
+    virtual void undestroy() = 0;
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 

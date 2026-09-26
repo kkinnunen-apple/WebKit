@@ -30,14 +30,12 @@
 #include "RemoteGPU.h"
 #include "StreamMessageReceiver.h"
 #include "WebGPUIdentifier.h"
+#include "WebGPUTextureViewDescriptor.h"
+#include <WebCore/WebGPUTexture.h>
 #include <wtf/Ref.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakRef.h>
 #include <wtf/text/WTFString.h>
-
-namespace WebCore::WebGPU {
-class Texture;
-}
 
 namespace IPC {
 class Connection;
@@ -50,7 +48,6 @@ class GPUConnectionToWebProcess;
 
 namespace WebGPU {
 class ObjectHeap;
-struct TextureViewDescriptor;
 }
 
 class RemoteTexture final : public IPC::StreamMessageReceiver {

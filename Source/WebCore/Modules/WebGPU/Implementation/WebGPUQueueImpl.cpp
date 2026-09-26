@@ -31,7 +31,7 @@
 #include "WebGPUBuffer.h"
 #include "WebGPUCommandBufferImpl.h"
 #include "WebGPUConvertToBackingContext.h"
-#include "WebGPUTextureImpl.h"
+#include "WebGPUTexture.h"
 #include <WebCore/ColorSpace.h>
 #include <WebCore/IOSurface.h>
 #include <WebCore/ImageBuffer.h>

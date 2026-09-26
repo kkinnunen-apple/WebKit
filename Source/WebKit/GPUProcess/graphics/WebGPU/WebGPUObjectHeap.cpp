@@ -442,7 +442,7 @@ WeakPtr<WebCore::WebGPU::ShaderModule> ObjectHeap::convertShaderModuleFromBackin
     return &std::get<IPC::ScopedActiveMessageReceiveQueue<RemoteShaderModule>>(iterator->value)->backing();
 }
 
-WeakPtr<WebCore::WebGPU::Texture> ObjectHeap::convertTextureFromBacking(WebGPUIdentifier identifier)
+RefPtr<WebCore::WebGPU::Texture> ObjectHeap::convertTextureFromBacking(WebGPUIdentifier identifier)
 {
     auto iterator = m_objects.find(identifier);
     if (iterator == m_objects.end() || !std::holds_alternative<IPC::ScopedActiveMessageReceiveQueue<RemoteTexture>>(iterator->value))
@@ -450,7 +450,7 @@ WeakPtr<WebCore::WebGPU::Texture> ObjectHeap::convertTextureFromBacking(WebGPUId
     return &std::get<IPC::ScopedActiveMessageReceiveQueue<RemoteTexture>>(iterator->value)->backing();
 }
 
-WeakPtr<WebCore::WebGPU::TextureView> ObjectHeap::convertTextureViewFromBacking(WebGPUIdentifier identifier)
+RefPtr<WebCore::WebGPU::TextureView> ObjectHeap::convertTextureViewFromBacking(WebGPUIdentifier identifier)
 {
     auto iterator = m_objects.find(identifier);
     if (iterator == m_objects.end() || !std::holds_alternative<IPC::ScopedActiveMessageReceiveQueue<RemoteTextureView>>(iterator->value))

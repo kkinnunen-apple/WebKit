@@ -57,9 +57,9 @@
 #include "WebGPUSamplerDescriptor.h"
 #include "WebGPUShaderModuleDescriptor.h"
 #include "WebGPUShaderModuleImpl.h"
+#include "WebGPUTexture.h"
 #include "WebGPUTextureDescriptor.h"
-#include "WebGPUTextureImpl.h"
-#include "WebGPUTextureViewImpl.h"
+#include "WebGPUTextureView.h"
 #include "WebGPUValidationError.h"
 #include "WebGPUXRBindingImpl.h"
 #include <CoreGraphics/CGColorSpace.h>
@@ -146,7 +146,7 @@ RefPtr<Texture> DeviceImpl::createTexture(const TextureDescriptor& descriptor)
 
     Ref convertToBackingContext = m_convertToBackingContext;
 
-    auto backingTextureFormats = descriptor.viewFormats.map([&](TextureFormat textureFormat) {
+    auto backingTextureFormats = WTF::map(descriptor.viewFormats, [&](TextureFormat textureFormat) {
         return convertToBackingContext->convertToBacking(textureFormat);
     });
 
@@ -162,7 +162,7 @@ RefPtr<Texture> DeviceImpl::createTexture(const TextureDescriptor& descriptor)
         .viewFormats = backingTextureFormats.size() ? backingTextureFormats.span().data() : nullptr,
     };
 
-    return TextureImpl::create(adoptWebGPU(wgpuDeviceCreateTexture(m_backing.get(), &backingDescriptor)), descriptor.format, descriptor.dimension, convertToBackingContext);
+    return adoptRef(::WebGPU::fromAPI(wgpuDeviceCreateTexture(m_backing.get(), &backingDescriptor)));
 }
 
 RefPtr<Sampler> DeviceImpl::createSampler(const SamplerDescriptor& descriptor)

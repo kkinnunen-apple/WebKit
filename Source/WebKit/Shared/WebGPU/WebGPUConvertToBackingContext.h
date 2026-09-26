@@ -35,6 +35,7 @@
 #include "WebGPUOrigin2D.h"
 #include "WebGPUOrigin3D.h"
 #include "WebGPURenderPassTimestampWrites.h"
+#include "WebGPUTextureViewDescriptor.h"
 #include <WebCore/WebGPUBlendComponent.h>
 #include <WebCore/WebGPUBlendState.h>
 #include <WebCore/WebGPUBuffer.h>
@@ -55,7 +56,9 @@
 #include <WebCore/WebGPUSamplerBindingLayout.h>
 #include <WebCore/WebGPUStencilFaceState.h>
 #include <WebCore/WebGPUStorageTextureBindingLayout.h>
+#include <WebCore/WebGPUTexture.h>
 #include <WebCore/WebGPUTextureBindingLayout.h>
+#include <WebCore/WebGPUTextureDescriptor.h>
 #include <WebCore/WebGPUVertexAttribute.h>
 #include <wtf/RefCounted.h>
 
@@ -121,10 +124,6 @@ struct ShaderModuleCompilationHint;
 struct ShaderModuleDescriptor;
 class SupportedFeatures;
 class SupportedLimits;
-class Texture;
-struct TextureDescriptor;
-class TextureView;
-struct TextureViewDescriptor;
 class ValidationError;
 struct VertexBufferLayout;
 struct VertexState;
@@ -194,7 +193,6 @@ struct SupportedFeatures;
 struct SupportedLimits;
 struct TextureBindingLayout;
 struct TextureDescriptor;
-struct TextureViewDescriptor;
 struct ValidationError;
 struct VertexAttribute;
 struct VertexBufferLayout;
@@ -262,7 +260,6 @@ public:
     std::optional<SupportedLimits> NODELETE convertToBacking(const WebCore::WebGPU::SupportedLimits&);
     std::optional<TextureBindingLayout> NODELETE convertToBacking(const WebCore::WebGPU::TextureBindingLayout&);
     std::optional<TextureDescriptor> convertToBacking(const WebCore::WebGPU::TextureDescriptor&);
-    std::optional<TextureViewDescriptor> convertToBacking(const WebCore::WebGPU::TextureViewDescriptor&);
     std::optional<ValidationError> NODELETE convertToBacking(const WebCore::WebGPU::ValidationError&);
     std::optional<VertexAttribute> NODELETE convertToBacking(const WebCore::WebGPU::VertexAttribute&);
     std::optional<VertexBufferLayout> convertToBacking(const WebCore::WebGPU::VertexBufferLayout&);
