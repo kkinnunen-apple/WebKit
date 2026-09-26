@@ -138,22 +138,26 @@ public:
     Ref<PresentationContext> createSwapChain(PresentationContext&, const WGPUSwapChainDescriptor&);
     Ref<Texture> createTexture(const WebGPU::TextureDescriptor&);
     void destroy();
-    size_t enumerateFeatures(WGPUFeatureName* features);
-    bool NODELETE getLimits(WGPUSupportedLimits&);
+    Vector<WebGPU::FeatureName> features() const;
     Queue& getQueueReference() const { return m_defaultQueue; }
     Ref<Queue> getQueue() const { return m_defaultQueue; }
     bool hasFeature(WGPUFeatureName) const;
-    bool popErrorScope(CompletionHandler<void(WGPUErrorType, String&&)>&& callback);
-    void pushErrorScope(WGPUErrorFilter);
-    void setDeviceLostCallback(Function<void(WGPUDeviceLostReason, String&&)>&&);
-    void setUncapturedErrorCallback(Function<void(WGPUErrorType, String&&)>&&);
+    // The callbacks have the shapes of the WebCore::WebGPU::Device callbacks. popErrorScope() completes
+    // with true and no error when the scope caught none, or when the device is lost; with false and
+    // the error when it caught one; and with false and no error when there is no scope to pop.
+    void popErrorScope(CompletionHandler<void(bool, std::optional<WebGPU::Error>&&)>&&);
+    void pushErrorScope(WebGPU::ErrorFilter);
+    // An empty callback clears the current one. Setting a callback completes the current one.
+    void resolveDeviceLostPromise(CompletionHandler<void(WebGPU::DeviceLostReason, String&&)>&&);
+    // The callback completes with true and the next uncaptured error, or with false and no error
+    // when the device is destroyed or the callback is replaced.
+    void resolveUncapturedErrorEvent(CompletionHandler<void(bool, std::optional<WebGPU::Error>&&)>&&);
     void NODELETE setLabel(String&&) final;
 
     bool isValid() const final { return m_device; }
     bool isLost() const { return m_isLost; }
     const Limits& limits() const LIFETIME_BOUND { return m_capabilities.limits; }
     const Limits limitsCopy() const { return m_capabilities.limits; }
-    const Vector<WGPUFeatureName>& features() const LIFETIME_BOUND { return m_capabilities.features; }
     const HardwareCapabilities::BaseCapabilities& baseCapabilities() const LIFETIME_BOUND { return m_capabilities.baseCapabilities; }
 
     // Encoding an ICB into an argument buffer, and dereferencing that argument buffer from a shader
@@ -312,22 +316,18 @@ private:
     void captureFrameIfNeeded() const;
     GPUShaderValidation shaderValidationState() const;
 
-    struct Error {
-        WGPUErrorType type;
-        String message;
-    };
     struct ErrorScope {
-        std::optional<Error> error;
+        std::optional<WebGPU::Error> error;
         const WGPUErrorFilter filter;
     };
     id<MTLDevice> _Nullable m_device { nil };
     const Ref<Queue> m_defaultQueue;
 
-    Function<void(WGPUErrorType, String&&)> m_uncapturedErrorCallback;
+    CompletionHandler<void(bool, std::optional<WebGPU::Error>&&)> m_uncapturedErrorCallback;
     Vector<ErrorScope> m_errorScopeStack;
     RefPtr<XRSubImage> m_xrSubImage;
 
-    Function<void(WGPUDeviceLostReason, String&&)> m_deviceLostCallback;
+    CompletionHandler<void(WebGPU::DeviceLostReason, String&&)> m_deviceLostCallback;
     bool m_isLost { false };
     bool m_destroyed { false };
     id<NSObject> m_deviceObserver { nil };

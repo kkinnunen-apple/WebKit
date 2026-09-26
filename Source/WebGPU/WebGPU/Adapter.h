@@ -62,11 +62,14 @@ public:
 
     ~Adapter();
 
-    size_t enumerateFeatures(WGPUFeatureName* features);
-    bool NODELETE getLimits(WGPUSupportedLimits&);
+    Vector<WebGPU::FeatureName> features() const;
+    const WebGPU::Limits& limits() const LIFETIME_BOUND { return m_capabilities.limits; }
+    WebGPU::AdapterInfo info();
+    // The C API adapter info, which has members that WebGPU::AdapterInfo does not have.
     void getInfo(WGPUAdapterInfo&);
     bool hasFeature(WGPUFeatureName);
-    void requestDevice(const WGPUDeviceDescriptor&, CompletionHandler<void(WGPURequestDeviceStatus, Ref<Device>&&, String&&)>&& callback);
+    // Completes with nullptr when the device cannot be created.
+    void requestDevice(const WebGPU::DeviceDescriptor&, CompletionHandler<void(RefPtr<Device>&&)>&&);
 
     void setLabel(String&&) final { }
     bool isValid() const final { return m_device; }
