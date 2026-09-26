@@ -71,7 +71,6 @@ namespace WebCore::WebGPU {
 class CommandEncoder;
 struct CommandEncoderDescriptor;
 class ComputePassEncoder;
-class ComputePipeline;
 struct ComputePipelineDescriptor;
 struct ExternalTextureDescriptor;
 class RenderPipeline;

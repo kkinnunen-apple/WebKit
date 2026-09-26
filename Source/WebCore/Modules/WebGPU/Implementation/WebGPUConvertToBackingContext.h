@@ -40,6 +40,7 @@
 #include "WebGPUCommandBuffer.h"
 #include "WebGPUCompareFunction.h"
 #include "WebGPUCompilationMessageType.h"
+#include "WebGPUComputePipeline.h"
 #include "WebGPUCullMode.h"
 #include "WebGPUErrorFilter.h"
 #include "WebGPUExtent3D.h"
@@ -122,7 +123,6 @@ class CommandEncoder;
 class CompositorIntegration;
 class CompositorIntegrationImpl;
 class ComputePassEncoder;
-class ComputePipeline;
 class Device;
 class GPU;
 class PresentationContext;

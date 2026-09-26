@@ -104,7 +104,7 @@ GPUDevice* GPUComputePipeline::device() const
 
 String GPUComputePipeline::label() const
 {
-    return m_backing->label();
+    return m_descriptor.label;
 }
 
 void GPUComputePipeline::setLabel(String&& label)
