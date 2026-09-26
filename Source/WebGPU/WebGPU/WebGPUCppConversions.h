@@ -30,6 +30,7 @@
 #import <WebGPU/WebGPUCppBridge.h>
 #import <WebGPU/WebGPUExt.h>
 #import <optional>
+#import <type_traits>
 #import <wtf/OptionSet.h>
 #import <wtf/StdLibExtras.h>
 #import <wtf/Vector.h>
@@ -58,6 +59,40 @@ inline String fromAPI(WGPUStringView string)
     if (string.length == WGPU_STRLEN)
         return String::fromUTF8(string.data);
     return String::fromUTF8(unsafeMakeSpan(string.data, string.length));
+}
+
+// Associates a chainable extension struct with its sType tag. Specialize for each struct
+// that findChainedStruct() is used with.
+template<typename T> struct ChainedStructSType;
+
+template<> struct ChainedStructSType<WGPUShaderSourceWGSL> {
+    static constexpr WGPUSType value = WGPUSType_ShaderSourceWGSL;
+};
+
+template<> struct ChainedStructSType<WGPUInstanceCocoaDescriptor> {
+    static constexpr WGPUSType value = static_cast<WGPUSType>(WGPUSTypeExtended_InstanceCocoaDescriptor);
+};
+
+template<> struct ChainedStructSType<WGPUSurfaceDescriptorCocoaCustomSurface> {
+    static constexpr WGPUSType value = static_cast<WGPUSType>(WGPUSTypeExtended_SurfaceDescriptorCocoaSurfaceBacking);
+};
+
+// Walks a descriptor's nextInChain looking for one particular extension struct. Every
+// chainable struct starts with its WGPUChainedStruct, so the match can be cast to it.
+template<typename T>
+inline const T* findChainedStruct(const WGPUChainedStruct* chain)
+{
+    static_assert(std::is_same_v<decltype(T::chain), WGPUChainedStruct>);
+    for (; chain; chain = chain->next) {
+        if (chain->sType == ChainedStructSType<T>::value)
+            return reinterpret_cast<const T*>(chain);
+    }
+    return nullptr;
+}
+
+inline String fromAPI(const char* string)
+{
+    return String::fromUTF8(string);
 }
 
 constexpr std::optional<WebGPU::AddressMode> fromAPI(WGPUAddressMode value)
@@ -2103,6 +2138,10 @@ inline std::optional<WebGPU::BindGroupEntry> fromAPI(const WGPUBindGroupEntry& e
     };
 }
 
+struct ShaderModuleDescriptorStorage {
+    Vector<WebGPU::ShaderModuleCompilationHint> hints;
+};
+
 struct BindGroupDescriptorStorage {
     Vector<WebGPU::BindGroupEntry> entries;
 };
@@ -2125,6 +2164,51 @@ inline std::optional<WebGPU::BindGroupDescriptor> fromAPI(const WGPUBindGroupDes
         .layout = WebGPU::fromAPI(descriptor.layout),
         .entries = storage.entries.span(),
     };
+}
+
+inline std::optional<WebGPU::ShaderModuleDescriptor> fromAPI(const WGPUShaderModuleDescriptor& descriptor, ShaderModuleDescriptorStorage& storage LIFETIME_BOUND)
+{
+    // WGSL is the only shader source.
+    auto* wgsl = findChainedStruct<WGPUShaderSourceWGSL>(descriptor.nextInChain);
+    if (!wgsl)
+        return std::nullopt;
+
+    auto code = fromAPI(wgsl->code);
+    if (code.isNull())
+        return std::nullopt;
+
+    storage.hints.clear();
+    for (auto& hint : unsafeMakeSpan(descriptor.hints, descriptor.hintCount)) {
+        if (!hint.layout)
+            return std::nullopt;
+        storage.hints.append({
+            .entryPoint = fromAPI(hint.entryPoint),
+            .layout = WebGPU::fromAPI(hint.layout),
+        });
+    }
+
+    return WebGPU::ShaderModuleDescriptor {
+        .label = fromAPI(descriptor.label),
+        .code = WTF::move(code),
+        .hints = storage.hints.span(),
+    };
+}
+
+inline Vector<WGPUCompilationMessage> toAPI(const WebGPU::CompilationInfo& compilationInfo)
+{
+    return compilationInfo.messages.map([](auto& message) {
+        return WGPUCompilationMessage {
+            .message = message.message,
+            .type = toAPI(message.type),
+            .lineNum = message.lineNum,
+            .linePos = message.linePos,
+            .offset = message.offset,
+            .length = message.length,
+            .utf16LinePos = message.linePos,
+            .utf16Offset = message.offset,
+            .utf16Length = message.length,
+        };
+    });
 }
 
 } // namespace WebGPU::Metal
