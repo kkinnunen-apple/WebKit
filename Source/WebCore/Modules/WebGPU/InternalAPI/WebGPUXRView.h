@@ -25,30 +25,11 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUDevice.h>
-#include <wtf/Ref.h>
-#include <wtf/RefCountedAndCanMakeWeakPtr.h>
-#include <wtf/WeakPtr.h>
 
 namespace WebCore::WebGPU {
 
-class GPUTexture;
-
-class XRView : public RefCountedAndCanMakeWeakPtr<XRView> {
-public:
-    virtual ~XRView() = default;
-
-    virtual bool isRemoteXRViewProxy() const { return false; }
-    virtual bool isXRViewImpl() const { return false; }
-
-protected:
-    XRView() = default;
-
-private:
-    XRView(const XRView&) = delete;
-    XRView(XRView&&) = delete;
-    XRView& operator=(const XRView&) = delete;
-    XRView& operator=(XRView&&) = delete;
-};
+using XRView = ::WebGPU::XRView;
 
 } // namespace WebCore::WebGPU

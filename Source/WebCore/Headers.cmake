@@ -152,10 +152,6 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     Modules/WebGPU/Implementation/WebGPUDowncastConvertToBackingContext.h
     Modules/WebGPU/Implementation/WebGPUImpl.h
     Modules/WebGPU/Implementation/WebGPUPtr.h
-    Modules/WebGPU/Implementation/WebGPUXRBindingImpl.h
-    Modules/WebGPU/Implementation/WebGPUXRProjectionLayerImpl.h
-    Modules/WebGPU/Implementation/WebGPUXRSubImageImpl.h
-    Modules/WebGPU/Implementation/WebGPUXRViewImpl.h
 
     Modules/WebGPU/InternalAPI/WebGPU.h
     Modules/WebGPU/InternalAPI/WebGPUAdapter.h

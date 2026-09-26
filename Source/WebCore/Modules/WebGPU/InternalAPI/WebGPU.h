@@ -25,6 +25,10 @@
 
 #pragma once
 
+#include "WebGPUXRBinding.h"
+#include "WebGPUXRProjectionLayer.h"
+#include "WebGPUXRSubImage.h"
+#include "WebGPUXRView.h"
 #include <WebCore/WebGPUAdapter.h>
 #include <WebCore/WebGPUBindGroup.h>
 #include <WebCore/WebGPUBindGroupLayout.h>
@@ -71,10 +75,6 @@ namespace WebCore::WebGPU {
 class CompositorIntegration;
 class GPU;
 class GPUImpl;
-class XRBinding;
-class XRProjectionLayer;
-class XRSubImage;
-class XRView;
 
 struct ExternalTextureDescriptor;
 struct ImageCopyExternalImage;
@@ -95,13 +95,11 @@ public:
     // The queue commands that take WebCore sources, which the WebGPU implementations cannot see.
     virtual void copyExternalImageToTexture(Queue&, const ImageCopyExternalImage& source, const ImageCopyTextureTagged& destination, const Extent3D& copySize) = 0;
     virtual RefPtr<WebCore::NativeImage> nativeImage(Queue&, WebCore::VideoFrame&) = 0;
-    // The device commands that take WebCore sources. createXRBinding() is here until the XR objects
-    // are WebGPU objects.
+    // The device commands that take WebCore sources.
     virtual RefPtr<ExternalTexture> importExternalTexture(Device&, const ExternalTextureDescriptor&) = 0;
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
     virtual void updateExternalTexture(Device&, const ExternalTexture&, const WebCore::MediaPlayerIdentifier&) = 0;
 #endif
-    virtual RefPtr<XRBinding> createXRBinding(Device&) = 0;
     virtual bool isValid(const CompositorIntegration&) const = 0;
     virtual bool isValid(const Buffer&) const = 0;
     virtual bool isValid(const Adapter&) const = 0;

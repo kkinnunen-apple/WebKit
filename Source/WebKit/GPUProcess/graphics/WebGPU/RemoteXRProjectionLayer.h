@@ -34,6 +34,7 @@
 #include <WebCore/PlatformXR.h>
 #include <WebCore/RenderingResourceIdentifier.h>
 #include <WebCore/WebGPUIntegralTypes.h>
+#include <WebCore/WebGPUXRProjectionLayer.h>
 #include <wtf/Ref.h>
 #include <wtf/WeakRef.h>
 #include <wtf/text/WTFString.h>
@@ -51,10 +52,6 @@ struct RateMapDescription;
 namespace WebCore {
 class ColorSpace;
 class ImageBuffer;
-}
-
-namespace WebCore::WebGPU {
-class XRProjectionLayer;
 }
 
 namespace IPC {

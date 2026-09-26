@@ -87,6 +87,10 @@
 #include <WebCore/WebGPUTextureBindingLayout.h>
 #include <WebCore/WebGPUTextureDescriptor.h>
 #include <WebCore/WebGPUVertexAttribute.h>
+#include <WebCore/WebGPUXRBinding.h>
+#include <WebCore/WebGPUXRProjectionLayer.h>
+#include <WebCore/WebGPUXRSubImage.h>
+#include <WebCore/WebGPUXRView.h>
 #include <wtf/RefCounted.h>
 
 namespace WebCore::WebGPU {
@@ -120,10 +124,6 @@ class SupportedLimits;
 class ValidationError;
 struct VertexBufferLayout;
 struct VertexState;
-class XRBinding;
-class XRProjectionLayer;
-class XRSubImage;
-class XRView;
 } // namespace WebCore::WebGPU
 
 namespace WebKit::WebGPU {

@@ -34,14 +34,11 @@
 #include <WebCore/RenderingResourceIdentifier.h>
 #include <WebCore/WebGPUIntegralTypes.h>
 #include <WebCore/WebGPUTextureUsage.h>
+#include <WebCore/WebGPUXRBinding.h>
 #include <WebCore/WebGPUXREye.h>
 #include <wtf/Ref.h>
 #include <wtf/WeakRef.h>
 #include <wtf/text/WTFString.h>
-
-namespace WebCore::WebGPU {
-class XRBinding;
-}
 
 namespace IPC {
 class StreamServerConnection;

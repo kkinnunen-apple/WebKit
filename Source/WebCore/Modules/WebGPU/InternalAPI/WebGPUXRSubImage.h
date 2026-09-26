@@ -25,33 +25,11 @@
 
 #pragma once
 
-#include <WebCore/WebGPUDevice.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUTexture.h>
-#include <wtf/Ref.h>
-#include <wtf/RefCountedAndCanMakeWeakPtr.h>
-#include <wtf/WeakPtr.h>
 
 namespace WebCore::WebGPU {
 
-
-class XRSubImage : public RefCountedAndCanMakeWeakPtr<XRSubImage> {
-public:
-    virtual ~XRSubImage() = default;
-
-    virtual RefPtr<Texture> colorTexture() = 0;
-    virtual RefPtr<Texture> depthStencilTexture() = 0;
-    virtual RefPtr<Texture> motionVectorTexture() = 0;
-    virtual bool isRemoteXRSubImageProxy() const { return false; }
-    virtual bool isXRSubImageImpl() const { return false; }
-
-protected:
-    XRSubImage() = default;
-
-private:
-    XRSubImage(const XRSubImage&) = delete;
-    XRSubImage(XRSubImage&&) = delete;
-    XRSubImage& operator=(const XRSubImage&) = delete;
-    XRSubImage& operator=(XRSubImage&&) = delete;
-};
+using XRSubImage = ::WebGPU::XRSubImage;
 
 } // namespace WebCore::WebGPU

@@ -87,6 +87,10 @@
 #include <WebCore/WebGPUTextureBindingLayout.h>
 #include <WebCore/WebGPUTextureDescriptor.h>
 #include <WebCore/WebGPUVertexAttribute.h>
+#include <WebCore/WebGPUXRBinding.h>
+#include <WebCore/WebGPUXRProjectionLayer.h>
+#include <WebCore/WebGPUXRSubImage.h>
+#include <WebCore/WebGPUXRView.h>
 #include <optional>
 #include <wtf/RefCounted.h>
 #include <wtf/ThreadSafeWeakPtr.h>
@@ -130,10 +134,6 @@ class SupportedLimits;
 class ValidationError;
 struct VertexBufferLayout;
 struct VertexState;
-class XRBinding;
-class XRProjectionLayer;
-class XRSubImage;
-class XRView;
 } // namespace WebCore::WebGPU
 
 namespace WebKit::WebGPU {
@@ -293,10 +293,10 @@ public:
     virtual RefPtr<WebCore::WebGPU::PresentationContext> convertPresentationContextFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::Texture> convertTextureFromBacking(WebGPUIdentifier) = 0;
     virtual RefPtr<WebCore::WebGPU::TextureView> convertTextureViewFromBacking(WebGPUIdentifier) = 0;
-    virtual WeakPtr<WebCore::WebGPU::XRBinding> convertXRBindingFromBacking(WebGPUIdentifier) = 0;
-    virtual WeakPtr<WebCore::WebGPU::XRProjectionLayer> convertXRProjectionLayerFromBacking(WebGPUIdentifier) = 0;
-    virtual WeakPtr<WebCore::WebGPU::XRSubImage> convertXRSubImageFromBacking(WebGPUIdentifier) = 0;
-    virtual WeakPtr<WebCore::WebGPU::XRView> createXRViewFromBacking(WebGPUIdentifier) = 0;
+    virtual RefPtr<WebCore::WebGPU::XRBinding> convertXRBindingFromBacking(WebGPUIdentifier) = 0;
+    virtual RefPtr<WebCore::WebGPU::XRProjectionLayer> convertXRProjectionLayerFromBacking(WebGPUIdentifier) = 0;
+    virtual RefPtr<WebCore::WebGPU::XRSubImage> convertXRSubImageFromBacking(WebGPUIdentifier) = 0;
+    virtual RefPtr<WebCore::WebGPU::XRView> createXRViewFromBacking(WebGPUIdentifier) = 0;
 };
 
 } // namespace WebKit::WebGPU

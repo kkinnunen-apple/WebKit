@@ -1247,7 +1247,7 @@ WGPUBindGroupLayout wgpuDeviceCreateBindGroupLayout(WGPUDevice device, const WGP
 
 WGPUXRBinding wgpuDeviceCreateXRBinding(WGPUDevice device)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createXRBinding());
+    return WebGPU::Metal::releaseToAPIAs<WebGPU::Metal::XRBinding>(protect(WebGPU::Metal::fromAPI(device))->createXRBinding());
 }
 
 WGPUBuffer wgpuDeviceCreateBuffer(WGPUDevice device, const WGPUBufferDescriptor* descriptor)

@@ -32,9 +32,12 @@
 #include "WebGPUExternalTextureDescriptor.h"
 #include "WebGPUImageCopyExternalImage.h"
 #include "WebGPUImageCopyTextureTagged.h"
-#include "WebGPUPresentationContextDescriptor.h"
 #include "WebGPUPresentationContext.h"
-#include "WebGPUXRBindingImpl.h"
+#include "WebGPUPresentationContextDescriptor.h"
+#include "WebGPUXRBinding.h"
+#include "WebGPUXRProjectionLayer.h"
+#include "WebGPUXRSubImage.h"
+#include "WebGPUXRView.h"
 #include <WebCore/ColorSpace.h>
 #include <WebCore/GraphicsContext.h>
 #include <WebCore/IOSurface.h>
@@ -242,11 +245,6 @@ void GPUImpl::updateExternalTexture(Device&, const ExternalTexture&, const WebCo
 }
 #endif
 
-RefPtr<XRBinding> GPUImpl::createXRBinding(Device& device)
-{
-    return XRBindingImpl::create(adoptWebGPU(wgpuDeviceCreateXRBinding(m_convertToBackingContext->convertToBacking(device))), m_convertToBackingContext);
-}
-
 void GPUImpl::paintToCanvas(WebCore::NativeImage& image, const WebCore::IntSize& canvasSize, WebCore::GraphicsContext& context)
 {
     auto imageSize = image.size();
@@ -373,26 +371,22 @@ bool GPUImpl::isValid(const TextureView& textureView) const
 
 bool GPUImpl::isValid(const XRBinding& binding) const
 {
-    WGPUXRBinding wgpuBinding = m_convertToBackingContext.get().convertToBacking(binding);
-    return wgpuXRBindingIsValid(wgpuBinding);
+    return binding.isValid();
 }
 
 bool GPUImpl::isValid(const XRSubImage& subImage) const
 {
-    WGPUXRSubImage wgpuSubImage = m_convertToBackingContext.get().convertToBacking(subImage);
-    return wgpuXRSubImageIsValid(wgpuSubImage);
+    return subImage.isValid();
 }
 
 bool GPUImpl::isValid(const XRProjectionLayer& layer) const
 {
-    WGPUXRProjectionLayer wgpuLayer = m_convertToBackingContext.get().convertToBacking(layer);
-    return wgpuXRProjectionLayerIsValid(wgpuLayer);
+    return layer.isValid();
 }
 
 bool GPUImpl::isValid(const XRView& view) const
 {
-    WGPUXRView wgpuView = m_convertToBackingContext.get().convertToBacking(view);
-    return wgpuXRViewIsValid(wgpuView);
+    return view.isValid();
 }
 
 } // namespace WebCore::WebGPU

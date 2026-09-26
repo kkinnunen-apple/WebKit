@@ -86,7 +86,11 @@
 #include "WebGPUTextureViewDimension.h"
 #include "WebGPUVertexFormat.h"
 #include "WebGPUVertexStepMode.h"
+#include "WebGPUXRBinding.h"
 #include "WebGPUXREye.h"
+#include "WebGPUXRProjectionLayer.h"
+#include "WebGPUXRSubImage.h"
+#include "WebGPUXRView.h"
 #include <WebGPU/WebGPU.h>
 #include <WebGPU/WebGPUExt.h>
 #include <cstdint>
@@ -130,10 +134,6 @@ inline WGPUStringView toBackingStringView(ASCIILiteral literal)
 class CompositorIntegration;
 class CompositorIntegrationImpl;
 class GPU;
-class XRBinding;
-class XRProjectionLayer;
-class XRSubImage;
-class XRView;
 
 class ConvertToBackingContext : public RefCounted<ConvertToBackingContext> {
     WTF_MAKE_TZONE_ALLOCATED(ConvertToBackingContext);
@@ -206,10 +206,6 @@ public:
     virtual WGPUSurface convertToBacking(const PresentationContext&) = 0;
     virtual WGPUTexture convertToBacking(const Texture&) = 0;
     virtual WGPUTextureView convertToBacking(const TextureView&) = 0;
-    virtual WGPUXRBinding convertToBacking(const XRBinding&) = 0;
-    virtual WGPUXRProjectionLayer convertToBacking(const XRProjectionLayer&) = 0;
-    virtual WGPUXRSubImage convertToBacking(const XRSubImage&) = 0;
-    virtual WGPUXRView convertToBacking(const XRView&) = 0;
 };
 
 } // namespace WebCore::WebGPU

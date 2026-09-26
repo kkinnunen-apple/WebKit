@@ -64,7 +64,16 @@ void RemoteXRProjectionLayer::destruct()
 #if PLATFORM(COCOA)
 void RemoteXRProjectionLayer::startFrame(uint64_t frameIndex, MachSendRight&& colorBuffer, MachSendRight&& depthBuffer, MachSendRight&& completionSyncEvent, uint64_t reusableTextureIndex, PlatformXR::RateMapDescription&& rateMapDescription)
 {
-    protect(m_backing)->startFrame(frameIndex, WTF::move(colorBuffer), WTF::move(depthBuffer), WTF::move(completionSyncEvent), reusableTextureIndex, WTF::move(rateMapDescription));
+#if ENABLE(WEBXR)
+    protect(m_backing)->startFrame(frameIndex, WTF::move(colorBuffer), WTF::move(depthBuffer), WTF::move(completionSyncEvent), reusableTextureIndex, rateMapDescription.screenSize.width(), rateMapDescription.screenSize.height(), WTF::move(rateMapDescription.horizontalSamplesLeft), WTF::move(rateMapDescription.horizontalSamplesRight), WTF::move(rateMapDescription.verticalSamples));
+#else
+    UNUSED_PARAM(frameIndex);
+    UNUSED_PARAM(colorBuffer);
+    UNUSED_PARAM(depthBuffer);
+    UNUSED_PARAM(completionSyncEvent);
+    UNUSED_PARAM(reusableTextureIndex);
+    UNUSED_PARAM(rateMapDescription);
+#endif
 }
 #endif
 

@@ -25,17 +25,53 @@
 
 #pragma once
 
+#include <WebCore/PlatformXR.h>
+#include <WebCore/WebGPUXRProjectionLayer.h>
 #include <WebCore/XRLayerBacking.h>
+#include <wtf/Ref.h>
 
-#include <wtf/TZoneMalloc.h>
+namespace WebCore {
 
-namespace WebCore::WebGPU {
+// Presents a WebGPU::XRProjectionLayer to WebXR, which knows the layers by their XRLayerBacking. The
+// frames that the compositor supplies carry the sizes of the textures.
+class WebGPUXRLayerBacking final : public XRLayerBacking {
+    WTF_MAKE_TZONE_ALLOCATED(WebGPUXRLayerBacking);
+public:
+    static Ref<WebGPUXRLayerBacking> create(Ref<::WebGPU::XRProjectionLayer>&& projectionLayer)
+    {
+        return adoptRef(*new WebGPUXRLayerBacking(WTF::move(projectionLayer)));
+    }
 
-class XRLayerBacking : public WebCore::XRLayerBacking {
-    WTF_MAKE_TZONE_ALLOCATED(XRLayerBacking);
+    ::WebGPU::XRProjectionLayer& projectionLayer() const { return m_projectionLayer; }
 
-protected:
-    XRLayerBacking() = default;
+    uint32_t colorTextureWidth() const final { return 0; }
+    uint32_t colorTextureHeight() const final { return 0; }
+    uint32_t colorTextureArrayLength() const final { return 0; }
+    bool allColorTexturesAreBound() const final { return false; }
+
+#if PLATFORM(COCOA)
+    void startFrame(size_t frameIndex, MachSendRight&& colorBuffer, MachSendRight&& depthBuffer, MachSendRight&& completionSyncEvent, size_t reusableTextureIndex, PlatformXR::RateMapDescription&&) final;
+
+    void endFrame() final
+    {
+        m_projectionLayer->endFrame();
+    }
+#else
+    void startFrame(PlatformXR::FrameData&) final { }
+
+    void endFrame(PlatformXR::DeviceLayer&) final
+    {
+        m_projectionLayer->endFrame();
+    }
+#endif
+
+private:
+    explicit WebGPUXRLayerBacking(Ref<::WebGPU::XRProjectionLayer>&& projectionLayer)
+        : m_projectionLayer(WTF::move(projectionLayer))
+    {
+    }
+
+    const Ref<::WebGPU::XRProjectionLayer> m_projectionLayer;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

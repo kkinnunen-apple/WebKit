@@ -80,11 +80,11 @@ RefPtr<WebCore::WebGPU::Texture> RemoteXRSubImageProxy::depthStencilTexture()
     return m_currentDepthTexture;
 }
 
-RefPtr<WebCore::WebGPU::Texture> RemoteXRSubImageProxy::motionVectorTexture()
+bool RemoteXRSubImageProxy::isValid() const
 {
-    return nullptr;
+    // The Web Process cannot know. RemoteGPU::isValid() answers it for tests.
+    RELEASE_ASSERT_NOT_REACHED();
 }
-
 
 } // namespace WebKit::WebGPU
 

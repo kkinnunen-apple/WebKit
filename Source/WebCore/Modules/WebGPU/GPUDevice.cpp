@@ -277,7 +277,7 @@ GPUDevice::LostPromise& GPUDevice::lost()
 
 RefPtr<WebGPU::XRBinding> GPUDevice::createXRBinding(const WebXRSession&)
 {
-    return m_gpu->createXRBinding(m_backing);
+    return m_backing->createXRBinding();
 }
 
 ExceptionOr<Ref<GPUBuffer>> GPUDevice::createBuffer(GPUBufferDescriptor&& bufferDescriptor)

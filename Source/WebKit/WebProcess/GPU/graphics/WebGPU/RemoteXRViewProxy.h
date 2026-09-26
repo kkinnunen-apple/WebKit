@@ -33,15 +33,11 @@
 #include "WebGPUIdentifier.h"
 #include <WebCore/WebGPUDevice.h>
 #include <WebCore/WebGPUXREye.h>
+#include <WebCore/WebGPUXRProjectionLayer.h>
 #include <WebCore/WebGPUXRView.h>
 
 namespace WebCore {
 class WebXRFrame;
-}
-
-namespace WebCore::WebGPU {
-class XRProjectionLayer;
-class XRView;
 }
 
 namespace WebKit::WebGPU {
@@ -61,6 +57,9 @@ public:
     RemoteDeviceProxy& parent() const { return m_parent; }
     RemoteGPUProxy& root() const { return m_parent->root(); }
 
+    void setLabel(String&&) final { }
+    bool isValid() const final;
+
 private:
     friend class DowncastConvertToBackingContext;
 
@@ -70,8 +69,6 @@ private:
     RemoteXRViewProxy(RemoteXRViewProxy&&) = delete;
     RemoteXRViewProxy& operator=(const RemoteXRViewProxy&) = delete;
     RemoteXRViewProxy& operator=(RemoteXRViewProxy&&) = delete;
-
-    bool isRemoteXRViewProxy() const final { return true; }
 
     WebGPUIdentifier backing() const { return m_backing; }
 
@@ -92,9 +89,5 @@ private:
 };
 
 } // namespace WebKit::WebGPU
-
-SPECIALIZE_TYPE_TRAITS_BEGIN(WebKit::WebGPU::RemoteXRViewProxy)
-    static bool isType(const WebCore::WebGPU::XRView& view) { return view.isRemoteXRViewProxy(); }
-SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // ENABLE(GPU_PROCESS)

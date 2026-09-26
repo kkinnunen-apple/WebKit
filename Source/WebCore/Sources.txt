@@ -112,10 +112,7 @@ Modules/WebGPU/Implementation/WebGPUConvertToBackingContext.cpp
 Modules/WebGPU/Implementation/WebGPUCreateImpl.cpp
 Modules/WebGPU/Implementation/WebGPUDowncastConvertToBackingContext.cpp
 Modules/WebGPU/Implementation/WebGPUImpl.cpp
-Modules/WebGPU/Implementation/WebGPUXRBindingImpl.cpp
-Modules/WebGPU/Implementation/WebGPUXRProjectionLayerImpl.cpp
-Modules/WebGPU/Implementation/WebGPUXRSubImageImpl.cpp
-Modules/WebGPU/Implementation/WebGPUXRViewImpl.cpp
+Modules/WebGPU/InternalAPI/WebGPUXRLayerBacking.cpp
 Modules/WebGPU/WGSLLanguageFeatures.cpp
 Modules/airplay/WebKitPlaybackTargetAvailabilityEvent.cpp
 Modules/applicationmanifest/ApplicationManifestParser.cpp

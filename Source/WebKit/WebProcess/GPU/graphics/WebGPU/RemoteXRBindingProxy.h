@@ -34,14 +34,11 @@
 #include <WebCore/WebGPUDevice.h>
 #include <WebCore/WebGPUXRBinding.h>
 #include <WebCore/WebGPUXREye.h>
+#include <WebCore/WebGPUXRProjectionLayer.h>
+#include <WebCore/WebGPUXRView.h>
 
 namespace WebCore {
 class WebXRFrame;
-}
-
-namespace WebCore::WebGPU {
-class XRProjectionLayer;
-class XRView;
 }
 
 namespace WebKit::WebGPU {
@@ -61,6 +58,11 @@ public:
     RemoteDeviceProxy& parent() const { return m_parent; }
     RemoteGPUProxy& root() { return m_parent->root(); }
 
+    RefPtr<WebCore::WebGPU::XRProjectionLayer> createProjectionLayer(const WebCore::WebGPU::XRProjectionLayerInit&) final;
+    RefPtr<WebCore::WebGPU::XRSubImage> getViewSubImage(WebCore::WebGPU::XRProjectionLayer&) final;
+    void setLabel(String&&) final { }
+    bool isValid() const final;
+
 private:
     friend class DowncastConvertToBackingContext;
 
@@ -71,14 +73,7 @@ private:
     RemoteXRBindingProxy& operator=(const RemoteXRBindingProxy&) = delete;
     RemoteXRBindingProxy& operator=(RemoteXRBindingProxy&&) = delete;
 
-    bool isRemoteXRBindingProxy() const final { return true; }
-
     WebGPUIdentifier backing() const { return m_backing; }
-
-    RefPtr<WebCore::WebGPU::XRProjectionLayer> createProjectionLayer(const WebCore::WebGPU::XRProjectionLayerInit&) final;
-    RefPtr<WebCore::WebGPU::XRSubImage> getSubImage(WebCore::WebGPU::XRProjectionLayer&, WebCore::WebXRFrame&, std::optional<WebCore::WebGPU::XREye>/* = "none"*/) final;
-    RefPtr<WebCore::WebGPU::XRSubImage> getViewSubImage(WebCore::WebGPU::XRProjectionLayer&) final;
-    WebCore::WebGPU::TextureFormat getPreferredColorFormat() final;
 
     template<typename T>
     [[nodiscard]] IPC::Error send(T&& message)
@@ -97,9 +92,5 @@ private:
 };
 
 } // namespace WebKit::WebGPU
-
-SPECIALIZE_TYPE_TRAITS_BEGIN(WebKit::WebGPU::RemoteXRBindingProxy)
-    static bool isType(const WebCore::WebGPU::XRBinding& binding) { return binding.isRemoteXRBindingProxy(); }
-SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // ENABLE(GPU_PROCESS)

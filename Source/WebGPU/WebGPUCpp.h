@@ -1409,6 +1409,7 @@ public:
     virtual RefPtr<CommandEncoder> createCommandEncoder(const CommandEncoderDescriptor&) = 0;
     virtual RefPtr<RenderBundleEncoder> createRenderBundleEncoder(const RenderBundleEncoderDescriptor&) = 0;
     virtual RefPtr<QuerySet> createQuerySet(const QuerySetDescriptor&) = 0;
+    virtual RefPtr<XRBinding> createXRBinding() = 0;
 
     virtual void pushErrorScope(ErrorFilter) = 0;
     // Completes with true and no error when the scope caught none, or when the device is lost; with
@@ -1663,6 +1664,8 @@ class XRBinding : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<XRBindi
 public:
     virtual ~XRBinding() = default;
 
+    virtual RefPtr<XRProjectionLayer> createProjectionLayer(const XRProjectionLayerDescriptor&) = 0;
+    virtual RefPtr<XRSubImage> getViewSubImage(XRProjectionLayer&) = 0;
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 
@@ -1674,6 +1677,12 @@ class XRProjectionLayer : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr
 public:
     virtual ~XRProjectionLayer() = default;
 
+#if PLATFORM(COCOA)
+    // Starts a frame in the buffers of the compositor. The rasterization rate map is flattened into
+    // the size of the screen and its samples.
+    virtual void startFrame(size_t frameIndex, MachSendRight&& colorBuffer, MachSendRight&& depthBuffer, MachSendRight&& completionSyncEvent, size_t reusableTextureIndex, unsigned screenWidth, unsigned screenHeight, Vector<float>&& horizontalSamplesLeft, Vector<float>&& horizontalSamplesRight, Vector<float>&& verticalSamples) = 0;
+#endif
+    virtual void endFrame() = 0;
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 
@@ -1685,6 +1694,8 @@ class XRSubImage : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<XRSubI
 public:
     virtual ~XRSubImage() = default;
 
+    virtual RefPtr<Texture> colorTexture() = 0;
+    virtual RefPtr<Texture> depthStencilTexture() = 0;
     virtual void setLabel(String&&) = 0;
     virtual bool isValid() const = 0;
 

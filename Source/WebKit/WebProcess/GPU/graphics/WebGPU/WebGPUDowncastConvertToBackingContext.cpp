@@ -189,22 +189,22 @@ WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::XRBinding& xrBinding)
 {
-    return downcast<RemoteXRBindingProxy>(xrBinding).backing();
+    return static_cast<const RemoteXRBindingProxy&>(xrBinding).backing();
 }
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::XRProjectionLayer& layer)
 {
-    return downcast<RemoteXRProjectionLayerProxy>(layer).backing();
+    return static_cast<const RemoteXRProjectionLayerProxy&>(layer).backing();
 }
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::XRSubImage& subImage)
 {
-    return downcast<RemoteXRSubImageProxy>(subImage).backing();
+    return static_cast<const RemoteXRSubImageProxy&>(subImage).backing();
 }
 
 WebGPUIdentifier DowncastConvertToBackingContext::convertToBacking(const WebCore::WebGPU::XRView& view)
 {
-    return downcast<RemoteXRViewProxy>(view).backing();
+    return static_cast<const RemoteXRViewProxy&>(view).backing();
 }
 
 } // namespace WebKit::WebGPU

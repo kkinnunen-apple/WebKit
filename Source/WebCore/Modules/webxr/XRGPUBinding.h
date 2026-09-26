@@ -39,10 +39,6 @@
 
 namespace WebCore {
 
-namespace WebGPU {
-class XRBinding;
-}
-
 enum class GPUTextureFormat : uint8_t;
 
 class GPUDevice;
