@@ -2607,4 +2607,41 @@ inline std::optional<WebGPU::RenderPassDescriptor> fromAPI(const WGPURenderPassD
     };
 }
 
+struct RenderBundleEncoderDescriptorStorage {
+    Vector<std::optional<WebGPU::TextureFormat>> colorFormats;
+};
+
+// WGPUTextureFormat_Undefined is std::nullopt: an empty color format slot, or no depth stencil format.
+inline std::optional<WebGPU::RenderBundleEncoderDescriptor> fromAPI(const WGPURenderBundleEncoderDescriptor& descriptor, RenderBundleEncoderDescriptorStorage& storage LIFETIME_BOUND)
+{
+    auto optionalFormat = [](WGPUTextureFormat format) -> std::optional<std::optional<WebGPU::TextureFormat>> {
+        if (format == WGPUTextureFormat_Undefined)
+            return std::optional<WebGPU::TextureFormat> { };
+        auto result = fromAPI(format);
+        if (!result)
+            return std::nullopt;
+        return std::optional<WebGPU::TextureFormat> { *result };
+    };
+
+    storage.colorFormats.clear();
+    for (auto format : unsafeMakeSpan(descriptor.colorFormats, descriptor.colorFormatCount)) {
+        auto colorFormat = optionalFormat(format);
+        if (!colorFormat)
+            return std::nullopt;
+        storage.colorFormats.append(*colorFormat);
+    }
+    auto depthStencilFormat = optionalFormat(descriptor.depthStencilFormat);
+    if (!depthStencilFormat)
+        return std::nullopt;
+
+    return WebGPU::RenderBundleEncoderDescriptor {
+        .label = fromAPI(descriptor.label),
+        .colorFormats = storage.colorFormats.span(),
+        .depthStencilFormat = *depthStencilFormat,
+        .sampleCount = descriptor.sampleCount,
+        .depthReadOnly = !!descriptor.depthReadOnly,
+        .stencilReadOnly = !!descriptor.stencilReadOnly,
+    };
+}
+
 } // namespace WebGPU::Metal

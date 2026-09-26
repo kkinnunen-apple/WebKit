@@ -91,6 +91,11 @@ inline QuerySet& metal(WebGPU::QuerySet& querySet)
     return static_cast<QuerySet&>(querySet);
 }
 
+inline RenderBundle& metal(WebGPU::RenderBundle& renderBundle)
+{
+    return static_cast<RenderBundle&>(renderBundle);
+}
+
 inline Sampler& metal(WebGPU::Sampler& sampler)
 {
     return static_cast<Sampler&>(sampler);
@@ -274,11 +279,6 @@ inline XRView& fromAPI(WGPUXRView view)
 inline WGPUStringView toAPI(ASCIILiteral literal)
 {
     return { literal.characters(), literal.length() };
-}
-
-inline std::span<const WGPUTextureFormat> colorFormatsSpan(const WGPURenderBundleEncoderDescriptor& descriptor)
-{
-    return unsafeMakeSpan(descriptor.colorFormats, descriptor.colorFormatCount);
 }
 
 inline std::span<const WGPUFeatureName> requiredFeaturesSpan(const WGPUDeviceDescriptor& descriptor)

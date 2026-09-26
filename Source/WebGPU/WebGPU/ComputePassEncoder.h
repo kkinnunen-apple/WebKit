@@ -79,7 +79,8 @@ public:
     void popDebugGroup();
     void pushDebugGroup(String&& groupLabel);
 
-    void setBindGroup(uint32_t groupIndex, const BindGroup*, std::optional<Vector<uint32_t>>&& dynamicOffsets);
+    // std::nullopt dynamic offsets are not validated against the bind group layout.
+    void setBindGroup(uint32_t groupIndex, const BindGroup*, std::optional<std::span<const uint32_t>> dynamicOffsets);
     void setPipeline(const ComputePipeline&);
     void setLabel(String&&) final;
 
