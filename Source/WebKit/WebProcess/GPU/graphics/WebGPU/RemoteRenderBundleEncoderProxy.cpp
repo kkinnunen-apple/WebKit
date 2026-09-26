@@ -113,27 +113,13 @@ void RemoteRenderBundleEncoderProxy::drawIndexedIndirect(const WebCore::WebGPU::
     UNUSED_VARIABLE(sendResult);
 }
 
-void RemoteRenderBundleEncoderProxy::setBindGroup(WebCore::WebGPU::Index32 index, const WebCore::WebGPU::BindGroup* bindGroup,
-    std::optional<Vector<WebCore::WebGPU::BufferDynamicOffset>>&& dynamicOffsets)
+void RemoteRenderBundleEncoderProxy::setBindGroup(uint32_t index, const WebCore::WebGPU::BindGroup* bindGroup, std::optional<std::span<const uint32_t>> dynamicOffsets)
 {
     std::optional<WebGPUIdentifier> convertedBindGroup;
     if (bindGroup)
         convertedBindGroup = m_convertToBackingContext->convertToBacking(*bindGroup);
 
-    auto sendResult = send(Messages::RemoteRenderBundleEncoder::SetBindGroup(index, convertedBindGroup, dynamicOffsets));
-    UNUSED_VARIABLE(sendResult);
-}
-
-void RemoteRenderBundleEncoderProxy::setBindGroup(WebCore::WebGPU::Index32 index, const WebCore::WebGPU::BindGroup* bindGroup,
-    std::span<const uint32_t> dynamicOffsetsArrayBuffer,
-    WebCore::WebGPU::Size64 dynamicOffsetsDataStart,
-    WebCore::WebGPU::Size32 dynamicOffsetsDataLength)
-{
-    std::optional<WebGPUIdentifier> convertedBindGroup;
-    if (bindGroup)
-        convertedBindGroup = m_convertToBackingContext->convertToBacking(*bindGroup);
-
-    auto sendResult = send(Messages::RemoteRenderBundleEncoder::SetBindGroup(index, convertedBindGroup, Vector<WebCore::WebGPU::BufferDynamicOffset>(dynamicOffsetsArrayBuffer.subspan(dynamicOffsetsDataStart, dynamicOffsetsDataLength))));
+    auto sendResult = send(Messages::RemoteRenderBundleEncoder::SetBindGroup(index, convertedBindGroup, dynamicOffsets ? std::optional { Vector<uint32_t>(*dynamicOffsets) } : std::nullopt));
     UNUSED_VARIABLE(sendResult);
 }
 
@@ -166,10 +152,16 @@ RefPtr<WebCore::WebGPU::RenderBundle> RemoteRenderBundleEncoderProxy::finish(con
     return RemoteRenderBundleProxy::create(m_parent, convertToBackingContext, identifier);
 }
 
-void RemoteRenderBundleEncoderProxy::setLabelInternal(const String& label)
+void RemoteRenderBundleEncoderProxy::setLabel(String&& label)
 {
-    auto sendResult = send(Messages::RemoteRenderBundleEncoder::SetLabel(label));
+    auto sendResult = send(Messages::RemoteRenderBundleEncoder::SetLabel(WTF::move(label)));
     UNUSED_VARIABLE(sendResult);
+}
+
+bool RemoteRenderBundleEncoderProxy::isValid() const
+{
+    // The Web Process cannot know. RemoteGPU::isValid() answers it for tests.
+    RELEASE_ASSERT_NOT_REACHED();
 }
 
 } // namespace WebKit::WebGPU

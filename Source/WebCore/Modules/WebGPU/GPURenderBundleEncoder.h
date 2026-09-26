@@ -49,9 +49,9 @@ template<typename> class ExceptionOr;
 
 class GPURenderBundleEncoder : public RefCountedAndCanMakeWeakPtr<GPURenderBundleEncoder> {
 public:
-    static Ref<GPURenderBundleEncoder> create(Ref<WebGPU::RenderBundleEncoder>&& backing, GPUDevice& device)
+    static Ref<GPURenderBundleEncoder> create(Ref<WebGPU::RenderBundleEncoder>&& backing, String&& label, GPUDevice& device)
     {
-        return adoptRef(*new GPURenderBundleEncoder(WTF::move(backing), device));
+        return adoptRef(*new GPURenderBundleEncoder(WTF::move(backing), WTF::move(label), device));
     }
 
     String NODELETE label() const;
@@ -94,9 +94,10 @@ public:
     bool hasActiveInspectorCanvasCallTracer() const;
 
 private:
-    GPURenderBundleEncoder(Ref<WebGPU::RenderBundleEncoder>&&, GPUDevice&);
+    GPURenderBundleEncoder(Ref<WebGPU::RenderBundleEncoder>&&, String&& label, GPUDevice&);
 
     const Ref<WebGPU::RenderBundleEncoder> m_backing;
+    String m_label;
     WeakPtr<GPUDevice, WeakPtrImplWithEventTargetData> m_device;
     WeakPtr<GPURenderPipeline> m_currentPipeline;
 };

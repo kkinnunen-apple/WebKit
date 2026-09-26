@@ -143,7 +143,7 @@ void RemoteRenderBundleEncoder::setBindGroup(WebCore::WebGPU::Index32 index, std
     std::optional<Vector<WebCore::WebGPU::BufferDynamicOffset>>&& dynamicOffsets)
 {
     if (!bindGroup) {
-        protect(m_backing)->setBindGroup(index, nullptr, WTF::move(dynamicOffsets));
+        protect(m_backing)->setBindGroup(index, nullptr, dynamicOffsets ? std::optional { dynamicOffsets->span() } : std::nullopt);
         return;
     }
 
@@ -152,7 +152,7 @@ void RemoteRenderBundleEncoder::setBindGroup(WebCore::WebGPU::Index32 index, std
     if (!convertedBindGroup)
         return;
 
-    protect(m_backing)->setBindGroup(index, convertedBindGroup.get(), WTF::move(dynamicOffsets));
+    protect(m_backing)->setBindGroup(index, convertedBindGroup.get(), dynamicOffsets ? std::optional { dynamicOffsets->span() } : std::nullopt);
 }
 
 void RemoteRenderBundleEncoder::pushDebugGroup(String&& groupLabel)
