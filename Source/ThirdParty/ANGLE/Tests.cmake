@@ -15,6 +15,10 @@ set(angle_test_definitions
     ANGLE_VULKAN_SECONDARIES_EGL_LIBRARY_NAME="vk-libEGL"
     ANGLE_VULKAN_SECONDARIES_GLESV2_LIBRARY_NAME="vk-libGLESv2"
 )
+if (ENABLE_WEBGL_WEBGPU)
+    # The tests instantiate the WebGPU platforms only when the backend is built.
+    list(APPEND angle_test_definitions ANGLE_ENABLE_WGPU)
+endif ()
 
 set(angle_test_include_directories
     "${CMAKE_CURRENT_SOURCE_DIR}"
