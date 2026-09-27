@@ -36,8 +36,6 @@
 #import <wtf/WeakPtr.h>
 #import <wtf/threads/BinarySemaphore.h>
 
-struct WGPUCommandBufferImpl {
-};
 
 namespace WebGPU::Metal {
 
@@ -45,7 +43,7 @@ class CommandEncoder;
 class Device;
 
 // https://gpuweb.github.io/gpuweb/#gpucommandbuffer
-class CommandBuffer final : public WebGPU::CommandBuffer, public WGPUCommandBufferImpl {
+class CommandBuffer final : public WebGPU::CommandBuffer {
     WTF_MAKE_TZONE_ALLOCATED(CommandBuffer);
 public:
     static Ref<CommandBuffer> create(id<MTLCommandBuffer> commandBuffer, Device& device, id<MTLSharedEvent> sharedEvent, uint64_t sharedEventSignalValue, Vector<Function<bool(CommandBuffer&, CommandEncoder&)>>&& onCommitHandlers, CommandEncoder& commandEncoder)

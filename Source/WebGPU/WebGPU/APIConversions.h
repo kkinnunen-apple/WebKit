@@ -140,119 +140,119 @@ inline Texture& metal(const Ref<WebGPU::Texture>& texture)
 
 // FIXME: It would be cool if we didn't have to list all these overloads, but instead could do something like bridge_cast() in WTF.
 
-inline Adapter& fromAPI(WGPUAdapter adapter)
+inline Adapter& fromAPI(WGPUAdapter handle)
 {
-    return static_cast<Adapter&>(*adapter);
+    return static_cast<Adapter&>(WebGPU::fromAPI(handle));
 }
 
-inline BindGroup& fromAPI(WGPUBindGroup bindGroup)
+inline BindGroup& fromAPI(WGPUBindGroup handle)
 {
-    return static_cast<BindGroup&>(*bindGroup);
+    return static_cast<BindGroup&>(WebGPU::fromAPI(handle));
 }
 
-inline BindGroupLayout& fromAPI(WGPUBindGroupLayout bindGroupLayout)
+inline BindGroupLayout& fromAPI(WGPUBindGroupLayout handle)
 {
-    return static_cast<BindGroupLayout&>(*bindGroupLayout);
+    return static_cast<BindGroupLayout&>(WebGPU::fromAPI(handle));
 }
 
-inline Buffer& fromAPI(WGPUBuffer buffer)
+inline Buffer& fromAPI(WGPUBuffer handle)
 {
-    return static_cast<Buffer&>(*buffer);
+    return static_cast<Buffer&>(WebGPU::fromAPI(handle));
 }
 
-inline CommandBuffer& fromAPI(WGPUCommandBuffer commandBuffer)
+inline CommandBuffer& fromAPI(WGPUCommandBuffer handle)
 {
-    return static_cast<CommandBuffer&>(*commandBuffer);
+    return static_cast<CommandBuffer&>(WebGPU::fromAPI(handle));
 }
 
-inline CommandEncoder& fromAPI(WGPUCommandEncoder commandEncoder)
+inline CommandEncoder& fromAPI(WGPUCommandEncoder handle)
 {
-    return static_cast<CommandEncoder&>(*commandEncoder);
+    return static_cast<CommandEncoder&>(WebGPU::fromAPI(handle));
 }
 
-inline ComputePassEncoder& fromAPI(WGPUComputePassEncoder computePassEncoder)
+inline ComputePassEncoder& fromAPI(WGPUComputePassEncoder handle)
 {
-    return static_cast<ComputePassEncoder&>(*computePassEncoder);
+    return static_cast<ComputePassEncoder&>(WebGPU::fromAPI(handle));
 }
 
-inline ComputePipeline& fromAPI(WGPUComputePipeline computePipeline)
+inline ComputePipeline& fromAPI(WGPUComputePipeline handle)
 {
-    return static_cast<ComputePipeline&>(*computePipeline);
+    return static_cast<ComputePipeline&>(WebGPU::fromAPI(handle));
 }
 
-inline Device& fromAPI(WGPUDevice device)
+inline Device& fromAPI(WGPUDevice handle)
 {
-    return static_cast<Device&>(*device);
+    return static_cast<Device&>(WebGPU::fromAPI(handle));
 }
 
-inline ExternalTexture& fromAPI(WGPUExternalTexture texture)
+inline ExternalTexture& fromAPI(WGPUExternalTexture handle)
 {
-    return static_cast<ExternalTexture&>(*texture);
+    return static_cast<ExternalTexture&>(WebGPU::fromAPI(handle));
 }
 
-inline Instance& fromAPI(WGPUInstance instance)
+inline Instance& fromAPI(WGPUInstance handle)
 {
-    return static_cast<Instance&>(*instance);
+    return static_cast<Instance&>(WebGPU::fromAPI(handle));
 }
 
-inline PipelineLayout& fromAPI(WGPUPipelineLayout pipelineLayout)
+inline PipelineLayout& fromAPI(WGPUPipelineLayout handle)
 {
-    return static_cast<PipelineLayout&>(*pipelineLayout);
+    return static_cast<PipelineLayout&>(WebGPU::fromAPI(handle));
 }
 
-inline QuerySet& fromAPI(WGPUQuerySet querySet)
+inline QuerySet& fromAPI(WGPUQuerySet handle)
 {
-    return static_cast<QuerySet&>(*querySet);
+    return static_cast<QuerySet&>(WebGPU::fromAPI(handle));
 }
 
-inline Queue& fromAPI(WGPUQueue queue)
+inline Queue& fromAPI(WGPUQueue handle)
 {
-    return static_cast<Queue&>(*queue);
+    return static_cast<Queue&>(WebGPU::fromAPI(handle));
 }
 
-inline RenderBundle& fromAPI(WGPURenderBundle renderBundle)
+inline RenderBundle& fromAPI(WGPURenderBundle handle)
 {
-    return static_cast<RenderBundle&>(*renderBundle);
+    return static_cast<RenderBundle&>(WebGPU::fromAPI(handle));
 }
 
-inline RenderBundleEncoder& fromAPI(WGPURenderBundleEncoder renderBundleEncoder)
+inline RenderBundleEncoder& fromAPI(WGPURenderBundleEncoder handle)
 {
-    return static_cast<RenderBundleEncoder&>(*renderBundleEncoder);
+    return static_cast<RenderBundleEncoder&>(WebGPU::fromAPI(handle));
 }
 
-inline RenderPassEncoder& fromAPI(WGPURenderPassEncoder renderPassEncoder)
+inline RenderPassEncoder& fromAPI(WGPURenderPassEncoder handle)
 {
-    return static_cast<RenderPassEncoder&>(*renderPassEncoder);
+    return static_cast<RenderPassEncoder&>(WebGPU::fromAPI(handle));
 }
 
-inline RenderPipeline& fromAPI(WGPURenderPipeline renderPipeline)
+inline RenderPipeline& fromAPI(WGPURenderPipeline handle)
 {
-    return static_cast<RenderPipeline&>(*renderPipeline);
+    return static_cast<RenderPipeline&>(WebGPU::fromAPI(handle));
 }
 
-inline Sampler& fromAPI(WGPUSampler sampler)
+inline Sampler& fromAPI(WGPUSampler handle)
 {
-    return static_cast<Sampler&>(*sampler);
+    return static_cast<Sampler&>(WebGPU::fromAPI(handle));
 }
 
-inline ShaderModule& fromAPI(WGPUShaderModule shaderModule)
+inline ShaderModule& fromAPI(WGPUShaderModule handle)
 {
-    return static_cast<ShaderModule&>(*shaderModule);
+    return static_cast<ShaderModule&>(WebGPU::fromAPI(handle));
 }
 
-inline PresentationContext& fromAPI(WGPUSurface surface)
+inline PresentationContext& fromAPI(WGPUSurface handle)
 {
-    return static_cast<PresentationContext&>(*surface);
+    return static_cast<PresentationContext&>(WebGPU::fromAPI(handle));
 }
 
-inline Texture& fromAPI(WGPUTexture texture)
+inline Texture& fromAPI(WGPUTexture handle)
 {
-    return static_cast<Texture&>(*texture);
+    return static_cast<Texture&>(WebGPU::fromAPI(handle));
 }
 
-inline TextureView& fromAPI(WGPUTextureView textureView)
+inline TextureView& fromAPI(WGPUTextureView handle)
 {
-    return static_cast<TextureView&>(*textureView);
+    return static_cast<TextureView&>(WebGPU::fromAPI(handle));
 }
 
 // Literals have static storage, so the view can borrow them freely.
@@ -312,32 +312,33 @@ inline BlockPtr<R (Args...)> fromAPI(R (^ __strong &&block)(Args...))
     return makeBlockPtr(WTF::move(block));
 }
 
+// The handle of a new reference, for the C API. The handle of an object is its WebGPU::X.
 template <typename T>
-inline T* releaseToAPI(Ref<T>&& pointer)
+inline auto releaseToAPI(Ref<T>&& pointer)
 {
-    return &pointer.leakRef();
+    return WebGPU::toAPI(pointer.leakRef());
 }
 
 template <typename T>
-inline T* releaseToAPI(RefPtr<T>&& pointer)
+inline auto releaseToAPI(RefPtr<T>&& pointer) -> decltype(WebGPU::toAPI(*pointer))
 {
     // FIXME: We shouldn't need this, because invalid objects should be created instead of returning nullptr.
     if (pointer)
-        return pointer.leakRef();
+        return WebGPU::toAPI(*pointer.leakRef());
     return nullptr;
 }
 
 // For the WebGPU::X objects that a WebGPU::Metal object creates, which are WebGPU::Metal::X objects.
 template <typename T, typename U>
-inline T* releaseToAPIAs(RefPtr<U>&& pointer)
+inline auto releaseToAPIAs(RefPtr<U>&& pointer)
 {
-    return static_cast<T*>(pointer.leakRef());
+    return releaseToAPI(WTF::move(pointer));
 }
 
 template <typename T, typename U>
-inline T* releaseToAPIAs(Ref<U>&& pointer)
+inline auto releaseToAPIAs(Ref<U>&& pointer)
 {
-    return static_cast<T*>(&pointer.leakRef());
+    return releaseToAPI(WTF::move(pointer));
 }
 
 } // namespace WebGPU::Metal

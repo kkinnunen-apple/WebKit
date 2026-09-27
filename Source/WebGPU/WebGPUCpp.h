@@ -39,6 +39,8 @@
 // must also compile as C and Objective-C.
 #ifdef __cplusplus
 
+#include <wtf/Platform.h>
+
 #include <cstdint>
 #include <optional>
 #include <span>
