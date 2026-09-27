@@ -83,6 +83,9 @@ public:
     // The mapped range as a span, for the C API. The C++ API has getMappedRange() instead,
     // because a proxy cannot return a pointer into the mapping.
     std::span<uint8_t> getMappedRangeSpan(uint64_t offset, std::optional<uint64_t> size) HAS_SWIFTCXX_THUNK;
+    // The mapped range for the C API, which, unlike the JavaScript API, lets the ranges that it hands
+    // out overlap: they are pointers into the mapping, not ArrayBuffers that are detached on unmap.
+    std::span<uint8_t> NODELETE mappedRangeForCAPI(uint64_t offset, std::optional<uint64_t> size);
     void unmap() final;
     void setLabel(String&&) final;
     void generateAValidationError() final;
@@ -145,6 +148,9 @@ private:
     Buffer(Device&);
 
     bool validateGetMappedRange(size_t offset, size_t rangeSize) const;
+    // validateGetMappedRange() without the check that the range does not overlap a range that has
+    // been handed out.
+    bool validateMappedRangeBounds(size_t offset, size_t rangeSize) const;
     NSString * _Nullable errorValidatingMapAsync(OptionSet<WebGPU::MapMode>, size_t offset, size_t rangeSize) const;
     bool NODELETE validateUnmap() const;
     void NODELETE setState(State);
