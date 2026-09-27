@@ -30,8 +30,8 @@
 #include "RemoteGPUProxy.h"
 #include "WebGPUIdentifier.h"
 #include <WebCore/PlatformXR.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUDevice.h>
-#include <WebCore/WebGPUXRProjectionLayer.h>
 
 namespace WebCore {
 class ImageBuffer;
@@ -42,7 +42,7 @@ namespace WebKit::WebGPU {
 
 class ConvertToBackingContext;
 
-class RemoteXRProjectionLayerProxy final : public WebCore::WebGPU::XRProjectionLayer {
+class RemoteXRProjectionLayerProxy final : public ::WebGPU::XRProjectionLayer {
     WTF_MAKE_TZONE_ALLOCATED(RemoteXRProjectionLayerProxy);
 public:
     static Ref<RemoteXRProjectionLayerProxy> create(Ref<RemoteGPUProxy>&& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)

@@ -25,17 +25,15 @@
 
 #pragma once
 
-#include <WebCore/WebGPUIntegralTypes.h>
-#include <WebCore/WebGPUVertexAttribute.h>
-#include <WebCore/WebGPUVertexStepMode.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/Vector.h>
 
 namespace WebCore {
 
 struct WebGPUVertexBufferLayout {
-    WebGPU::Size64 arrayStride { 0 };
-    WebGPU::VertexStepMode stepMode { WebGPU::VertexStepMode::Vertex };
-    Vector<WebGPU::VertexAttribute> attributes;
+    uint64_t arrayStride { 0 };
+    ::WebGPU::VertexStepMode stepMode { ::WebGPU::VertexStepMode::Vertex };
+    Vector<::WebGPU::VertexAttribute> attributes;
 };
 
 } // namespace WebCore

@@ -31,16 +31,16 @@
 #include "RemoteVideoFrameObjectHeapProxy.h"
 #include "SharedVideoFrame.h"
 #include "WebGPUIdentifier.h"
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUImageCopyExternalImage.h>
 #include <WebCore/WebGPUImageCopyTextureTagged.h>
-#include <WebCore/WebGPUQueue.h>
 #include <wtf/TZoneMalloc.h>
 
 namespace WebKit::WebGPU {
 
 class ConvertToBackingContext;
 
-class RemoteQueueProxy final : public WebCore::WebGPU::Queue {
+class RemoteQueueProxy final : public ::WebGPU::Queue {
     WTF_MAKE_TZONE_ALLOCATED(RemoteQueueProxy);
 public:
     static Ref<RemoteQueueProxy> create(RemoteAdapterProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)
@@ -51,18 +51,18 @@ public:
     virtual ~RemoteQueueProxy();
 
     // Called by RemoteGPUProxy, which implements the queue commands that take WebCore sources.
-    void copyExternalImageToTexture(const WebCore::WebGPUExternalImageSource& source, const WebCore::WebGPUImageCopyTextureTagged& destination, const WebCore::WebGPU::Extent3D& copySize);
+    void copyExternalImageToTexture(const WebCore::WebGPUExternalImageSource& source, const WebCore::WebGPUImageCopyTextureTagged& destination, const ::WebGPU::Extent3D& copySize);
     RefPtr<WebCore::NativeImage> getNativeImage(WebCore::VideoFrame&);
 
     RemoteAdapterProxy& parent() const { return m_parent; }
     RemoteGPUProxy& root() { return m_parent->root(); }
 
-    void submit(Vector<Ref<WebCore::WebGPU::CommandBuffer>>&&) final;
+    void submit(Vector<Ref<::WebGPU::CommandBuffer>>&&) final;
     void onSubmittedWorkDone(CompletionHandler<void()>&&) final;
-    void writeBuffer(const WebCore::WebGPU::Buffer&, uint64_t bufferOffset, std::span<const uint8_t> data) final;
-    void writeTexture(const WebCore::WebGPU::ImageCopyTexture& destination, std::span<const uint8_t> data, const WebCore::WebGPU::ImageDataLayout&, const WebCore::WebGPU::Extent3D& writeSize) final;
+    void writeBuffer(const ::WebGPU::Buffer&, uint64_t bufferOffset, std::span<const uint8_t> data) final;
+    void writeTexture(const ::WebGPU::TexelCopyTextureInfo& destination, std::span<const uint8_t> data, const ::WebGPU::TexelCopyBufferLayout&, const ::WebGPU::Extent3D& writeSize) final;
 #if PLATFORM(COCOA)
-    void copyExternalImageToTexture(const ::WebGPU::ImageCopyExternalImage& source, const ::WebGPU::ImageCopyTextureTagged& destination, const WebCore::WebGPU::Extent3D& copySize) final;
+    void copyExternalImageToTexture(const ::WebGPU::ImageCopyExternalImage& source, const ::WebGPU::ImageCopyTextureTagged& destination, const ::WebGPU::Extent3D& copySize) final;
 #endif
     void setLabel(String&&) final;
     bool isValid() const final;
@@ -99,7 +99,7 @@ private:
     void copyExternalImageFromVideoFrameToTexture(
         const WebCore::WebGPUExternalImageSource& source,
         const WebCore::WebGPUImageCopyTextureTagged& destination,
-        const WebCore::WebGPU::Extent3D& copySize);
+        const ::WebGPU::Extent3D& copySize);
 #endif
 
     WebGPUIdentifier m_backing;

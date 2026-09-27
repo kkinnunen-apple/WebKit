@@ -27,7 +27,6 @@
 
 #if ENABLE(GPU_PROCESS)
 
-#include <WebCore/WebGPUCompilationMessageType.h>
 #include <WebCore/WebGPUCppAPI.h>
 
 namespace WebKit::WebGPU {

@@ -29,8 +29,7 @@
 
 #include "RemoteGPUProxy.h"
 #include "WebGPUIdentifier.h"
-#include <WebCore/WebGPUAdapter.h>
-#include <WebCore/WebGPUFeatureName.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/TZoneMalloc.h>
 
 namespace WebKit {
@@ -41,10 +40,10 @@ namespace WebKit::WebGPU {
 
 class ConvertToBackingContext;
 
-class RemoteAdapterProxy final : public WebCore::WebGPU::Adapter {
+class RemoteAdapterProxy final : public ::WebGPU::Adapter {
     WTF_MAKE_TZONE_ALLOCATED(RemoteAdapterProxy);
 public:
-    static Ref<RemoteAdapterProxy> create(Vector<WebCore::WebGPU::FeatureName>&& features, const ::WebGPU::Limits& limits, ::WebGPU::AdapterInfo&& info, bool xrCompatible, RemoteGPUProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)
+    static Ref<RemoteAdapterProxy> create(Vector<::WebGPU::FeatureName>&& features, const ::WebGPU::Limits& limits, ::WebGPU::AdapterInfo&& info, bool xrCompatible, RemoteGPUProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)
     {
         return adoptRef(*new RemoteAdapterProxy(WTF::move(features), limits, WTF::move(info), xrCompatible, parent, convertToBackingContext, identifier));
     }
@@ -54,18 +53,18 @@ public:
     RemoteGPUProxy& parent() const { return m_parent; }
     RemoteGPUProxy& root() { return m_parent->root(); }
 
-    Vector<WebCore::WebGPU::FeatureName> features() const final { return m_features; }
+    Vector<::WebGPU::FeatureName> features() const final { return m_features; }
     const ::WebGPU::Limits& limits() const LIFETIME_BOUND final { return m_limits; }
     ::WebGPU::AdapterInfo info() final { return m_info; }
     bool isXRCompatible() const final { return m_xrCompatible; }
-    void requestDevice(const ::WebGPU::DeviceDescriptor&, CompletionHandler<void(RefPtr<WebCore::WebGPU::Device>&&)>&&) final;
+    void requestDevice(const ::WebGPU::DeviceDescriptor&, CompletionHandler<void(RefPtr<::WebGPU::Device>&&)>&&) final;
     void setLabel(String&&) final { }
     bool isValid() const final;
 
 private:
     friend class DowncastConvertToBackingContext;
 
-    RemoteAdapterProxy(Vector<WebCore::WebGPU::FeatureName>&&, const ::WebGPU::Limits&, ::WebGPU::AdapterInfo&&, bool xrCompatible, RemoteGPUProxy&, ConvertToBackingContext&, WebGPUIdentifier);
+    RemoteAdapterProxy(Vector<::WebGPU::FeatureName>&&, const ::WebGPU::Limits&, ::WebGPU::AdapterInfo&&, bool xrCompatible, RemoteGPUProxy&, ConvertToBackingContext&, WebGPUIdentifier);
 
     RemoteAdapterProxy(const RemoteAdapterProxy&) = delete;
     RemoteAdapterProxy(RemoteAdapterProxy&&) = delete;
@@ -86,7 +85,7 @@ private:
     }
 
     WebGPUIdentifier m_backing;
-    const Vector<WebCore::WebGPU::FeatureName> m_features;
+    const Vector<::WebGPU::FeatureName> m_features;
     const ::WebGPU::Limits m_limits;
     const ::WebGPU::AdapterInfo m_info;
     const Ref<ConvertToBackingContext> m_convertToBackingContext;

@@ -25,18 +25,17 @@
 
 #pragma once
 
-#include <WebCore/WebGPUIntegralTypes.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUObjectDescriptorBase.h>
-#include <WebCore/WebGPUTextureFormat.h>
 #include <optional>
 #include <wtf/Vector.h>
 
 namespace WebCore {
 
 struct WebGPURenderPassLayout : public WebGPUObjectDescriptorBase {
-    Vector<std::optional<WebGPU::TextureFormat>> colorFormats;
-    std::optional<WebGPU::TextureFormat> depthStencilFormat;
-    WebGPU::Size32 sampleCount { 1 };
+    Vector<std::optional<::WebGPU::TextureFormat>> colorFormats;
+    std::optional<::WebGPU::TextureFormat> depthStencilFormat;
+    uint32_t sampleCount { 1 };
 };
 
 } // namespace WebCore

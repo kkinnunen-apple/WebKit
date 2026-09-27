@@ -38,7 +38,7 @@ namespace WebKit::WebGPU {
 std::optional<CanvasConfiguration> ConvertToBackingContext::convertToBacking(const ::WebGPU::CanvasConfiguration& canvasConfiguration)
 {
     auto device = convertToBacking(canvasConfiguration.device.get());
-    return { { device, canvasConfiguration.format, canvasConfiguration.usage, Vector<WebCore::WebGPU::TextureFormat> { canvasConfiguration.viewFormats }, WebCore::WebGPU::convertFromAPI(canvasConfiguration.colorSpace), canvasConfiguration.toneMappingMode, canvasConfiguration.compositingAlphaMode, canvasConfiguration.reportValidationErrors, canvasConfiguration.width, canvasConfiguration.height } };
+    return { { device, canvasConfiguration.format, canvasConfiguration.usage, Vector<::WebGPU::TextureFormat> { canvasConfiguration.viewFormats }, WebCore::convertFromWebGPU(canvasConfiguration.colorSpace), canvasConfiguration.toneMappingMode, canvasConfiguration.compositingAlphaMode, canvasConfiguration.reportValidationErrors, canvasConfiguration.width, canvasConfiguration.height } };
 }
 
 std::optional<::WebGPU::CanvasConfiguration> ConvertFromBackingContext::convertFromBacking(const CanvasConfiguration& canvasConfiguration)
@@ -52,7 +52,7 @@ std::optional<::WebGPU::CanvasConfiguration> ConvertFromBackingContext::convertF
         .format = canvasConfiguration.format,
         .usage = canvasConfiguration.usage,
         .viewFormats = canvasConfiguration.viewFormats.span(),
-        .colorSpace = WebCore::WebGPU::convertToAPI(canvasConfiguration.colorSpace),
+        .colorSpace = WebCore::convertToWebGPU(canvasConfiguration.colorSpace),
         .toneMappingMode = canvasConfiguration.toneMappingMode,
         .compositingAlphaMode = canvasConfiguration.compositingAlphaMode,
         .reportValidationErrors = canvasConfiguration.reportValidationErrors,

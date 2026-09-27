@@ -34,7 +34,7 @@
 #include "StreamServerConnection.h"
 #include "WebGPUObjectHeap.h"
 #include <WebCore/PlatformXR.h>
-#include <WebCore/WebGPUXRProjectionLayer.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/MachSendRight.h>
 #include <wtf/TZoneMalloc.h>
 
@@ -44,7 +44,7 @@ namespace WebKit {
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(RemoteXRProjectionLayer);
 
-RemoteXRProjectionLayer::RemoteXRProjectionLayer(WebCore::WebGPU::XRProjectionLayer& xrProjectionLayer, WebGPU::ObjectHeap& objectHeap, Ref<IPC::StreamServerConnection>&& streamConnection, RemoteGPU& gpu, WebGPUIdentifier identifier)
+RemoteXRProjectionLayer::RemoteXRProjectionLayer(::WebGPU::XRProjectionLayer& xrProjectionLayer, WebGPU::ObjectHeap& objectHeap, Ref<IPC::StreamServerConnection>&& streamConnection, RemoteGPU& gpu, WebGPUIdentifier identifier)
     : m_backing(xrProjectionLayer)
     , m_objectHeap(objectHeap)
     , m_streamConnection(WTF::move(streamConnection))

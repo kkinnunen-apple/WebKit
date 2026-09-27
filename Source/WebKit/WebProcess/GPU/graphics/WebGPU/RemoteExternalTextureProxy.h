@@ -29,14 +29,14 @@
 
 #include "RemoteDeviceProxy.h"
 #include "WebGPUIdentifier.h"
-#include <WebCore/WebGPUExternalTexture.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/TZoneMalloc.h>
 
 namespace WebKit::WebGPU {
 
 class ConvertToBackingContext;
 
-class RemoteExternalTextureProxy final : public WebCore::WebGPU::ExternalTexture {
+class RemoteExternalTextureProxy final : public ::WebGPU::ExternalTexture {
     WTF_MAKE_TZONE_ALLOCATED(RemoteExternalTextureProxy);
 public:
     static Ref<RemoteExternalTextureProxy> create(RemoteDeviceProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)

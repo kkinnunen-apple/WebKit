@@ -35,7 +35,7 @@
 #include "RemoteXRSubImageProxy.h"
 #include "WebGPUConvertToBackingContext.h"
 #include <WebCore/ImageBuffer.h>
-#include <WebCore/WebGPUTextureFormat.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebKit::WebGPU {
 
@@ -54,7 +54,7 @@ RemoteXRBindingProxy::~RemoteXRBindingProxy()
     UNUSED_VARIABLE(sendResult);
 }
 
-RefPtr<WebCore::WebGPU::XRProjectionLayer> RemoteXRBindingProxy::createProjectionLayer(const WebCore::WebGPU::XRProjectionLayerInit& descriptor)
+RefPtr<::WebGPU::XRProjectionLayer> RemoteXRBindingProxy::createProjectionLayer(const ::WebGPU::XRProjectionLayerDescriptor& descriptor)
 {
     auto identifier = WebGPUIdentifier::generate();
 
@@ -66,7 +66,7 @@ RefPtr<WebCore::WebGPU::XRProjectionLayer> RemoteXRBindingProxy::createProjectio
     return result;
 }
 
-RefPtr<WebCore::WebGPU::XRSubImage> RemoteXRBindingProxy::getViewSubImage(WebCore::WebGPU::XRProjectionLayer& projectionLayer)
+RefPtr<::WebGPU::XRSubImage> RemoteXRBindingProxy::getViewSubImage(::WebGPU::XRProjectionLayer& projectionLayer)
 {
     auto identifier = WebGPUIdentifier::generate();
     auto sendResult = send(Messages::RemoteXRBinding::GetViewSubImage(static_cast<RemoteXRProjectionLayerProxy&>(projectionLayer).backing(), identifier));

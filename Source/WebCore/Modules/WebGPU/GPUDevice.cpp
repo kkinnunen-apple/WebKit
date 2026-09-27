@@ -79,12 +79,11 @@
 #include "JSGPUValidationError.h"
 #include "RequestAnimationFrameCallback.h"
 #include "SecurityOrigin.h"
-#include "WebGPUColorWrite.h"
 #include "WebGPUComputePipelineDescriptor.h"
 #include "WebGPURenderPipelineDescriptor.h"
 #include "WebGPUShaderModuleDescriptor.h"
-#include "WebGPUXRBinding.h"
 #include "XRGPUBinding.h"
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/CheckedArithmetic.h>
 #include <wtf/NeverDestroyed.h>
 #include <wtf/TZoneMallocInlines.h>
@@ -264,7 +263,7 @@ GPUDevice::LostPromise& GPUDevice::lost()
         return m_lostPromise;
 
     m_waitingForDeviceLostPromise = true;
-    m_backing->resolveDeviceLostPromise([weakThis = WeakPtr { *this }](WebCore::WebGPU::DeviceLostReason reason, String&& message) {
+    m_backing->resolveDeviceLostPromise([weakThis = WeakPtr { *this }](WebGPU::DeviceLostReason reason, String&& message) {
         if (!weakThis)
             return;
 
@@ -913,10 +912,10 @@ Ref<GPUAdapterInfo> GPUDevice::adapterInfo() const
 }
 
 
-static OptionSet<::WebGPU::ColorWrite> convertToAPI(WebGPU::ColorWriteFlags writeMask)
+static OptionSet<::WebGPU::ColorWrite> convertToAPI(uint32_t writeMask)
 {
-    auto result = OptionSet<::WebGPU::ColorWrite>::fromRaw(writeMask & WebGPU::ColorWriteFlags_All);
-    if (writeMask & ~WebGPU::ColorWriteFlags_All)
+    auto result = OptionSet<::WebGPU::ColorWrite>::fromRaw(writeMask & webGPUColorWriteMaskAll);
+    if (writeMask & ~webGPUColorWriteMaskAll)
         result.add(::WebGPU::ColorWrite::Invalid);
     return result;
 }

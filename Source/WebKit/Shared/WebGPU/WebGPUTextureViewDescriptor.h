@@ -28,10 +28,6 @@
 #if ENABLE(GPU_PROCESS)
 
 #include <WebCore/WebGPUCppAPI.h>
-#include <WebCore/WebGPUTextureAspect.h>
-#include <WebCore/WebGPUTextureFormat.h>
-#include <WebCore/WebGPUTextureUsage.h>
-#include <WebCore/WebGPUTextureViewDimension.h>
 
 namespace WebKit::WebGPU {
 

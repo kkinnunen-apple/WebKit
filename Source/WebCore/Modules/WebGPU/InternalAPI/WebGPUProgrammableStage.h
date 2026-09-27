@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include <WebCore/WebGPUShaderModule.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/KeyValuePair.h>
 #include <wtf/Ref.h>
 #include <wtf/Vector.h>
@@ -36,7 +36,7 @@ namespace WebCore {
 using WebGPUPipelineConstantValue = double; // May represent WGSL’s bool, f32, i32, u32.
 
 struct WebGPUProgrammableStage {
-    Ref<WebGPU::ShaderModule> module;
+    Ref<::WebGPU::ShaderModule> module;
     String entryPoint;
     Vector<KeyValuePair<String, WebGPUPipelineConstantValue>> constants;
 };

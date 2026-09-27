@@ -30,7 +30,7 @@
 #include "RemoteGPU.h"
 #include "StreamMessageReceiver.h"
 #include "WebGPUIdentifier.h"
-#include <WebCore/WebGPUBindGroup.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/Ref.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakRef.h>
@@ -49,7 +49,7 @@ class ObjectHeap;
 class RemoteBindGroup final : public IPC::StreamMessageReceiver {
     WTF_MAKE_TZONE_ALLOCATED(RemoteBindGroup);
 public:
-    static Ref<RemoteBindGroup> create(WebCore::WebGPU::BindGroup& bindGroup, WebGPU::ObjectHeap& objectHeap, Ref<IPC::StreamServerConnection>&& streamConnection, RemoteGPU& gpu, WebGPUIdentifier identifier)
+    static Ref<RemoteBindGroup> create(::WebGPU::BindGroup& bindGroup, WebGPU::ObjectHeap& objectHeap, Ref<IPC::StreamServerConnection>&& streamConnection, RemoteGPU& gpu, WebGPUIdentifier identifier)
     {
         return adoptRef(*new RemoteBindGroup(bindGroup, objectHeap, WTF::move(streamConnection), gpu, identifier));
     }
@@ -63,14 +63,14 @@ public:
 private:
     friend class WebGPU::ObjectHeap;
 
-    RemoteBindGroup(WebCore::WebGPU::BindGroup&, WebGPU::ObjectHeap&, Ref<IPC::StreamServerConnection>&&, RemoteGPU&, WebGPUIdentifier);
+    RemoteBindGroup(::WebGPU::BindGroup&, WebGPU::ObjectHeap&, Ref<IPC::StreamServerConnection>&&, RemoteGPU&, WebGPUIdentifier);
 
     RemoteBindGroup(const RemoteBindGroup&) = delete;
     RemoteBindGroup(RemoteBindGroup&&) = delete;
     RemoteBindGroup& operator=(const RemoteBindGroup&) = delete;
     RemoteBindGroup& operator=(RemoteBindGroup&&) = delete;
 
-    WebCore::WebGPU::BindGroup& backing() { return m_backing; }
+    ::WebGPU::BindGroup& backing() { return m_backing; }
 
     void didReceiveStreamMessage(IPC::StreamServerConnection&, IPC::Decoder&) final;
 
@@ -78,7 +78,7 @@ private:
     void destruct();
     void updateExternalTextures(WebGPUIdentifier, CompletionHandler<void(bool)>&&);
 
-    const Ref<WebCore::WebGPU::BindGroup> m_backing;
+    const Ref<::WebGPU::BindGroup> m_backing;
     WeakRef<WebGPU::ObjectHeap> m_objectHeap;
     const Ref<IPC::StreamServerConnection> m_streamConnection;
     WeakRef<RemoteGPU> m_gpu;

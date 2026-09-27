@@ -27,8 +27,8 @@
 
 #include "IDLTypes.h"
 #include "JSDOMSetLike.h"
-#include "WebGPUFeatureName.h"
 #include "WebGPUSupportedFeatures.h"
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/RefCounted.h>
 #include <wtf/Vector.h>
 #include <wtf/text/WTFString.h>

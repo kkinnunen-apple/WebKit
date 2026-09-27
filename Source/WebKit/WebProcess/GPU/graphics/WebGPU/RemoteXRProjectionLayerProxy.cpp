@@ -33,7 +33,7 @@
 #include "WebGPUConvertToBackingContext.h"
 #include <WebCore/ImageBuffer.h>
 #include <WebCore/PlatformXR.h>
-#include <WebCore/WebGPUTextureFormat.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/MachSendRight.h>
 
 namespace WebKit::WebGPU {

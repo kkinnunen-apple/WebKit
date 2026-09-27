@@ -54,7 +54,7 @@ bool GPUPresentationContext::configure(const GPUCanvasConfiguration& canvasConfi
         .format = configuration.format,
         .usage = configuration.usage,
         .viewFormats = configuration.viewFormats.span(),
-        .colorSpace = WebGPU::convertToAPI(configuration.colorSpace),
+        .colorSpace = convertToWebGPU(configuration.colorSpace),
         .toneMappingMode = configuration.toneMappingMode,
         .compositingAlphaMode = configuration.compositingAlphaMode,
         .reportValidationErrors = configuration.reportValidationErrors,

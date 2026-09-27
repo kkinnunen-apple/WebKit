@@ -61,7 +61,7 @@ bool RemoteBindGroupProxy::isValid() const
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-bool RemoteBindGroupProxy::updateExternalTextures(WebCore::WebGPU::ExternalTexture& externalTexture)
+bool RemoteBindGroupProxy::updateExternalTextures(::WebGPU::ExternalTexture& externalTexture)
 {
     auto convertedDescriptor = protect(m_convertToBackingContext)->convertToBacking(externalTexture);
     auto sendResult = sendSync(Messages::RemoteBindGroup::UpdateExternalTextures(WTF::move(convertedDescriptor)));

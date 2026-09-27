@@ -44,10 +44,10 @@
 #include "WebGPUConvertToBackingContext.h"
 #include "WebPage.h"
 #include "WebProcess.h"
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUPresentationContextDescriptor.h>
 #include <WebCore/WebGPUSupportedFeatures.h>
 #include <WebCore/WebGPUSupportedLimits.h>
-#include <WebCore/WebGPUXRBinding.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebKit {
@@ -153,7 +153,7 @@ void RemoteGPUProxy::waitUntilInitialized()
     abandonGPUProcess();
 }
 
-void RemoteGPUProxy::requestAdapter(const WebCore::WebGPU::RequestAdapterOptions& options, CompletionHandler<void(RefPtr<WebCore::WebGPU::Adapter>&&)>&& callback)
+void RemoteGPUProxy::requestAdapter(const ::WebGPU::RequestAdapterOptions& options, CompletionHandler<void(RefPtr<::WebGPU::Adapter>&&)>&& callback)
 {
     if (m_lost) {
         callback(nullptr);
@@ -217,7 +217,7 @@ RefPtr<WebKit::Mesh> RemoteGPUProxy::createModelBacking(unsigned width, unsigned
 #endif
 }
 
-RefPtr<WebCore::WebGPU::PresentationContext> RemoteGPUProxy::createPresentationContext(const WebCore::WebGPUPresentationContextDescriptor& descriptor)
+RefPtr<::WebGPU::PresentationContext> RemoteGPUProxy::createPresentationContext(const WebCore::WebGPUPresentationContextDescriptor& descriptor)
 {
     // FIXME: Should we be consulting m_lost?
 
@@ -251,25 +251,25 @@ RefPtr<WebCore::WebGPUCompositorIntegration> RemoteGPUProxy::createCompositorInt
     return WebGPU::RemoteCompositorIntegrationProxy::create(*this, m_convertToBackingContext, identifier);
 }
 
-void RemoteGPUProxy::copyExternalImageToTexture(WebCore::WebGPU::Queue& queue, const WebCore::WebGPUExternalImageSource& source, const WebCore::WebGPUImageCopyTextureTagged& destination, const WebCore::WebGPU::Extent3D& copySize)
+void RemoteGPUProxy::copyExternalImageToTexture(::WebGPU::Queue& queue, const WebCore::WebGPUExternalImageSource& source, const WebCore::WebGPUImageCopyTextureTagged& destination, const ::WebGPU::Extent3D& copySize)
 {
-    // Every WebCore::WebGPU::Queue in the Web Process is a RemoteQueueProxy.
+    // Every ::WebGPU::Queue in the Web Process is a RemoteQueueProxy.
     static_cast<WebGPU::RemoteQueueProxy&>(queue).copyExternalImageToTexture(source, destination, copySize);
 }
 
-RefPtr<WebCore::NativeImage> RemoteGPUProxy::nativeImage(WebCore::WebGPU::Queue& queue, WebCore::VideoFrame& videoFrame)
+RefPtr<WebCore::NativeImage> RemoteGPUProxy::nativeImage(::WebGPU::Queue& queue, WebCore::VideoFrame& videoFrame)
 {
     return static_cast<WebGPU::RemoteQueueProxy&>(queue).getNativeImage(videoFrame);
 }
 
-RefPtr<WebCore::WebGPU::ExternalTexture> RemoteGPUProxy::importExternalTexture(WebCore::WebGPU::Device& device, const WebCore::WebGPUExternalTextureDescriptor& descriptor)
+RefPtr<::WebGPU::ExternalTexture> RemoteGPUProxy::importExternalTexture(::WebGPU::Device& device, const WebCore::WebGPUExternalTextureDescriptor& descriptor)
 {
-    // Every WebCore::WebGPU::Device in the Web Process is a RemoteDeviceProxy.
+    // Every ::WebGPU::Device in the Web Process is a RemoteDeviceProxy.
     return static_cast<WebGPU::RemoteDeviceProxy&>(device).importExternalTexture(descriptor);
 }
 
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
-void RemoteGPUProxy::updateExternalTexture(WebCore::WebGPU::Device& device, const WebCore::WebGPU::ExternalTexture& externalTexture, const WebCore::MediaPlayerIdentifier& mediaPlayerIdentifier)
+void RemoteGPUProxy::updateExternalTexture(::WebGPU::Device& device, const ::WebGPU::ExternalTexture& externalTexture, const WebCore::MediaPlayerIdentifier& mediaPlayerIdentifier)
 {
     static_cast<WebGPU::RemoteDeviceProxy&>(device).updateExternalTexture(externalTexture, mediaPlayerIdentifier);
 }
@@ -284,107 +284,107 @@ bool RemoteGPUProxy::isValid(const WebCore::WebGPUCompositorIntegration&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::Buffer&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::Buffer&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::Adapter&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::Adapter&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::BindGroup&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::BindGroup&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::BindGroupLayout&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::BindGroupLayout&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::CommandBuffer&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::CommandBuffer&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::CommandEncoder&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::CommandEncoder&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::ComputePassEncoder&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::ComputePassEncoder&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::ComputePipeline&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::ComputePipeline&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::Device&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::Device&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::ExternalTexture&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::ExternalTexture&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::PipelineLayout&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::PipelineLayout&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::PresentationContext&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::PresentationContext&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::QuerySet&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::QuerySet&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::Queue&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::Queue&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::RenderBundleEncoder&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::RenderBundleEncoder&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::RenderBundle&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::RenderBundle&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::RenderPassEncoder&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::RenderPassEncoder&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::RenderPipeline&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::RenderPipeline&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::Sampler&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::Sampler&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::ShaderModule&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::ShaderModule&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::Texture&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::Texture&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::TextureView&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::TextureView&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::XRBinding&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::XRBinding&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::XRSubImage&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::XRSubImage&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::XRProjectionLayer&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::XRProjectionLayer&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool RemoteGPUProxy::isValid(const WebCore::WebGPU::XRView&) const
+bool RemoteGPUProxy::isValid(const ::WebGPU::XRView&) const
 {
     RELEASE_ASSERT_NOT_REACHED();
 }

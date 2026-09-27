@@ -25,41 +25,9 @@
 
 #pragma once
 
-#include <WebCore/WebGPUBindGroup.h>
-#include <WebCore/WebGPUBindGroupDescriptor.h>
-#include <WebCore/WebGPUBindGroupLayout.h>
-#include <WebCore/WebGPUBindGroupLayoutDescriptor.h>
-#include <WebCore/WebGPUBuffer.h>
-#include <WebCore/WebGPUBufferDescriptor.h>
-#include <WebCore/WebGPUCommandBuffer.h>
-#include <WebCore/WebGPUCommandEncoder.h>
-#include <WebCore/WebGPUCommandEncoderDescriptor.h>
-#include <WebCore/WebGPUComputePassEncoder.h>
-#include <WebCore/WebGPUComputePipeline.h>
 #include <WebCore/WebGPUCppAPI.h>
-#include <WebCore/WebGPUErrorFilter.h>
-#include <WebCore/WebGPUExternalTexture.h>
-#include <WebCore/WebGPUPipelineLayout.h>
-#include <WebCore/WebGPUPipelineLayoutDescriptor.h>
-#include <WebCore/WebGPUQuerySet.h>
-#include <WebCore/WebGPUQuerySetDescriptor.h>
-#include <WebCore/WebGPUQueue.h>
-#include <WebCore/WebGPURenderBundleEncoder.h>
-#include <WebCore/WebGPURenderPassEncoder.h>
-#include <WebCore/WebGPURenderPipeline.h>
-#include <WebCore/WebGPUSampler.h>
-#include <WebCore/WebGPUSamplerDescriptor.h>
-#include <WebCore/WebGPUShaderModule.h>
-#include <WebCore/WebGPUTexture.h>
-#include <WebCore/WebGPUTextureDescriptor.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/text/WTFString.h>
-
-namespace WebCore::WebGPU {
-
-using Device = ::WebGPU::Device;
-
-} // namespace WebCore::WebGPU
 
 namespace WebCore {
 
@@ -68,13 +36,13 @@ struct WebGPURenderPipelineDescriptor;
 struct WebGPUShaderModuleDescriptor;
 
 // WebCore keeps these descriptors, which own their arrays. These functions create the objects from
-// them through the WebGPU::Device, which borrows the arrays for the call.
-RefPtr<WebGPU::ShaderModule> createShaderModule(WebGPU::Device&, const WebGPUShaderModuleDescriptor&);
-RefPtr<WebGPU::ComputePipeline> createComputePipeline(WebGPU::Device&, const WebGPUComputePipelineDescriptor&);
-RefPtr<WebGPU::RenderPipeline> createRenderPipeline(WebGPU::Device&, const WebGPURenderPipelineDescriptor&);
-void createComputePipelineAsync(WebGPU::Device&, const WebGPUComputePipelineDescriptor&, CompletionHandler<void(Expected<Ref<WebGPU::ComputePipeline>, ::WebGPU::PipelineError>&&)>&&);
-void createRenderPipelineAsync(WebGPU::Device&, const WebGPURenderPipelineDescriptor&, CompletionHandler<void(Expected<Ref<WebGPU::RenderPipeline>, ::WebGPU::PipelineError>&&)>&&);
-void createComputePipelineWithPipelineLayoutFromPipelineAsync(WebGPU::Device&, const WebGPUComputePipelineDescriptor&, const WebGPU::ComputePipeline& pipelineToReplace, CompletionHandler<void(Expected<Ref<WebGPU::ComputePipeline>, ::WebGPU::PipelineError>&&)>&&);
-void createRenderPipelineWithPipelineLayoutFromPipelineAsync(WebGPU::Device&, const WebGPURenderPipelineDescriptor&, const WebGPU::RenderPipeline& pipelineToReplace, CompletionHandler<void(Expected<Ref<WebGPU::RenderPipeline>, ::WebGPU::PipelineError>&&)>&&);
+// them through the ::WebGPU::Device, which borrows the arrays for the call.
+RefPtr<::WebGPU::ShaderModule> createShaderModule(::WebGPU::Device&, const WebGPUShaderModuleDescriptor&);
+RefPtr<::WebGPU::ComputePipeline> createComputePipeline(::WebGPU::Device&, const WebGPUComputePipelineDescriptor&);
+RefPtr<::WebGPU::RenderPipeline> createRenderPipeline(::WebGPU::Device&, const WebGPURenderPipelineDescriptor&);
+void createComputePipelineAsync(::WebGPU::Device&, const WebGPUComputePipelineDescriptor&, CompletionHandler<void(Expected<Ref<::WebGPU::ComputePipeline>, ::WebGPU::PipelineError>&&)>&&);
+void createRenderPipelineAsync(::WebGPU::Device&, const WebGPURenderPipelineDescriptor&, CompletionHandler<void(Expected<Ref<::WebGPU::RenderPipeline>, ::WebGPU::PipelineError>&&)>&&);
+void createComputePipelineWithPipelineLayoutFromPipelineAsync(::WebGPU::Device&, const WebGPUComputePipelineDescriptor&, const ::WebGPU::ComputePipeline& pipelineToReplace, CompletionHandler<void(Expected<Ref<::WebGPU::ComputePipeline>, ::WebGPU::PipelineError>&&)>&&);
+void createRenderPipelineWithPipelineLayoutFromPipelineAsync(::WebGPU::Device&, const WebGPURenderPipelineDescriptor&, const ::WebGPU::RenderPipeline& pipelineToReplace, CompletionHandler<void(Expected<Ref<::WebGPU::RenderPipeline>, ::WebGPU::PipelineError>&&)>&&);
 
 } // namespace WebCore

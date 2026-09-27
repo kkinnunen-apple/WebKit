@@ -28,13 +28,13 @@
 #include "GPUBufferUsage.h"
 #include "GPUIntegralTypes.h"
 #include "GPUObjectDescriptorBase.h"
-#include "WebGPUBufferDescriptor.h"
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/Forward.h>
 
 namespace WebCore {
 
 struct GPUBufferDescriptor : public GPUObjectDescriptorBase {
-    WebGPU::BufferDescriptor convertToBacking() const
+    ::WebGPU::BufferDescriptor convertToBacking() const
     {
         return {
             .label = label,

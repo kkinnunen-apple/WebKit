@@ -27,7 +27,7 @@
 
 #include "WebGPUSupportedFeatures.h"
 #include "WebGPUSupportedLimits.h"
-#include <WebCore/WebGPUFeatureName.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 #if ENABLE(GPU_PROCESS)
 
@@ -35,7 +35,7 @@ namespace WebKit {
 
 struct RemoteGPURequestAdapterResponse {
     String name;
-    Vector<WebCore::WebGPU::FeatureName> features;
+    Vector<::WebGPU::FeatureName> features;
     WebGPU::SupportedLimits limits;
     bool isFallbackAdapter;
     uint32_t subgroupMinSize { 0 };

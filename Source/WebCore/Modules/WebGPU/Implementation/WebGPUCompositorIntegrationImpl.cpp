@@ -29,17 +29,16 @@
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
 #include "WebGPUDevice.h"
-#include "WebGPUQueue.h"
-#include "WebGPUTextureFormat.h"
 #include <CoreFoundation/CoreFoundation.h>
 #include <WebCore/IOSurface.h>
 #include <WebCore/NativeImage.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebGPU/WebGPUExt.h>
 #include <pal/spi/cg/CoreGraphicsSPI.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/spi/cocoa/IOSurfaceSPI.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(WebGPUCompositorIntegrationImpl);
 
@@ -75,7 +74,7 @@ void WebGPUCompositorIntegrationImpl::updateContentsHeadroom(float headroom)
 }
 
 #if PLATFORM(COCOA)
-Vector<MachSendRight> WebGPUCompositorIntegrationImpl::recreateRenderBuffers(int width, int height, WebCore::ColorSpace&& colorSpace, WebCore::AlphaPremultiplication alphaMode, TextureFormat textureFormat, unsigned bufferCount, Device& device)
+Vector<MachSendRight> WebGPUCompositorIntegrationImpl::recreateRenderBuffers(int width, int height, WebCore::ColorSpace&& colorSpace, WebCore::AlphaPremultiplication alphaMode, WebGPU::TextureFormat textureFormat, unsigned bufferCount, WebGPU::Device& device)
 {
     m_renderBuffers.clear();
     m_device = device;
@@ -90,12 +89,12 @@ Vector<MachSendRight> WebGPUCompositorIntegrationImpl::recreateRenderBuffers(int
     height = std::max(1, std::min(max2DTextureSize, height));
     IOSurface::Format colorFormat;
     switch (textureFormat) {
-    case TextureFormat::Rgba8unorm:
-    case TextureFormat::Rgba8unormSRGB:
+    case WebGPU::TextureFormat::Rgba8unorm:
+    case WebGPU::TextureFormat::Rgba8unormSRGB:
         colorFormat = alphaMode == AlphaPremultiplication::Unpremultiplied ? IOSurface::Format::RGBX : IOSurface::Format::RGBA;
         break;
 #if ENABLE(PIXEL_FORMAT_RGBA16F)
-    case TextureFormat::Rgba16float:
+    case WebGPU::TextureFormat::Rgba16float:
         colorFormat = IOSurface::Format::RGBA16F;
         break;
 #endif
@@ -153,6 +152,6 @@ void WebGPUCompositorIntegrationImpl::paintCompositedResultsToCanvas(WebCore::Im
     ASSERT_NOT_REACHED();
 }
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore
 
 #endif // HAVE(WEBGPU_IMPLEMENTATION)

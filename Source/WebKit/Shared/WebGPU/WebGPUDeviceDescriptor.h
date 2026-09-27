@@ -29,7 +29,7 @@
 
 #include "WebGPUObjectDescriptorBase.h"
 #include "WebGPUSupportedLimits.h"
-#include <WebCore/WebGPUFeatureName.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <cstdint>
 #include <optional>
 #include <wtf/HashMap.h>
@@ -39,7 +39,7 @@
 namespace WebKit::WebGPU {
 
 struct DeviceDescriptor : public ObjectDescriptorBase {
-    Vector<WebCore::WebGPU::FeatureName> requiredFeatures;
+    Vector<::WebGPU::FeatureName> requiredFeatures;
     std::optional<SupportedLimits> requiredLimits;
 };
 

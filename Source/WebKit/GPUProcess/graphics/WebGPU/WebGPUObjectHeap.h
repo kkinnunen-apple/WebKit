@@ -30,31 +30,8 @@
 #include "ScopedActiveMessageReceiveQueue.h"
 #include "WebGPUConvertFromBackingContext.h"
 #include "WebGPUIdentifier.h"
-#include <WebCore/WebGPUAdapter.h>
-#include <WebCore/WebGPUBindGroup.h>
-#include <WebCore/WebGPUBindGroupLayout.h>
-#include <WebCore/WebGPUBuffer.h>
-#include <WebCore/WebGPUCommandBuffer.h>
-#include <WebCore/WebGPUCommandEncoder.h>
-#include <WebCore/WebGPUComputePassEncoder.h>
-#include <WebCore/WebGPUComputePipeline.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUDevice.h>
-#include <WebCore/WebGPUExternalTexture.h>
-#include <WebCore/WebGPUPipelineLayout.h>
-#include <WebCore/WebGPUPresentationContext.h>
-#include <WebCore/WebGPUQuerySet.h>
-#include <WebCore/WebGPUQueue.h>
-#include <WebCore/WebGPURenderBundle.h>
-#include <WebCore/WebGPURenderBundleEncoder.h>
-#include <WebCore/WebGPURenderPassEncoder.h>
-#include <WebCore/WebGPURenderPipeline.h>
-#include <WebCore/WebGPUSampler.h>
-#include <WebCore/WebGPUShaderModule.h>
-#include <WebCore/WebGPUTexture.h>
-#include <WebCore/WebGPUXRBinding.h>
-#include <WebCore/WebGPUXRProjectionLayer.h>
-#include <WebCore/WebGPUXRSubImage.h>
-#include <WebCore/WebGPUXRView.h>
 #include <functional>
 #include <wtf/HashMap.h>
 #include <wtf/Ref.h>
@@ -140,33 +117,33 @@ public:
 
     void clear();
 
-    RefPtr<WebCore::WebGPU::Adapter> convertAdapterFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::BindGroup> convertBindGroupFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::BindGroupLayout> convertBindGroupLayoutFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::Buffer> convertBufferFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::CommandBuffer> convertCommandBufferFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::CommandEncoder> convertCommandEncoderFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::Adapter> convertAdapterFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::BindGroup> convertBindGroupFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::BindGroupLayout> convertBindGroupLayoutFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::Buffer> convertBufferFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::CommandBuffer> convertCommandBufferFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::CommandEncoder> convertCommandEncoderFromBacking(WebGPUIdentifier) final;
     WeakPtr<WebCore::WebGPUCompositorIntegration> convertCompositorIntegrationFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::ComputePassEncoder> convertComputePassEncoderFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::ComputePipeline> convertComputePipelineFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::Device> convertDeviceFromBacking(WebGPUIdentifier) final;
-    ThreadSafeWeakPtr<WebCore::WebGPU::ExternalTexture> convertExternalTextureFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::PipelineLayout> convertPipelineLayoutFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::PresentationContext> convertPresentationContextFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::QuerySet> convertQuerySetFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::Queue> convertQueueFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::RenderBundleEncoder> convertRenderBundleEncoderFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::RenderBundle> convertRenderBundleFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::RenderPassEncoder> convertRenderPassEncoderFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::RenderPipeline> convertRenderPipelineFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::Sampler> convertSamplerFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::ShaderModule> convertShaderModuleFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::Texture> convertTextureFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::TextureView> convertTextureViewFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::XRBinding> convertXRBindingFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::XRSubImage> convertXRSubImageFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::XRProjectionLayer> convertXRProjectionLayerFromBacking(WebGPUIdentifier) final;
-    RefPtr<WebCore::WebGPU::XRView> createXRViewFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::ComputePassEncoder> convertComputePassEncoderFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::ComputePipeline> convertComputePipelineFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::Device> convertDeviceFromBacking(WebGPUIdentifier) final;
+    ThreadSafeWeakPtr<::WebGPU::ExternalTexture> convertExternalTextureFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::PipelineLayout> convertPipelineLayoutFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::PresentationContext> convertPresentationContextFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::QuerySet> convertQuerySetFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::Queue> convertQueueFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::RenderBundleEncoder> convertRenderBundleEncoderFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::RenderBundle> convertRenderBundleFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::RenderPassEncoder> convertRenderPassEncoderFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::RenderPipeline> convertRenderPipelineFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::Sampler> convertSamplerFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::ShaderModule> convertShaderModuleFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::Texture> convertTextureFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::TextureView> convertTextureViewFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::XRBinding> convertXRBindingFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::XRSubImage> convertXRSubImageFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::XRProjectionLayer> convertXRProjectionLayerFromBacking(WebGPUIdentifier) final;
+    RefPtr<::WebGPU::XRView> createXRViewFromBacking(WebGPUIdentifier) final;
 
     struct ExistsAndValid {
         bool exists { false };

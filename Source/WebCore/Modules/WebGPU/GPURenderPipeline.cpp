@@ -29,9 +29,7 @@
 #include "GPUBindGroupLayout.h"
 #include "GPUDevice.h"
 #include "InspectorInstrumentation.h"
-#include "WebGPUBlendFactor.h"
-#include "WebGPUBlendOperation.h"
-#include "WebGPUBlendState.h"
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/Locker.h>
 #include <wtf/NeverDestroyed.h>
 

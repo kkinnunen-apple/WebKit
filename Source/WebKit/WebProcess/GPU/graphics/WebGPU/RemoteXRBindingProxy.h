@@ -31,11 +31,8 @@
 #include "RemoteGPUProxy.h"
 #include "RemotePresentationContextProxy.h"
 #include "WebGPUIdentifier.h"
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUDevice.h>
-#include <WebCore/WebGPUXRBinding.h>
-#include <WebCore/WebGPUXREye.h>
-#include <WebCore/WebGPUXRProjectionLayer.h>
-#include <WebCore/WebGPUXRView.h>
 
 namespace WebCore {
 class WebXRFrame;
@@ -45,7 +42,7 @@ namespace WebKit::WebGPU {
 
 class ConvertToBackingContext;
 
-class RemoteXRBindingProxy final : public WebCore::WebGPU::XRBinding {
+class RemoteXRBindingProxy final : public ::WebGPU::XRBinding {
     WTF_MAKE_TZONE_ALLOCATED(RemoteXRBindingProxy);
 public:
     static Ref<RemoteXRBindingProxy> create(RemoteDeviceProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)
@@ -58,8 +55,8 @@ public:
     RemoteDeviceProxy& parent() const { return m_parent; }
     RemoteGPUProxy& root() { return m_parent->root(); }
 
-    RefPtr<WebCore::WebGPU::XRProjectionLayer> createProjectionLayer(const WebCore::WebGPU::XRProjectionLayerInit&) final;
-    RefPtr<WebCore::WebGPU::XRSubImage> getViewSubImage(WebCore::WebGPU::XRProjectionLayer&) final;
+    RefPtr<::WebGPU::XRProjectionLayer> createProjectionLayer(const ::WebGPU::XRProjectionLayerDescriptor&) final;
+    RefPtr<::WebGPU::XRSubImage> getViewSubImage(::WebGPU::XRProjectionLayer&) final;
     void setLabel(String&&) final { }
     bool isValid() const final;
 

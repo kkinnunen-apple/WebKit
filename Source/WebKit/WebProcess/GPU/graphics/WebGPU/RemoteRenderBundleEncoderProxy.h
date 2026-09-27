@@ -29,14 +29,14 @@
 
 #include "RemoteDeviceProxy.h"
 #include "WebGPUIdentifier.h"
-#include <WebCore/WebGPURenderBundleEncoder.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/TZoneMalloc.h>
 
 namespace WebKit::WebGPU {
 
 class ConvertToBackingContext;
 
-class RemoteRenderBundleEncoderProxy final : public WebCore::WebGPU::RenderBundleEncoder {
+class RemoteRenderBundleEncoderProxy final : public ::WebGPU::RenderBundleEncoder {
     WTF_MAKE_TZONE_ALLOCATED(RemoteRenderBundleEncoderProxy);
 public:
     static Ref<RemoteRenderBundleEncoderProxy> create(RemoteDeviceProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)
@@ -49,22 +49,22 @@ public:
     RemoteDeviceProxy& parent() const { return m_parent; }
     RemoteGPUProxy& root() { return m_parent->root(); }
 
-    void setPipeline(const WebCore::WebGPU::RenderPipeline&) final;
-    void setIndexBuffer(const WebCore::WebGPU::Buffer&, WebCore::WebGPU::IndexFormat, WebCore::WebGPU::Size64 offset, std::optional<WebCore::WebGPU::Size64>) final;
-    void setVertexBuffer(WebCore::WebGPU::Index32 slot, const WebCore::WebGPU::Buffer*, WebCore::WebGPU::Size64 offset, std::optional<WebCore::WebGPU::Size64>) final;
-    void draw(WebCore::WebGPU::Size32 vertexCount, WebCore::WebGPU::Size32 instanceCount,
-        WebCore::WebGPU::Size32 firstVertex, WebCore::WebGPU::Size32 firstInstance) final;
-    void drawIndexed(WebCore::WebGPU::Size32 indexCount, WebCore::WebGPU::Size32 instanceCount,
-        WebCore::WebGPU::Size32 firstIndex,
-        WebCore::WebGPU::SignedOffset32 baseVertex,
-        WebCore::WebGPU::Size32 firstInstance) final;
-    void drawIndirect(const WebCore::WebGPU::Buffer& indirectBuffer, WebCore::WebGPU::Size64 indirectOffset) final;
-    void drawIndexedIndirect(const WebCore::WebGPU::Buffer& indirectBuffer, WebCore::WebGPU::Size64 indirectOffset) final;
-    void setBindGroup(uint32_t, const WebCore::WebGPU::BindGroup*, std::optional<std::span<const uint32_t>> dynamicOffsets) final;
+    void setPipeline(const ::WebGPU::RenderPipeline&) final;
+    void setIndexBuffer(const ::WebGPU::Buffer&, ::WebGPU::IndexFormat, uint64_t offset, std::optional<uint64_t>) final;
+    void setVertexBuffer(uint32_t slot, const ::WebGPU::Buffer*, uint64_t offset, std::optional<uint64_t>) final;
+    void draw(uint32_t vertexCount, uint32_t instanceCount,
+        uint32_t firstVertex, uint32_t firstInstance) final;
+    void drawIndexed(uint32_t indexCount, uint32_t instanceCount,
+        uint32_t firstIndex,
+        int32_t baseVertex,
+        uint32_t firstInstance) final;
+    void drawIndirect(const ::WebGPU::Buffer& indirectBuffer, uint64_t indirectOffset) final;
+    void drawIndexedIndirect(const ::WebGPU::Buffer& indirectBuffer, uint64_t indirectOffset) final;
+    void setBindGroup(uint32_t, const ::WebGPU::BindGroup*, std::optional<std::span<const uint32_t>> dynamicOffsets) final;
     void pushDebugGroup(String&& groupLabel) final;
     void popDebugGroup() final;
     void insertDebugMarker(String&& markerLabel) final;
-    RefPtr<WebCore::WebGPU::RenderBundle> finish(const WebCore::WebGPU::RenderBundleDescriptor&) final;
+    RefPtr<::WebGPU::RenderBundle> finish(const ::WebGPU::RenderBundleDescriptor&) final;
 
     void setLabel(String&&) final;
     bool isValid() const final;

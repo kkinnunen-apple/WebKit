@@ -26,8 +26,8 @@
 #pragma once
 
 #include <WebCore/ImageBuffer.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUExternalTextureDescriptor.h>
-#include <WebCore/WebGPUOrigin2D.h>
 #include <optional>
 #include <wtf/RefPtr.h>
 
@@ -36,7 +36,7 @@ namespace WebCore {
 // An image or a video frame to copy to a texture: a WebCore source, which the WebGPU implementations
 // cannot see.
 struct WebGPUExternalImageSource {
-    std::optional<WebGPU::Origin2D> origin;
+    std::optional<::WebGPU::Origin2D> origin;
     bool flipY { false };
     // The source, when it is backed by an ImageBuffer whose pixels are already GPU-resident
     // (a canvas, an OffscreenCanvas, or an ImageBitmap). Null for the sources which still take

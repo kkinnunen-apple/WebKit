@@ -27,14 +27,14 @@
 
 #include "GPUBuffer.h"
 #include "GPUIntegralTypes.h"
-#include "WebGPUBufferBinding.h"
+#include <WebCore/WebGPUCppAPI.h>
 #include <optional>
 #include <wtf/Ref.h>
 
 namespace WebCore {
 
 struct GPUBufferBinding {
-    WebGPU::BufferBinding convertToBacking() const
+    ::WebGPU::BufferBinding convertToBacking() const
     {
         return {
             .buffer = buffer->backing(),

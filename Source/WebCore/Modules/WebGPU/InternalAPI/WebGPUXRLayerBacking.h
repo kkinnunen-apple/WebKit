@@ -26,13 +26,13 @@
 #pragma once
 
 #include <WebCore/PlatformXR.h>
-#include <WebCore/WebGPUXRProjectionLayer.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/XRLayerBacking.h>
 #include <wtf/Ref.h>
 
 namespace WebCore {
 
-// Presents a WebGPU::XRProjectionLayer to WebXR, which knows the layers by their XRLayerBacking. The
+// Presents a ::WebGPU::XRProjectionLayer to WebXR, which knows the layers by their XRLayerBacking. The
 // frames that the compositor supplies carry the sizes of the textures.
 class WebGPUXRLayerBacking final : public XRLayerBacking {
     WTF_MAKE_TZONE_ALLOCATED(WebGPUXRLayerBacking);

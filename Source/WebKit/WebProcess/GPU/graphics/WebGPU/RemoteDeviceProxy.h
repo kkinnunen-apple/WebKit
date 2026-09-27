@@ -30,11 +30,8 @@
 #include "RemoteAdapterProxy.h"
 #include "SharedVideoFrame.h"
 #include "WebGPUIdentifier.h"
-#include <WebCore/WebGPUCommandEncoderDescriptor.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUDevice.h>
-#include <WebCore/WebGPUDeviceLostReason.h>
-#include <WebCore/WebGPUErrorFilter.h>
-#include <WebCore/WebGPUFeatureName.h>
 #include <WebCore/WebGPURenderBundleEncoderDescriptor.h>
 #include <wtf/TZoneMalloc.h>
 
@@ -47,10 +44,10 @@ namespace WebKit::WebGPU {
 class ConvertToBackingContext;
 class RemoteQueueProxy;
 
-class RemoteDeviceProxy final : public WebCore::WebGPU::Device {
+class RemoteDeviceProxy final : public ::WebGPU::Device {
     WTF_MAKE_TZONE_ALLOCATED(RemoteDeviceProxy);
 public:
-    static Ref<RemoteDeviceProxy> create(Vector<WebCore::WebGPU::FeatureName>&& features, const ::WebGPU::Limits& limits, RemoteAdapterProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier, WebGPUIdentifier queueIdentifier)
+    static Ref<RemoteDeviceProxy> create(Vector<::WebGPU::FeatureName>&& features, const ::WebGPU::Limits& limits, RemoteAdapterProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier, WebGPUIdentifier queueIdentifier)
     {
         return adoptRef(*new RemoteDeviceProxy(WTF::move(features), limits, parent, convertToBackingContext, identifier, queueIdentifier));
     }
@@ -61,42 +58,42 @@ public:
     RemoteGPUProxy& root() { return m_parent->root(); }
 
     // Called by RemoteGPUProxy, which implements the device commands that take WebCore sources.
-    RefPtr<WebCore::WebGPU::ExternalTexture> importExternalTexture(const WebCore::WebGPUExternalTextureDescriptor&);
+    RefPtr<::WebGPU::ExternalTexture> importExternalTexture(const WebCore::WebGPUExternalTextureDescriptor&);
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
-    void updateExternalTexture(const WebCore::WebGPU::ExternalTexture&, const WebCore::MediaPlayerIdentifier&);
+    void updateExternalTexture(const ::WebGPU::ExternalTexture&, const WebCore::MediaPlayerIdentifier&);
 #endif
     WebGPUIdentifier backing() const { return m_backing; }
 
-    Vector<WebCore::WebGPU::FeatureName> features() const final { return m_features; }
+    Vector<::WebGPU::FeatureName> features() const final { return m_features; }
     const ::WebGPU::Limits& limits() const LIFETIME_BOUND final { return m_limits; }
-    Ref<WebCore::WebGPU::Queue> NODELETE queue() final;
+    Ref<::WebGPU::Queue> NODELETE queue() final;
     void destroy() final;
 
-    RefPtr<WebCore::WebGPU::Buffer> createBuffer(const WebCore::WebGPU::BufferDescriptor&) final;
-    RefPtr<WebCore::WebGPU::Texture> createTexture(const WebCore::WebGPU::TextureDescriptor&) final;
-    RefPtr<WebCore::WebGPU::Sampler> createSampler(const WebCore::WebGPU::SamplerDescriptor&) final;
+    RefPtr<::WebGPU::Buffer> createBuffer(const ::WebGPU::BufferDescriptor&) final;
+    RefPtr<::WebGPU::Texture> createTexture(const ::WebGPU::TextureDescriptor&) final;
+    RefPtr<::WebGPU::Sampler> createSampler(const ::WebGPU::SamplerDescriptor&) final;
 #if PLATFORM(COCOA)
-    RefPtr<WebCore::WebGPU::ExternalTexture> importExternalTexture(const ::WebGPU::ExternalTextureDescriptor&) final;
+    RefPtr<::WebGPU::ExternalTexture> importExternalTexture(const ::WebGPU::ExternalTextureDescriptor&) final;
 #endif
-    RefPtr<WebCore::WebGPU::BindGroupLayout> createBindGroupLayout(const WebCore::WebGPU::BindGroupLayoutDescriptor&) final;
-    RefPtr<WebCore::WebGPU::PipelineLayout> createPipelineLayout(const WebCore::WebGPU::PipelineLayoutDescriptor&) final;
-    RefPtr<WebCore::WebGPU::BindGroup> createBindGroup(const WebCore::WebGPU::BindGroupDescriptor&) final;
-    RefPtr<WebCore::WebGPU::ShaderModule> createShaderModule(const ::WebGPU::ShaderModuleDescriptor&) final;
-    RefPtr<WebCore::WebGPU::ComputePipeline> createComputePipeline(const ::WebGPU::ComputePipelineDescriptor&) final;
-    RefPtr<WebCore::WebGPU::RenderPipeline> createRenderPipeline(const ::WebGPU::RenderPipelineDescriptor&) final;
-    void createComputePipelineAsync(const ::WebGPU::ComputePipelineDescriptor&, CompletionHandler<void(Expected<Ref<WebCore::WebGPU::ComputePipeline>, ::WebGPU::PipelineError>&&)>&&) final;
-    void createRenderPipelineAsync(const ::WebGPU::RenderPipelineDescriptor&, CompletionHandler<void(Expected<Ref<WebCore::WebGPU::RenderPipeline>, ::WebGPU::PipelineError>&&)>&&) final;
-    void createComputePipelineWithPipelineLayoutFromPipelineAsync(const ::WebGPU::ComputePipelineDescriptor&, const WebCore::WebGPU::ComputePipeline&, CompletionHandler<void(Expected<Ref<WebCore::WebGPU::ComputePipeline>, ::WebGPU::PipelineError>&&)>&&) final;
-    void createRenderPipelineWithPipelineLayoutFromPipelineAsync(const ::WebGPU::RenderPipelineDescriptor&, const WebCore::WebGPU::RenderPipeline&, CompletionHandler<void(Expected<Ref<WebCore::WebGPU::RenderPipeline>, ::WebGPU::PipelineError>&&)>&&) final;
-    RefPtr<WebCore::WebGPU::CommandEncoder> createCommandEncoder(const WebCore::WebGPU::CommandEncoderDescriptor&) final;
-    RefPtr<WebCore::WebGPU::RenderBundleEncoder> createRenderBundleEncoder(const ::WebGPU::RenderBundleEncoderDescriptor&) final;
-    RefPtr<WebCore::WebGPU::QuerySet> createQuerySet(const WebCore::WebGPU::QuerySetDescriptor&) final;
-    RefPtr<WebCore::WebGPU::XRBinding> createXRBinding() final;
+    RefPtr<::WebGPU::BindGroupLayout> createBindGroupLayout(const ::WebGPU::BindGroupLayoutDescriptor&) final;
+    RefPtr<::WebGPU::PipelineLayout> createPipelineLayout(const ::WebGPU::PipelineLayoutDescriptor&) final;
+    RefPtr<::WebGPU::BindGroup> createBindGroup(const ::WebGPU::BindGroupDescriptor&) final;
+    RefPtr<::WebGPU::ShaderModule> createShaderModule(const ::WebGPU::ShaderModuleDescriptor&) final;
+    RefPtr<::WebGPU::ComputePipeline> createComputePipeline(const ::WebGPU::ComputePipelineDescriptor&) final;
+    RefPtr<::WebGPU::RenderPipeline> createRenderPipeline(const ::WebGPU::RenderPipelineDescriptor&) final;
+    void createComputePipelineAsync(const ::WebGPU::ComputePipelineDescriptor&, CompletionHandler<void(Expected<Ref<::WebGPU::ComputePipeline>, ::WebGPU::PipelineError>&&)>&&) final;
+    void createRenderPipelineAsync(const ::WebGPU::RenderPipelineDescriptor&, CompletionHandler<void(Expected<Ref<::WebGPU::RenderPipeline>, ::WebGPU::PipelineError>&&)>&&) final;
+    void createComputePipelineWithPipelineLayoutFromPipelineAsync(const ::WebGPU::ComputePipelineDescriptor&, const ::WebGPU::ComputePipeline&, CompletionHandler<void(Expected<Ref<::WebGPU::ComputePipeline>, ::WebGPU::PipelineError>&&)>&&) final;
+    void createRenderPipelineWithPipelineLayoutFromPipelineAsync(const ::WebGPU::RenderPipelineDescriptor&, const ::WebGPU::RenderPipeline&, CompletionHandler<void(Expected<Ref<::WebGPU::RenderPipeline>, ::WebGPU::PipelineError>&&)>&&) final;
+    RefPtr<::WebGPU::CommandEncoder> createCommandEncoder(const ::WebGPU::CommandEncoderDescriptor&) final;
+    RefPtr<::WebGPU::RenderBundleEncoder> createRenderBundleEncoder(const ::WebGPU::RenderBundleEncoderDescriptor&) final;
+    RefPtr<::WebGPU::QuerySet> createQuerySet(const ::WebGPU::QuerySetDescriptor&) final;
+    RefPtr<::WebGPU::XRBinding> createXRBinding() final;
 
-    void pushErrorScope(WebCore::WebGPU::ErrorFilter) final;
+    void pushErrorScope(::WebGPU::ErrorFilter) final;
     void popErrorScope(CompletionHandler<void(bool, std::optional<::WebGPU::Error>&&)>&&) final;
     void resolveUncapturedErrorEvent(CompletionHandler<void(bool, std::optional<::WebGPU::Error>&&)>&&) final;
-    void resolveDeviceLostPromise(CompletionHandler<void(WebCore::WebGPU::DeviceLostReason, String&&)>&&) final;
+    void resolveDeviceLostPromise(CompletionHandler<void(::WebGPU::DeviceLostReason, String&&)>&&) final;
     void pauseAllErrorReporting(bool pause) final;
     void setLabel(String&&) final;
     bool isValid() const final;
@@ -104,7 +101,7 @@ public:
 private:
     friend class DowncastConvertToBackingContext;
 
-    RemoteDeviceProxy(Vector<WebCore::WebGPU::FeatureName>&&, const ::WebGPU::Limits&, RemoteAdapterProxy&, ConvertToBackingContext&, WebGPUIdentifier, WebGPUIdentifier queueIdentifier);
+    RemoteDeviceProxy(Vector<::WebGPU::FeatureName>&&, const ::WebGPU::Limits&, RemoteAdapterProxy&, ConvertToBackingContext&, WebGPUIdentifier, WebGPUIdentifier queueIdentifier);
 
     RemoteDeviceProxy(const RemoteDeviceProxy&) = delete;
     RemoteDeviceProxy(RemoteDeviceProxy&&) = delete;
@@ -123,7 +120,7 @@ private:
     }
 
     WebGPUIdentifier m_backing;
-    const Vector<WebCore::WebGPU::FeatureName> m_features;
+    const Vector<::WebGPU::FeatureName> m_features;
     const ::WebGPU::Limits m_limits;
     const Ref<ConvertToBackingContext> m_convertToBackingContext;
     const Ref<RemoteAdapterProxy> m_parent;

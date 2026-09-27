@@ -31,14 +31,14 @@
 #include "GPUTextureFormat.h"
 #include "GPUTextureUsage.h"
 #include "GPUTextureViewDimension.h"
-#include "WebGPUTextureViewDescriptor.h"
+#include <WebCore/WebGPUCppAPI.h>
 #include <optional>
 #include <wtf/Forward.h>
 
 namespace WebCore {
 
 struct GPUTextureViewDescriptor : public GPUObjectDescriptorBase {
-    WebGPU::TextureViewDescriptor convertToBacking() const
+    ::WebGPU::TextureViewDescriptor convertToBacking() const
     {
         return {
             .label = label,

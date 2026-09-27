@@ -30,7 +30,7 @@
 #include "GPURenderPassColorAttachment.h"
 #include "GPURenderPassDepthStencilAttachment.h"
 #include "GPURenderPassTimestampWrites.h"
-#include "WebGPURenderPassDescriptor.h"
+#include <WebCore/WebGPUCppAPI.h>
 #include <optional>
 #include <wtf/RefPtr.h>
 #include <wtf/Vector.h>
@@ -39,9 +39,9 @@ namespace WebCore {
 
 struct GPURenderPassDescriptor : public GPUObjectDescriptorBase {
     // The descriptor borrows the color attachments from colorAttachmentsStorage.
-    WebGPU::RenderPassDescriptor convertToBacking(Vector<std::optional<WebGPU::RenderPassColorAttachment>>& colorAttachmentsStorage) const
+    ::WebGPU::RenderPassDescriptor convertToBacking(Vector<std::optional<::WebGPU::RenderPassColorAttachment>>& colorAttachmentsStorage) const
     {
-        colorAttachmentsStorage = colorAttachments.map([](auto& colorAttachment) -> std::optional<WebGPU::RenderPassColorAttachment> {
+        colorAttachmentsStorage = colorAttachments.map([](auto& colorAttachment) -> std::optional<::WebGPU::RenderPassColorAttachment> {
             return colorAttachment ? std::optional { colorAttachment->convertToBacking() } : std::nullopt;
         });
         return {

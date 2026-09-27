@@ -31,18 +31,14 @@
 #include "RemoteRenderPassEncoderMessages.h"
 #include "StreamServerConnection.h"
 #include "WebGPUObjectHeap.h"
-#include <WebCore/WebGPUBindGroup.h>
-#include <WebCore/WebGPUBuffer.h>
-#include <WebCore/WebGPURenderBundle.h>
-#include <WebCore/WebGPURenderPassEncoder.h>
-#include <WebCore/WebGPURenderPipeline.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebKit {
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(RemoteRenderPassEncoder);
 
-RemoteRenderPassEncoder::RemoteRenderPassEncoder(WebCore::WebGPU::RenderPassEncoder& renderPassEncoder, WebGPU::ObjectHeap& objectHeap, Ref<IPC::StreamServerConnection>&& streamConnection, RemoteGPU& gpu, WebGPUIdentifier identifier)
+RemoteRenderPassEncoder::RemoteRenderPassEncoder(::WebGPU::RenderPassEncoder& renderPassEncoder, WebGPU::ObjectHeap& objectHeap, Ref<IPC::StreamServerConnection>&& streamConnection, RemoteGPU& gpu, WebGPUIdentifier identifier)
     : m_backing(renderPassEncoder)
     , m_objectHeap(objectHeap)
     , m_streamConnection(WTF::move(streamConnection))
@@ -74,7 +70,7 @@ void RemoteRenderPassEncoder::setPipeline(WebGPUIdentifier renderPipeline)
     protect(m_backing)->setPipeline(protect(*convertedRenderPipeline));
 }
 
-void RemoteRenderPassEncoder::setIndexBuffer(WebGPUIdentifier buffer, WebCore::WebGPU::IndexFormat indexFormat, WebCore::WebGPU::Size64 offset, std::optional<WebCore::WebGPU::Size64> size)
+void RemoteRenderPassEncoder::setIndexBuffer(WebGPUIdentifier buffer, ::WebGPU::IndexFormat indexFormat, uint64_t offset, std::optional<uint64_t> size)
 {
     auto convertedBuffer = protect(m_objectHeap)->convertBufferFromBacking(buffer);
     ASSERT(convertedBuffer);
@@ -84,7 +80,7 @@ void RemoteRenderPassEncoder::setIndexBuffer(WebGPUIdentifier buffer, WebCore::W
     protect(m_backing)->setIndexBuffer(protect(*convertedBuffer), indexFormat, offset, size);
 }
 
-void RemoteRenderPassEncoder::setVertexBuffer(WebCore::WebGPU::Index32 slot, WebGPUIdentifier buffer, WebCore::WebGPU::Size64 offset, std::optional<WebCore::WebGPU::Size64> size)
+void RemoteRenderPassEncoder::setVertexBuffer(uint32_t slot, WebGPUIdentifier buffer, uint64_t offset, std::optional<uint64_t> size)
 {
     RefPtr convertedBuffer = protect(m_objectHeap)->convertBufferFromBacking(buffer);
     ASSERT(convertedBuffer);
@@ -94,27 +90,27 @@ void RemoteRenderPassEncoder::setVertexBuffer(WebCore::WebGPU::Index32 slot, Web
     protect(m_backing)->setVertexBuffer(slot, convertedBuffer.get(), offset, size);
 }
 
-void RemoteRenderPassEncoder::unsetVertexBuffer(WebCore::WebGPU::Index32 slot, WebCore::WebGPU::Size64 offset, std::optional<WebCore::WebGPU::Size64> size)
+void RemoteRenderPassEncoder::unsetVertexBuffer(uint32_t slot, uint64_t offset, std::optional<uint64_t> size)
 {
     protect(m_backing)->setVertexBuffer(slot, nullptr, offset, size);
 }
 
-void RemoteRenderPassEncoder::draw(WebCore::WebGPU::Size32 vertexCount, WebCore::WebGPU::Size32 instanceCount,
-    WebCore::WebGPU::Size32 firstVertex, WebCore::WebGPU::Size32 firstInstance)
+void RemoteRenderPassEncoder::draw(uint32_t vertexCount, uint32_t instanceCount,
+    uint32_t firstVertex, uint32_t firstInstance)
 {
     protect(m_backing)->draw(vertexCount, instanceCount, firstVertex, firstInstance);
 }
 
-void RemoteRenderPassEncoder::drawIndexed(WebCore::WebGPU::Size32 indexCount,
-    WebCore::WebGPU::Size32 instanceCount,
-    WebCore::WebGPU::Size32 firstIndex,
-    WebCore::WebGPU::SignedOffset32 baseVertex,
-    WebCore::WebGPU::Size32 firstInstance)
+void RemoteRenderPassEncoder::drawIndexed(uint32_t indexCount,
+    uint32_t instanceCount,
+    uint32_t firstIndex,
+    int32_t baseVertex,
+    uint32_t firstInstance)
 {
     protect(m_backing)->drawIndexed(indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
 }
 
-void RemoteRenderPassEncoder::drawIndirect(WebGPUIdentifier indirectBuffer, WebCore::WebGPU::Size64 indirectOffset)
+void RemoteRenderPassEncoder::drawIndirect(WebGPUIdentifier indirectBuffer, uint64_t indirectOffset)
 {
     auto convertedIndirectBuffer = protect(m_objectHeap)->convertBufferFromBacking(indirectBuffer);
     ASSERT(convertedIndirectBuffer);
@@ -124,7 +120,7 @@ void RemoteRenderPassEncoder::drawIndirect(WebGPUIdentifier indirectBuffer, WebC
     protect(m_backing)->drawIndirect(protect(*convertedIndirectBuffer), indirectOffset);
 }
 
-void RemoteRenderPassEncoder::drawIndexedIndirect(WebGPUIdentifier indirectBuffer, WebCore::WebGPU::Size64 indirectOffset)
+void RemoteRenderPassEncoder::drawIndexedIndirect(WebGPUIdentifier indirectBuffer, uint64_t indirectOffset)
 {
     auto convertedIndirectBuffer = protect(m_objectHeap)->convertBufferFromBacking(indirectBuffer);
     ASSERT(convertedIndirectBuffer);
@@ -134,8 +130,8 @@ void RemoteRenderPassEncoder::drawIndexedIndirect(WebGPUIdentifier indirectBuffe
     protect(m_backing)->drawIndexedIndirect(protect(*convertedIndirectBuffer), indirectOffset);
 }
 
-void RemoteRenderPassEncoder::setBindGroup(WebCore::WebGPU::Index32 index, std::optional<WebGPUIdentifier> bindGroup,
-    std::optional<Vector<WebCore::WebGPU::BufferDynamicOffset>>&& dynamicOffsets)
+void RemoteRenderPassEncoder::setBindGroup(uint32_t index, std::optional<WebGPUIdentifier> bindGroup,
+    std::optional<Vector<uint32_t>>&& dynamicOffsets)
 {
     if (!bindGroup) {
         protect(m_backing)->setBindGroup(index, nullptr, dynamicOffsets ? std::optional { dynamicOffsets->span() } : std::nullopt);
@@ -171,8 +167,8 @@ void RemoteRenderPassEncoder::setViewport(float x, float y,
     protect(m_backing)->setViewport(x, y, width, height, minDepth, maxDepth);
 }
 
-void RemoteRenderPassEncoder::setScissorRect(WebCore::WebGPU::IntegerCoordinate x, WebCore::WebGPU::IntegerCoordinate y,
-    WebCore::WebGPU::IntegerCoordinate width, WebCore::WebGPU::IntegerCoordinate height)
+void RemoteRenderPassEncoder::setScissorRect(uint32_t x, uint32_t y,
+    uint32_t width, uint32_t height)
 {
     protect(m_backing)->setScissorRect(x, y, width, height);
 }
@@ -182,12 +178,12 @@ void RemoteRenderPassEncoder::setBlendConstant(WebGPU::Color color)
     protect(m_backing)->setBlendConstant(color);
 }
 
-void RemoteRenderPassEncoder::setStencilReference(WebCore::WebGPU::StencilValue stencilValue)
+void RemoteRenderPassEncoder::setStencilReference(uint32_t stencilValue)
 {
     protect(m_backing)->setStencilReference(stencilValue);
 }
 
-void RemoteRenderPassEncoder::beginOcclusionQuery(WebCore::WebGPU::Size32 queryIndex)
+void RemoteRenderPassEncoder::beginOcclusionQuery(uint32_t queryIndex)
 {
     protect(m_backing)->beginOcclusionQuery(queryIndex);
 }
@@ -199,7 +195,7 @@ void RemoteRenderPassEncoder::endOcclusionQuery()
 
 void RemoteRenderPassEncoder::executeBundles(Vector<WebGPUIdentifier>&& renderBundles)
 {
-    Vector<Ref<WebCore::WebGPU::RenderBundle>> convertedBundles;
+    Vector<Ref<::WebGPU::RenderBundle>> convertedBundles;
     convertedBundles.reserveInitialCapacity(renderBundles.size());
     for (WebGPUIdentifier identifier : renderBundles) {
         auto convertedBundle = protect(m_objectHeap)->convertRenderBundleFromBacking(identifier);
