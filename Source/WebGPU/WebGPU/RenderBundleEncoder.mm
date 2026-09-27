@@ -815,7 +815,7 @@ RenderBundleEncoder::FinalizeRenderCommand RenderBundleEncoder::encodeDrawIndexe
     id<MTLBuffer> indexBuffer = m_indexBuffer ? m_indexBuffer->buffer() : nil;
     if (currentRenderCommand()) {
         if (renderPassEncoder) {
-            if (!setCommandEncoder(indirectBuffer, renderPassEncoder))
+            if (!::setCommandEncoder(indirectBuffer, renderPassEncoder))
                 return finalizeRenderCommand();
             if (!indirectBuffer.isDestroyed() && indexBuffer.length && mtlIndirectBuffer && !m_makeSubmitInvalid)
                 [renderPassEncoder->renderCommandEncoder() drawIndexedPrimitives:m_primitiveType indexType:m_indexType indexBuffer:indexBuffer indexBufferOffset:m_indexBufferOffset indirectBuffer:mtlIndirectBuffer indirectBufferOffset:modifiedIndirectOffset];
@@ -889,7 +889,7 @@ RenderBundleEncoder::FinalizeRenderCommand RenderBundleEncoder::encodeDrawIndire
         return finalizeRenderCommand();
     if (currentRenderCommand()) {
         if (renderPassEncoder) {
-            if (!setCommandEncoder(indirectBuffer, renderPassEncoder))
+            if (!::setCommandEncoder(indirectBuffer, renderPassEncoder))
                 return finalizeRenderCommand();
             if (!indirectBuffer.isDestroyed() && clampedIndirectBuffer && !m_makeSubmitInvalid)
                 [renderPassEncoder->renderCommandEncoder() drawPrimitives:m_primitiveType indirectBuffer:clampedIndirectBuffer indirectBufferOffset:indirectOffset];
@@ -1292,7 +1292,7 @@ void RenderBundleEncoder::setIndexBuffer(Buffer& buffer, WebGPU::IndexFormat api
     m_indexType = format == WebGPU::IndexFormat::Uint32 ? MTLIndexTypeUInt32 : MTLIndexTypeUInt16;
     m_indexBufferOffset = offset;
     m_indexBufferSize = size == WGPU_WHOLE_SIZE ? buffer.initialSize() : size;
-    if (RefPtr renderPassEncoder = m_renderPassEncoder.get(); renderPassEncoder && !setCommandEncoder(buffer, renderPassEncoder))
+    if (RefPtr renderPassEncoder = m_renderPassEncoder.get(); renderPassEncoder && !::setCommandEncoder(buffer, renderPassEncoder))
         return;
 
     if (!isValidToUseWith(buffer, *this)) {
@@ -1533,7 +1533,7 @@ void RenderBundleEncoder::setVertexBuffer(uint32_t slot, Buffer* optionalBuffer,
         return;
 
     m_vertexBuffers[slot] = { .buffer = buffer.buffer(), .offset = offset, .dynamicOffsetCount = 0, .dynamicOffsets = nullptr, .size = size };
-    if (RefPtr renderPassEncoder = m_renderPassEncoder.get(); renderPassEncoder && !setCommandEncoder(buffer, renderPassEncoder))
+    if (RefPtr renderPassEncoder = m_renderPassEncoder.get(); renderPassEncoder && !::setCommandEncoder(buffer, renderPassEncoder))
         return;
 }
 

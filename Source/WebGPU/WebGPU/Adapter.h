@@ -39,8 +39,6 @@
 #import <wtf/ThreadSafeWeakPtr.h>
 #import <wtf/WeakPtr.h>
 
-struct WGPUAdapterImpl {
-};
 
 namespace WebGPU::Metal {
 
@@ -48,7 +46,7 @@ class Device;
 class Instance;
 
 // https://gpuweb.github.io/gpuweb/#gpuadapter
-class Adapter final : public WebGPU::Adapter, public WGPUAdapterImpl {
+class Adapter final : public WebGPU::Adapter {
     WTF_MAKE_TZONE_ALLOCATED(Adapter);
 public:
     static Ref<Adapter> create(id<MTLDevice> device, Instance& instance, bool xrCompatible, HardwareCapabilities&& capabilities)
