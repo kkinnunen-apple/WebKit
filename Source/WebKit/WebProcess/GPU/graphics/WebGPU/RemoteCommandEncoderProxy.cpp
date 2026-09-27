@@ -52,7 +52,7 @@ RemoteCommandEncoderProxy::~RemoteCommandEncoderProxy()
     UNUSED_VARIABLE(sendResult);
 }
 
-RefPtr<WebCore::WebGPU::RenderPassEncoder> RemoteCommandEncoderProxy::beginRenderPass(const WebCore::WebGPU::RenderPassDescriptor& descriptor)
+RefPtr<::WebGPU::RenderPassEncoder> RemoteCommandEncoderProxy::beginRenderPass(const ::WebGPU::RenderPassDescriptor& descriptor)
 {
     auto convertedDescriptor = m_convertToBackingContext->convertToBacking(descriptor);
 
@@ -70,7 +70,7 @@ RefPtr<WebCore::WebGPU::RenderPassEncoder> RemoteCommandEncoderProxy::beginRende
     return result;
 }
 
-RefPtr<WebCore::WebGPU::ComputePassEncoder> RemoteCommandEncoderProxy::beginComputePass(const std::optional<WebCore::WebGPU::ComputePassDescriptor>& descriptor)
+RefPtr<::WebGPU::ComputePassEncoder> RemoteCommandEncoderProxy::beginComputePass(const std::optional<::WebGPU::ComputePassDescriptor>& descriptor)
 {
     std::optional<WebKit::WebGPU::ComputePassDescriptor> convertedDescriptor;
 
@@ -92,11 +92,11 @@ RefPtr<WebCore::WebGPU::ComputePassEncoder> RemoteCommandEncoderProxy::beginComp
 }
 
 void RemoteCommandEncoderProxy::copyBufferToBuffer(
-    const WebCore::WebGPU::Buffer& source,
-    WebCore::WebGPU::Size64 sourceOffset,
-    const WebCore::WebGPU::Buffer& destination,
-    WebCore::WebGPU::Size64 destinationOffset,
-    WebCore::WebGPU::Size64 size)
+    const ::WebGPU::Buffer& source,
+    uint64_t sourceOffset,
+    const ::WebGPU::Buffer& destination,
+    uint64_t destinationOffset,
+    uint64_t size)
 {
     auto convertedSource = m_convertToBackingContext->convertToBacking(source);
     auto convertedDestination = m_convertToBackingContext->convertToBacking(destination);
@@ -106,9 +106,9 @@ void RemoteCommandEncoderProxy::copyBufferToBuffer(
 }
 
 void RemoteCommandEncoderProxy::copyBufferToTexture(
-    const WebCore::WebGPU::ImageCopyBuffer& source,
-    const WebCore::WebGPU::ImageCopyTexture& destination,
-    const WebCore::WebGPU::Extent3D& copySize)
+    const ::WebGPU::TexelCopyBufferInfo& source,
+    const ::WebGPU::TexelCopyTextureInfo& destination,
+    const ::WebGPU::Extent3D& copySize)
 {
     auto convertedSource = m_convertToBackingContext->convertToBacking(source);
     ASSERT(convertedSource);
@@ -122,9 +122,9 @@ void RemoteCommandEncoderProxy::copyBufferToTexture(
 }
 
 void RemoteCommandEncoderProxy::copyTextureToBuffer(
-    const WebCore::WebGPU::ImageCopyTexture& source,
-    const WebCore::WebGPU::ImageCopyBuffer& destination,
-    const WebCore::WebGPU::Extent3D& copySize)
+    const ::WebGPU::TexelCopyTextureInfo& source,
+    const ::WebGPU::TexelCopyBufferInfo& destination,
+    const ::WebGPU::Extent3D& copySize)
 {
     auto convertedSource = m_convertToBackingContext->convertToBacking(source);
     ASSERT(convertedSource);
@@ -138,9 +138,9 @@ void RemoteCommandEncoderProxy::copyTextureToBuffer(
 }
 
 void RemoteCommandEncoderProxy::copyTextureToTexture(
-    const WebCore::WebGPU::ImageCopyTexture& source,
-    const WebCore::WebGPU::ImageCopyTexture& destination,
-    const WebCore::WebGPU::Extent3D& copySize)
+    const ::WebGPU::TexelCopyTextureInfo& source,
+    const ::WebGPU::TexelCopyTextureInfo& destination,
+    const ::WebGPU::Extent3D& copySize)
 {
     auto convertedSource = m_convertToBackingContext->convertToBacking(source);
     ASSERT(convertedSource);
@@ -154,9 +154,9 @@ void RemoteCommandEncoderProxy::copyTextureToTexture(
 }
 
 void RemoteCommandEncoderProxy::clearBuffer(
-    const WebCore::WebGPU::Buffer& buffer,
-    WebCore::WebGPU::Size64 offset,
-    std::optional<WebCore::WebGPU::Size64> size)
+    const ::WebGPU::Buffer& buffer,
+    uint64_t offset,
+    std::optional<uint64_t> size)
 {
     auto convertedBuffer = m_convertToBackingContext->convertToBacking(buffer);
 
@@ -182,7 +182,7 @@ void RemoteCommandEncoderProxy::insertDebugMarker(String&& markerLabel)
     UNUSED_VARIABLE(sendResult);
 }
 
-void RemoteCommandEncoderProxy::writeTimestamp(const WebCore::WebGPU::QuerySet& querySet, WebCore::WebGPU::Size32 queryIndex)
+void RemoteCommandEncoderProxy::writeTimestamp(const ::WebGPU::QuerySet& querySet, uint32_t queryIndex)
 {
     auto convertedQuerySet = m_convertToBackingContext->convertToBacking(querySet);
 
@@ -191,11 +191,11 @@ void RemoteCommandEncoderProxy::writeTimestamp(const WebCore::WebGPU::QuerySet& 
 }
 
 void RemoteCommandEncoderProxy::resolveQuerySet(
-    const WebCore::WebGPU::QuerySet& querySet,
-    WebCore::WebGPU::Size32 firstQuery,
-    WebCore::WebGPU::Size32 queryCount,
-    const WebCore::WebGPU::Buffer& destination,
-    WebCore::WebGPU::Size64 destinationOffset)
+    const ::WebGPU::QuerySet& querySet,
+    uint32_t firstQuery,
+    uint32_t queryCount,
+    const ::WebGPU::Buffer& destination,
+    uint64_t destinationOffset)
 {
     auto convertedQuerySet = m_convertToBackingContext->convertToBacking(querySet);
     auto convertedDestination = m_convertToBackingContext->convertToBacking(destination);
@@ -204,7 +204,7 @@ void RemoteCommandEncoderProxy::resolveQuerySet(
     UNUSED_VARIABLE(sendResult);
 }
 
-RefPtr<WebCore::WebGPU::CommandBuffer> RemoteCommandEncoderProxy::finish(const WebCore::WebGPU::CommandBufferDescriptor& descriptor)
+RefPtr<::WebGPU::CommandBuffer> RemoteCommandEncoderProxy::finish(const ::WebGPU::CommandBufferDescriptor& descriptor)
 {
     auto identifier = WebGPUIdentifier::generate();
     auto sendResult = send(Messages::RemoteCommandEncoder::Finish(descriptor, identifier));

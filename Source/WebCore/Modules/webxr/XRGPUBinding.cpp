@@ -29,8 +29,6 @@
 #if ENABLE(WEBXR_LAYERS) && ENABLE(WEBGPU)
 
 #include "GPUDevice.h"
-#include "WebGPUXRBinding.h"
-#include "WebGPUXREye.h"
 #include "WebGPUXRLayerBacking.h"
 #include "WebXRFrame.h"
 #include "WebXRView.h"
@@ -38,6 +36,7 @@
 #include "XRGPUProjectionLayerInit.h"
 #include "XRGPUSubImage.h"
 #include "XRProjectionLayer.h"
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebCore {
@@ -82,7 +81,7 @@ ExceptionOr<Ref<XRProjectionLayer>> XRGPUBinding::createProjectionLayer(ScriptEx
     } else
         m_session->initializeTrackingAndRendering(std::nullopt);
 
-    WebGPU::XRProjectionLayerInit convertedInit;
+    WebGPU::XRProjectionLayerDescriptor convertedInit;
     if (init)
         convertedInit = init->convertToBacking();
     RefPtr projectionLayer = m_backing->createProjectionLayer(convertedInit);

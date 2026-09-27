@@ -29,8 +29,8 @@
 
 #include "RemoteGPUProxy.h"
 #include "WebGPUIdentifier.h"
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUDevice.h>
-#include <WebCore/WebGPUXRSubImage.h>
 
 namespace WebCore {
 class ImageBuffer;
@@ -42,7 +42,7 @@ namespace WebKit::WebGPU {
 class ConvertToBackingContext;
 class RemoteTextureProxy;
 
-class RemoteXRSubImageProxy final : public WebCore::WebGPU::XRSubImage {
+class RemoteXRSubImageProxy final : public ::WebGPU::XRSubImage {
     WTF_MAKE_TZONE_ALLOCATED(RemoteXRSubImageProxy);
 public:
     static Ref<RemoteXRSubImageProxy> create(Ref<RemoteGPUProxy>&& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)
@@ -55,8 +55,8 @@ public:
     RemoteGPUProxy& parent() { return m_parent; }
     RemoteGPUProxy& root() { return m_parent; }
 
-    RefPtr<WebCore::WebGPU::Texture> colorTexture() final;
-    RefPtr<WebCore::WebGPU::Texture> depthStencilTexture() final;
+    RefPtr<::WebGPU::Texture> colorTexture() final;
+    RefPtr<::WebGPU::Texture> depthStencilTexture() final;
     void setLabel(String&&) final { }
     bool isValid() const final;
 

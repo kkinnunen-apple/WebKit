@@ -31,10 +31,8 @@
 #include "RemoteGPUProxy.h"
 #include "RemotePresentationContextProxy.h"
 #include "WebGPUIdentifier.h"
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUDevice.h>
-#include <WebCore/WebGPUXREye.h>
-#include <WebCore/WebGPUXRProjectionLayer.h>
-#include <WebCore/WebGPUXRView.h>
 
 namespace WebCore {
 class WebXRFrame;
@@ -44,7 +42,7 @@ namespace WebKit::WebGPU {
 
 class ConvertToBackingContext;
 
-class RemoteXRViewProxy final : public WebCore::WebGPU::XRView {
+class RemoteXRViewProxy final : public ::WebGPU::XRView {
     WTF_MAKE_TZONE_ALLOCATED(RemoteXRViewProxy);
 public:
     static Ref<RemoteXRViewProxy> create(RemoteDeviceProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)

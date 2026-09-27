@@ -61,7 +61,7 @@ RemoteQueueProxy::~RemoteQueueProxy()
     UNUSED_VARIABLE(sendResult);
 }
 
-void RemoteQueueProxy::submit(Vector<Ref<WebCore::WebGPU::CommandBuffer>>&& commandBuffers)
+void RemoteQueueProxy::submit(Vector<Ref<::WebGPU::CommandBuffer>>&& commandBuffers)
 {
     auto convertedCommandBuffers = WTF::compactMap(commandBuffers, [&](auto& commandBuffer) -> std::optional<WebGPUIdentifier> {
         auto convertedCommandBuffer = m_convertToBackingContext->convertToBacking(commandBuffer);
@@ -80,7 +80,7 @@ void RemoteQueueProxy::onSubmittedWorkDone(CompletionHandler<void()>&& callback)
     UNUSED_PARAM(sendResult);
 }
 
-void RemoteQueueProxy::writeBuffer(const WebCore::WebGPU::Buffer& buffer, uint64_t bufferOffset, std::span<const uint8_t> data)
+void RemoteQueueProxy::writeBuffer(const ::WebGPU::Buffer& buffer, uint64_t bufferOffset, std::span<const uint8_t> data)
 {
     auto convertedBuffer = m_convertToBackingContext->convertToBacking(buffer);
 
@@ -95,7 +95,7 @@ void RemoteQueueProxy::writeBuffer(const WebCore::WebGPU::Buffer& buffer, uint64
     }
 }
 
-void RemoteQueueProxy::writeTexture(const WebCore::WebGPU::ImageCopyTexture& destination, std::span<const uint8_t> data, const WebCore::WebGPU::ImageDataLayout& dataLayout, const WebCore::WebGPU::Extent3D& writeSize)
+void RemoteQueueProxy::writeTexture(const ::WebGPU::TexelCopyTextureInfo& destination, std::span<const uint8_t> data, const ::WebGPU::TexelCopyBufferLayout& dataLayout, const ::WebGPU::Extent3D& writeSize)
 {
     auto convertedDestination = m_convertToBackingContext->convertToBacking(destination);
     ASSERT(convertedDestination);
@@ -116,7 +116,7 @@ void RemoteQueueProxy::writeTexture(const WebCore::WebGPU::ImageCopyTexture& des
 }
 
 #if PLATFORM(COCOA)
-void RemoteQueueProxy::copyExternalImageToTexture(const ::WebGPU::ImageCopyExternalImage&, const ::WebGPU::ImageCopyTextureTagged&, const WebCore::WebGPU::Extent3D&)
+void RemoteQueueProxy::copyExternalImageToTexture(const ::WebGPU::ImageCopyExternalImage&, const ::WebGPU::ImageCopyTextureTagged&, const ::WebGPU::Extent3D&)
 {
     // The Web Process cannot name an IOSurface or a pixel buffer to the GPU process. RemoteGPUProxy
     // sends the WebCore source instead, through the overload that takes it.
@@ -127,7 +127,7 @@ void RemoteQueueProxy::copyExternalImageToTexture(const ::WebGPU::ImageCopyExter
 void RemoteQueueProxy::copyExternalImageToTexture(
     const WebCore::WebGPUExternalImageSource& source,
     const WebCore::WebGPUImageCopyTextureTagged& destination,
-    const WebCore::WebGPU::Extent3D& copySize)
+    const ::WebGPU::Extent3D& copySize)
 {
 #if PLATFORM(COCOA) && ENABLE(VIDEO)
     if (source.videoSource) {
@@ -163,7 +163,7 @@ void RemoteQueueProxy::copyExternalImageToTexture(
 void RemoteQueueProxy::copyExternalImageFromVideoFrameToTexture(
     const WebCore::WebGPUExternalImageSource& source,
     const WebCore::WebGPUImageCopyTextureTagged& destination,
-    const WebCore::WebGPU::Extent3D& copySize)
+    const ::WebGPU::Extent3D& copySize)
 {
     Ref convertToBackingContext = m_convertToBackingContext;
 

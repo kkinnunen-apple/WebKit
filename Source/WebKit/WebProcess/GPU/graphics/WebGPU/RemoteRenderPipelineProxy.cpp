@@ -50,7 +50,7 @@ RemoteRenderPipelineProxy::~RemoteRenderPipelineProxy()
     UNUSED_VARIABLE(sendResult);
 }
 
-Ref<WebCore::WebGPU::BindGroupLayout> RemoteRenderPipelineProxy::getBindGroupLayout(uint32_t index)
+Ref<::WebGPU::BindGroupLayout> RemoteRenderPipelineProxy::getBindGroupLayout(uint32_t index)
 {
     // "A new GPUBindGroupLayout wrapper is returned each time"
     auto identifier = WebGPUIdentifier::generate();

@@ -29,18 +29,14 @@
 
 #include "RemoteDeviceProxy.h"
 #include "WebGPUIdentifier.h"
-#include <WebCore/WebGPUIntegralTypes.h>
-#include <WebCore/WebGPUTexture.h>
-#include <WebCore/WebGPUTextureDimension.h>
-#include <WebCore/WebGPUTextureFormat.h>
-#include <WebCore/WebGPUTextureViewDescriptor.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/TZoneMalloc.h>
 
 namespace WebKit::WebGPU {
 
 class ConvertToBackingContext;
 
-class RemoteTextureProxy final : public WebCore::WebGPU::Texture {
+class RemoteTextureProxy final : public ::WebGPU::Texture {
     WTF_MAKE_TZONE_ALLOCATED(RemoteTextureProxy);
 public:
     static Ref<RemoteTextureProxy> create(Ref<RemoteGPUProxy>&& root, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier, bool isCanvasBacking = false)
@@ -52,7 +48,7 @@ public:
 
     RemoteGPUProxy& root() const { return m_root; }
 
-    RefPtr<WebCore::WebGPU::TextureView> createView(const std::optional<WebCore::WebGPU::TextureViewDescriptor>&) final;
+    RefPtr<::WebGPU::TextureView> createView(const std::optional<::WebGPU::TextureViewDescriptor>&) final;
 
     void destroy() final;
     void setLabel(String&&) final;
@@ -81,8 +77,8 @@ private:
     const Ref<ConvertToBackingContext> m_convertToBackingContext;
     const Ref<RemoteGPUProxy> m_root;
 
-    RefPtr<WebCore::WebGPU::TextureView> m_lastCreatedView;
-    std::optional<WebCore::WebGPU::TextureViewDescriptor> m_lastCreatedViewDescriptor;
+    RefPtr<::WebGPU::TextureView> m_lastCreatedView;
+    std::optional<::WebGPU::TextureViewDescriptor> m_lastCreatedViewDescriptor;
     bool m_isCanvasBacking { false };
 };
 

@@ -29,14 +29,14 @@
 
 #include "RemoteDeviceProxy.h"
 #include "WebGPUIdentifier.h"
-#include <WebCore/WebGPUPipelineLayout.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/TZoneMalloc.h>
 
 namespace WebKit::WebGPU {
 
 class ConvertToBackingContext;
 
-class RemotePipelineLayoutProxy final : public WebCore::WebGPU::PipelineLayout {
+class RemotePipelineLayoutProxy final : public ::WebGPU::PipelineLayout {
     WTF_MAKE_TZONE_ALLOCATED(RemotePipelineLayoutProxy);
 public:
     static Ref<RemotePipelineLayoutProxy> create(RemoteDeviceProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)

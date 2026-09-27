@@ -66,7 +66,7 @@ void RemotePresentationContextProxy::unconfigure()
     UNUSED_VARIABLE(sendResult);
 }
 
-RefPtr<WebCore::WebGPU::Texture> RemotePresentationContextProxy::getCurrentTexture(uint32_t frameIndex)
+RefPtr<::WebGPU::Texture> RemotePresentationContextProxy::getCurrentTexture(uint32_t frameIndex)
 {
     if (frameIndex >= textureCount)
         return nullptr;

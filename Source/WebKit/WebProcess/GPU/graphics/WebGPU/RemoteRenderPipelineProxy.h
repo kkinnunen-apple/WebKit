@@ -29,7 +29,7 @@
 
 #include "RemoteDeviceProxy.h"
 #include "WebGPUIdentifier.h"
-#include <WebCore/WebGPURenderPipeline.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/HashMap.h>
 #include <wtf/TZoneMalloc.h>
 
@@ -38,7 +38,7 @@ namespace WebKit::WebGPU {
 class ConvertToBackingContext;
 class RemoteBindGroupLayoutProxy;
 
-class RemoteRenderPipelineProxy final : public WebCore::WebGPU::RenderPipeline {
+class RemoteRenderPipelineProxy final : public ::WebGPU::RenderPipeline {
     WTF_MAKE_TZONE_ALLOCATED(RemoteRenderPipelineProxy);
 public:
     static Ref<RemoteRenderPipelineProxy> create(RemoteDeviceProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)
@@ -51,7 +51,7 @@ public:
     RemoteDeviceProxy& parent() const { return m_parent; }
     RemoteGPUProxy& root() { return m_parent->root(); }
 
-    Ref<WebCore::WebGPU::BindGroupLayout> getBindGroupLayout(uint32_t index) final;
+    Ref<::WebGPU::BindGroupLayout> getBindGroupLayout(uint32_t index) final;
     void setLabel(String&&) final;
     bool isValid() const final;
 

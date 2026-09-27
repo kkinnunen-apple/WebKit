@@ -26,8 +26,8 @@
 #pragma once
 
 #include <WebCore/AlphaPremultiplication.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUDevice.h>
-#include <WebCore/WebGPUTextureFormat.h>
 
 #include <optional>
 #include <wtf/CompletionHandler.h>
@@ -56,7 +56,7 @@ public:
     virtual ~WebGPUCompositorIntegration() = default;
 
 #if PLATFORM(COCOA)
-    virtual Vector<MachSendRight> recreateRenderBuffers(int width, int height, ColorSpace&&, AlphaPremultiplication, WebGPU::TextureFormat, unsigned bufferCount, WebGPU::Device&) = 0;
+    virtual Vector<MachSendRight> recreateRenderBuffers(int width, int height, ColorSpace&&, AlphaPremultiplication, ::WebGPU::TextureFormat, unsigned bufferCount, ::WebGPU::Device&) = 0;
 #endif
 
     virtual void prepareForDisplay(uint32_t frameIndex, CompletionHandler<void()>&&) = 0;

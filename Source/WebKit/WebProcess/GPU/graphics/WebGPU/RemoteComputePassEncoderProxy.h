@@ -29,14 +29,14 @@
 
 #include "RemoteCommandEncoderProxy.h"
 #include "WebGPUIdentifier.h"
-#include <WebCore/WebGPUComputePassEncoder.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/TZoneMalloc.h>
 
 namespace WebKit::WebGPU {
 
 class ConvertToBackingContext;
 
-class RemoteComputePassEncoderProxy final : public WebCore::WebGPU::ComputePassEncoder {
+class RemoteComputePassEncoderProxy final : public ::WebGPU::ComputePassEncoder {
     WTF_MAKE_TZONE_ALLOCATED(RemoteComputePassEncoderProxy);
 public:
     static Ref<RemoteComputePassEncoderProxy> create(RemoteCommandEncoderProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)
@@ -48,11 +48,11 @@ public:
 
     RemoteGPUProxy& root() const { return m_root; }
 
-    void setPipeline(const WebCore::WebGPU::ComputePipeline&) final;
-    void dispatch(WebCore::WebGPU::Size32 workgroupCountX, WebCore::WebGPU::Size32 workgroupCountY = 1, WebCore::WebGPU::Size32 workgroupCountZ = 1) final;
-    void dispatchIndirect(const WebCore::WebGPU::Buffer& indirectBuffer, WebCore::WebGPU::Size64 indirectOffset) final;
+    void setPipeline(const ::WebGPU::ComputePipeline&) final;
+    void dispatch(uint32_t workgroupCountX, uint32_t workgroupCountY = 1, uint32_t workgroupCountZ = 1) final;
+    void dispatchIndirect(const ::WebGPU::Buffer& indirectBuffer, uint64_t indirectOffset) final;
     void end() final;
-    void setBindGroup(uint32_t, const WebCore::WebGPU::BindGroup*, std::optional<std::span<const uint32_t>> dynamicOffsets) final;
+    void setBindGroup(uint32_t, const ::WebGPU::BindGroup*, std::optional<std::span<const uint32_t>> dynamicOffsets) final;
     void pushDebugGroup(String&& groupLabel) final;
     void popDebugGroup() final;
     void insertDebugMarker(String&& markerLabel) final;

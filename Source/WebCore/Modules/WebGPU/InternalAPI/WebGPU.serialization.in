@@ -27,17 +27,11 @@ enum class ::WebGPU::ErrorFilter : uint8_t {
     Internal
 };
 
-header: <WebCore/WebGPUErrorFilter.h>
-using WebCore::WebGPU::ErrorFilter = ::WebGPU::ErrorFilter;
-
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::IndexFormat : uint8_t {
     Uint16,
     Uint32,
 };
-
-header: <WebCore/WebGPUIndexFormat.h>
-using WebCore::WebGPU::IndexFormat = ::WebGPU::IndexFormat;
 
 header: <WebGPU/WebGPUCpp.h>
 [OptionSet] enum class ::WebGPU::MapMode : uint8_t {
@@ -45,25 +39,11 @@ header: <WebGPU/WebGPUCpp.h>
     Write,
 };
 
-header: <WebCore/WebGPUMapMode.h>
-using WebCore::WebGPU::MapMode = ::WebGPU::MapMode;
-using WebCore::WebGPU::MapModeFlags = OptionSet<::WebGPU::MapMode>;
-
 header: <WebGPU/WebGPUCpp.h>
 [AdditionalEncoder=StreamConnectionEncoder] enum class ::WebGPU::MapMode : uint8_t {
     Read,
     Write,
 };
-
-using WebCore::WebGPU::Size64 = uint64_t;
-using WebCore::WebGPU::Size32 = uint32_t;
-using WebCore::WebGPU::BufferDynamicOffset = uint32_t;
-using WebCore::WebGPU::IntegerCoordinate = uint32_t;
-using WebCore::WebGPU::Index32 = uint32_t;
-using WebCore::WebGPU::StencilValue = uint32_t;
-using WebCore::WebGPU::SampleMask = uint32_t;
-using WebCore::WebGPU::DepthBias = int32_t;
-using WebCore::WebGPU::SignedOffset32 = int32_t;
 
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::BlendFactor : uint8_t {
@@ -82,9 +62,6 @@ enum class ::WebGPU::BlendFactor : uint8_t {
     OneMinusConstant,
 };
 
-header: <WebCore/WebGPUBlendFactor.h>
-using WebCore::WebGPU::BlendFactor = ::WebGPU::BlendFactor;
-
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::TextureSampleType : uint8_t {
     Float,
@@ -93,9 +70,6 @@ enum class ::WebGPU::TextureSampleType : uint8_t {
     Sint,
     Uint,
 };
-
-header: <WebCore/WebGPUTextureSampleType.h>
-using WebCore::WebGPU::TextureSampleType = ::WebGPU::TextureSampleType;
 
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::BlendOperation : uint8_t {
@@ -106,17 +80,11 @@ enum class ::WebGPU::BlendOperation : uint8_t {
     Max,
 };
 
-header: <WebCore/WebGPUBlendOperation.h>
-using WebCore::WebGPU::BlendOperation = ::WebGPU::BlendOperation;
-
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::CanvasToneMappingMode : uint8_t {
     Standard,
     Extended,
 };
-
-header: <WebCore/WebGPUCanvasToneMappingMode.h>
-using WebCore::WebGPU::CanvasToneMappingMode = ::WebGPU::CanvasToneMappingMode;
 
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::CanvasAlphaMode : uint8_t {
@@ -124,17 +92,11 @@ enum class ::WebGPU::CanvasAlphaMode : uint8_t {
     Premultiplied,
 };
 
-header: <WebCore/WebGPUCanvasAlphaMode.h>
-using WebCore::WebGPU::CanvasAlphaMode = ::WebGPU::CanvasAlphaMode;
-
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::QueryType : uint8_t {
     Occlusion,
     Timestamp,
 };
-
-header: <WebCore/WebGPUQueryType.h>
-using WebCore::WebGPU::QueryType = ::WebGPU::QueryType;
 
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::CompareFunction : uint8_t {
@@ -148,17 +110,11 @@ enum class ::WebGPU::CompareFunction : uint8_t {
     Always,
 };
 
-header: <WebCore/WebGPUCompareFunction.h>
-using WebCore::WebGPU::CompareFunction = ::WebGPU::CompareFunction;
-
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::FilterMode : uint8_t {
     Nearest,
     Linear,
 };
-
-header: <WebCore/WebGPUFilterMode.h>
-using WebCore::WebGPU::FilterMode = ::WebGPU::FilterMode;
 
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::MipmapFilterMode : uint8_t {
@@ -166,18 +122,12 @@ enum class ::WebGPU::MipmapFilterMode : uint8_t {
     Linear,
 };
 
-header: <WebCore/WebGPUFilterMode.h>
-using WebCore::WebGPU::MipmapFilterMode = ::WebGPU::MipmapFilterMode;
-
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::TextureDimension : uint8_t {
     _1d,
     _2d,
     _3d,
 };
-
-header: <WebCore/WebGPUTextureDimension.h>
-using WebCore::WebGPU::TextureDimension = ::WebGPU::TextureDimension;
 
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::VertexFormat : uint8_t {
@@ -225,9 +175,6 @@ enum class ::WebGPU::VertexFormat : uint8_t {
     Unorm8x4Bgra,
 };
 
-header: <WebCore/WebGPUVertexFormat.h>
-using WebCore::WebGPU::VertexFormat = ::WebGPU::VertexFormat;
-
 header: <WebGPU/WebGPUCpp.h>
 [OptionSet] enum class ::WebGPU::ShaderStage : uint8_t {
     Vertex,
@@ -235,21 +182,12 @@ header: <WebGPU/WebGPUCpp.h>
     Compute,
 };
 
-header: <WebCore/WebGPUShaderStage.h>
-using WebCore::WebGPU::ShaderStage = ::WebGPU::ShaderStage;
-
-header: <WebCore/WebGPUShaderStage.h>
-using WebCore::WebGPU::ShaderStageFlags = OptionSet<::WebGPU::ShaderStage>;
-
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::CompilationMessageType : uint8_t {
     Error,
     Warning,
     Info,
 };
-
-header: <WebCore/WebGPUCompilationMessageType.h>
-using WebCore::WebGPU::CompilationMessageType = ::WebGPU::CompilationMessageType;
 
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::StencilOperation : uint8_t {
@@ -263,17 +201,11 @@ enum class ::WebGPU::StencilOperation : uint8_t {
     DecrementWrap,
 };
 
-header: <WebCore/WebGPUStencilOperation.h>
-using WebCore::WebGPU::StencilOperation = ::WebGPU::StencilOperation;
-
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::DeviceLostReason : uint8_t {
     Destroyed,
     Unknown,
 };
-
-header: <WebCore/WebGPUDeviceLostReason.h>
-using WebCore::WebGPU::DeviceLostReason = ::WebGPU::DeviceLostReason;
 
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::AddressMode : uint8_t {
@@ -282,18 +214,12 @@ enum class ::WebGPU::AddressMode : uint8_t {
     MirrorRepeat,
 };
 
-header: <WebCore/WebGPUAddressMode.h>
-using WebCore::WebGPU::AddressMode = ::WebGPU::AddressMode;
-
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::BufferBindingType : uint8_t {
     Uniform,
     Storage,
     ReadOnlyStorage,
 };
-
-header: <WebCore/WebGPUBufferBindingType.h>
-using WebCore::WebGPU::BufferBindingType = ::WebGPU::BufferBindingType;
 
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::StorageTextureAccess : uint8_t {
@@ -302,17 +228,11 @@ enum class ::WebGPU::StorageTextureAccess : uint8_t {
     ReadWrite,
 };
 
-header: <WebCore/WebGPUStorageTextureAccess.h>
-using WebCore::WebGPU::StorageTextureAccess = ::WebGPU::StorageTextureAccess;
-
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::FrontFace : uint8_t {
     CCW,
     CW,
 };
-
-header: <WebCore/WebGPUFrontFace.h>
-using WebCore::WebGPU::FrontFace = ::WebGPU::FrontFace;
 
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::StoreOp : uint8_t {
@@ -320,17 +240,11 @@ enum class ::WebGPU::StoreOp : uint8_t {
     Discard,
 };
 
-header: <WebCore/WebGPUStoreOp.h>
-using WebCore::WebGPU::StoreOp = ::WebGPU::StoreOp;
-
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::LoadOp : uint8_t {
     Load,
     Clear,
 };
-
-header: <WebCore/WebGPULoadOp.h>
-using WebCore::WebGPU::LoadOp = ::WebGPU::LoadOp;
 
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::ColorWrite : uint8_t {
@@ -341,21 +255,12 @@ enum class ::WebGPU::ColorWrite : uint8_t {
     Invalid,
 };
 
-header: <WebCore/WebGPUColorWrite.h>
-using WebCore::WebGPU::ColorWrite = ::WebGPU::ColorWrite;
-
-header: <WebCore/WebGPUColorWrite.h>
-using WebCore::WebGPU::ColorWriteFlags = uint32_t;
-
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::SamplerBindingType : uint8_t {
     Filtering,
     NonFiltering,
     Comparison,
 };
-
-header: <WebCore/WebGPUSamplerBindingType.h>
-using WebCore::WebGPU::SamplerBindingType = ::WebGPU::SamplerBindingType;
 
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::PrimitiveTopology : uint8_t {
@@ -366,18 +271,12 @@ enum class ::WebGPU::PrimitiveTopology : uint8_t {
     TriangleStrip,
 };
 
-header: <WebCore/WebGPUPrimitiveTopology.h>
-using WebCore::WebGPU::PrimitiveTopology = ::WebGPU::PrimitiveTopology;
-
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::CullMode : uint8_t {
     None,
     Front,
     Back,
 };
-
-header: <WebCore/WebGPUCullMode.h>
-using WebCore::WebGPU::CullMode = ::WebGPU::CullMode;
 
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::TextureViewDimension : uint8_t {
@@ -389,17 +288,11 @@ enum class ::WebGPU::TextureViewDimension : uint8_t {
     _3d,
 };
 
-header: <WebCore/WebGPUTextureViewDimension.h>
-using WebCore::WebGPU::TextureViewDimension = ::WebGPU::TextureViewDimension;
-
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::VertexStepMode : uint8_t {
     Vertex,
     Instance,
 };
-
-header: <WebCore/WebGPUVertexStepMode.h>
-using WebCore::WebGPU::VertexStepMode = ::WebGPU::VertexStepMode;
 
 header: <WebGPU/WebGPUCpp.h>
 [OptionSet] enum class ::WebGPU::BufferUsage : uint16_t {
@@ -416,9 +309,6 @@ header: <WebGPU/WebGPUCpp.h>
     Invalid,
 };
 
-header: <WebCore/WebGPUBufferUsage.h>
-using WebCore::WebGPU::BufferUsage = ::WebGPU::BufferUsage;
-
 header: <WebGPU/WebGPUCpp.h>
 [OptionSet] enum class ::WebGPU::TextureUsage : uint8_t {
     CopySource,
@@ -430,11 +320,5 @@ header: <WebGPU/WebGPUCpp.h>
     Invalid,
 };
 
-header: <WebCore/WebGPUTextureUsage.h>
-using WebCore::WebGPU::TextureUsage = ::WebGPU::TextureUsage;
-
-header: <WebCore/WebGPUTextureUsage.h>
-using WebCore::WebGPU::TextureUsageFlags = OptionSet<::WebGPU::TextureUsage>;
-
-header: <WebCore/WebGPUBufferUsage.h>
-using WebCore::WebGPU::BufferUsageFlags = OptionSet<::WebGPU::BufferUsage>
+header: <WebCore/WebGPUCppAPI.h>
+using OptionSet<::WebGPU::BufferUsage> = OptionSet<::WebGPU::BufferUsage>

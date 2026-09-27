@@ -24,7 +24,7 @@
 header: <WebGPU/WebGPUCpp.h>
 [AdditionalEncoder=StreamConnectionEncoder, CustomHeader] struct ::WebGPU::BufferDescriptor {
     String label;
-    WebCore::WebGPU::BufferUsageFlags usage;
+    OptionSet<::WebGPU::BufferUsage> usage;
     uint64_t size;
     bool mappedAtCreation;
 };

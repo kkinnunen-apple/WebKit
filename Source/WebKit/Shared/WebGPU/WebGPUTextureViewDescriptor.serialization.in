@@ -24,14 +24,14 @@
 header: <WebGPU/WebGPUCpp.h>
 [AdditionalEncoder=StreamConnectionEncoder, CustomHeader] struct ::WebGPU::TextureViewDescriptor {
     String label;
-    std::optional<WebCore::WebGPU::TextureFormat> format;
-    std::optional<WebCore::WebGPU::TextureViewDimension> dimension;
+    std::optional<::WebGPU::TextureFormat> format;
+    std::optional<::WebGPU::TextureViewDimension> dimension;
     uint32_t baseMipLevel;
     std::optional<uint32_t> mipLevelCount;
     uint32_t baseArrayLayer;
     std::optional<uint32_t> arrayLayerCount;
-    WebCore::WebGPU::TextureAspect aspect;
-    WebCore::WebGPU::TextureUsageFlags usage;
+    ::WebGPU::TextureAspect aspect;
+    OptionSet<::WebGPU::TextureUsage> usage;
 };
 
 header: "WebGPUTextureViewDescriptor.h"

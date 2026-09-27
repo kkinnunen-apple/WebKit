@@ -36,7 +36,7 @@ namespace WebKit::WebGPU {
 
 std::optional<ImageCopyTextureTagged> ConvertToBackingContext::convertToBacking(const WebCore::WebGPUImageCopyTextureTagged& imageCopyTextureTagged)
 {
-    auto base = convertToBacking(static_cast<const WebCore::WebGPU::ImageCopyTexture&>(imageCopyTextureTagged));
+    auto base = convertToBacking(static_cast<const ::WebGPU::TexelCopyTextureInfo&>(imageCopyTextureTagged));
     if (!base)
         return std::nullopt;
 

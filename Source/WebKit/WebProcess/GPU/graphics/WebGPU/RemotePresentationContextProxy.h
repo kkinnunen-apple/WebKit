@@ -29,8 +29,7 @@
 
 #include "RemoteGPUProxy.h"
 #include "WebGPUIdentifier.h"
-#include <WebCore/WebGPUIntegralTypes.h>
-#include <WebCore/WebGPUPresentationContext.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <array>
 #include <wtf/TZoneMalloc.h>
 
@@ -43,7 +42,7 @@ namespace WebKit::WebGPU {
 class ConvertToBackingContext;
 class RemoteTextureProxy;
 
-class RemotePresentationContextProxy final : public WebCore::WebGPU::PresentationContext {
+class RemotePresentationContextProxy final : public ::WebGPU::PresentationContext {
     WTF_MAKE_TZONE_ALLOCATED(RemotePresentationContextProxy);
 public:
     static Ref<RemotePresentationContextProxy> create(RemoteGPUProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)
@@ -59,7 +58,7 @@ public:
     void configure(const ::WebGPU::CanvasConfiguration&) final;
     void unconfigure() final;
     void present(uint32_t frameIndex) final;
-    RefPtr<WebCore::WebGPU::Texture> getCurrentTexture(uint32_t) final;
+    RefPtr<::WebGPU::Texture> getCurrentTexture(uint32_t) final;
     Seconds lastFrameGPUCost() const final;
     RetainPtr<CGImageRef> getTextureAsNativeImage(uint32_t, bool& isIOSurfaceSupportedFormat) final;
     void setLabel(String&&) final { }

@@ -5351,9 +5351,6 @@ enum class ::WebGPU::TextureFormat : uint8_t {
     Astc12x12UnormSRGB,
 };
 
-header: <WebCore/WebGPUTextureFormat.h>
-using WebCore::WebGPU::TextureFormat = ::WebGPU::TextureFormat;
-
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::TextureAspect : uint8_t {
     All,
@@ -5361,17 +5358,14 @@ enum class ::WebGPU::TextureAspect : uint8_t {
     DepthOnly,
 };
 
-header: <WebCore/WebGPUTextureAspect.h>
-using WebCore::WebGPU::TextureAspect = ::WebGPU::TextureAspect;
-
 header: <WebGPU/WebGPUCpp.h>
 enum class ::WebGPU::PowerPreference : bool
 
-header: <WebCore/WebGPUPowerPreference.h>
-using WebCore::WebGPU::PowerPreference = ::WebGPU::PowerPreference
+header: <WebCore/WebGPUCppAPI.h>
+using ::WebGPU::PowerPreference = ::WebGPU::PowerPreference
 
 header: <WebCore/WebGPUPredefinedColorSpace.h>
-using WebCore::WebGPU::PredefinedColorSpace = WebCore::PredefinedColorSpace
+using WebCore::PredefinedColorSpace = WebCore::PredefinedColorSpace
 
 [RefCounted] class WebCore::Model {
     Ref<WebCore::SharedBuffer> data()

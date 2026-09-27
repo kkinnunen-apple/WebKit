@@ -27,8 +27,8 @@
 
 #include "EventTarget.h"
 #include "GPUIntegralTypes.h"
-#include "WebGPUComputePassEncoder.h"
 #include <JavaScriptCore/Uint32Array.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <optional>
 #include <wtf/Ref.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
@@ -48,7 +48,7 @@ template<typename> class ExceptionOr;
 
 class GPUComputePassEncoder : public RefCountedAndCanMakeWeakPtr<GPUComputePassEncoder> {
 public:
-    static Ref<GPUComputePassEncoder> create(Ref<WebGPU::ComputePassEncoder>&& backing, String&& label, GPUCommandEncoder& commandEncoder)
+    static Ref<GPUComputePassEncoder> create(Ref<::WebGPU::ComputePassEncoder>&& backing, String&& label, GPUCommandEncoder& commandEncoder)
     {
         return adoptRef(*new GPUComputePassEncoder(WTF::move(backing), WTF::move(label), commandEncoder));
     }
@@ -74,17 +74,17 @@ public:
     void popDebugGroup();
     void insertDebugMarker(String&& markerLabel);
 
-    WebGPU::ComputePassEncoder& backing() { return m_backing; }
-    const WebGPU::ComputePassEncoder& backing() const { return m_backing; }
+    ::WebGPU::ComputePassEncoder& backing() { return m_backing; }
+    const ::WebGPU::ComputePassEncoder& backing() const { return m_backing; }
 
     GPUDevice* device() const;
 
     bool hasActiveInspectorCanvasCallTracer() const;
 
 private:
-    GPUComputePassEncoder(Ref<WebGPU::ComputePassEncoder>&&, String&& label, GPUCommandEncoder&);
+    GPUComputePassEncoder(Ref<::WebGPU::ComputePassEncoder>&&, String&& label, GPUCommandEncoder&);
 
-    Ref<WebGPU::ComputePassEncoder> m_backing;
+    Ref<::WebGPU::ComputePassEncoder> m_backing;
     String m_label;
     WeakPtr<GPUDevice, WeakPtrImplWithEventTargetData> m_device;
     std::optional<String> m_overrideLabel;

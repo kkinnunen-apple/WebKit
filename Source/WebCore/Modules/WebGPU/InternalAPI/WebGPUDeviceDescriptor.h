@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include <WebCore/WebGPUFeatureName.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUObjectDescriptorBase.h>
 #include <cstdint>
 #include <wtf/HashMap.h>
@@ -35,7 +35,7 @@
 namespace WebCore {
 
 struct WebGPUDeviceDescriptor : public WebGPUObjectDescriptorBase {
-    Vector<WebGPU::FeatureName> requiredFeatures;
+    Vector<::WebGPU::FeatureName> requiredFeatures;
     Vector<KeyValuePair<String, uint64_t>> requiredLimits;
 };
 

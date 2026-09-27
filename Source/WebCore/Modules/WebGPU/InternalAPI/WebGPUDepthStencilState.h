@@ -25,27 +25,24 @@
 
 #pragma once
 
-#include <WebCore/WebGPUCompareFunction.h>
-#include <WebCore/WebGPUIntegralTypes.h>
-#include <WebCore/WebGPUStencilFaceState.h>
-#include <WebCore/WebGPUTextureFormat.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <optional>
 
 namespace WebCore {
 
 struct WebGPUDepthStencilState {
-    WebGPU::TextureFormat format { WebGPU::TextureFormat::R8unorm };
+    ::WebGPU::TextureFormat format { ::WebGPU::TextureFormat::R8unorm };
 
     std::optional<bool> depthWriteEnabled;
-    std::optional<WebGPU::CompareFunction> depthCompare;
+    std::optional<::WebGPU::CompareFunction> depthCompare;
 
-    WebGPU::StencilFaceState stencilFront;
-    WebGPU::StencilFaceState stencilBack;
+    ::WebGPU::StencilFaceState stencilFront;
+    ::WebGPU::StencilFaceState stencilBack;
 
-    std::optional<WebGPU::StencilValue> stencilReadMask;
-    std::optional<WebGPU::StencilValue> stencilWriteMask;
+    std::optional<uint32_t> stencilReadMask;
+    std::optional<uint32_t> stencilWriteMask;
 
-    WebGPU::DepthBias depthBias { 0 };
+    int32_t depthBias { 0 };
     float depthBiasSlopeScale { 0 };
     float depthBiasClamp { 0 };
 };

@@ -25,12 +25,12 @@
 
 #pragma once
 
-#include <WebCore/WebGPUImageCopyTexture.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUPredefinedColorSpace.h>
 
 namespace WebCore {
 
-struct WebGPUImageCopyTextureTagged : public WebGPU::ImageCopyTexture {
+struct WebGPUImageCopyTextureTagged : public ::WebGPU::TexelCopyTextureInfo {
     PredefinedColorSpace colorSpace { PredefinedColorSpace::SRGB };
     bool premultipliedAlpha { false };
 };

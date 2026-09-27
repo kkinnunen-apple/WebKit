@@ -30,7 +30,7 @@
 #include "GPUStoreOp.h"
 #include "GPUTexture.h"
 #include "GPUTextureView.h"
-#include "WebGPURenderPassDepthStencilAttachment.h"
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/Forward.h>
 #include <wtf/RefPtr.h>
 
@@ -39,14 +39,14 @@ namespace WebCore {
 using GPURenderPassDepthAttachmentView = Variant<Ref<GPUTexture>, Ref<GPUTextureView>>;
 
 struct GPURenderPassDepthStencilAttachment {
-    WebGPU::RenderPassDepthStencilAttachment convertToBacking() const
+    ::WebGPU::RenderPassDepthStencilAttachment convertToBacking() const
     {
         return {
             .view = WTF::switchOn(view,
-                [](const Ref<GPUTexture>& texture) -> WebGPU::RenderPassDepthAttachmentView {
+                [](const Ref<GPUTexture>& texture) -> ::WebGPU::RenderPassAttachmentView {
                     return texture->backing();
                 },
-                [](const Ref<GPUTextureView>& view) -> WebGPU::RenderPassDepthAttachmentView {
+                [](const Ref<GPUTextureView>& view) -> ::WebGPU::RenderPassAttachmentView {
                     return view->backing();
                 }
             ),

@@ -31,7 +31,7 @@
 #include "StreamMessageReceiver.h"
 #include "WebGPUIdentifier.h"
 #include "WebGPUTextureViewDescriptor.h"
-#include <WebCore/WebGPUTexture.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/Ref.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakRef.h>
@@ -53,7 +53,7 @@ class ObjectHeap;
 class RemoteTexture final : public IPC::StreamMessageReceiver {
     WTF_MAKE_TZONE_ALLOCATED(RemoteTexture);
 public:
-    static Ref<RemoteTexture> create(GPUConnectionToWebProcess& gpuConnectionToWebProcess, RemoteGPU& gpu, WebCore::WebGPU::Texture& texture, WebGPU::ObjectHeap& objectHeap, Ref<IPC::StreamServerConnection>&& streamConnection, WebGPUIdentifier identifier)
+    static Ref<RemoteTexture> create(GPUConnectionToWebProcess& gpuConnectionToWebProcess, RemoteGPU& gpu, ::WebGPU::Texture& texture, WebGPU::ObjectHeap& objectHeap, Ref<IPC::StreamServerConnection>&& streamConnection, WebGPUIdentifier identifier)
     {
         return adoptRef(*new RemoteTexture(gpuConnectionToWebProcess, gpu, texture, objectHeap, WTF::move(streamConnection), identifier));
     }
@@ -67,14 +67,14 @@ public:
 private:
     friend class WebGPU::ObjectHeap;
 
-    RemoteTexture(GPUConnectionToWebProcess&, RemoteGPU&, WebCore::WebGPU::Texture&, WebGPU::ObjectHeap&, Ref<IPC::StreamServerConnection>&&, WebGPUIdentifier);
+    RemoteTexture(GPUConnectionToWebProcess&, RemoteGPU&, ::WebGPU::Texture&, WebGPU::ObjectHeap&, Ref<IPC::StreamServerConnection>&&, WebGPUIdentifier);
 
     RemoteTexture(const RemoteTexture&) = delete;
     RemoteTexture(RemoteTexture&&) = delete;
     RemoteTexture& operator=(const RemoteTexture&) = delete;
     RemoteTexture& operator=(RemoteTexture&&) = delete;
 
-    WebCore::WebGPU::Texture& backing() { return m_backing; }
+    ::WebGPU::Texture& backing() { return m_backing; }
 
     void didReceiveStreamMessage(IPC::StreamServerConnection&, IPC::Decoder&) final;
 
@@ -86,7 +86,7 @@ private:
 
     void setLabel(String&&);
 
-    const Ref<WebCore::WebGPU::Texture> m_backing;
+    const Ref<::WebGPU::Texture> m_backing;
     WeakRef<WebGPU::ObjectHeap> m_objectHeap;
     const Ref<IPC::StreamServerConnection> m_streamConnection;
     WebGPUIdentifier m_identifier;

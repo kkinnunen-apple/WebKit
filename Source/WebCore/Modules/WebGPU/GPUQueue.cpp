@@ -405,17 +405,17 @@ static void getImageBytesFromImageBuffer(const RefPtr<ImageBuffer>& imageBuffer,
 }
 
 #if PLATFORM(COCOA) && ENABLE(VIDEO) && ENABLE(WEB_CODECS)
-static void clampDimension(WebGPU::Extent3D& extent3D, size_t dimension, WebGPU::IntegerCoordinate minValue)
+static void clampDimension(WebGPU::Extent3D& extent3D, size_t dimension, uint32_t minValue)
 {
     switch (dimension) {
     case 0:
-        extent3D.width = std::min<WebGPU::IntegerCoordinate>(minValue, extent3D.width);
+        extent3D.width = std::min<uint32_t>(minValue, extent3D.width);
         break;
     case 1:
-        extent3D.height = std::min<WebGPU::IntegerCoordinate>(minValue, extent3D.height);
+        extent3D.height = std::min<uint32_t>(minValue, extent3D.height);
         break;
     case 2:
-        extent3D.depthOrArrayLayers = std::min<WebGPU::IntegerCoordinate>(minValue, extent3D.depthOrArrayLayers);
+        extent3D.depthOrArrayLayers = std::min<uint32_t>(minValue, extent3D.depthOrArrayLayers);
         break;
     default:
         ASSERT_NOT_REACHED();

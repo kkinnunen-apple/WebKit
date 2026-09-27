@@ -25,25 +25,22 @@
 
 #pragma once
 
-#include <WebCore/WebGPUCanvasAlphaMode.h>
-#include <WebCore/WebGPUCanvasToneMappingMode.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUDevice.h>
 #include <WebCore/WebGPUPredefinedColorSpace.h>
-#include <WebCore/WebGPUTextureFormat.h>
-#include <WebCore/WebGPUTextureUsage.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakRef.h>
 
 namespace WebCore {
 
 struct WebGPUCanvasConfiguration {
-    Ref<WebGPU::Device> device;
-    WebGPU::TextureFormat format { WebGPU::TextureFormat::R8unorm };
-    WebGPU::TextureUsageFlags usage { WebGPU::TextureUsage::RenderAttachment };
-    Vector<WebGPU::TextureFormat> viewFormats;
+    Ref<::WebGPU::Device> device;
+    ::WebGPU::TextureFormat format { ::WebGPU::TextureFormat::R8unorm };
+    OptionSet<::WebGPU::TextureUsage> usage { ::WebGPU::TextureUsage::RenderAttachment };
+    Vector<::WebGPU::TextureFormat> viewFormats;
     PredefinedColorSpace colorSpace { PredefinedColorSpace::SRGB };
-    WebGPU::CanvasToneMappingMode toneMappingMode { WebGPU::CanvasToneMappingMode::Standard };
-    WebGPU::CanvasAlphaMode compositingAlphaMode { WebGPU::CanvasAlphaMode::Opaque };
+    ::WebGPU::CanvasToneMappingMode toneMappingMode { ::WebGPU::CanvasToneMappingMode::Standard };
+    ::WebGPU::CanvasAlphaMode compositingAlphaMode { ::WebGPU::CanvasAlphaMode::Opaque };
     bool reportValidationErrors { true };
 };
 

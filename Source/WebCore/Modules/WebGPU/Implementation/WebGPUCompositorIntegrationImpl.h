@@ -30,8 +30,8 @@
 #include "WebGPUCompositorIntegration.h"
 #include "WebGPUDevice.h"
 
-#include "WebGPUPresentationContext.h"
 #include <WebCore/IOSurface.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebGPU/WebGPU.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Function.h>
@@ -48,7 +48,7 @@ namespace WebCore {
 class NativeImage;
 }
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
 
 class WebGPUCompositorIntegrationImpl final : public WebGPUCompositorIntegration {
@@ -61,7 +61,7 @@ public:
 
     virtual ~WebGPUCompositorIntegrationImpl();
 
-    void setPresentationContext(PresentationContext& presentationContext)
+    void setPresentationContext(::WebGPU::PresentationContext& presentationContext)
     {
         ASSERT(!m_presentationContext);
         m_presentationContext = presentationContext;
@@ -95,7 +95,7 @@ private:
     Seconds lastFrameGPUCost() const override;
 
 #if PLATFORM(COCOA)
-    Vector<MachSendRight> recreateRenderBuffers(int width, int height, WebCore::ColorSpace&&, WebCore::AlphaPremultiplication, WebCore::WebGPU::TextureFormat, unsigned bufferCount, Device&) override;
+    Vector<MachSendRight> recreateRenderBuffers(int width, int height, WebCore::ColorSpace&&, WebCore::AlphaPremultiplication, ::WebGPU::TextureFormat, unsigned bufferCount, ::WebGPU::Device&) override;
 
     Vector<UniqueRef<WebCore::IOSurface>> m_renderBuffers;
     WebCore::AlphaPremultiplication m_alphaMode { WebCore::AlphaPremultiplication::Premultiplied };
@@ -104,13 +104,13 @@ private:
 
     WTF::Function<void(CompletionHandler<void()>&&)> m_onSubmittedWorkScheduledCallback;
 
-    RefPtr<PresentationContext> m_presentationContext;
-    ThreadSafeWeakPtr<Device> m_device;
+    RefPtr<::WebGPU::PresentationContext> m_presentationContext;
+    ThreadSafeWeakPtr<::WebGPU::Device> m_device;
 };
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore
 
-SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::WebGPU::WebGPUCompositorIntegrationImpl)
+SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::WebGPUCompositorIntegrationImpl)
     static bool isType(const WebCore::WebGPUCompositorIntegration& compositorIntegration) { return compositorIntegration.isWebGPUCompositorIntegrationImpl(); }
 SPECIALIZE_TYPE_TRAITS_END()
 

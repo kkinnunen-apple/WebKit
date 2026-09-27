@@ -40,9 +40,9 @@ WTF_WEAK_LINK_FORCE_IMPORT(createInstance);
 }
 #endif
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-RefPtr<WebGPUIntegration> create(ScheduleWorkFunction&& scheduleWorkFunction, const WebCore::ProcessIdentity* webProcessIdentity)
+RefPtr<WebGPUIntegration> createWebGPUIntegration(WebGPUScheduleWorkFunction&& scheduleWorkFunction, const ProcessIdentity* webProcessIdentity)
 {
 #if !HAVE(TASK_IDENTITY_TOKEN)
     UNUSED_PARAM(webProcessIdentity);
@@ -62,6 +62,6 @@ RefPtr<WebGPUIntegration> create(ScheduleWorkFunction&& scheduleWorkFunction, co
     return WebGPUIntegrationImpl::create(instance.releaseNonNull());
 }
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore
 
 #endif // HAVE(WEBGPU_IMPLEMENTATION)

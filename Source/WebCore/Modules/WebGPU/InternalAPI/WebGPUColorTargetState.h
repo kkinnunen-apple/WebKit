@@ -25,18 +25,19 @@
 
 #pragma once
 
-#include <WebCore/WebGPUBlendState.h>
-#include <WebCore/WebGPUColorWrite.h>
-#include <WebCore/WebGPUTextureFormat.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <optional>
 
 namespace WebCore {
 
-struct WebGPUColorTargetState {
-    WebGPU::TextureFormat format { WebGPU::TextureFormat::R8unorm };
+// The four channel bits of a color write mask.
+constexpr uint32_t webGPUColorWriteMaskAll = OptionSet<::WebGPU::ColorWrite> { ::WebGPU::ColorWrite::Red, ::WebGPU::ColorWrite::Green, ::WebGPU::ColorWrite::Blue, ::WebGPU::ColorWrite::Alpha }.toRaw();
 
-    std::optional<WebGPU::BlendState> blend;
-    WebGPU::ColorWriteFlags writeMask { WebGPU::ColorWriteFlags_All };
+struct WebGPUColorTargetState {
+    ::WebGPU::TextureFormat format { ::WebGPU::TextureFormat::R8unorm };
+
+    std::optional<::WebGPU::BlendState> blend;
+    uint32_t writeMask { webGPUColorWriteMaskAll };
 };
 
 } // namespace WebCore

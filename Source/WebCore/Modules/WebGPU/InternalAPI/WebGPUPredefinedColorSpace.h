@@ -28,11 +28,9 @@
 #include <WebCore/PredefinedColorSpace.h>
 #include <WebCore/WebGPUCppAPI.h>
 
-namespace WebCore::WebGPU {
+namespace WebCore {
 
-using PredefinedColorSpace = WebCore::PredefinedColorSpace;
-
-constexpr ::WebGPU::PredefinedColorSpace convertToAPI(PredefinedColorSpace colorSpace)
+constexpr ::WebGPU::PredefinedColorSpace convertToWebGPU(PredefinedColorSpace colorSpace)
 {
     switch (colorSpace) {
     case PredefinedColorSpace::SRGB:
@@ -49,7 +47,7 @@ constexpr ::WebGPU::PredefinedColorSpace convertToAPI(PredefinedColorSpace color
     return ::WebGPU::PredefinedColorSpace::SRGB;
 }
 
-constexpr PredefinedColorSpace convertFromAPI(::WebGPU::PredefinedColorSpace colorSpace)
+constexpr PredefinedColorSpace convertFromWebGPU(::WebGPU::PredefinedColorSpace colorSpace)
 {
     switch (colorSpace) {
     case ::WebGPU::PredefinedColorSpace::SRGB:
@@ -72,4 +70,4 @@ constexpr PredefinedColorSpace convertFromAPI(::WebGPU::PredefinedColorSpace col
     return PredefinedColorSpace::SRGB;
 }
 
-} // namespace WebCore::WebGPU
+} // namespace WebCore

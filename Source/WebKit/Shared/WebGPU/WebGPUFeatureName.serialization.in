@@ -48,6 +48,4 @@ enum class ::WebGPU::FeatureName : uint8_t {
     Subgroups,
 };
 
-header: <WebCore/WebGPUFeatureName.h>
-using WebCore::WebGPU::FeatureName = ::WebGPU::FeatureName;
 #endif

@@ -30,19 +30,19 @@
 
 #include "WebGPUConvertFromBackingContext.h"
 #include "WebGPUConvertToBackingContext.h"
-#include <WebCore/WebGPUTextureDescriptor.h>
+#include <WebCore/WebGPUCppAPI.h>
 
 namespace WebKit::WebGPU {
 
-std::optional<TextureDescriptor> ConvertToBackingContext::convertToBacking(const WebCore::WebGPU::TextureDescriptor& textureDescriptor)
+std::optional<TextureDescriptor> ConvertToBackingContext::convertToBacking(const ::WebGPU::TextureDescriptor& textureDescriptor)
 {
     return { { { textureDescriptor.label }, textureDescriptor.size, textureDescriptor.mipLevelCount, textureDescriptor.sampleCount, textureDescriptor.dimension, textureDescriptor.format, textureDescriptor.usage, Vector(textureDescriptor.viewFormats) } };
 }
 
 // The descriptor borrows the view formats from textureDescriptor.
-std::optional<WebCore::WebGPU::TextureDescriptor> ConvertFromBackingContext::convertFromBacking(const TextureDescriptor& textureDescriptor)
+std::optional<::WebGPU::TextureDescriptor> ConvertFromBackingContext::convertFromBacking(const TextureDescriptor& textureDescriptor)
 {
-    return WebCore::WebGPU::TextureDescriptor {
+    return ::WebGPU::TextureDescriptor {
         .label = textureDescriptor.label,
         .usage = textureDescriptor.usage,
         .dimension = textureDescriptor.dimension,

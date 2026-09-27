@@ -30,8 +30,7 @@
 
 #include "RemoteShaderModuleMessages.h"
 #include "WebGPUConvertToBackingContext.h"
-#include <WebCore/WebGPUCompilationInfo.h>
-#include <WebCore/WebGPUCompilationMessage.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebKit::WebGPU {
@@ -51,7 +50,7 @@ RemoteShaderModuleProxy::~RemoteShaderModuleProxy()
     UNUSED_VARIABLE(sendResult);
 }
 
-void RemoteShaderModuleProxy::compilationInfo(CompletionHandler<void(WebCore::WebGPU::CompilationInfo&&)>&& callback)
+void RemoteShaderModuleProxy::compilationInfo(CompletionHandler<void(::WebGPU::CompilationInfo&&)>&& callback)
 {
     auto sendResult = sendWithAsyncReply(Messages::RemoteShaderModule::CompilationInfo(), [callback = WTF::move(callback)](Vector<CompilationMessage>&& messages) mutable {
         callback({ WTF::move(messages) });

@@ -39,7 +39,7 @@ std::optional<DeviceDescriptor> ConvertToBackingContext::convertToBacking(const 
     std::optional<SupportedLimits> requiredLimits;
     if (deviceDescriptor.requiredLimits)
         requiredLimits = WebGPU::convertToBacking(*deviceDescriptor.requiredLimits);
-    return { { { deviceDescriptor.label }, Vector<WebCore::WebGPU::FeatureName> { deviceDescriptor.requiredFeatures }, WTF::move(requiredLimits) } };
+    return { { { deviceDescriptor.label }, Vector<::WebGPU::FeatureName> { deviceDescriptor.requiredFeatures }, WTF::move(requiredLimits) } };
 }
 
 std::optional<::WebGPU::DeviceDescriptor> ConvertFromBackingContext::convertFromBacking(const DeviceDescriptor& deviceDescriptor)

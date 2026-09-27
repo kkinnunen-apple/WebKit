@@ -26,7 +26,7 @@
 #pragma once
 
 #include "EventTarget.h"
-#include "WebGPUPipelineLayout.h"
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/Ref.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/WeakPtr.h>
@@ -38,7 +38,7 @@ class GPUDevice;
 
 class GPUPipelineLayout : public RefCountedAndCanMakeWeakPtr<GPUPipelineLayout> {
 public:
-    static Ref<GPUPipelineLayout> create(Ref<WebGPU::PipelineLayout>&& backing, String&& label, GPUDevice& device)
+    static Ref<GPUPipelineLayout> create(Ref<::WebGPU::PipelineLayout>&& backing, String&& label, GPUDevice& device)
     {
         return adoptRef(*new GPUPipelineLayout(WTF::move(backing), WTF::move(label), device));
     }
@@ -46,17 +46,17 @@ public:
     String NODELETE label() const;
     void setLabel(String&&);
 
-    WebGPU::PipelineLayout& backing() { return m_backing; }
-    const WebGPU::PipelineLayout& backing() const { return m_backing; }
+    ::WebGPU::PipelineLayout& backing() { return m_backing; }
+    const ::WebGPU::PipelineLayout& backing() const { return m_backing; }
 
     GPUDevice* device() const;
 
     bool hasActiveInspectorCanvasCallTracer() const;
 
 private:
-    GPUPipelineLayout(Ref<WebGPU::PipelineLayout>&&, String&& label, GPUDevice&);
+    GPUPipelineLayout(Ref<::WebGPU::PipelineLayout>&&, String&& label, GPUDevice&);
 
-    const Ref<WebGPU::PipelineLayout> m_backing;
+    const Ref<::WebGPU::PipelineLayout> m_backing;
     String m_label;
     WeakPtr<GPUDevice, WeakPtrImplWithEventTargetData> m_device;
 };

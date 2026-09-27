@@ -27,10 +27,7 @@
 
 #if ENABLE(GPU_PROCESS)
 
-#include <WebCore/WebGPUAddressMode.h>
-#include <WebCore/WebGPUCompareFunction.h>
 #include <WebCore/WebGPUCppAPI.h>
-#include <WebCore/WebGPUFilterMode.h>
 
 namespace WebKit::WebGPU {
 

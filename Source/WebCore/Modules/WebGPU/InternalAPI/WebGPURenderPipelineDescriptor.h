@@ -25,11 +25,10 @@
 
 #pragma once
 
+#include <WebCore/WebGPUCppAPI.h>
 #include <WebCore/WebGPUDepthStencilState.h>
 #include <WebCore/WebGPUFragmentState.h>
-#include <WebCore/WebGPUMultisampleState.h>
 #include <WebCore/WebGPUPipelineDescriptorBase.h>
-#include <WebCore/WebGPUPrimitiveState.h>
 #include <WebCore/WebGPUVertexState.h>
 #include <optional>
 
@@ -37,9 +36,9 @@ namespace WebCore {
 
 struct WebGPURenderPipelineDescriptor : public WebGPUPipelineDescriptorBase {
     WebGPUVertexState vertex;
-    std::optional<WebGPU::PrimitiveState> primitive;
+    std::optional<::WebGPU::PrimitiveState> primitive;
     std::optional<WebGPUDepthStencilState> depthStencil;
-    std::optional<WebGPU::MultisampleState> multisample;
+    std::optional<::WebGPU::MultisampleState> multisample;
     std::optional<WebGPUFragmentState> fragment;
 };
 

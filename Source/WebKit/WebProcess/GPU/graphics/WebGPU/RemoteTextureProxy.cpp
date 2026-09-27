@@ -52,7 +52,7 @@ RemoteTextureProxy::~RemoteTextureProxy()
     UNUSED_VARIABLE(sendResult);
 }
 
-static bool NODELETE equalDescriptors(const std::optional<WebCore::WebGPU::TextureViewDescriptor>& a, const std::optional<WebCore::WebGPU::TextureViewDescriptor>& b)
+static bool NODELETE equalDescriptors(const std::optional<::WebGPU::TextureViewDescriptor>& a, const std::optional<::WebGPU::TextureViewDescriptor>& b)
 {
     if (!a && !b)
         return true;
@@ -69,7 +69,7 @@ static bool NODELETE equalDescriptors(const std::optional<WebCore::WebGPU::Textu
         && a->arrayLayerCount == b->arrayLayerCount;
 }
 
-RefPtr<WebCore::WebGPU::TextureView> RemoteTextureProxy::createView(const std::optional<WebCore::WebGPU::TextureViewDescriptor>& descriptor)
+RefPtr<::WebGPU::TextureView> RemoteTextureProxy::createView(const std::optional<::WebGPU::TextureViewDescriptor>& descriptor)
 {
     if (m_isCanvasBacking && m_lastCreatedView && equalDescriptors(descriptor, m_lastCreatedViewDescriptor))
         return m_lastCreatedView;

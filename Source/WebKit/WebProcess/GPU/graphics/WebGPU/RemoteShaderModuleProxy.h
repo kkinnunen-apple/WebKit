@@ -29,14 +29,14 @@
 
 #include "RemoteDeviceProxy.h"
 #include "WebGPUIdentifier.h"
-#include <WebCore/WebGPUShaderModule.h>
+#include <WebCore/WebGPUCppAPI.h>
 #include <wtf/TZoneMalloc.h>
 
 namespace WebKit::WebGPU {
 
 class ConvertToBackingContext;
 
-class RemoteShaderModuleProxy final : public WebCore::WebGPU::ShaderModule {
+class RemoteShaderModuleProxy final : public ::WebGPU::ShaderModule {
     WTF_MAKE_TZONE_ALLOCATED(RemoteShaderModuleProxy);
 public:
     static Ref<RemoteShaderModuleProxy> create(RemoteDeviceProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)
@@ -49,7 +49,7 @@ public:
     RemoteDeviceProxy& parent() { return m_parent; }
     RemoteGPUProxy& root() { return m_parent->root(); }
 
-    void compilationInfo(CompletionHandler<void(WebCore::WebGPU::CompilationInfo&&)>&&) final;
+    void compilationInfo(CompletionHandler<void(::WebGPU::CompilationInfo&&)>&&) final;
     void setLabel(String&&) final;
     bool isValid() const final;
 

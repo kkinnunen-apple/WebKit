@@ -24,7 +24,7 @@
 header: <WebGPU/WebGPUCpp.h>
 [AdditionalEncoder=StreamConnectionEncoder, CustomHeader] struct ::WebGPU::QuerySetDescriptor {
     String label;
-    WebCore::WebGPU::QueryType type;
+    ::WebGPU::QueryType type;
     uint32_t count;
 };
 

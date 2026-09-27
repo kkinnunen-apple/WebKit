@@ -24,7 +24,7 @@
 header: <WebGPU/WebGPUCpp.h>
 [AdditionalEncoder=StreamConnectionEncoder, CustomHeader] struct ::WebGPU::CompilationMessage {
     String message;
-    WebCore::WebGPU::CompilationMessageType type;
+    ::WebGPU::CompilationMessageType type;
     uint64_t lineNum;
     uint64_t linePos;
     uint64_t offset;

@@ -112,7 +112,7 @@ std::optional<::WebGPU::RenderPipelineDescriptor> ConvertFromBackingContext::con
     return { { renderPipelineDescriptor.label, WTF::move(*layout), WTF::move(*vertex), primitive, WTF::move(depthStencil), multisample, WTF::move(fragment) } };
 }
 
-std::optional<RefPtr<WebCore::WebGPU::PipelineLayout>> ConvertFromBackingContext::convertLayoutFromBacking(const PipelineDescriptorBase& pipelineDescriptorBase, bool allowMissingPipelineLayout)
+std::optional<RefPtr<::WebGPU::PipelineLayout>> ConvertFromBackingContext::convertLayoutFromBacking(const PipelineDescriptorBase& pipelineDescriptorBase, bool allowMissingPipelineLayout)
 {
     if (!pipelineDescriptorBase.layout) {
         if (!allowMissingPipelineLayout)
