@@ -97,7 +97,7 @@ static MTLArgumentDescriptor *createTextureArgumentDescriptor()
 static MTLArgumentDescriptor *createArgumentDescriptor(const BindGroupLayout::TextureBindingLayout& texture)
 {
     if (texture.multisampled) {
-        if (texture.viewDimension != WGPUTextureViewDimension_2D || texture.sampleType == WGPUTextureSampleType_Float)
+        if (texture.viewDimension != WebGPU::TextureViewDimension::_2d || texture.sampleType == WGPUTextureSampleType_Float)
             return nil;
     }
 
@@ -109,7 +109,7 @@ static MTLArgumentDescriptor *createArgumentDescriptor(const BindGroupLayout::St
     if ((visibility & WGPUShaderStage_Vertex) && storageTexture.access != WGPUStorageTextureAccess_ReadOnly)
         return nil;
 
-    if (storageTexture.viewDimension == WGPUTextureViewDimension_Cube || storageTexture.viewDimension == WGPUTextureViewDimension_CubeArray)
+    if (storageTexture.viewDimension == WebGPU::TextureViewDimension::Cube || storageTexture.viewDimension == WebGPU::TextureViewDimension::CubeArray)
         return nil;
 
     if (!Texture::hasStorageBindingCapability(storageTexture.format, device, storageTexture.access))
@@ -181,15 +181,15 @@ static std::optional<BindGroupLayout::Entry::BindingLayout> bindingLayout(const 
     if (auto& texture = entry.texture) {
         return BindGroupLayout::TextureBindingLayout {
             .sampleType = toAPI(texture->sampleType),
-            .viewDimension = toAPI(texture->viewDimension),
+            .viewDimension = texture->viewDimension,
             .multisampled = texture->multisampled,
         };
     }
     auto& storageTexture = *entry.storageTexture;
     return BindGroupLayout::StorageTextureBindingLayout {
         .access = toAPI(storageTexture.access),
-        .format = toAPI(storageTexture.format),
-        .viewDimension = toAPI(storageTexture.viewDimension),
+        .format = storageTexture.format,
+        .viewDimension = storageTexture.viewDimension,
     };
 }
 

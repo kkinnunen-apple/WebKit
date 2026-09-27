@@ -195,7 +195,7 @@ public:
     id<MTLBuffer> placeholderBuffer() const { return m_placeholderBuffer; }
     uint64_t placeholderBufferUniqueId() const { return m_placeholderBuffer.gpuAddress; }
 
-    id<MTLTexture> NODELETE placeholderTexture(WGPUTextureFormat) const;
+    id<MTLTexture> NODELETE placeholderTexture(WebGPU::TextureFormat) const;
     bool NODELETE isDestroyed() const;
     NSString *errorValidatingTextureCreation(const WebGPU::TextureDescriptor&);
     id<MTLBuffer> _Nullable dispatchCallBuffer();

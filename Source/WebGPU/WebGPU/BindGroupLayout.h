@@ -64,13 +64,13 @@ public:
     };
     struct TextureBindingLayout {
         WGPUTextureSampleType sampleType { WGPUTextureSampleType_Undefined };
-        WGPUTextureViewDimension viewDimension { WGPUTextureViewDimension_Undefined };
+        WebGPU::TextureViewDimension viewDimension { WebGPU::TextureViewDimension::_2d };
         bool multisampled { false };
     };
     struct StorageTextureBindingLayout {
         WGPUStorageTextureAccess access { WGPUStorageTextureAccess_Undefined };
-        WGPUTextureFormat format { WGPUTextureFormat_Undefined };
-        WGPUTextureViewDimension viewDimension { WGPUTextureViewDimension_Undefined };
+        WebGPU::TextureFormat format;
+        WebGPU::TextureViewDimension viewDimension { WebGPU::TextureViewDimension::_2d };
     };
     struct ExternalTextureBindingLayout { };
     struct Entry {

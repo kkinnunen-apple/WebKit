@@ -257,23 +257,22 @@ void PresentationContextIOSurface::configure(const WebGPU::CanvasConfiguration& 
 
     bool reportValidationErrors = configuration.reportValidationErrors;
     m_device = device;
-    auto allowedFormat = ^(WGPUTextureFormat format) {
-        return format == WGPUTextureFormat_BGRA8Unorm || format == WGPUTextureFormat_RGBA8Unorm || format == WGPUTextureFormat_RGBA16Float;
+    auto allowedFormat = ^(WebGPU::TextureFormat format) {
+        return format == WebGPU::TextureFormat::Bgra8unorm || format == WebGPU::TextureFormat::Rgba8unorm || format == WebGPU::TextureFormat::Rgba16float;
     };
 
-    auto allowedViewFormat = ^(WGPUTextureFormat format) {
+    auto allowedViewFormat = ^(WebGPU::TextureFormat format) {
         return allowedFormat(Texture::removeSRGBSuffix(format));
     };
 
-    // The format helpers and the stored state take the C API values.
-    auto format = toAPI(configuration.format);
+    auto format = configuration.format;
     auto& limits = device.limits();
     auto width = std::min<uint32_t>(limits.maxTextureDimension2D, configuration.width);
     auto height = std::min<uint32_t>(limits.maxTextureDimension2D, configuration.height);
-    auto effectiveFormat = allowedFormat(format) ? format : WGPUTextureFormat_BGRA8Unorm;
+    auto effectiveFormat = allowedFormat(format) ? format : WebGPU::TextureFormat::Bgra8unorm;
     // Without view formats in the configuration, the validation takes the format of the textures as
     // their only view format.
-    std::array effectiveViewFormats { *fromAPI(effectiveFormat) };
+    std::array effectiveViewFormats { effectiveFormat };
     WebGPU::TextureDescriptor apiTextureDescriptor {
         .usage = configuration.usage,
         .dimension = WebGPU::TextureDimension::_2d,
@@ -325,7 +324,7 @@ void PresentationContextIOSurface::configure(const WebGPU::CanvasConfiguration& 
     }
 
     for (auto viewFormat : configuration.viewFormats) {
-        if (!allowedViewFormat(toAPI(viewFormat))) {
+        if (!allowedViewFormat(viewFormat)) {
             generateAValidationError(device, @"Requested texture view format BGRA8UnormStorage is not enabled", reportValidationErrors);
             return;
         }
@@ -339,7 +338,7 @@ void PresentationContextIOSurface::configure(const WebGPU::CanvasConfiguration& 
     // The textures allow views only in the formats that the configuration lists.
     Vector<WebGPU::TextureFormat> textureViewFormats { configuration.viewFormats };
 
-    if (format == WGPUTextureFormat_BGRA8Unorm && configuration.usage.contains(WebGPU::TextureUsage::StorageBinding) && !device.hasFeature(WGPUFeatureName_BGRA8UnormStorage)) {
+    if (format == WebGPU::TextureFormat::Bgra8unorm && configuration.usage.contains(WebGPU::TextureUsage::StorageBinding) && !device.hasFeature(WGPUFeatureName_BGRA8UnormStorage)) {
         generateAValidationError(device, @"Requested storage format but BGRA8UnormStorage is not enabled", reportValidationErrors);
         return;
     }

@@ -58,7 +58,7 @@ struct ResolvedTextureViewDescriptor {
 class TextureView final : public WebGPU::TextureView, public WGPUTextureViewImpl, public TrackedResource {
     WTF_MAKE_TZONE_ALLOCATED(TextureView);
 public:
-    static Ref<TextureView> create(id<MTLTexture> texture, const ResolvedTextureViewDescriptor& descriptor, const std::optional<WGPUExtent3D>& renderExtent, Texture& parentTexture, Device& device)
+    static Ref<TextureView> create(id<MTLTexture> texture, const ResolvedTextureViewDescriptor& descriptor, const std::optional<WebGPU::Extent3D>& renderExtent, Texture& parentTexture, Device& device)
     {
         return adoptRef(*new TextureView(texture, descriptor, renderExtent, parentTexture, device));
     }
@@ -75,7 +75,7 @@ public:
 
     id<MTLTexture> NODELETE texture() const;
     id<MTLTexture> NODELETE parentTexture() const;
-    const std::optional<WGPUExtent3D>& renderExtent() const LIFETIME_BOUND { return m_renderExtent; }
+    const std::optional<WebGPU::Extent3D>& renderExtent() const LIFETIME_BOUND { return m_renderExtent; }
 
     Device& device() const { return m_device; }
     bool previouslyCleared() const;
@@ -85,15 +85,19 @@ public:
     uint32_t depthOrArrayLayers() const;
     OptionSet<WebGPU::TextureUsage> NODELETE usage() const;
     uint32_t NODELETE sampleCount() const;
-    WGPUTextureFormat NODELETE parentFormat() const;
-    WGPUTextureFormat NODELETE format() const;
+    WebGPU::TextureFormat NODELETE parentFormat() const;
+    // Invalid views may have no format or dimension. format() and dimension() then report arbitrary
+    // ones, which only the validation that rejects the view sees.
+    WebGPU::TextureFormat NODELETE format() const;
+    const std::optional<WebGPU::TextureFormat>& optionalFormat() const { return m_format; }
     uint32_t NODELETE parentMipLevelCount() const;
     uint32_t NODELETE mipLevelCount() const;
     uint32_t NODELETE baseMipLevel() const;
-    WGPUTextureAspect NODELETE aspect() const;
+    WebGPU::TextureAspect NODELETE aspect() const;
     uint32_t NODELETE arrayLayerCount() const;
     uint32_t NODELETE baseArrayLayer() const;
-    WGPUTextureViewDimension NODELETE dimension() const;
+    WebGPU::TextureViewDimension NODELETE dimension() const;
+    const std::optional<WebGPU::TextureViewDimension>& optionalDimension() const { return m_dimension; }
     bool NODELETE isDestroyed() const;
     void destroy();
     void setCommandEncoder(CommandEncoder&) const;
@@ -107,7 +111,7 @@ public:
     id<MTLRasterizationRateMap> NODELETE rasterizationMapForSlice(uint32_t slice) const;
 
 private:
-    TextureView(id<MTLTexture>, const ResolvedTextureViewDescriptor&, const std::optional<WGPUExtent3D>&, Texture&, Device&);
+    TextureView(id<MTLTexture>, const ResolvedTextureViewDescriptor&, const std::optional<WebGPU::Extent3D>&, Texture&, Device&);
     TextureView(Texture&, Device&);
 
     id<MTLTexture> m_texture { nil };
@@ -121,7 +125,7 @@ private:
     const uint32_t m_arrayLayerCount { 0 };
     const WebGPU::TextureAspect m_aspect { WebGPU::TextureAspect::All };
     const OptionSet<WebGPU::TextureUsage> m_usage;
-    const std::optional<WGPUExtent3D> m_renderExtent;
+    const std::optional<WebGPU::Extent3D> m_renderExtent;
 
     const Ref<Device> m_device;
     const Ref<Texture> m_parentTexture;

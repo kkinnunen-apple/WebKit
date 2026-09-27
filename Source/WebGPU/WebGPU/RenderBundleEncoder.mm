@@ -157,10 +157,9 @@ RefPtr<WebGPU::RenderBundleEncoder> Device::createRenderBundleEncoder(const WebG
     for (auto [ i, apiTextureFormat ] : indexedRange(descriptor.colorFormats)) {
         if (!apiTextureFormat)
             continue;
-        // The format helpers take the C API format.
-        auto textureFormat = toAPI(*apiTextureFormat);
+        auto textureFormat = *apiTextureFormat;
         if (!Texture::isColorRenderableFormat(textureFormat, *this)) {
-            NSString* error = [NSString stringWithFormat:@"createRenderBundleEncoder - colorAttachment[%zu] with format %d is not renderable", i, textureFormat];
+            NSString* error = [NSString stringWithFormat:@"createRenderBundleEncoder - colorAttachment[%zu] with format %s is not renderable", i, Texture::formatToString(textureFormat).characters()];
             generateAValidationError(error);
             return RenderBundleEncoder::createInvalid(*this, error);
         }
@@ -174,9 +173,9 @@ RefPtr<WebGPU::RenderBundleEncoder> Device::createRenderBundleEncoder(const WebG
     }
 
     if (auto apiDepthStencilFormat = descriptor.depthStencilFormat) {
-        auto depthStencilFormat = toAPI(*apiDepthStencilFormat);
+        auto depthStencilFormat = *apiDepthStencilFormat;
         if (!Texture::isDepthOrStencilFormat(depthStencilFormat)) {
-            NSString* error = [NSString stringWithFormat:@"createRenderBundleEncoder - provided depthStencilFormat %d is not a depth or stencil format", depthStencilFormat];
+            NSString* error = [NSString stringWithFormat:@"createRenderBundleEncoder - provided depthStencilFormat %s is not a depth or stencil format", Texture::formatToString(depthStencilFormat).characters()];
             generateAValidationError(error);
             return RenderBundleEncoder::createInvalid(*this, error);
         }
@@ -189,23 +188,14 @@ RefPtr<WebGPU::RenderBundleEncoder> Device::createRenderBundleEncoder(const WebG
     return RenderBundleEncoder::create(icbDescriptor, descriptor, *this);
 }
 
-// The encoder stores the formats as the C API values that the pipelines and passes compare, with
-// WGPUTextureFormat_Undefined for an empty slot.
-static Vector<WGPUTextureFormat> colorFormats(const WebGPU::RenderBundleEncoderDescriptor& descriptor)
-{
-    return WTF::map(descriptor.colorFormats, [](auto format) {
-        return format ? toAPI(*format) : WGPUTextureFormat_Undefined;
-    });
-}
-
 RenderBundleEncoder::RenderBundleEncoder(MTLIndirectCommandBufferDescriptor *indirectCommandBufferDescriptor, const WebGPU::RenderBundleEncoderDescriptor& descriptor, Device& device)
     : m_device(device)
     , m_icbDescriptor(indirectCommandBufferDescriptor)
     , m_resources([NSMapTable strongToStrongObjectsMapTable])
     , m_vertexBuffers(m_device->maxBuffersPlusVertexBuffersForVertexStage() + 1)
     , m_fragmentBuffers(m_device->maxBuffersForFragmentStage() + 1)
-    , m_colorFormats(colorFormats(descriptor))
-    , m_depthStencilFormat(descriptor.depthStencilFormat ? toAPI(*descriptor.depthStencilFormat) : WGPUTextureFormat_Undefined)
+    , m_colorFormats(descriptor.colorFormats)
+    , m_depthStencilFormat(descriptor.depthStencilFormat)
     , m_sampleCount(descriptor.sampleCount)
     , m_depthReadOnly(descriptor.depthReadOnly)
     , m_stencilReadOnly(descriptor.stencilReadOnly)

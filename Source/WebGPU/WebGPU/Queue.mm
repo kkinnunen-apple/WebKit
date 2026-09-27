@@ -851,16 +851,19 @@ NSString* Queue::errorValidatingWriteTexture(const WebGPU::TexelCopyTextureInfo&
     if (NSString* error = Texture::errorValidatingTextureCopyRange(destination, size))
         return ERROR_STRING(error);
 
-    if (!Texture::refersToSingleAspect(texture.format(), toAPI(destination.aspect)))
+    if (!Texture::refersToSingleAspect(texture.format(), destination.aspect))
         return ERROR_STRING(@"refersToSingleAspect failed");
 
     auto aspectSpecificFormat = texture.format();
 
     if (Texture::isDepthOrStencilFormat(texture.format())) {
-        if (!Texture::isValidDepthStencilCopyDestination(texture.format(), toAPI(destination.aspect)))
+        if (!Texture::isValidDepthStencilCopyDestination(texture.format(), destination.aspect))
             return ERROR_STRING(@"isValidDepthStencilCopyDestination failed");
 
-        aspectSpecificFormat = Texture::aspectSpecificFormat(texture.format(), toAPI(destination.aspect));
+        auto format = Texture::aspectSpecificFormat(texture.format(), destination.aspect);
+        if (!format)
+            return ERROR_STRING(@"destination aspect has no aspect-specific format");
+        aspectSpecificFormat = *format;
     }
 
     if (NSString* errorString = Texture::errorValidatingLinearTextureData(dataLayout, dataByteSize, aspectSpecificFormat, size))
@@ -898,17 +901,15 @@ void Queue::clearTextureIfNeeded(const WebGPU::TexelCopyTextureInfo& destination
     CommandEncoder::clearTextureIfNeeded(destination, slice, *device, m_blitCommandEncoder);
 }
 
-bool Queue::writeWillCompletelyClear(WGPUTextureDimension textureDimension, uint32_t widthForMetal, uint32_t logicalSizeWidth, uint32_t heightForMetal, uint32_t logicalSizeHeight, uint32_t depthForMetal, uint32_t logicalSizeDepthOrArrayLayers)
+bool Queue::writeWillCompletelyClear(WebGPU::TextureDimension textureDimension, uint32_t widthForMetal, uint32_t logicalSizeWidth, uint32_t heightForMetal, uint32_t logicalSizeHeight, uint32_t depthForMetal, uint32_t logicalSizeDepthOrArrayLayers)
 {
     switch (textureDimension) {
-    case WGPUTextureDimension_1D:
+    case WebGPU::TextureDimension::_1d:
         return widthForMetal == logicalSizeWidth;
-    case WGPUTextureDimension_2D:
+    case WebGPU::TextureDimension::_2d:
         return widthForMetal == logicalSizeWidth && heightForMetal == logicalSizeHeight;
-    case WGPUTextureDimension_3D:
+    case WebGPU::TextureDimension::_3d:
         return widthForMetal == logicalSizeWidth && heightForMetal == logicalSizeHeight && depthForMetal == logicalSizeDepthOrArrayLayers;
-    case WGPUTextureDimension_Force32:
-        return false;
     }
 
     ASSERT_NOT_REACHED();
@@ -932,11 +933,12 @@ void Queue::writeTexture(const WebGPU::TexelCopyTextureInfo& destination, std::s
 
     auto textureFormat = texture->format();
     if (Texture::isDepthOrStencilFormat(textureFormat)) {
-        textureFormat = Texture::aspectSpecificFormat(textureFormat, toAPI(destination.aspect));
-        if (textureFormat == WGPUTextureFormat_Undefined) {
+        auto aspectSpecificFormat = Texture::aspectSpecificFormat(textureFormat, destination.aspect);
+        if (!aspectSpecificFormat) {
             device->generateAValidationError("Invalid depth-stencil format"_s);
             return;
         }
+        textureFormat = *aspectSpecificFormat;
     }
 
     if (!skipValidation) {
@@ -963,17 +965,15 @@ void Queue::writeTexture(const WebGPU::TexelCopyTextureInfo& destination, std::s
         bytesPerRow = std::max<uint32_t>(size.height ? (data.size() / size.height) : data.size(), Texture::bytesPerRow(textureFormat, widthForMetal, texture->sampleCount()));
 
     switch (texture->dimension()) {
-    case WGPUTextureDimension_1D: {
+    case WebGPU::TextureDimension::_1d: {
         auto blockSizeTimes1DTextureLimit = checkedProduct<uint32_t>(blockSize, device->limits().maxTextureDimension1D);
         bytesPerRow = blockSizeTimes1DTextureLimit.hasOverflowed() ? bytesPerRow : std::min<uint32_t>(bytesPerRow, blockSizeTimes1DTextureLimit.value());
     }break;
-    case WGPUTextureDimension_2D:
-    case WGPUTextureDimension_3D: {
+    case WebGPU::TextureDimension::_2d:
+    case WebGPU::TextureDimension::_3d: {
         auto blockSizeTimes2DTextureLimit = checkedProduct<uint32_t>(blockSize, device->limits().maxTextureDimension2D);
         bytesPerRow = blockSizeTimes2DTextureLimit.hasOverflowed() ? bytesPerRow : std::min<uint32_t>(bytesPerRow, blockSizeTimes2DTextureLimit.value());
     } break;
-    case WGPUTextureDimension_Force32:
-        break;
     }
 
     NSUInteger rowsPerImage = dataLayout.rowsPerImage.value_or(size.height);
@@ -983,30 +983,27 @@ void Queue::writeTexture(const WebGPU::TexelCopyTextureInfo& destination, std::s
     NSUInteger bytesPerImage = checkedBytesPerImage.value();
 
     MTLBlitOption options = MTLBlitOptionNone;
-    switch (toAPI(destination.aspect)) {
-    case WGPUTextureAspect_All:
+    switch (destination.aspect) {
+    case WebGPU::TextureAspect::All:
         options = MTLBlitOptionNone;
         break;
-    case WGPUTextureAspect_StencilOnly:
+    case WebGPU::TextureAspect::StencilOnly:
         options = MTLBlitOptionStencilFromDepthStencil;
         break;
-    case WGPUTextureAspect_DepthOnly:
+    case WebGPU::TextureAspect::DepthOnly:
         options = MTLBlitOptionDepthFromDepthStencil;
         break;
-    case WGPUTextureAspect_Force32:
-        ASSERT_NOT_REACHED();
-        return;
     }
 
     id<MTLTexture> mtlTexture = texture->texture();
     auto textureDimension = texture->dimension();
-    uint32_t sliceCount = textureDimension == WGPUTextureDimension_3D ? 1 : size.depthOrArrayLayers;
+    uint32_t sliceCount = textureDimension == WebGPU::TextureDimension::_3d ? 1 : size.depthOrArrayLayers;
     bool clearWasNeeded = false;
     for (uint32_t layer = 0; layer < sliceCount; ++layer) {
         auto checkedDestinationSlice = checkedSum<uint32_t>(destination.origin.z, layer);
         if (checkedDestinationSlice.hasOverflowed())
             return;
-        NSUInteger destinationSlice = textureDimension == WGPUTextureDimension_3D ? 0 : checkedDestinationSlice.value();
+        NSUInteger destinationSlice = textureDimension == WebGPU::TextureDimension::_3d ? 0 : checkedDestinationSlice.value();
         if (!texture->previouslyCleared(destination.mipLevel, destinationSlice)) {
             if (writeWillCompletelyClear(textureDimension, widthForMetal, logicalSize.width, heightForMetal, logicalSize.height, depthForMetal, logicalSize.depthOrArrayLayers))
                 texture->setPreviouslyCleared(destination.mipLevel, destinationSlice);
@@ -1020,7 +1017,7 @@ void Queue::writeTexture(const WebGPU::TexelCopyTextureInfo& destination, std::s
     auto checkedBlockSizeTimes2048 = checkedProduct<uint32_t>(2048, blockSize);
     if (checkedBlockSizeTimes2048.hasOverflowed())
         return;
-    NSUInteger maxRowBytes = textureDimension == WGPUTextureDimension_3D ? checkedBlockSizeTimes2048.value() : bytesPerRow;
+    NSUInteger maxRowBytes = textureDimension == WebGPU::TextureDimension::_3d ? checkedBlockSizeTimes2048.value() : bytesPerRow;
     bool isCompressed = Texture::isCompressedFormat(textureFormat);
     auto blockHeight = Texture::texelBlockHeight(textureFormat);
     auto blockWidth = Texture::texelBlockWidth(textureFormat);
@@ -1031,7 +1028,7 @@ void Queue::writeTexture(const WebGPU::TexelCopyTextureInfo& destination, std::s
             .depthOrArrayLayers = 1
         };
 
-        if (textureDimension != WGPUTextureDimension_1D && (heightForMetal > newSize.height || depthForMetal > newSize.depthOrArrayLayers)) {
+        if (textureDimension != WebGPU::TextureDimension::_1d && (heightForMetal > newSize.height || depthForMetal > newSize.depthOrArrayLayers)) {
             WebGPU::TexelCopyBufferLayout newDataLayout {
                 .offset = 0,
                 .bytesPerRow = std::min<uint32_t>(maxRowBytes, dataLayout.bytesPerRow.value_or(WGPU_COPY_STRIDE_UNDEFINED)),
@@ -1050,7 +1047,7 @@ void Queue::writeTexture(const WebGPU::TexelCopyTextureInfo& destination, std::s
                 if (checkedNewDestinationOriginZ.hasOverflowed())
                     return;
                 newDestination.origin.z = checkedNewDestinationOriginZ.value();
-                for (uint32_t y = 0, endY = textureDimension == WGPUTextureDimension_1D ? std::max<uint32_t>(1, heightForMetal) : heightForMetal; y < endY; ) {
+                for (uint32_t y = 0, endY = textureDimension == WebGPU::TextureDimension::_1d ? std::max<uint32_t>(1, heightForMetal) : heightForMetal; y < endY; ) {
                     auto checkedDestinationOriginYPlusY = checkedSum<uint32_t>(destination.origin.y, y);
                     if (checkedDestinationOriginYPlusY.hasOverflowed())
                         return;
@@ -1100,20 +1097,18 @@ void Queue::writeTexture(const WebGPU::TexelCopyTextureInfo& destination, std::s
     }
 
     switch (textureDimension) {
-    case WGPUTextureDimension_1D:
+    case WebGPU::TextureDimension::_1d:
         if (!widthForMetal || !heightForMetal)
             return;
         break;
-    case WGPUTextureDimension_2D:
+    case WebGPU::TextureDimension::_2d:
         if (!widthForMetal || !heightForMetal)
             return;
         break;
-    case WGPUTextureDimension_3D:
+    case WebGPU::TextureDimension::_3d:
         if (!widthForMetal || !heightForMetal || !depthForMetal)
             return;
         break;
-    case WGPUTextureDimension_Force32:
-        return;
     }
 
     Vector<uint8_t> newData;
@@ -1203,7 +1198,7 @@ void Queue::writeTexture(const WebGPU::TexelCopyTextureInfo& destination, std::s
 #endif
             {
                 switch (textureDimension) {
-                case WGPUTextureDimension_1D: {
+                case WebGPU::TextureDimension::_1d: {
                     if (!widthForMetal || !heightForMetal)
                         return;
 
@@ -1232,7 +1227,7 @@ void Queue::writeTexture(const WebGPU::TexelCopyTextureInfo& destination, std::s
                     }
                     break;
                 }
-                case WGPUTextureDimension_2D: {
+                case WebGPU::TextureDimension::_2d: {
                     if (!widthForMetal || !heightForMetal)
                         return;
 
@@ -1262,7 +1257,7 @@ void Queue::writeTexture(const WebGPU::TexelCopyTextureInfo& destination, std::s
                     }
                     break;
                 }
-                case WGPUTextureDimension_3D: {
+                case WebGPU::TextureDimension::_3d: {
                     if (!widthForMetal || !heightForMetal || !depthForMetal)
                         return;
 
@@ -1279,9 +1274,6 @@ void Queue::writeTexture(const WebGPU::TexelCopyTextureInfo& destination, std::s
                         bytesPerImage:bytesPerImage];
                     break;
                 }
-                case WGPUTextureDimension_Force32:
-                    ASSERT_NOT_REACHED();
-                    return;
                 }
                 return;
             }
@@ -1307,7 +1299,7 @@ void Queue::writeTexture(const WebGPU::TexelCopyTextureInfo& destination, std::s
     ASSERT(temporaryBuffer.length >= newBufferSize);
 
     switch (texture->dimension()) {
-    case WGPUTextureDimension_1D: {
+    case WebGPU::TextureDimension::_1d: {
         // https://developer.apple.com/documentation/metal/mtlblitcommandencoder/1400771-copyfrombuffer?language=objc
         // "When you copy to a 1D texture, height and depth must be 1."
         auto sourceSize = MTLSizeMake(widthForMetal, 1, 1);
@@ -1350,7 +1342,7 @@ void Queue::writeTexture(const WebGPU::TexelCopyTextureInfo& destination, std::s
         }
         break;
     }
-    case WGPUTextureDimension_2D: {
+    case WebGPU::TextureDimension::_2d: {
         // https://developer.apple.com/documentation/metal/mtlblitcommandencoder/1400771-copyfrombuffer?language=objc
         // "When you copy to a 2D texture, depth must be 1."
         auto sourceSize = MTLSizeMake(widthForMetal, heightForMetal, 1);
@@ -1383,7 +1375,7 @@ void Queue::writeTexture(const WebGPU::TexelCopyTextureInfo& destination, std::s
         }
         break;
     }
-    case WGPUTextureDimension_3D: {
+    case WebGPU::TextureDimension::_3d: {
         auto sourceSize = MTLSizeMake(widthForMetal, heightForMetal, depthForMetal);
         auto destinationOrigin = MTLOriginMake(destination.origin.x, destination.origin.y, destination.origin.z);
         if (!widthForMetal || !heightForMetal || !depthForMetal || (bytesPerRow && bytesPerRow < Texture::bytesPerRow(textureFormat, widthForMetal, texture->sampleCount())))
@@ -1402,9 +1394,6 @@ void Queue::writeTexture(const WebGPU::TexelCopyTextureInfo& destination, std::s
             options:options];
         break;
     }
-    case WGPUTextureDimension_Force32:
-        ASSERT_NOT_REACHED();
-        return;
     }
 
     if (noCopy) {
@@ -1777,39 +1766,39 @@ struct WebKitCopyExternalImageVertexOut {
 // channels are normalized or floating point, because the fragment stage writes floats. Which formats
 // are renderable depends on the features the device enabled - texture-formats-tier1 and
 // rg11b10ufloat-renderable both widen the set - so ask Texture rather than keeping a list here.
-static bool isValidCopyExternalImageDestinationFormat(WGPUTextureFormat format, const Device& device)
+static bool isValidCopyExternalImageDestinationFormat(WebGPU::TextureFormat format, const Device& device)
 {
     if (!Texture::isColorRenderableFormat(format, device))
         return false;
 
     switch (format) {
     // A render pass can target these, but the fragment stage below writes floats, not integers.
-    case WGPUTextureFormat_R8Uint:
-    case WGPUTextureFormat_R8Sint:
-    case WGPUTextureFormat_R16Uint:
-    case WGPUTextureFormat_R16Sint:
-    case WGPUTextureFormat_R32Uint:
-    case WGPUTextureFormat_R32Sint:
-    case WGPUTextureFormat_RG8Uint:
-    case WGPUTextureFormat_RG8Sint:
-    case WGPUTextureFormat_RG16Uint:
-    case WGPUTextureFormat_RG16Sint:
-    case WGPUTextureFormat_RG32Uint:
-    case WGPUTextureFormat_RG32Sint:
-    case WGPUTextureFormat_RGB10A2Uint:
-    case WGPUTextureFormat_RGBA8Uint:
-    case WGPUTextureFormat_RGBA8Sint:
-    case WGPUTextureFormat_RGBA16Uint:
-    case WGPUTextureFormat_RGBA16Sint:
-    case WGPUTextureFormat_RGBA32Uint:
-    case WGPUTextureFormat_RGBA32Sint:
+    case WebGPU::TextureFormat::R8uint:
+    case WebGPU::TextureFormat::R8sint:
+    case WebGPU::TextureFormat::R16uint:
+    case WebGPU::TextureFormat::R16sint:
+    case WebGPU::TextureFormat::R32uint:
+    case WebGPU::TextureFormat::R32sint:
+    case WebGPU::TextureFormat::Rg8uint:
+    case WebGPU::TextureFormat::Rg8sint:
+    case WebGPU::TextureFormat::Rg16uint:
+    case WebGPU::TextureFormat::Rg16sint:
+    case WebGPU::TextureFormat::Rg32uint:
+    case WebGPU::TextureFormat::Rg32sint:
+    case WebGPU::TextureFormat::Rgb10a2uint:
+    case WebGPU::TextureFormat::Rgba8uint:
+    case WebGPU::TextureFormat::Rgba8sint:
+    case WebGPU::TextureFormat::Rgba16uint:
+    case WebGPU::TextureFormat::Rgba16sint:
+    case WebGPU::TextureFormat::Rgba32uint:
+    case WebGPU::TextureFormat::Rgba32sint:
     // texture-formats-tier1 makes these renderable, but the spec excludes them all the same.
-    case WGPUTextureFormat_R8Snorm:
-    case WGPUTextureFormat_R16Snorm:
-    case WGPUTextureFormat_RG8Snorm:
-    case WGPUTextureFormat_RG16Snorm:
-    case WGPUTextureFormat_RGBA8Snorm:
-    case WGPUTextureFormat_RGBA16Snorm:
+    case WebGPU::TextureFormat::R8snorm:
+    case WebGPU::TextureFormat::R16snorm:
+    case WebGPU::TextureFormat::Rg8snorm:
+    case WebGPU::TextureFormat::Rg16snorm:
+    case WebGPU::TextureFormat::Rgba8snorm:
+    case WebGPU::TextureFormat::Rgba16snorm:
         return false;
     default:
         return true;
@@ -1848,7 +1837,7 @@ NSString* Queue::errorValidatingCopyExternalImageToTexture(const WebGPU::ImageCo
     if (destination.aspect != WebGPU::TextureAspect::All)
         return ERROR_STRING(@"destination aspect is not All");
 
-    if (texture.dimension() != WGPUTextureDimension_2D)
+    if (texture.dimension() != WebGPU::TextureDimension::_2d)
         return ERROR_STRING(@"destination texture dimension is not 2D");
 
     if (texture.sampleCount() != 1)
@@ -1964,7 +1953,9 @@ void Queue::copyExternalImageToTexture(const WebGPU::ImageCopyExternalImage& sou
         if (!sourceWidth || !sourceHeight)
             return;
 
-        auto sourcePixelFormat = Texture::pixelFormat(source.sourceFormat ? toAPI(*source.sourceFormat) : WGPUTextureFormat_Undefined);
+        if (!source.sourceFormat)
+            return;
+        auto sourcePixelFormat = Texture::pixelFormat(*source.sourceFormat);
         if (sourcePixelFormat == MTLPixelFormatInvalid)
             return;
 
@@ -2020,7 +2011,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     NSUInteger destinationSlice = destination.origin.z;
 
     if (!texture->previouslyCleared(destination.mipLevel, destinationSlice)) {
-        if (writeWillCompletelyClear(WGPUTextureDimension_2D, widthForMetal, logicalSize.width, heightForMetal, logicalSize.height, 1, logicalSize.depthOrArrayLayers))
+        if (writeWillCompletelyClear(WebGPU::TextureDimension::_2d, widthForMetal, logicalSize.width, heightForMetal, logicalSize.height, 1, logicalSize.depthOrArrayLayers))
             texture->setPreviouslyCleared(destination.mipLevel, destinationSlice);
         else {
             clearTextureIfNeeded(untaggedDestination(destination), destinationSlice);

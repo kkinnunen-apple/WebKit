@@ -93,7 +93,7 @@ public:
     Device& device() const { return m_device; }
     static bool NODELETE allowedUsage(const OptionSet<BindGroupEntryUsage>&);
     static NSString* usageName(const OptionSet<BindGroupEntryUsage>&);
-    static uint64_t NODELETE makeEntryMapKey(uint32_t baseMipLevel, uint32_t baseArrayLayer, WGPUTextureAspect);
+    static uint64_t NODELETE makeEntryMapKey(uint32_t baseMipLevel, uint32_t baseArrayLayer, WebGPU::TextureAspect);
 
     const BindGroupLayout* bindGroupLayout() const { return m_bindGroupLayout.get(); }
 

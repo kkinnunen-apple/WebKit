@@ -457,7 +457,7 @@ Vector<WebGPU::FeatureName> Device::features() const
     return featuresFromAPI(m_capabilities.features.span());
 }
 
-id<MTLTexture> Device::placeholderTexture(WGPUTextureFormat format) const
+id<MTLTexture> Device::placeholderTexture(WebGPU::TextureFormat format) const
 {
     return Texture::isDepthOrStencilFormat(format) ? m_placeholderDepthStencilTexture : m_placeholderTexture;
 }
