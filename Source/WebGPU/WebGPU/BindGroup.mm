@@ -717,16 +717,19 @@ Device::ExternalTextureData Device::createExternalTextureFromPixelBuffer(CVPixel
 #endif
 }
 
-static bool NODELETE hasProperUsageFlags(WGPUBufferBindingType bufferType, OptionSet<WebGPU::BufferUsage> usage)
+static bool NODELETE hasProperUsageFlags(BindGroupLayout::BufferBindingType bufferType, OptionSet<WebGPU::BufferUsage> usage)
 {
     switch (bufferType) {
-    case WGPUBufferBindingType_Uniform:
+    case BindGroupLayout::BufferBindingType::Uniform:
         return usage.contains(WebGPU::BufferUsage::Uniform);
-    case WGPUBufferBindingType_Storage:
-    case WGPUBufferBindingType_ReadOnlyStorage:
+    case BindGroupLayout::BufferBindingType::Storage:
+    case BindGroupLayout::BufferBindingType::ReadOnlyStorage:
         return usage.contains(WebGPU::BufferUsage::Storage);
-    case WGPUBufferBindingType_Undefined:
-    case WGPUBufferBindingType_Force32:
+    case BindGroupLayout::BufferBindingType::Float3x2:
+    case BindGroupLayout::BufferBindingType::Float4x3:
+    case BindGroupLayout::BufferBindingType::Float3x3:
+    case BindGroupLayout::BufferBindingType::UInt2:
+    case BindGroupLayout::BufferBindingType::ArrayLength:
         ASSERT_NOT_REACHED();
         return false;
     }
@@ -1061,22 +1064,22 @@ static BindGroupEntryUsage NODELETE usageForStorageTexture(const BindGroupLayout
     return BindGroupEntryUsage::Undefined;
 }
 
-static BindGroupEntryUsage NODELETE usageForBuffer(WGPUBufferBindingType bufferBindingType)
+static BindGroupEntryUsage NODELETE usageForBuffer(BindGroupLayout::BufferBindingType bufferBindingType)
 {
     switch (bufferBindingType) {
-    case WGPUBufferBindingType_Undefined:
-        return BindGroupEntryUsage::Undefined;
-    case WGPUBufferBindingType_Uniform:
+    case BindGroupLayout::BufferBindingType::Uniform:
         return BindGroupEntryUsage::Constant;
-    case WGPUBufferBindingType_Storage:
+    case BindGroupLayout::BufferBindingType::Storage:
         return BindGroupEntryUsage::Storage;
-    case WGPUBufferBindingType_ReadOnlyStorage:
+    case BindGroupLayout::BufferBindingType::ReadOnlyStorage:
         return BindGroupEntryUsage::StorageRead;
-    case WGPUBufferBindingType_Force32:
-        RELEASE_ASSERT_NOT_REACHED();
+    case BindGroupLayout::BufferBindingType::Float3x2:
+    case BindGroupLayout::BufferBindingType::Float4x3:
+    case BindGroupLayout::BufferBindingType::Float3x3:
+    case BindGroupLayout::BufferBindingType::UInt2:
+    case BindGroupLayout::BufferBindingType::ArrayLength:
+        return BindGroupEntryUsage::Undefined;
     }
-
-    return BindGroupEntryUsage::Undefined;
 }
 
 template <typename T>
@@ -1319,8 +1322,8 @@ RefPtr<WebGPU::BindGroup> Device::createBindGroup(const WebGPU::BindGroupDescrip
                 }
 
                 auto& deviceLimits = limits();
-                const bool isUniformBuffer = layoutBinding->type == WGPUBufferBindingType_Uniform;
-                const bool isStorageBuffer = layoutBinding->type == WGPUBufferBindingType_Storage || layoutBinding->type == WGPUBufferBindingType_ReadOnlyStorage;
+                const bool isUniformBuffer = layoutBinding->type == BindGroupLayout::BufferBindingType::Uniform;
+                const bool isStorageBuffer = layoutBinding->type == BindGroupLayout::BufferBindingType::Storage || layoutBinding->type == BindGroupLayout::BufferBindingType::ReadOnlyStorage;
                 if (!apiBuffer->isDestroyed()) {
                     if (bufferBinding->offset >= buffer.length) {
                         VALIDATION_ERROR([NSString stringWithFormat:@"Unexpected entry.offset(%llu) >= buffer length(%lu)", bufferBinding->offset, (unsigned long)buffer.length]);

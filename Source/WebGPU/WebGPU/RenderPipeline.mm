@@ -704,15 +704,15 @@ static void populateStencilOperation(MTLStencilDescriptor *mtlStencil, const Web
     mtlStencil.readMask = stencilReadMask;
 }
 
-static WGPUBufferBindingType NODELETE convertBindingType(WGSL::BufferBindingType bindingType)
+static BindGroupLayout::BufferBindingType NODELETE convertBindingType(WGSL::BufferBindingType bindingType)
 {
     switch (bindingType) {
     case WGSL::BufferBindingType::Uniform:
-        return WGPUBufferBindingType_Uniform;
+        return BindGroupLayout::BufferBindingType::Uniform;
     case WGSL::BufferBindingType::Storage:
-        return WGPUBufferBindingType_Storage;
+        return BindGroupLayout::BufferBindingType::Storage;
     case WGSL::BufferBindingType::ReadOnlyStorage:
-        return WGPUBufferBindingType_ReadOnlyStorage;
+        return BindGroupLayout::BufferBindingType::ReadOnlyStorage;
     }
 }
 
@@ -873,12 +873,12 @@ static WebGPU::TextureFormat NODELETE convertFormat(WGSL::TexelFormat format)
     }
 }
 
-static BindGroupLayout::Entry::BindingLayout makeBindingLayout(auto& bindingMember, WGPUBufferBindingType bufferTypeOverride = WGPUBufferBindingType_Undefined, uint64_t bufferSizeForBinding = 0)
+static BindGroupLayout::Entry::BindingLayout makeBindingLayout(auto& bindingMember, std::optional<BindGroupLayout::BufferBindingType> bufferTypeOverride = std::nullopt, uint64_t bufferSizeForBinding = 0)
 {
     using Result = BindGroupLayout::Entry::BindingLayout;
     return WTF::switchOn(bindingMember, [&](const WGSL::BufferBindingLayout& bufferBinding) -> Result {
         return BindGroupLayout::BufferBindingLayout {
-            .type = (bufferTypeOverride != WGPUBufferBindingType_Undefined) ? bufferTypeOverride : convertBindingType(bufferBinding.type),
+            .type = bufferTypeOverride.value_or(convertBindingType(bufferBinding.type)),
             .hasDynamicOffset = bufferBinding.hasDynamicOffset,
             .minBindingSize = bufferBinding.minBindingSize,
             .bufferSizeForBinding = bufferSizeForBinding,
@@ -960,14 +960,14 @@ NSString* Device::addPipelineLayouts(Vector<Vector<ResolvedBindGroupLayoutEntry>
                 continue;
             }
             uint64_t bufferSizeForBinding = 0;
-            WGPUBufferBindingType bufferTypeOverride = WGPUBufferBindingType_Undefined;
+            std::optional<BindGroupLayout::BufferBindingType> bufferTypeOverride;
             if (auto& entryName = entry.name; entryName.length()) {
                 if (isArrayLength) {
                     auto bumped = bumpForArrayLength(webBinding);
                     if (!bumped)
                         return @"Binding index overflow in auto-generated layouts";
                     webBinding = *bumped;
-                    bufferTypeOverride = static_cast<WGPUBufferBindingType>(WGPUBufferBindingType_ArrayLength);
+                    bufferTypeOverride = BindGroupLayout::BufferBindingType::ArrayLength;
                     auto shortName = entryName.substring(2, entryName.length() - (sizeof("_ArrayLength") + 1));
                     if (auto it = entryMap.find(shortName); it != entryMap.end())
                         bufferSizeForBinding = it->value;
