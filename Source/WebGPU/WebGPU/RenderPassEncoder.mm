@@ -424,7 +424,7 @@ bool RenderPassEncoder::runIndexBufferValidation(uint32_t firstInstance, uint32_
         auto bufferSize = bufferAndOffset.size;
         auto stride = bufferData.stride;
         auto lastStride = bufferData.lastStride;
-        if (bufferData.stepMode == WGPUVertexStepMode_Instance) {
+        if (bufferData.stepMode == WebGPU::VertexStepMode::Instance) {
             auto product = checkedProduct<NSUInteger>(strideCount - 1, stride);
             if (product.hasOverflowed())
                 return false;
@@ -458,14 +458,14 @@ void RenderPassEncoder::runVertexBufferValidation(uint32_t vertexCount, uint32_t
     for (auto& [bufferIndex, bufferData] : requiredBufferIndices) {
         Checked<uint64_t, WTF::RecordOverflow> strideCount = 0;
         switch (bufferData.stepMode) {
-        case WGPUVertexStepMode_Vertex:
+        case WebGPU::VertexStepMode::Vertex:
             strideCount = checkedSum<uint32_t>(firstVertex, vertexCount);
             if (strideCount.hasOverflowed()) {
                 makeInvalid(@"StrideCount invalid");
                 return;
             }
             break;
-        case WGPUVertexStepMode_Instance:
+        case WebGPU::VertexStepMode::Instance:
             strideCount = checkedSum<uint32_t>(firstInstance, instanceCount);
             if (strideCount.hasOverflowed()) {
                 makeInvalid(@"StrideCount invalid");
@@ -536,7 +536,7 @@ NSString* RenderPassEncoder::errorValidatingDrawIndexed() const
         return @"Pipeline is not set";
 
     auto topology = m_pipeline->primitiveTopology();
-    if (topology == WGPUPrimitiveTopology_LineStrip || topology == WGPUPrimitiveTopology_TriangleStrip) {
+    if (topology == WebGPU::PrimitiveTopology::LineStrip || topology == WebGPU::PrimitiveTopology::TriangleStrip) {
         if (m_indexType != m_pipeline->stripIndexFormat())
             return @"Primitive topology mismiatch with render pipeline";
     }
@@ -745,7 +745,7 @@ std::pair<uint32_t, uint32_t> RenderPassEncoder::computeMininumVertexInstanceCou
         if (bufferSize < stride && bufferSize >= lastStride && elementCount == 1)
             needsValidationLayerWorkaround = true;
 
-        if (bufferData.stepMode == WGPUVertexStepMode_Vertex)
+        if (bufferData.stepMode == WebGPU::VertexStepMode::Vertex)
             minVertexCount = std::min<uint32_t>(minVertexCount, elementCount);
         else
             minInstanceCount = std::min<uint32_t>(minInstanceCount, elementCount);
@@ -1895,8 +1895,7 @@ void RenderPassEncoder::setBlendConstant(const WebGPU::Color& color)
 void RenderPassEncoder::setIndexBuffer(Buffer& buffer, WebGPU::IndexFormat apiFormat, uint64_t offset, std::optional<uint64_t> optionalSize)
 {
     RETURN_IF_FINISHED();
-    // The validation computes with the C API values.
-    auto format = toAPI(apiFormat);
+    auto format = apiFormat;
     auto size = optionalSize.value_or(WGPU_WHOLE_SIZE);
     if (!isValidToUseWith(buffer, *this)) {
         makeInvalid(@"setIndexBuffer: invalid buffer");
@@ -1907,7 +1906,7 @@ void RenderPassEncoder::setIndexBuffer(Buffer& buffer, WebGPU::IndexFormat apiFo
     if (buffer.isDestroyed())
         return;
 
-    auto indexSizeInBytes = (format == WGPUIndexFormat_Uint16 ? sizeof(uint16_t) : sizeof(uint32_t));
+    auto indexSizeInBytes = (format == WebGPU::IndexFormat::Uint16 ? sizeof(uint16_t) : sizeof(uint32_t));
     if (!buffer.usage().contains(WebGPU::BufferUsage::Index) || (offset % indexSizeInBytes)) {
         makeInvalid(@"setIndexBuffer: validation failed");
         return;
@@ -1920,7 +1919,7 @@ void RenderPassEncoder::setIndexBuffer(Buffer& buffer, WebGPU::IndexFormat apiFo
 
     m_indexBuffer = buffer;
     m_indexBufferSize = size == WGPU_WHOLE_SIZE ? buffer.initialSize() : size;
-    m_indexType = format == WGPUIndexFormat_Uint32 ? MTLIndexTypeUInt32 : MTLIndexTypeUInt16;
+    m_indexType = format == WebGPU::IndexFormat::Uint32 ? MTLIndexTypeUInt32 : MTLIndexTypeUInt16;
     m_indexBufferOffset = offset;
     addResourceToActiveResources(&buffer, BindGroupEntryUsage::Input);
 }

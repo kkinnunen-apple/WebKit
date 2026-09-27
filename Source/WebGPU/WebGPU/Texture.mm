@@ -1572,7 +1572,7 @@ static uint32_t maximumMiplevelCount(WebGPU::TextureDimension dimension, const W
     return WTF::fastLog2(m);
 }
 
-bool Texture::hasStorageBindingCapability(WebGPU::TextureFormat format, const Device& device, std::optional<WGPUStorageTextureAccess> access)
+bool Texture::hasStorageBindingCapability(WebGPU::TextureFormat format, const Device& device, std::optional<WebGPU::StorageTextureAccess> access)
 {
     // https://gpuweb.github.io/gpuweb/#plain-color-formats
     switch (format) {
@@ -1587,14 +1587,14 @@ bool Texture::hasStorageBindingCapability(WebGPU::TextureFormat format, const De
     case WebGPU::TextureFormat::Rgba32float:
     case WebGPU::TextureFormat::Rgba32uint:
     case WebGPU::TextureFormat::Rgba32sint:
-        return (!access || *access != WGPUStorageTextureAccess_ReadWrite) || device.hasFeature(WGPUFeatureName_TextureFormatsTier2);
+        return (!access || *access != WebGPU::StorageTextureAccess::ReadWrite) || device.hasFeature(WGPUFeatureName_TextureFormatsTier2);
     case WebGPU::TextureFormat::Rgba8snorm:
     case WebGPU::TextureFormat::Rg32float:
     case WebGPU::TextureFormat::Rg32uint:
     case WebGPU::TextureFormat::Rg32sint:
-        return !access || *access != WGPUStorageTextureAccess_ReadWrite;
+        return !access || *access != WebGPU::StorageTextureAccess::ReadWrite;
     case WebGPU::TextureFormat::Bgra8unorm:
-        return (!access || *access == WGPUStorageTextureAccess_WriteOnly) && device.hasFeature(WGPUFeatureName_BGRA8UnormStorage);
+        return (!access || *access == WebGPU::StorageTextureAccess::WriteOnly) && device.hasFeature(WGPUFeatureName_BGRA8UnormStorage);
     case WebGPU::TextureFormat::R32float:
     case WebGPU::TextureFormat::R32uint:
     case WebGPU::TextureFormat::R32sint:
@@ -1607,7 +1607,7 @@ bool Texture::hasStorageBindingCapability(WebGPU::TextureFormat format, const De
     case WebGPU::TextureFormat::R16float:
     case WebGPU::TextureFormat::R16uint:
     case WebGPU::TextureFormat::R16sint:
-        return ((!access || *access != WGPUStorageTextureAccess_ReadWrite) || device.hasFeature(WGPUFeatureName_TextureFormatsTier2)) && device.hasFeature(WGPUFeatureName_TextureFormatsTier1);
+        return ((!access || *access != WebGPU::StorageTextureAccess::ReadWrite) || device.hasFeature(WGPUFeatureName_TextureFormatsTier2)) && device.hasFeature(WGPUFeatureName_TextureFormatsTier1);
     case WebGPU::TextureFormat::R8snorm:
     case WebGPU::TextureFormat::Rg8unorm:
     case WebGPU::TextureFormat::Rg8snorm:
@@ -1625,7 +1625,7 @@ bool Texture::hasStorageBindingCapability(WebGPU::TextureFormat format, const De
     case WebGPU::TextureFormat::Rgb10a2unorm:
     case WebGPU::TextureFormat::Rg11b10ufloat:
     case WebGPU::TextureFormat::Rg16float:
-        return (!access || *access != WGPUStorageTextureAccess_ReadWrite) && device.hasFeature(WGPUFeatureName_TextureFormatsTier1);
+        return (!access || *access != WebGPU::StorageTextureAccess::ReadWrite) && device.hasFeature(WGPUFeatureName_TextureFormatsTier1);
     case WebGPU::TextureFormat::Rgba8unormSRGB:
     case WebGPU::TextureFormat::Bgra8unormSRGB:
     case WebGPU::TextureFormat::Rgb9e5ufloat:
@@ -3079,7 +3079,7 @@ NSString* Texture::errorValidatingTextureViewCreation(const ResolvedTextureViewD
 
     auto format = descriptor.format;
 
-    if (descriptor.usage.contains(WebGPU::TextureUsage::StorageBinding) && !hasStorageBindingCapability(format, m_device, WGPUStorageTextureAccess_WriteOnly))
+    if (descriptor.usage.contains(WebGPU::TextureUsage::StorageBinding) && !hasStorageBindingCapability(format, m_device, WebGPU::StorageTextureAccess::WriteOnly))
         return ERROR_STRING(@"view usage contains storage binding and the view's format does not support it");
 
     if (descriptor.usage.contains(WebGPU::TextureUsage::RenderAttachment) && !isDepthOrStencilFormat(format) && !isColorRenderableFormat(format, m_device))

@@ -97,7 +97,7 @@ static MTLArgumentDescriptor *createTextureArgumentDescriptor()
 static MTLArgumentDescriptor *createArgumentDescriptor(const BindGroupLayout::TextureBindingLayout& texture)
 {
     if (texture.multisampled) {
-        if (texture.viewDimension != WebGPU::TextureViewDimension::_2d || texture.sampleType == WGPUTextureSampleType_Float)
+        if (texture.viewDimension != WebGPU::TextureViewDimension::_2d || texture.sampleType == WebGPU::TextureSampleType::Float)
             return nil;
     }
 
@@ -106,7 +106,7 @@ static MTLArgumentDescriptor *createArgumentDescriptor(const BindGroupLayout::Te
 
 static MTLArgumentDescriptor *createArgumentDescriptor(const BindGroupLayout::StorageTextureBindingLayout& storageTexture, const Device& device, WGPUShaderStage visibility)
 {
-    if ((visibility & WGPUShaderStage_Vertex) && storageTexture.access != WGPUStorageTextureAccess_ReadOnly)
+    if ((visibility & WGPUShaderStage_Vertex) && storageTexture.access != WebGPU::StorageTextureAccess::ReadOnly)
         return nil;
 
     if (storageTexture.viewDimension == WebGPU::TextureViewDimension::Cube || storageTexture.viewDimension == WebGPU::TextureViewDimension::CubeArray)
@@ -177,17 +177,17 @@ static std::optional<BindGroupLayout::Entry::BindingLayout> bindingLayout(const 
         };
     }
     if (auto& sampler = entry.sampler)
-        return BindGroupLayout::SamplerBindingLayout { .type = toAPI(sampler->type) };
+        return BindGroupLayout::SamplerBindingLayout { .type = sampler->type };
     if (auto& texture = entry.texture) {
         return BindGroupLayout::TextureBindingLayout {
-            .sampleType = toAPI(texture->sampleType),
+            .sampleType = texture->sampleType,
             .viewDimension = texture->viewDimension,
             .multisampled = texture->multisampled,
         };
     }
     auto& storageTexture = *entry.storageTexture;
     return BindGroupLayout::StorageTextureBindingLayout {
-        .access = toAPI(storageTexture.access),
+        .access = storageTexture.access,
         .format = storageTexture.format,
         .viewDimension = storageTexture.viewDimension,
     };

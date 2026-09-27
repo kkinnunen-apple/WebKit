@@ -46,57 +46,51 @@
 
 namespace WebGPU::Metal {
 
-static MTLBlendOperation NODELETE blendOperation(WGPUBlendOperation operation)
+static MTLBlendOperation NODELETE blendOperation(WebGPU::BlendOperation operation)
 {
     switch (operation) {
-    case WGPUBlendOperation_Add:
+    case WebGPU::BlendOperation::Add:
         return MTLBlendOperationAdd;
-    case WGPUBlendOperation_Max:
+    case WebGPU::BlendOperation::Max:
         return MTLBlendOperationMax;
-    case WGPUBlendOperation_Min:
+    case WebGPU::BlendOperation::Min:
         return MTLBlendOperationMin;
-    case WGPUBlendOperation_ReverseSubtract:
+    case WebGPU::BlendOperation::ReverseSubtract:
         return MTLBlendOperationReverseSubtract;
-    case WGPUBlendOperation_Subtract:
+    case WebGPU::BlendOperation::Subtract:
         return MTLBlendOperationSubtract;
-    case WGPUBlendOperation_Force32:
-        ASSERT_NOT_REACHED();
-        return MTLBlendOperationAdd;
     }
 }
 
-static MTLBlendFactor NODELETE blendFactor(WGPUBlendFactor factor)
+static MTLBlendFactor NODELETE blendFactor(WebGPU::BlendFactor factor)
 {
     switch (factor) {
-    case WGPUBlendFactor_Constant:
+    case WebGPU::BlendFactor::Constant:
         return MTLBlendFactorBlendColor;
-    case WGPUBlendFactor_Dst:
+    case WebGPU::BlendFactor::Dst:
         return MTLBlendFactorDestinationColor;
-    case WGPUBlendFactor_DstAlpha:
+    case WebGPU::BlendFactor::DstAlpha:
         return MTLBlendFactorDestinationAlpha;
-    case WGPUBlendFactor_One:
+    case WebGPU::BlendFactor::One:
         return MTLBlendFactorOne;
-    case WGPUBlendFactor_OneMinusConstant:
+    case WebGPU::BlendFactor::OneMinusConstant:
         return MTLBlendFactorOneMinusBlendColor;
-    case WGPUBlendFactor_OneMinusDst:
+    case WebGPU::BlendFactor::OneMinusDst:
         return MTLBlendFactorOneMinusDestinationColor;
-    case WGPUBlendFactor_OneMinusDstAlpha:
+    case WebGPU::BlendFactor::OneMinusDstAlpha:
         return MTLBlendFactorOneMinusDestinationAlpha;
-    case WGPUBlendFactor_OneMinusSrc:
+    case WebGPU::BlendFactor::OneMinusSrc:
         return MTLBlendFactorOneMinusSourceColor;
-    case WGPUBlendFactor_Src:
+    case WebGPU::BlendFactor::Src:
         return MTLBlendFactorSourceColor;
-    case WGPUBlendFactor_OneMinusSrcAlpha:
+    case WebGPU::BlendFactor::OneMinusSrcAlpha:
         return MTLBlendFactorOneMinusSourceAlpha;
-    case WGPUBlendFactor_Zero:
+    case WebGPU::BlendFactor::Zero:
         return MTLBlendFactorZero;
-    case WGPUBlendFactor_SrcAlpha:
+    case WebGPU::BlendFactor::SrcAlpha:
         return MTLBlendFactorSourceAlpha;
-    case WGPUBlendFactor_SrcAlphaSaturated:
+    case WebGPU::BlendFactor::SrcAlphaSaturated:
         return MTLBlendFactorSourceAlphaSaturated;
-    case WGPUBlendFactor_Force32:
-        ASSERT_NOT_REACHED();
-        return MTLBlendFactorOne;
     }
 }
 
@@ -116,82 +110,65 @@ static MTLColorWriteMask NODELETE colorWriteMask(WGPUColorWriteMask mask)
     return mtlMask;
 }
 
-static MTLWinding NODELETE frontFace(WGPUFrontFace frontFace)
+static MTLWinding NODELETE frontFace(WebGPU::FrontFace frontFace)
 {
     switch (frontFace) {
-    case WGPUFrontFace_CW:
+    case WebGPU::FrontFace::CW:
         return MTLWindingClockwise;
-    case WGPUFrontFace_CCW:
+    case WebGPU::FrontFace::CCW:
         return MTLWindingCounterClockwise;
-    case WGPUFrontFace_Force32:
-        ASSERT_NOT_REACHED();
-        return MTLWindingClockwise;
     }
 }
 
-static MTLCullMode NODELETE cullMode(WGPUCullMode cullMode)
+static MTLCullMode NODELETE cullMode(WebGPU::CullMode cullMode)
 {
     switch (cullMode) {
-    case WGPUCullMode_None:
+    case WebGPU::CullMode::None:
         return MTLCullModeNone;
-    case WGPUCullMode_Front:
+    case WebGPU::CullMode::Front:
         return MTLCullModeFront;
-    case WGPUCullMode_Back:
+    case WebGPU::CullMode::Back:
         return MTLCullModeBack;
-    case WGPUCullMode_Force32:
-        ASSERT_NOT_REACHED();
-        return MTLCullModeNone;
     }
 }
 
-static MTLPrimitiveType NODELETE primitiveType(WGPUPrimitiveTopology topology)
+static MTLPrimitiveType NODELETE primitiveType(WebGPU::PrimitiveTopology topology)
 {
     switch (topology) {
-    case WGPUPrimitiveTopology_PointList:
+    case WebGPU::PrimitiveTopology::PointList:
         return MTLPrimitiveTypePoint;
-    case WGPUPrimitiveTopology_LineStrip:
+    case WebGPU::PrimitiveTopology::LineStrip:
         return MTLPrimitiveTypeLineStrip;
-    case WGPUPrimitiveTopology_TriangleList:
+    case WebGPU::PrimitiveTopology::TriangleList:
         return MTLPrimitiveTypeTriangle;
-    case WGPUPrimitiveTopology_LineList:
+    case WebGPU::PrimitiveTopology::LineList:
         return MTLPrimitiveTypeLine;
-    case WGPUPrimitiveTopology_TriangleStrip:
+    case WebGPU::PrimitiveTopology::TriangleStrip:
         return MTLPrimitiveTypeTriangleStrip;
-    case WGPUPrimitiveTopology_Force32:
-        ASSERT_NOT_REACHED();
-        return MTLPrimitiveTypeTriangle;
     }
 }
 
-static MTLPrimitiveTopologyClass NODELETE topologyType(WGPUPrimitiveTopology topology)
+static MTLPrimitiveTopologyClass NODELETE topologyType(WebGPU::PrimitiveTopology topology)
 {
     switch (topology) {
-    case WGPUPrimitiveTopology_PointList:
+    case WebGPU::PrimitiveTopology::PointList:
         return MTLPrimitiveTopologyClassPoint;
-    case WGPUPrimitiveTopology_LineStrip:
-    case WGPUPrimitiveTopology_LineList:
+    case WebGPU::PrimitiveTopology::LineStrip:
+    case WebGPU::PrimitiveTopology::LineList:
         return MTLPrimitiveTopologyClassLine;
-    case WGPUPrimitiveTopology_TriangleList:
-    case WGPUPrimitiveTopology_TriangleStrip:
-        return MTLPrimitiveTopologyClassTriangle;
-    case WGPUPrimitiveTopology_Force32:
-        ASSERT_NOT_REACHED();
+    case WebGPU::PrimitiveTopology::TriangleList:
+    case WebGPU::PrimitiveTopology::TriangleStrip:
         return MTLPrimitiveTopologyClassTriangle;
     }
 }
 
-static std::optional<MTLIndexType> NODELETE indexType(WGPUIndexFormat format)
+static std::optional<MTLIndexType> NODELETE indexType(WebGPU::IndexFormat format)
 {
     switch (format) {
-    case WGPUIndexFormat_Uint16:
+    case WebGPU::IndexFormat::Uint16:
         return MTLIndexTypeUInt16;
-    case WGPUIndexFormat_Uint32:
+    case WebGPU::IndexFormat::Uint32:
         return MTLIndexTypeUInt32;
-    case WGPUIndexFormat_Undefined:
-        return { };
-    case WGPUIndexFormat_Force32:
-        ASSERT_NOT_REACHED();
-        return { };
     }
 }
 
@@ -210,420 +187,394 @@ bool Device::validateRenderPipeline(const WebGPU::RenderPipelineDescriptor& desc
     return true;
 }
 
-static MTLStencilOperation NODELETE convertToMTLStencilOperation(WGPUStencilOperation operation)
+static MTLStencilOperation NODELETE convertToMTLStencilOperation(WebGPU::StencilOperation operation)
 {
     switch (operation) {
-    case WGPUStencilOperation_Keep:
+    case WebGPU::StencilOperation::Keep:
         return MTLStencilOperationKeep;
-    case WGPUStencilOperation_Zero:
+    case WebGPU::StencilOperation::Zero:
         return MTLStencilOperationZero;
-    case WGPUStencilOperation_Replace:
+    case WebGPU::StencilOperation::Replace:
         return MTLStencilOperationReplace;
-    case WGPUStencilOperation_Invert:
+    case WebGPU::StencilOperation::Invert:
         return MTLStencilOperationInvert;
-    case WGPUStencilOperation_IncrementClamp:
+    case WebGPU::StencilOperation::IncrementClamp:
         return MTLStencilOperationIncrementClamp;
-    case WGPUStencilOperation_DecrementClamp:
+    case WebGPU::StencilOperation::DecrementClamp:
         return MTLStencilOperationDecrementClamp;
-    case WGPUStencilOperation_IncrementWrap:
+    case WebGPU::StencilOperation::IncrementWrap:
         return MTLStencilOperationIncrementWrap;
-    case WGPUStencilOperation_DecrementWrap:
+    case WebGPU::StencilOperation::DecrementWrap:
         return MTLStencilOperationDecrementWrap;
-    case WGPUStencilOperation_Force32:
-        ASSERT_NOT_REACHED();
-        return MTLStencilOperationZero;
     }
 }
 
-static MTLCompareFunction NODELETE convertToMTLCompare(WGPUCompareFunction comparison)
+static MTLCompareFunction NODELETE convertToMTLCompare(WebGPU::CompareFunction comparison)
 {
     switch (comparison) {
-    case WGPUCompareFunction_Never:
+    case WebGPU::CompareFunction::Never:
         return MTLCompareFunctionNever;
-    case WGPUCompareFunction_Less:
+    case WebGPU::CompareFunction::Less:
         return MTLCompareFunctionLess;
-    case WGPUCompareFunction_LessEqual:
+    case WebGPU::CompareFunction::LessEqual:
         return MTLCompareFunctionLessEqual;
-    case WGPUCompareFunction_Greater:
+    case WebGPU::CompareFunction::Greater:
         return MTLCompareFunctionGreater;
-    case WGPUCompareFunction_GreaterEqual:
+    case WebGPU::CompareFunction::GreaterEqual:
         return MTLCompareFunctionGreaterEqual;
-    case WGPUCompareFunction_Equal:
+    case WebGPU::CompareFunction::Equal:
         return MTLCompareFunctionEqual;
-    case WGPUCompareFunction_NotEqual:
+    case WebGPU::CompareFunction::NotEqual:
         return MTLCompareFunctionNotEqual;
-    case WGPUCompareFunction_Undefined:
-    case WGPUCompareFunction_Always:
-    case WGPUCompareFunction_Force32:
+    case WebGPU::CompareFunction::Always:
         return MTLCompareFunctionAlways;
     }
 }
 
-static MTLVertexFormat NODELETE vertexFormat(WGPUVertexFormat vertexFormat)
+static MTLVertexFormat NODELETE vertexFormat(WebGPU::VertexFormat vertexFormat)
 {
     switch (vertexFormat) {
-    case WGPUVertexFormat_Uint8:
+    case WebGPU::VertexFormat::Uint8:
         return MTLVertexFormatUChar;
-    case WGPUVertexFormat_Uint8x2:
+    case WebGPU::VertexFormat::Uint8x2:
         return MTLVertexFormatUChar2;
-    case WGPUVertexFormat_Uint8x4:
+    case WebGPU::VertexFormat::Uint8x4:
         return MTLVertexFormatUChar4;
-    case WGPUVertexFormat_Sint8:
+    case WebGPU::VertexFormat::Sint8:
         return MTLVertexFormatChar;
-    case WGPUVertexFormat_Sint8x2:
+    case WebGPU::VertexFormat::Sint8x2:
         return MTLVertexFormatChar2;
-    case WGPUVertexFormat_Sint8x4:
+    case WebGPU::VertexFormat::Sint8x4:
         return MTLVertexFormatChar4;
-    case WGPUVertexFormat_Unorm8:
+    case WebGPU::VertexFormat::Unorm8:
         return MTLVertexFormatUCharNormalized;
-    case WGPUVertexFormat_Unorm8x2:
+    case WebGPU::VertexFormat::Unorm8x2:
         return MTLVertexFormatUChar2Normalized;
-    case WGPUVertexFormat_Unorm8x4:
+    case WebGPU::VertexFormat::Unorm8x4:
         return MTLVertexFormatUChar4Normalized;
-    case WGPUVertexFormat_Snorm8:
+    case WebGPU::VertexFormat::Snorm8:
         return MTLVertexFormatCharNormalized;
-    case WGPUVertexFormat_Snorm8x2:
+    case WebGPU::VertexFormat::Snorm8x2:
         return MTLVertexFormatChar2Normalized;
-    case WGPUVertexFormat_Snorm8x4:
+    case WebGPU::VertexFormat::Snorm8x4:
         return MTLVertexFormatChar4Normalized;
-    case WGPUVertexFormat_Uint16:
+    case WebGPU::VertexFormat::Uint16:
         return MTLVertexFormatUShort;
-    case WGPUVertexFormat_Uint16x2:
+    case WebGPU::VertexFormat::Uint16x2:
         return MTLVertexFormatUShort2;
-    case WGPUVertexFormat_Uint16x4:
+    case WebGPU::VertexFormat::Uint16x4:
         return MTLVertexFormatUShort4;
-    case WGPUVertexFormat_Sint16:
+    case WebGPU::VertexFormat::Sint16:
         return MTLVertexFormatShort;
-    case WGPUVertexFormat_Sint16x2:
+    case WebGPU::VertexFormat::Sint16x2:
         return MTLVertexFormatShort2;
-    case WGPUVertexFormat_Sint16x4:
+    case WebGPU::VertexFormat::Sint16x4:
         return MTLVertexFormatShort4;
-    case WGPUVertexFormat_Unorm16:
+    case WebGPU::VertexFormat::Unorm16:
         return MTLVertexFormatUShortNormalized;
-    case WGPUVertexFormat_Unorm16x2:
+    case WebGPU::VertexFormat::Unorm16x2:
         return MTLVertexFormatUShort2Normalized;
-    case WGPUVertexFormat_Unorm16x4:
+    case WebGPU::VertexFormat::Unorm16x4:
         return MTLVertexFormatUShort4Normalized;
-    case WGPUVertexFormat_Snorm16:
+    case WebGPU::VertexFormat::Snorm16:
         return MTLVertexFormatShortNormalized;
-    case WGPUVertexFormat_Snorm16x2:
+    case WebGPU::VertexFormat::Snorm16x2:
         return MTLVertexFormatShort2Normalized;
-    case WGPUVertexFormat_Snorm16x4:
+    case WebGPU::VertexFormat::Snorm16x4:
         return MTLVertexFormatShort4Normalized;
-    case WGPUVertexFormat_Float16:
+    case WebGPU::VertexFormat::Float16:
         return MTLVertexFormatHalf;
-    case WGPUVertexFormat_Float16x2:
+    case WebGPU::VertexFormat::Float16x2:
         return MTLVertexFormatHalf2;
-    case WGPUVertexFormat_Float16x4:
+    case WebGPU::VertexFormat::Float16x4:
         return MTLVertexFormatHalf4;
-    case WGPUVertexFormat_Float32:
+    case WebGPU::VertexFormat::Float32:
         return MTLVertexFormatFloat;
-    case WGPUVertexFormat_Float32x2:
+    case WebGPU::VertexFormat::Float32x2:
         return MTLVertexFormatFloat2;
-    case WGPUVertexFormat_Float32x3:
+    case WebGPU::VertexFormat::Float32x3:
         return MTLVertexFormatFloat3;
-    case WGPUVertexFormat_Float32x4:
+    case WebGPU::VertexFormat::Float32x4:
         return MTLVertexFormatFloat4;
-    case WGPUVertexFormat_Uint32:
+    case WebGPU::VertexFormat::Uint32:
         return MTLVertexFormatUInt;
-    case WGPUVertexFormat_Uint32x2:
+    case WebGPU::VertexFormat::Uint32x2:
         return MTLVertexFormatUInt2;
-    case WGPUVertexFormat_Uint32x3:
+    case WebGPU::VertexFormat::Uint32x3:
         return MTLVertexFormatUInt3;
-    case WGPUVertexFormat_Uint32x4:
+    case WebGPU::VertexFormat::Uint32x4:
         return MTLVertexFormatUInt4;
-    case WGPUVertexFormat_Sint32:
+    case WebGPU::VertexFormat::Sint32:
         return MTLVertexFormatInt;
-    case WGPUVertexFormat_Sint32x2:
+    case WebGPU::VertexFormat::Sint32x2:
         return MTLVertexFormatInt2;
-    case WGPUVertexFormat_Sint32x3:
+    case WebGPU::VertexFormat::Sint32x3:
         return MTLVertexFormatInt3;
-    case WGPUVertexFormat_Sint32x4:
+    case WebGPU::VertexFormat::Sint32x4:
         return MTLVertexFormatInt4;
-    case WGPUVertexFormat_Snorm1010102:
+    case WebGPU::VertexFormat::Snorm1010102:
         return MTLVertexFormatInt1010102Normalized;
-    case WGPUVertexFormat_Unorm1010102:
+    case WebGPU::VertexFormat::Unorm1010102:
         return MTLVertexFormatUInt1010102Normalized;
-    case WGPUVertexFormat_Unorm8x4Bgra:
+    case WebGPU::VertexFormat::Unorm8x4Bgra:
         return MTLVertexFormatUChar4Normalized_BGRA;
-    case WGPUVertexFormat_Force32:
-    case WGPUVertexFormat_Undefined:
-        ASSERT_NOT_REACHED();
-        return MTLVertexFormatFloat;
     }
 }
 
-static size_t NODELETE vertexFormatSize(WGPUVertexFormat vertexFormat)
+static size_t NODELETE vertexFormatSize(WebGPU::VertexFormat vertexFormat)
 {
     switch (vertexFormat) {
-    case WGPUVertexFormat_Uint8:
+    case WebGPU::VertexFormat::Uint8:
         return 1;
-    case WGPUVertexFormat_Uint8x2:
+    case WebGPU::VertexFormat::Uint8x2:
         return 2;
-    case WGPUVertexFormat_Uint8x4:
+    case WebGPU::VertexFormat::Uint8x4:
         return 4;
-    case WGPUVertexFormat_Sint8:
+    case WebGPU::VertexFormat::Sint8:
         return 1;
-    case WGPUVertexFormat_Sint8x2:
+    case WebGPU::VertexFormat::Sint8x2:
         return 2;
-    case WGPUVertexFormat_Sint8x4:
+    case WebGPU::VertexFormat::Sint8x4:
         return 4;
-    case WGPUVertexFormat_Unorm8:
+    case WebGPU::VertexFormat::Unorm8:
         return 1;
-    case WGPUVertexFormat_Unorm8x2:
+    case WebGPU::VertexFormat::Unorm8x2:
         return 2;
-    case WGPUVertexFormat_Unorm8x4:
+    case WebGPU::VertexFormat::Unorm8x4:
         return 4;
-    case WGPUVertexFormat_Snorm8:
+    case WebGPU::VertexFormat::Snorm8:
         return 1;
-    case WGPUVertexFormat_Snorm8x2:
+    case WebGPU::VertexFormat::Snorm8x2:
         return 2;
-    case WGPUVertexFormat_Snorm8x4:
+    case WebGPU::VertexFormat::Snorm8x4:
         return 4;
-    case WGPUVertexFormat_Uint16:
+    case WebGPU::VertexFormat::Uint16:
         return 2;
-    case WGPUVertexFormat_Uint16x2:
+    case WebGPU::VertexFormat::Uint16x2:
         return 4;
-    case WGPUVertexFormat_Uint16x4:
+    case WebGPU::VertexFormat::Uint16x4:
         return 8;
-    case WGPUVertexFormat_Sint16:
+    case WebGPU::VertexFormat::Sint16:
         return 2;
-    case WGPUVertexFormat_Sint16x2:
+    case WebGPU::VertexFormat::Sint16x2:
         return 4;
-    case WGPUVertexFormat_Sint16x4:
+    case WebGPU::VertexFormat::Sint16x4:
         return 8;
-    case WGPUVertexFormat_Unorm16:
+    case WebGPU::VertexFormat::Unorm16:
         return 2;
-    case WGPUVertexFormat_Unorm16x2:
+    case WebGPU::VertexFormat::Unorm16x2:
         return 4;
-    case WGPUVertexFormat_Unorm16x4:
+    case WebGPU::VertexFormat::Unorm16x4:
         return 8;
-    case WGPUVertexFormat_Snorm16:
+    case WebGPU::VertexFormat::Snorm16:
         return 2;
-    case WGPUVertexFormat_Snorm16x2:
+    case WebGPU::VertexFormat::Snorm16x2:
         return 4;
-    case WGPUVertexFormat_Snorm16x4:
+    case WebGPU::VertexFormat::Snorm16x4:
         return 8;
-    case WGPUVertexFormat_Float16:
+    case WebGPU::VertexFormat::Float16:
         return 2;
-    case WGPUVertexFormat_Float16x2:
+    case WebGPU::VertexFormat::Float16x2:
         return 4;
-    case WGPUVertexFormat_Float16x4:
+    case WebGPU::VertexFormat::Float16x4:
         return 8;
-    case WGPUVertexFormat_Float32:
+    case WebGPU::VertexFormat::Float32:
         return 4;
-    case WGPUVertexFormat_Float32x2:
+    case WebGPU::VertexFormat::Float32x2:
         return 8;
-    case WGPUVertexFormat_Float32x3:
+    case WebGPU::VertexFormat::Float32x3:
         return 12;
-    case WGPUVertexFormat_Float32x4:
+    case WebGPU::VertexFormat::Float32x4:
         return 16;
-    case WGPUVertexFormat_Uint32:
+    case WebGPU::VertexFormat::Uint32:
         return 4;
-    case WGPUVertexFormat_Uint32x2:
+    case WebGPU::VertexFormat::Uint32x2:
         return 8;
-    case WGPUVertexFormat_Uint32x3:
+    case WebGPU::VertexFormat::Uint32x3:
         return 12;
-    case WGPUVertexFormat_Uint32x4:
+    case WebGPU::VertexFormat::Uint32x4:
         return 16;
-    case WGPUVertexFormat_Sint32:
+    case WebGPU::VertexFormat::Sint32:
         return 4;
-    case WGPUVertexFormat_Sint32x2:
+    case WebGPU::VertexFormat::Sint32x2:
         return 8;
-    case WGPUVertexFormat_Sint32x3:
+    case WebGPU::VertexFormat::Sint32x3:
         return 12;
-    case WGPUVertexFormat_Sint32x4:
+    case WebGPU::VertexFormat::Sint32x4:
         return 16;
-    case WGPUVertexFormat_Snorm1010102:
-    case WGPUVertexFormat_Unorm1010102:
+    case WebGPU::VertexFormat::Snorm1010102:
+    case WebGPU::VertexFormat::Unorm1010102:
         return 4;
-    case WGPUVertexFormat_Unorm8x4Bgra:
+    case WebGPU::VertexFormat::Unorm8x4Bgra:
         return 4;
-    case WGPUVertexFormat_Force32:
-    case WGPUVertexFormat_Undefined:
-        ASSERT_NOT_REACHED();
-        return 0;
     }
 }
 
-static MTLVertexStepFunction NODELETE stepFunction(WGPUVertexStepMode stepMode, auto arrayStride)
+static MTLVertexStepFunction NODELETE stepFunction(WebGPU::VertexStepMode stepMode, auto arrayStride)
 {
     if (!arrayStride)
         return MTLVertexStepFunctionConstant;
 
     switch (stepMode) {
-    case WGPUVertexStepMode_Vertex:
+    case WebGPU::VertexStepMode::Vertex:
         return MTLVertexStepFunctionPerVertex;
-    case WGPUVertexStepMode_Instance:
+    case WebGPU::VertexStepMode::Instance:
         return MTLVertexStepFunctionPerInstance;
-    case WGPUVertexStepMode_VertexBufferNotUsed:
-        return MTLVertexStepFunctionConstant;
-    case WGPUVertexStepMode_Force32:
-        ASSERT_NOT_REACHED();
-        return MTLVertexStepFunctionPerVertex;
     }
 }
 
-static ASCIILiteral name(WGPUVertexFormat format)
+static ASCIILiteral name(WebGPU::VertexFormat format)
 {
     switch (format) {
-    case WGPUVertexFormat_Uint8:
+    case WebGPU::VertexFormat::Uint8:
         return "UChar"_s;
-    case WGPUVertexFormat_Uint8x2:
+    case WebGPU::VertexFormat::Uint8x2:
         return "UChar2"_s;
-    case WGPUVertexFormat_Uint8x4:
+    case WebGPU::VertexFormat::Uint8x4:
         return "UChar4"_s;
-    case WGPUVertexFormat_Sint8:
+    case WebGPU::VertexFormat::Sint8:
         return "Char"_s;
-    case WGPUVertexFormat_Sint8x2:
+    case WebGPU::VertexFormat::Sint8x2:
         return "Char2"_s;
-    case WGPUVertexFormat_Sint8x4:
+    case WebGPU::VertexFormat::Sint8x4:
         return "Char4"_s;
-    case WGPUVertexFormat_Unorm8:
+    case WebGPU::VertexFormat::Unorm8:
         return "UCharNormalized"_s;
-    case WGPUVertexFormat_Unorm8x2:
+    case WebGPU::VertexFormat::Unorm8x2:
         return "UChar2Normalized"_s;
-    case WGPUVertexFormat_Unorm8x4:
+    case WebGPU::VertexFormat::Unorm8x4:
         return "UChar4Normalized"_s;
-    case WGPUVertexFormat_Snorm8:
+    case WebGPU::VertexFormat::Snorm8:
         return "CharNormalized"_s;
-    case WGPUVertexFormat_Snorm8x2:
+    case WebGPU::VertexFormat::Snorm8x2:
         return "Char2Normalized"_s;
-    case WGPUVertexFormat_Snorm8x4:
+    case WebGPU::VertexFormat::Snorm8x4:
         return "Char4Normalized"_s;
-    case WGPUVertexFormat_Uint16:
+    case WebGPU::VertexFormat::Uint16:
         return "UShort"_s;
-    case WGPUVertexFormat_Uint16x2:
+    case WebGPU::VertexFormat::Uint16x2:
         return "UShort2"_s;
-    case WGPUVertexFormat_Uint16x4:
+    case WebGPU::VertexFormat::Uint16x4:
         return "UShort4"_s;
-    case WGPUVertexFormat_Sint16:
+    case WebGPU::VertexFormat::Sint16:
         return "Short"_s;
-    case WGPUVertexFormat_Sint16x2:
+    case WebGPU::VertexFormat::Sint16x2:
         return "Short2"_s;
-    case WGPUVertexFormat_Sint16x4:
+    case WebGPU::VertexFormat::Sint16x4:
         return "Short4"_s;
-    case WGPUVertexFormat_Unorm16:
+    case WebGPU::VertexFormat::Unorm16:
         return "UShortNormalized"_s;
-    case WGPUVertexFormat_Unorm16x2:
+    case WebGPU::VertexFormat::Unorm16x2:
         return "UShort2Normalized"_s;
-    case WGPUVertexFormat_Unorm16x4:
+    case WebGPU::VertexFormat::Unorm16x4:
         return "UShort4Normalized"_s;
-    case WGPUVertexFormat_Snorm16:
+    case WebGPU::VertexFormat::Snorm16:
         return "ShortNormalized"_s;
-    case WGPUVertexFormat_Snorm16x2:
+    case WebGPU::VertexFormat::Snorm16x2:
         return "Short2Normalized"_s;
-    case WGPUVertexFormat_Snorm16x4:
+    case WebGPU::VertexFormat::Snorm16x4:
         return "Short4Normalized"_s;
-    case WGPUVertexFormat_Float16:
+    case WebGPU::VertexFormat::Float16:
         return "Half"_s;
-    case WGPUVertexFormat_Float16x2:
+    case WebGPU::VertexFormat::Float16x2:
         return "Half2"_s;
-    case WGPUVertexFormat_Float16x4:
+    case WebGPU::VertexFormat::Float16x4:
         return "Half4"_s;
-    case WGPUVertexFormat_Float32:
+    case WebGPU::VertexFormat::Float32:
         return "Float"_s;
-    case WGPUVertexFormat_Float32x2:
+    case WebGPU::VertexFormat::Float32x2:
         return "Float2"_s;
-    case WGPUVertexFormat_Float32x3:
+    case WebGPU::VertexFormat::Float32x3:
         return "Float3"_s;
-    case WGPUVertexFormat_Float32x4:
+    case WebGPU::VertexFormat::Float32x4:
         return "Float4"_s;
-    case WGPUVertexFormat_Uint32:
+    case WebGPU::VertexFormat::Uint32:
         return "UInt"_s;
-    case WGPUVertexFormat_Uint32x2:
+    case WebGPU::VertexFormat::Uint32x2:
         return "UInt2"_s;
-    case WGPUVertexFormat_Uint32x3:
+    case WebGPU::VertexFormat::Uint32x3:
         return "UInt3"_s;
-    case WGPUVertexFormat_Uint32x4:
+    case WebGPU::VertexFormat::Uint32x4:
         return "UInt4"_s;
-    case WGPUVertexFormat_Sint32:
+    case WebGPU::VertexFormat::Sint32:
         return "Int"_s;
-    case WGPUVertexFormat_Sint32x2:
+    case WebGPU::VertexFormat::Sint32x2:
         return "Int2"_s;
-    case WGPUVertexFormat_Sint32x3:
+    case WebGPU::VertexFormat::Sint32x3:
         return "Int3"_s;
-    case WGPUVertexFormat_Sint32x4:
+    case WebGPU::VertexFormat::Sint32x4:
         return "Int4"_s;
-    case WGPUVertexFormat_Snorm1010102:
+    case WebGPU::VertexFormat::Snorm1010102:
         return "SInt1010102Normalized"_s;
-    case WGPUVertexFormat_Unorm1010102:
+    case WebGPU::VertexFormat::Unorm1010102:
         return "UInt1010102Normalized"_s;
-    case WGPUVertexFormat_Unorm8x4Bgra:
+    case WebGPU::VertexFormat::Unorm8x4Bgra:
         return "Unorm8x4Bgra"_s;
-    case WGPUVertexFormat_Force32:
-    case WGPUVertexFormat_Undefined:
-        ASSERT_NOT_REACHED();
-        return "none"_s;
     }
 }
 
-enum class WGPUVertexFormatType {
+enum class VertexFormatType {
     Undefined,
     SignedInt,
     UnsignedInt,
     Float
 };
 
-static constexpr WGPUVertexFormatType NODELETE formatType(WGPUVertexFormat format)
+static constexpr VertexFormatType NODELETE formatType(WebGPU::VertexFormat format)
 {
     switch (format) {
-    case WGPUVertexFormat_Uint8:
-    case WGPUVertexFormat_Uint8x2:
-    case WGPUVertexFormat_Uint8x4:
-    case WGPUVertexFormat_Uint16:
-    case WGPUVertexFormat_Uint16x2:
-    case WGPUVertexFormat_Uint16x4:
-    case WGPUVertexFormat_Uint32:
-    case WGPUVertexFormat_Uint32x2:
-    case WGPUVertexFormat_Uint32x3:
-    case WGPUVertexFormat_Uint32x4:
-        return WGPUVertexFormatType::UnsignedInt;
+    case WebGPU::VertexFormat::Uint8:
+    case WebGPU::VertexFormat::Uint8x2:
+    case WebGPU::VertexFormat::Uint8x4:
+    case WebGPU::VertexFormat::Uint16:
+    case WebGPU::VertexFormat::Uint16x2:
+    case WebGPU::VertexFormat::Uint16x4:
+    case WebGPU::VertexFormat::Uint32:
+    case WebGPU::VertexFormat::Uint32x2:
+    case WebGPU::VertexFormat::Uint32x3:
+    case WebGPU::VertexFormat::Uint32x4:
+        return VertexFormatType::UnsignedInt;
 
-    case WGPUVertexFormat_Sint8:
-    case WGPUVertexFormat_Sint8x2:
-    case WGPUVertexFormat_Sint8x4:
-    case WGPUVertexFormat_Sint16:
-    case WGPUVertexFormat_Sint16x2:
-    case WGPUVertexFormat_Sint16x4:
-    case WGPUVertexFormat_Sint32:
-    case WGPUVertexFormat_Sint32x2:
-    case WGPUVertexFormat_Sint32x3:
-    case WGPUVertexFormat_Sint32x4:
-        return WGPUVertexFormatType::SignedInt;
+    case WebGPU::VertexFormat::Sint8:
+    case WebGPU::VertexFormat::Sint8x2:
+    case WebGPU::VertexFormat::Sint8x4:
+    case WebGPU::VertexFormat::Sint16:
+    case WebGPU::VertexFormat::Sint16x2:
+    case WebGPU::VertexFormat::Sint16x4:
+    case WebGPU::VertexFormat::Sint32:
+    case WebGPU::VertexFormat::Sint32x2:
+    case WebGPU::VertexFormat::Sint32x3:
+    case WebGPU::VertexFormat::Sint32x4:
+        return VertexFormatType::SignedInt;
 
-    case WGPUVertexFormat_Unorm8:
-    case WGPUVertexFormat_Unorm8x2:
-    case WGPUVertexFormat_Unorm8x4:
-    case WGPUVertexFormat_Snorm8:
-    case WGPUVertexFormat_Snorm8x2:
-    case WGPUVertexFormat_Snorm8x4:
-    case WGPUVertexFormat_Unorm16:
-    case WGPUVertexFormat_Unorm16x2:
-    case WGPUVertexFormat_Unorm16x4:
-    case WGPUVertexFormat_Snorm16:
-    case WGPUVertexFormat_Snorm16x2:
-    case WGPUVertexFormat_Snorm16x4:
-    case WGPUVertexFormat_Float16:
-    case WGPUVertexFormat_Float16x2:
-    case WGPUVertexFormat_Float16x4:
-    case WGPUVertexFormat_Float32:
-    case WGPUVertexFormat_Float32x2:
-    case WGPUVertexFormat_Float32x3:
-    case WGPUVertexFormat_Float32x4:
-    case WGPUVertexFormat_Snorm1010102:
-    case WGPUVertexFormat_Unorm1010102:
-    case WGPUVertexFormat_Unorm8x4Bgra:
-        return WGPUVertexFormatType::Float;
+    case WebGPU::VertexFormat::Unorm8:
+    case WebGPU::VertexFormat::Unorm8x2:
+    case WebGPU::VertexFormat::Unorm8x4:
+    case WebGPU::VertexFormat::Snorm8:
+    case WebGPU::VertexFormat::Snorm8x2:
+    case WebGPU::VertexFormat::Snorm8x4:
+    case WebGPU::VertexFormat::Unorm16:
+    case WebGPU::VertexFormat::Unorm16x2:
+    case WebGPU::VertexFormat::Unorm16x4:
+    case WebGPU::VertexFormat::Snorm16:
+    case WebGPU::VertexFormat::Snorm16x2:
+    case WebGPU::VertexFormat::Snorm16x4:
+    case WebGPU::VertexFormat::Float16:
+    case WebGPU::VertexFormat::Float16x2:
+    case WebGPU::VertexFormat::Float16x4:
+    case WebGPU::VertexFormat::Float32:
+    case WebGPU::VertexFormat::Float32x2:
+    case WebGPU::VertexFormat::Float32x3:
+    case WebGPU::VertexFormat::Float32x4:
+    case WebGPU::VertexFormat::Snorm1010102:
+    case WebGPU::VertexFormat::Unorm1010102:
+    case WebGPU::VertexFormat::Unorm8x4Bgra:
+        return VertexFormatType::Float;
 
-    case WGPUVertexFormat_Force32:
-        RELEASE_ASSERT_NOT_REACHED();
-    case WGPUVertexFormat_Undefined:
-        return WGPUVertexFormatType::Undefined;
     }
 }
 
-static bool NODELETE matchesFormat(const ShaderModule::VertexStageIn& stageIn, uint32_t shaderLocation, WGPUVertexFormat format)
+static bool NODELETE matchesFormat(const ShaderModule::VertexStageIn& stageIn, uint32_t shaderLocation, WebGPU::VertexFormat format)
 {
     auto it = stageIn.find(shaderLocation);
     if (it == stageIn.end())
@@ -669,13 +620,12 @@ static MTLVertexDescriptor *createVertexDescriptor(const WebGPU::VertexState& ve
 
         uint64_t lastStride = 0;
         vertexDescriptor.layouts[bufferIndex].stride = stride;
-        auto stepMode = toAPI(buffer.stepMode);
+        auto stepMode = buffer.stepMode;
         vertexDescriptor.layouts[bufferIndex].stepFunction = stepFunction(stepMode, buffer.arrayStride);
         if (vertexDescriptor.layouts[bufferIndex].stepFunction == MTLVertexStepFunctionConstant)
             vertexDescriptor.layouts[bufferIndex].stepRate = 0;
         for (auto& attribute : buffer.attributes) {
-            // The vertex format helpers and the shader stage-in take the C API format.
-            auto attributeFormat = toAPI(attribute.format);
+            auto attributeFormat = attribute.format;
             auto formatSize = vertexFormatSize(attributeFormat);
             auto offsetPlusFormatSize = checkedSum<uint64_t>(attribute.offset, formatSize);
             if (offsetPlusFormatSize.hasOverflowed()) {
@@ -723,10 +673,10 @@ static MTLVertexDescriptor *createVertexDescriptor(const WebGPU::VertexState& ve
         auto formatSize = vertexFormatSize(attributeFormat);
         if (!matchesFormat(shaderLocations, shaderLocation, attributeFormat)) {
             auto it = stageIn.find(shaderLocation);
-            WGPUVertexFormat otherFormat = WGPUVertexFormat_Undefined;
+            ASCIILiteral otherFormat = "undefined"_s;
             if (it != stageIn.end())
-                otherFormat = it->value;
-            *error = [NSString stringWithFormat:@"!matchesFormat(attribute(%d), format(%s), size(%zu), otherFormat(%d)", shaderLocation, name(attributeFormat).characters(), formatSize, otherFormat];
+                otherFormat = name(it->value);
+            *error = [NSString stringWithFormat:@"!matchesFormat(attribute(%d), format(%s), size(%zu), otherFormat(%s)", shaderLocation, name(attributeFormat).characters(), formatSize, otherFormat.characters()];
             return nil;
         }
     }
@@ -746,10 +696,10 @@ static MTLVertexDescriptor *createVertexDescriptor(const WebGPU::VertexState& ve
 
 static void populateStencilOperation(MTLStencilDescriptor *mtlStencil, const WebGPU::StencilFaceState& stencil, uint32_t stencilReadMask, uint32_t stencilWriteMask)
 {
-    mtlStencil.stencilCompareFunction =  convertToMTLCompare(toAPI(stencil.compare));
-    mtlStencil.stencilFailureOperation = convertToMTLStencilOperation(toAPI(stencil.failOp));
-    mtlStencil.depthFailureOperation = convertToMTLStencilOperation(toAPI(stencil.depthFailOp));
-    mtlStencil.depthStencilPassOperation = convertToMTLStencilOperation(toAPI(stencil.passOp));
+    mtlStencil.stencilCompareFunction =  convertToMTLCompare(stencil.compare);
+    mtlStencil.stencilFailureOperation = convertToMTLStencilOperation(stencil.failOp);
+    mtlStencil.depthFailureOperation = convertToMTLStencilOperation(stencil.depthFailOp);
+    mtlStencil.depthStencilPassOperation = convertToMTLStencilOperation(stencil.passOp);
     mtlStencil.writeMask = stencilWriteMask;
     mtlStencil.readMask = stencilReadMask;
 }
@@ -766,15 +716,15 @@ static WGPUBufferBindingType NODELETE convertBindingType(WGSL::BufferBindingType
     }
 }
 
-static WGPUSamplerBindingType NODELETE convertSamplerBindingType(WGSL::SamplerBindingType samplerType)
+static WebGPU::SamplerBindingType NODELETE convertSamplerBindingType(WGSL::SamplerBindingType samplerType)
 {
     switch (samplerType) {
     case WGSL::SamplerBindingType::Filtering:
-        return WGPUSamplerBindingType_Filtering;
+        return WebGPU::SamplerBindingType::Filtering;
     case WGSL::SamplerBindingType::NonFiltering:
-        return WGPUSamplerBindingType_NonFiltering;
+        return WebGPU::SamplerBindingType::NonFiltering;
     case WGSL::SamplerBindingType::Comparison:
-        return WGPUSamplerBindingType_Comparison;
+        return WebGPU::SamplerBindingType::Comparison;
     }
 }
 
@@ -791,19 +741,19 @@ static WGPUShaderStage NODELETE convertVisibility(const OptionSet<WGSL::ShaderSt
     return flags;
 }
 
-static WGPUTextureSampleType NODELETE convertSampleType(WGSL::TextureSampleType sampleType)
+static WebGPU::TextureSampleType NODELETE convertSampleType(WGSL::TextureSampleType sampleType)
 {
     switch (sampleType) {
     case WGSL::TextureSampleType::Float:
-        return WGPUTextureSampleType_Float;
+        return WebGPU::TextureSampleType::Float;
     case WGSL::TextureSampleType::UnfilterableFloat:
-        return WGPUTextureSampleType_UnfilterableFloat;
+        return WebGPU::TextureSampleType::UnfilterableFloat;
     case WGSL::TextureSampleType::Depth:
-        return WGPUTextureSampleType_Depth;
+        return WebGPU::TextureSampleType::Depth;
     case WGSL::TextureSampleType::SignedInt:
-        return WGPUTextureSampleType_Sint;
+        return WebGPU::TextureSampleType::Sint;
     case WGSL::TextureSampleType::UnsignedInt:
-        return WGPUTextureSampleType_Uint;
+        return WebGPU::TextureSampleType::Uint;
     }
 }
 
@@ -825,15 +775,15 @@ static WebGPU::TextureViewDimension NODELETE convertViewDimension(WGSL::TextureV
     }
 }
 
-static WGPUStorageTextureAccess NODELETE convertAccess(WGSL::StorageTextureAccess access)
+static WebGPU::StorageTextureAccess NODELETE convertAccess(WGSL::StorageTextureAccess access)
 {
     switch (access) {
     case WGSL::StorageTextureAccess::WriteOnly:
-        return WGPUStorageTextureAccess_WriteOnly;
+        return WebGPU::StorageTextureAccess::WriteOnly;
     case WGSL::StorageTextureAccess::ReadOnly:
-        return WGPUStorageTextureAccess_ReadOnly;
+        return WebGPU::StorageTextureAccess::ReadOnly;
     case WGSL::StorageTextureAccess::ReadWrite:
-        return WGPUStorageTextureAccess_ReadWrite;
+        return WebGPU::StorageTextureAccess::ReadWrite;
     }
 }
 
@@ -1096,33 +1046,30 @@ static std::pair<Ref<RenderPipeline>, NSString*> returnInvalidRenderPipeline(Web
     return returnInvalidRenderPipeline(object, isAsync, error.createNSString().get());
 }
 
-static constexpr ASCIILiteral name(WGPUCompareFunction compare)
+static constexpr ASCIILiteral name(WebGPU::CompareFunction compare)
 {
     switch (compare) {
-    case WGPUCompareFunction_Undefined: return "undefined"_s;
-    case WGPUCompareFunction_Never: return "never"_s;
-    case WGPUCompareFunction_Less: return "less"_s;
-    case WGPUCompareFunction_LessEqual: return "less-equal"_s;
-    case WGPUCompareFunction_Greater: return "greater"_s;
-    case WGPUCompareFunction_GreaterEqual: return "greater-equal"_s;
-    case WGPUCompareFunction_Equal: return "equal"_s;
-    case WGPUCompareFunction_NotEqual: return "not-equal"_s;
-    case WGPUCompareFunction_Always: return "always"_s;
-    case WGPUCompareFunction_Force32: RELEASE_ASSERT_NOT_REACHED();
+    case WebGPU::CompareFunction::Never: return "never"_s;
+    case WebGPU::CompareFunction::Less: return "less"_s;
+    case WebGPU::CompareFunction::LessEqual: return "less-equal"_s;
+    case WebGPU::CompareFunction::Greater: return "greater"_s;
+    case WebGPU::CompareFunction::GreaterEqual: return "greater-equal"_s;
+    case WebGPU::CompareFunction::Equal: return "equal"_s;
+    case WebGPU::CompareFunction::NotEqual: return "not-equal"_s;
+    case WebGPU::CompareFunction::Always: return "always"_s;
     }
 }
-static constexpr ASCIILiteral name(WGPUStencilOperation operation)
+static constexpr ASCIILiteral name(WebGPU::StencilOperation operation)
 {
     switch (operation) {
-    case WGPUStencilOperation_Keep: return "keep"_s;
-    case WGPUStencilOperation_Zero: return "zero"_s;
-    case WGPUStencilOperation_Replace: return "replace"_s;
-    case WGPUStencilOperation_Invert: return "invert"_s;
-    case WGPUStencilOperation_IncrementClamp: return "increment-clamp"_s;
-    case WGPUStencilOperation_DecrementClamp: return "decrement-clamp"_s;
-    case WGPUStencilOperation_IncrementWrap: return "increment-wrap"_s;
-    case WGPUStencilOperation_DecrementWrap: return "decrement-wrap"_s;
-    case WGPUStencilOperation_Force32: RELEASE_ASSERT_NOT_REACHED();
+    case WebGPU::StencilOperation::Keep: return "keep"_s;
+    case WebGPU::StencilOperation::Zero: return "zero"_s;
+    case WebGPU::StencilOperation::Replace: return "replace"_s;
+    case WebGPU::StencilOperation::Invert: return "invert"_s;
+    case WebGPU::StencilOperation::IncrementClamp: return "increment-clamp"_s;
+    case WebGPU::StencilOperation::DecrementClamp: return "decrement-clamp"_s;
+    case WebGPU::StencilOperation::IncrementWrap: return "increment-wrap"_s;
+    case WebGPU::StencilOperation::DecrementWrap: return "decrement-wrap"_s;
     }
 }
 
@@ -1144,7 +1091,7 @@ static NSString* errorValidatingDepthStencilState(const WebGPU::DepthStencilStat
     };
     if (!isDefault(depthStencil.stencilFront) || !isDefault(depthStencil.stencilBack)) {
         if (!Texture::stencilOnlyAspectMetalFormat(format)) {
-            NSString *error = [NSString stringWithFormat:@"missing stencil format - stencilFront: compare = %s, failOp = %s, depthFailOp = %s, passOp = %s, stencilBack: compare = %s, failOp = %s, depthFailOp = %s, passOp = %s", name(toAPI(depthStencil.stencilFront.compare)).characters(), name(toAPI(depthStencil.stencilFront.failOp)).characters(), name(toAPI(depthStencil.stencilFront.depthFailOp)).characters(), name(toAPI(depthStencil.stencilFront.passOp)).characters(), name(toAPI(depthStencil.stencilBack.compare)).characters(), name(toAPI(depthStencil.stencilBack.failOp)).characters(), name(toAPI(depthStencil.stencilBack.depthFailOp)).characters(), name(toAPI(depthStencil.stencilBack.passOp)).characters()];
+            NSString *error = [NSString stringWithFormat:@"missing stencil format - stencilFront: compare = %s, failOp = %s, depthFailOp = %s, passOp = %s, stencilBack: compare = %s, failOp = %s, depthFailOp = %s, passOp = %s", name(depthStencil.stencilFront.compare).characters(), name(depthStencil.stencilFront.failOp).characters(), name(depthStencil.stencilFront.depthFailOp).characters(), name(depthStencil.stencilFront.passOp).characters(), name(depthStencil.stencilBack.compare).characters(), name(depthStencil.stencilBack.failOp).characters(), name(depthStencil.stencilBack.depthFailOp).characters(), name(depthStencil.stencilBack.passOp).characters()];
             return ERROR_STRING(error);
         }
     }
@@ -1534,8 +1481,8 @@ void Device::createRenderPipeline(const WebGPU::RenderPipelineDescriptor& descri
     auto& deviceLimits = limits();
 
     // The pipeline stores and validates with the C API enums.
-    auto primitiveTopology = toAPI(descriptor.primitive.topology);
-    auto stripIndexFormat = descriptor.primitive.stripIndexFormat ? toAPI(*descriptor.primitive.stripIndexFormat) : WGPUIndexFormat_Undefined;
+    auto primitiveTopology = descriptor.primitive.topology;
+    auto stripIndexFormat = descriptor.primitive.stripIndexFormat;
 
     RefPtr<PipelineLayout> pipelineLayout;
     Vector<Vector<ResolvedBindGroupLayoutEntry>> bindGroupEntries;
@@ -1664,13 +1611,13 @@ void Device::createRenderPipeline(const WebGPU::RenderPipelineDescriptor& descri
                 };
                 if (!validateBlend(alphaBlend) || !validateBlend(colorBlend))
                     return callback(returnInvalidRenderPipeline(*this, isAsync, "Blend states are not valid"_s));
-                mtlColorAttachment.alphaBlendOperation = blendOperation(toAPI(alphaBlend.operation));
-                mtlColorAttachment.sourceAlphaBlendFactor = blendFactor(toAPI(alphaBlend.srcFactor));
-                mtlColorAttachment.destinationAlphaBlendFactor = blendFactor(toAPI(alphaBlend.dstFactor));
+                mtlColorAttachment.alphaBlendOperation = blendOperation(alphaBlend.operation);
+                mtlColorAttachment.sourceAlphaBlendFactor = blendFactor(alphaBlend.srcFactor);
+                mtlColorAttachment.destinationAlphaBlendFactor = blendFactor(alphaBlend.dstFactor);
 
-                mtlColorAttachment.rgbBlendOperation = blendOperation(toAPI(colorBlend.operation));
-                mtlColorAttachment.sourceRGBBlendFactor = blendFactor(toAPI(colorBlend.srcFactor));
-                mtlColorAttachment.destinationRGBBlendFactor = blendFactor(toAPI(colorBlend.dstFactor));
+                mtlColorAttachment.rgbBlendOperation = blendOperation(colorBlend.operation);
+                mtlColorAttachment.sourceRGBBlendFactor = blendFactor(colorBlend.srcFactor);
+                mtlColorAttachment.destinationRGBBlendFactor = blendFactor(colorBlend.dstFactor);
                 auto readsAlphaFactor = [](WebGPU::BlendFactor factor) {
                     return factor == WebGPU::BlendFactor::SrcAlpha || factor == WebGPU::BlendFactor::OneMinusSrcAlpha || factor == WebGPU::BlendFactor::SrcAlphaSaturated;
                 };
@@ -1714,7 +1661,7 @@ void Device::createRenderPipeline(const WebGPU::RenderPipelineDescriptor& descri
             mtlRenderPipelineDescriptor.stencilAttachmentPixelFormat = depthStencilFormat;
 
         depthStencilDescriptor = [MTLDepthStencilDescriptor new];
-        depthStencilDescriptor.depthCompareFunction = depthStencil->depthCompare ? convertToMTLCompare(toAPI(*depthStencil->depthCompare)) : MTLCompareFunctionAlways;
+        depthStencilDescriptor.depthCompareFunction = depthStencil->depthCompare ? convertToMTLCompare(*depthStencil->depthCompare) : MTLCompareFunctionAlways;
         depthStencilDescriptor.depthWriteEnabled = depthStencil->depthWriteEnabled.value_or(false);
         populateStencilOperation(depthStencilDescriptor.frontFaceStencil, depthStencil->stencilFront, depthStencil->stencilReadMask, depthStencil->stencilWriteMask);
         populateStencilOperation(depthStencilDescriptor.backFaceStencil, depthStencil->stencilBack, depthStencil->stencilReadMask, depthStencil->stencilWriteMask);
@@ -1724,7 +1671,7 @@ void Device::createRenderPipeline(const WebGPU::RenderPipelineDescriptor& descri
 
         // Depth bias is derived from the slope of the primitive being rasterized, which only points
         // and lines lack, so for those topologies it has to be left at zero.
-        if (primitiveTopology != WGPUPrimitiveTopology_TriangleList && primitiveTopology != WGPUPrimitiveTopology_TriangleStrip) {
+        if (primitiveTopology != WebGPU::PrimitiveTopology::TriangleList && primitiveTopology != WebGPU::PrimitiveTopology::TriangleStrip) {
             if (depthBias || depthBiasSlopeScale || depthBiasClamp)
                 return callback(returnInvalidRenderPipeline(*this, isAsync, "depthBias, depthBiasSlopeScale, and depthBiasClamp must be 0 unless primitive.topology is a triangle topology"_s));
         }
@@ -1791,15 +1738,15 @@ void Device::createRenderPipeline(const WebGPU::RenderPipelineDescriptor& descri
     // These properties are to be used by the render command encoder, not the render pipeline.
     // Therefore, the render pipeline stores these, and when the render command encoder is assigned
     // a pipeline, the render command encoder can get these information out of the render pipeline.
-    if (primitiveTopology != WGPUPrimitiveTopology_LineStrip && primitiveTopology != WGPUPrimitiveTopology_TriangleStrip) {
+    if (primitiveTopology != WebGPU::PrimitiveTopology::LineStrip && primitiveTopology != WebGPU::PrimitiveTopology::TriangleStrip) {
         if (descriptor.primitive.stripIndexFormat)
             return callback(returnInvalidRenderPipeline(*this, isAsync, "If primitive.topology is not line-strip or triangle-strip, primitive.stripIndexFormat must be undefined."_s));
     }
 
     auto mtlPrimitiveType = primitiveType(primitiveTopology);
-    auto mtlIndexType = indexType(stripIndexFormat);
-    auto mtlFrontFace = frontFace(toAPI(descriptor.primitive.frontFace));
-    auto mtlCullMode = cullMode(toAPI(descriptor.primitive.cullMode));
+    auto mtlIndexType = stripIndexFormat ? indexType(*stripIndexFormat) : std::nullopt;
+    auto mtlFrontFace = frontFace(descriptor.primitive.frontFace);
+    auto mtlCullMode = cullMode(descriptor.primitive.cullMode);
 
     if (m_pipelineId == Device::maxPipelines) {
         loseTheDevice(WGPUDeviceLostReason_Undefined);
@@ -1917,7 +1864,7 @@ void Device::createRenderPipelineWithPipelineLayoutFromPipelineAsync(const WebGP
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(RenderPipeline);
 
-RenderPipeline::RenderPipeline(MTLPrimitiveType primitiveType, std::optional<MTLIndexType> indexType, MTLWinding frontFace, MTLCullMode cullMode, MTLDepthClipMode clipMode, MTLDepthStencilDescriptor *depthStencilDescriptor, Ref<PipelineLayout>&& pipelineLayout, float depthBias, float depthBiasSlopeScale, float depthBiasClamp, uint32_t sampleMask, MTLRenderPipelineDescriptor* renderPipelineDescriptor, uint32_t colorAttachmentCount, WGPUPrimitiveTopology primitiveTopology, WGPUIndexFormat stripIndexFormat, uint32_t sampleCount, bool hasFragment, Vector<std::optional<WebGPU::TextureFormat>>&& colorTargetFormats, std::optional<WebGPU::TextureFormat> depthStencilFormat, bool writesStencil, RequiredBufferIndicesContainer&& requiredBufferIndices, BufferBindingSizesForPipeline&& minimumBufferSizes, uint64_t uniqueId, uint32_t vertexShaderBindingCount, Device& device)
+RenderPipeline::RenderPipeline(MTLPrimitiveType primitiveType, std::optional<MTLIndexType> indexType, MTLWinding frontFace, MTLCullMode cullMode, MTLDepthClipMode clipMode, MTLDepthStencilDescriptor *depthStencilDescriptor, Ref<PipelineLayout>&& pipelineLayout, float depthBias, float depthBiasSlopeScale, float depthBiasClamp, uint32_t sampleMask, MTLRenderPipelineDescriptor* renderPipelineDescriptor, uint32_t colorAttachmentCount, WebGPU::PrimitiveTopology primitiveTopology, std::optional<WebGPU::IndexFormat> stripIndexFormat, uint32_t sampleCount, bool hasFragment, Vector<std::optional<WebGPU::TextureFormat>>&& colorTargetFormats, std::optional<WebGPU::TextureFormat> depthStencilFormat, bool writesStencil, RequiredBufferIndicesContainer&& requiredBufferIndices, BufferBindingSizesForPipeline&& minimumBufferSizes, uint64_t uniqueId, uint32_t vertexShaderBindingCount, Device& device)
     : m_device(device)
     , m_primitiveType(primitiveType)
     , m_indexType(indexType)
