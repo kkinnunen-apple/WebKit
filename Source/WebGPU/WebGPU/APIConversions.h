@@ -245,11 +245,6 @@ inline PresentationContext& fromAPI(WGPUSurface surface)
     return static_cast<PresentationContext&>(*surface);
 }
 
-inline PresentationContext& fromAPI(WGPUSwapChain swapChain)
-{
-    return static_cast<PresentationContext&>(*swapChain);
-}
-
 inline Texture& fromAPI(WGPUTexture texture)
 {
     return static_cast<Texture&>(*texture);
@@ -258,26 +253,6 @@ inline Texture& fromAPI(WGPUTexture texture)
 inline TextureView& fromAPI(WGPUTextureView textureView)
 {
     return static_cast<TextureView&>(*textureView);
-}
-
-inline XRBinding& fromAPI(WGPUXRBinding binding)
-{
-    return static_cast<XRBinding&>(*binding);
-}
-
-inline XRSubImage& fromAPI(WGPUXRSubImage subImage)
-{
-    return static_cast<XRSubImage&>(*subImage);
-}
-
-inline XRProjectionLayer& fromAPI(WGPUXRProjectionLayer layer)
-{
-    return static_cast<XRProjectionLayer&>(*layer);
-}
-
-inline XRView& fromAPI(WGPUXRView view)
-{
-    return static_cast<XRView&>(*view);
 }
 
 // Literals have static storage, so the view can borrow them freely.

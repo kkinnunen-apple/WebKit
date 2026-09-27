@@ -4140,11 +4140,6 @@ void wgpuTextureDestroy(WGPUTexture texture)
     protect(WebGPU::Metal::fromAPI(texture))->destroy();
 }
 
-void wgpuTextureUndestroy(WGPUTexture texture)
-{
-    protect(WebGPU::Metal::fromAPI(texture))->undestroy();
-}
-
 void wgpuTextureSetLabel(WGPUTexture texture, WGPUStringView label)
 {
     protect(WebGPU::Metal::fromAPI(texture))->setLabel(WebGPU::Metal::fromAPI(label));
