@@ -843,25 +843,21 @@ static auto NODELETE wgslSampleType(WGPUTextureSampleType sampleType)
     }
 }
 
-static auto NODELETE wgslViewDimension(WGPUTextureViewDimension viewDimension)
+static auto NODELETE wgslViewDimension(WebGPU::TextureViewDimension viewDimension)
 {
     switch (viewDimension) {
-    case WGPUTextureViewDimension_Cube:
+    case WebGPU::TextureViewDimension::Cube:
         return WGSL::TextureViewDimension::Cube;
-    case WGPUTextureViewDimension_1D:
+    case WebGPU::TextureViewDimension::_1d:
         return WGSL::TextureViewDimension::OneDimensional;
-    case WGPUTextureViewDimension_2D:
+    case WebGPU::TextureViewDimension::_2d:
         return WGSL::TextureViewDimension::TwoDimensional;
-    case WGPUTextureViewDimension_3D:
+    case WebGPU::TextureViewDimension::_3d:
         return WGSL::TextureViewDimension::ThreeDimensional;
-    case WGPUTextureViewDimension_CubeArray:
+    case WebGPU::TextureViewDimension::CubeArray:
         return WGSL::TextureViewDimension::CubeArray;
-    case WGPUTextureViewDimension_2DArray:
+    case WebGPU::TextureViewDimension::_2dArray:
         return WGSL::TextureViewDimension::TwoDimensionalArray;
-    case WGPUTextureViewDimension_Force32:
-    case WGPUTextureViewDimension_Undefined:
-        ASSERT_NOT_REACHED("Unexpected viewDimension");
-        return WGSL::TextureViewDimension::TwoDimensional;
     }
 }
 
@@ -880,88 +876,88 @@ static WGSL::StorageTextureAccess NODELETE wgslAccess(WGPUStorageTextureAccess a
     }
 }
 
-static WGSL::TexelFormat NODELETE wgslFormat(WGPUTextureFormat format)
+static WGSL::TexelFormat NODELETE wgslFormat(WebGPU::TextureFormat format)
 {
     switch (format) {
-    case WGPUTextureFormat_BGRA8Unorm:
+    case WebGPU::TextureFormat::Bgra8unorm:
         return WGSL::TexelFormat::BGRA8unorm;
-    case WGPUTextureFormat_R16Float:
+    case WebGPU::TextureFormat::R16float:
         return WGSL::TexelFormat::R16float;
-    case WGPUTextureFormat_R16Sint:
+    case WebGPU::TextureFormat::R16sint:
         return WGSL::TexelFormat::R16sint;
-    case WGPUTextureFormat_R16Snorm:
+    case WebGPU::TextureFormat::R16snorm:
         return WGSL::TexelFormat::R16snorm;
-    case WGPUTextureFormat_R16Uint:
+    case WebGPU::TextureFormat::R16uint:
         return WGSL::TexelFormat::R16uint;
-    case WGPUTextureFormat_R16Unorm:
+    case WebGPU::TextureFormat::R16unorm:
         return WGSL::TexelFormat::R16unorm;
-    case WGPUTextureFormat_R32Float:
+    case WebGPU::TextureFormat::R32float:
         return WGSL::TexelFormat::R32float;
-    case WGPUTextureFormat_R32Sint:
+    case WebGPU::TextureFormat::R32sint:
         return WGSL::TexelFormat::R32sint;
-    case WGPUTextureFormat_R32Uint:
+    case WebGPU::TextureFormat::R32uint:
         return WGSL::TexelFormat::R32uint;
-    case WGPUTextureFormat_R8Sint:
+    case WebGPU::TextureFormat::R8sint:
         return WGSL::TexelFormat::R8sint;
-    case WGPUTextureFormat_R8Snorm:
+    case WebGPU::TextureFormat::R8snorm:
         return WGSL::TexelFormat::R8snorm;
-    case WGPUTextureFormat_R8Uint:
+    case WebGPU::TextureFormat::R8uint:
         return WGSL::TexelFormat::R8uint;
-    case WGPUTextureFormat_R8Unorm:
+    case WebGPU::TextureFormat::R8unorm:
         return WGSL::TexelFormat::R8unorm;
-    case WGPUTextureFormat_RG11B10Ufloat:
+    case WebGPU::TextureFormat::Rg11b10ufloat:
         return WGSL::TexelFormat::RG11B10ufloat;
-    case WGPUTextureFormat_RG16Float:
+    case WebGPU::TextureFormat::Rg16float:
         return WGSL::TexelFormat::RG16float;
-    case WGPUTextureFormat_RG16Sint:
+    case WebGPU::TextureFormat::Rg16sint:
         return WGSL::TexelFormat::RG16sint;
-    case WGPUTextureFormat_RG16Snorm:
+    case WebGPU::TextureFormat::Rg16snorm:
         return WGSL::TexelFormat::RG16snorm;
-    case WGPUTextureFormat_RG16Uint:
+    case WebGPU::TextureFormat::Rg16uint:
         return WGSL::TexelFormat::RG16uint;
-    case WGPUTextureFormat_RG16Unorm:
+    case WebGPU::TextureFormat::Rg16unorm:
         return WGSL::TexelFormat::RG16unorm;
-    case WGPUTextureFormat_RG32Float:
+    case WebGPU::TextureFormat::Rg32float:
         return WGSL::TexelFormat::RG32float;
-    case WGPUTextureFormat_RG32Sint:
+    case WebGPU::TextureFormat::Rg32sint:
         return WGSL::TexelFormat::RG32sint;
-    case WGPUTextureFormat_RG32Uint:
+    case WebGPU::TextureFormat::Rg32uint:
         return WGSL::TexelFormat::RG32uint;
-    case WGPUTextureFormat_RG8Sint:
+    case WebGPU::TextureFormat::Rg8sint:
         return WGSL::TexelFormat::RG8sint;
-    case WGPUTextureFormat_RG8Snorm:
+    case WebGPU::TextureFormat::Rg8snorm:
         return WGSL::TexelFormat::RG8snorm;
-    case WGPUTextureFormat_RG8Uint:
+    case WebGPU::TextureFormat::Rg8uint:
         return WGSL::TexelFormat::RG8uint;
-    case WGPUTextureFormat_RG8Unorm:
+    case WebGPU::TextureFormat::Rg8unorm:
         return WGSL::TexelFormat::RG8unorm;
-    case WGPUTextureFormat_RGB10A2Uint:
+    case WebGPU::TextureFormat::Rgb10a2uint:
         return WGSL::TexelFormat::RGB10A2uint;
-    case WGPUTextureFormat_RGB10A2Unorm:
+    case WebGPU::TextureFormat::Rgb10a2unorm:
         return WGSL::TexelFormat::RGB10A2unorm;
-    case WGPUTextureFormat_RGBA16Float:
+    case WebGPU::TextureFormat::Rgba16float:
         return WGSL::TexelFormat::RGBA16float;
-    case WGPUTextureFormat_RGBA16Sint:
+    case WebGPU::TextureFormat::Rgba16sint:
         return WGSL::TexelFormat::RGBA16sint;
-    case WGPUTextureFormat_RGBA16Snorm:
+    case WebGPU::TextureFormat::Rgba16snorm:
         return WGSL::TexelFormat::RGBA16snorm;
-    case WGPUTextureFormat_RGBA16Uint:
+    case WebGPU::TextureFormat::Rgba16uint:
         return WGSL::TexelFormat::RGBA16uint;
-    case WGPUTextureFormat_RGBA16Unorm:
+    case WebGPU::TextureFormat::Rgba16unorm:
         return WGSL::TexelFormat::RGBA16unorm;
-    case WGPUTextureFormat_RGBA32Float:
+    case WebGPU::TextureFormat::Rgba32float:
         return WGSL::TexelFormat::RGBA32float;
-    case WGPUTextureFormat_RGBA32Sint:
+    case WebGPU::TextureFormat::Rgba32sint:
         return WGSL::TexelFormat::RGBA32sint;
-    case WGPUTextureFormat_RGBA32Uint:
+    case WebGPU::TextureFormat::Rgba32uint:
         return WGSL::TexelFormat::RGBA32uint;
-    case WGPUTextureFormat_RGBA8Sint:
+    case WebGPU::TextureFormat::Rgba8sint:
         return WGSL::TexelFormat::RGBA8sint;
-    case WGPUTextureFormat_RGBA8Snorm:
+    case WebGPU::TextureFormat::Rgba8snorm:
         return WGSL::TexelFormat::RGBA8snorm;
-    case WGPUTextureFormat_RGBA8Uint:
+    case WebGPU::TextureFormat::Rgba8uint:
         return WGSL::TexelFormat::RGBA8uint;
-    case WGPUTextureFormat_RGBA8Unorm:
+    case WebGPU::TextureFormat::Rgba8unorm:
         return WGSL::TexelFormat::RGBA8unorm;
     default:
         ASSERT_NOT_REACHED();

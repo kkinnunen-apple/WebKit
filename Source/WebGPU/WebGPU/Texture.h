@@ -72,46 +72,46 @@ public:
 
     bool NODELETE isValid() const final;
 
-    static uint32_t NODELETE texelBlockWidth(WGPUTextureFormat); // Texels
-    static uint32_t NODELETE texelBlockHeight(WGPUTextureFormat); // Texels
-    static NSUInteger NODELETE bytesPerRow(WGPUTextureFormat, uint32_t textureWidth, uint32_t sampleCount);
-    static WGPUExtent3D NODELETE physicalTextureExtent(WGPUTextureDimension, WGPUTextureFormat, WGPUExtent3D logicalExtent);
+    static uint32_t NODELETE texelBlockWidth(WebGPU::TextureFormat); // Texels
+    static uint32_t NODELETE texelBlockHeight(WebGPU::TextureFormat); // Texels
+    static NSUInteger NODELETE bytesPerRow(WebGPU::TextureFormat, uint32_t textureWidth, uint32_t sampleCount);
+    static WebGPU::Extent3D NODELETE physicalTextureExtent(WebGPU::TextureDimension, WebGPU::TextureFormat, WebGPU::Extent3D logicalExtent);
 
     // For depth-stencil textures, the input value to texelBlockSize()
     // needs to be the output of aspectSpecificFormat().
-    static Checked<uint32_t> NODELETE texelBlockSize(WGPUTextureFormat); // Bytes
-    static bool NODELETE containsDepthAspect(WGPUTextureFormat);
-    static bool NODELETE containsStencilAspect(WGPUTextureFormat);
-    static bool NODELETE isDepthOrStencilFormat(WGPUTextureFormat);
-    static WGPUTextureFormat NODELETE aspectSpecificFormat(WGPUTextureFormat, WGPUTextureAspect);
+    static Checked<uint32_t> NODELETE texelBlockSize(WebGPU::TextureFormat); // Bytes
+    static bool NODELETE containsDepthAspect(WebGPU::TextureFormat);
+    static bool NODELETE containsStencilAspect(WebGPU::TextureFormat);
+    static bool NODELETE isDepthOrStencilFormat(WebGPU::TextureFormat);
+    static std::optional<WebGPU::TextureFormat> NODELETE aspectSpecificFormat(WebGPU::TextureFormat, WebGPU::TextureAspect);
     static NSString* errorValidatingImageCopyTexture(const WebGPU::TexelCopyTextureInfo&, const WebGPU::Extent3D&);
     static NSString* errorValidatingTextureCopyRange(const WebGPU::TexelCopyTextureInfo&, const WebGPU::Extent3D&);
-    static bool NODELETE refersToSingleAspect(WGPUTextureFormat, WGPUTextureAspect);
-    static bool NODELETE isValidDepthStencilCopySource(WGPUTextureFormat, WGPUTextureAspect);
-    static bool NODELETE isValidDepthStencilCopyDestination(WGPUTextureFormat, WGPUTextureAspect);
-    static NSString* errorValidatingLinearTextureData(const WebGPU::TexelCopyBufferLayout&, uint64_t, WGPUTextureFormat, const WebGPU::Extent3D&);
-    static MTLTextureUsage NODELETE usage(OptionSet<WebGPU::TextureUsage>, WGPUTextureFormat);
-    static MTLPixelFormat NODELETE pixelFormat(WGPUTextureFormat);
-    static WGPUTextureFormat NODELETE textureFormat(MTLPixelFormat);
-    static std::optional<MTLPixelFormat> NODELETE depthOnlyAspectMetalFormat(WGPUTextureFormat);
-    static std::optional<MTLPixelFormat> NODELETE stencilOnlyAspectMetalFormat(WGPUTextureFormat);
-    static WGPUTextureFormat NODELETE removeSRGBSuffix(WGPUTextureFormat);
-    static std::optional<WGPUTextureFormat> NODELETE resolveTextureFormat(WGPUTextureFormat, WGPUTextureAspect);
-    static bool NODELETE isCompressedFormat(WGPUTextureFormat);
+    static bool NODELETE refersToSingleAspect(WebGPU::TextureFormat, WebGPU::TextureAspect);
+    static bool NODELETE isValidDepthStencilCopySource(WebGPU::TextureFormat, WebGPU::TextureAspect);
+    static bool NODELETE isValidDepthStencilCopyDestination(WebGPU::TextureFormat, WebGPU::TextureAspect);
+    static NSString* errorValidatingLinearTextureData(const WebGPU::TexelCopyBufferLayout&, uint64_t, WebGPU::TextureFormat, const WebGPU::Extent3D&);
+    static MTLTextureUsage NODELETE usage(OptionSet<WebGPU::TextureUsage>, WebGPU::TextureFormat);
+    static MTLPixelFormat NODELETE pixelFormat(WebGPU::TextureFormat);
+    static std::optional<WebGPU::TextureFormat> NODELETE textureFormat(MTLPixelFormat);
+    static std::optional<MTLPixelFormat> NODELETE depthOnlyAspectMetalFormat(WebGPU::TextureFormat);
+    static std::optional<MTLPixelFormat> NODELETE stencilOnlyAspectMetalFormat(WebGPU::TextureFormat);
+    static WebGPU::TextureFormat NODELETE removeSRGBSuffix(WebGPU::TextureFormat);
+    static std::optional<WebGPU::TextureFormat> NODELETE resolveTextureFormat(WebGPU::TextureFormat, WebGPU::TextureAspect);
+    static bool NODELETE isCompressedFormat(WebGPU::TextureFormat);
     enum class CompressFormat {
         ASTC, // NOLINT
         BC, // NOLINT
         ETC // NOLINT
     };
-    static std::optional<CompressFormat> NODELETE compressedFormatType(WGPUTextureFormat);
-    static bool isRenderableFormat(WGPUTextureFormat, const Device&);
-    static bool isColorRenderableFormat(WGPUTextureFormat, const Device&);
-    static bool NODELETE isDepthStencilRenderableFormat(WGPUTextureFormat, const Device&);
-    static uint32_t NODELETE renderTargetPixelByteCost(WGPUTextureFormat);
-    static uint32_t NODELETE renderTargetPixelByteAlignment(WGPUTextureFormat);
+    static std::optional<CompressFormat> NODELETE compressedFormatType(WebGPU::TextureFormat);
+    static bool isRenderableFormat(WebGPU::TextureFormat, const Device&);
+    static bool isColorRenderableFormat(WebGPU::TextureFormat, const Device&);
+    static bool NODELETE isDepthStencilRenderableFormat(WebGPU::TextureFormat, const Device&);
+    static uint32_t NODELETE renderTargetPixelByteCost(WebGPU::TextureFormat);
+    static uint32_t NODELETE renderTargetPixelByteAlignment(WebGPU::TextureFormat);
 
-    WGPUExtent3D logicalMiplevelSpecificTextureExtent(uint32_t mipLevel);
-    WGPUExtent3D physicalMiplevelSpecificTextureExtent(uint32_t mipLevel);
+    WebGPU::Extent3D logicalMiplevelSpecificTextureExtent(uint32_t mipLevel);
+    WebGPU::Extent3D physicalMiplevelSpecificTextureExtent(uint32_t mipLevel);
 
     id<MTLTexture> texture() const { return m_texture; }
 
@@ -120,8 +120,11 @@ public:
     uint32_t depthOrArrayLayers() const { return m_depthOrArrayLayers; }
     uint32_t mipLevelCount() const { return m_mipLevelCount; }
     uint32_t sampleCount() const { return m_sampleCount; }
-    WGPUTextureDimension NODELETE dimension() const;
-    WGPUTextureFormat NODELETE format() const;
+    WebGPU::TextureDimension NODELETE dimension() const;
+    // Invalid textures may have no format. format() then reports an arbitrary one, which only the
+    // validation that rejects the texture sees.
+    WebGPU::TextureFormat NODELETE format() const;
+    const std::optional<WebGPU::TextureFormat>& optionalFormat() const { return m_format; }
     OptionSet<WebGPU::TextureUsage> usage() const { return m_usage; }
 
     Device& device() const { return m_device; }
@@ -132,14 +135,14 @@ public:
     void setPreviouslyCleared(uint32_t mipLevel, uint32_t slice, bool = true);
     bool isDestroyed() const { return m_destroyed; }
 
-    static bool hasStorageBindingCapability(WGPUTextureFormat, const Device&, std::optional<WGPUStorageTextureAccess> = std::nullopt);
-    static bool supportsMultisampling(WGPUTextureFormat, const Device&);
-    static bool supportsResolve(WGPUTextureFormat, const Device&);
-    static bool supportsBlending(WGPUTextureFormat, const Device&);
+    static bool hasStorageBindingCapability(WebGPU::TextureFormat, const Device&, std::optional<WGPUStorageTextureAccess> = std::nullopt);
+    static bool supportsMultisampling(WebGPU::TextureFormat, const Device&);
+    static bool supportsResolve(WebGPU::TextureFormat, const Device&);
+    static bool supportsBlending(WebGPU::TextureFormat, const Device&);
     void recreateIfNeeded();
     void NODELETE makeCanvasBacking();
     void setCommandEncoder(CommandEncoder&) const;
-    static ASCIILiteral formatToString(WGPUTextureFormat);
+    static ASCIILiteral formatToString(WebGPU::TextureFormat);
     bool isCanvasBacking() const { return m_canvasBacking; }
 
     bool waitForCommandBufferCompletion();
@@ -152,7 +155,7 @@ public:
     void setRasterizationRateMaps(std::pair<id<MTLRasterizationRateMap>, id<MTLRasterizationRateMap>>&& rateMaps) { m_leftRightRasterizationMaps = WTF::move(rateMaps); }
     id<MTLRasterizationRateMap> rasterizationMapForSlice(uint32_t slice) const { return slice ? m_leftRightRasterizationMaps.second : m_leftRightRasterizationMaps.first; }
     uint32_t NODELETE arrayLayerCount() const;
-    WGPUTextureAspect aspect() const { return WGPUTextureAspect_All; }
+    WebGPU::TextureAspect aspect() const { return WebGPU::TextureAspect::All; }
     uint32_t baseArrayLayer() const { return 0; }
     uint32_t baseMipLevel() const { return 0; }
     uint32_t parentRelativeSlice() const { return 0; }
