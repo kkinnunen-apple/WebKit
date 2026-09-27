@@ -490,7 +490,7 @@ Ref<BindGroupLayout> Device::createBindGroupLayout(const String& label, Vector<R
     }
 
     if (m_bindGroupLayoutId == std::numeric_limits<decltype(m_bindGroupLayoutId)>::max()) {
-        loseTheDevice(WGPUDeviceLostReason_Undefined);
+        loseTheDevice(WebGPU::DeviceLostReason::Unknown);
         return BindGroupLayout::createInvalid(*this);
     }
 

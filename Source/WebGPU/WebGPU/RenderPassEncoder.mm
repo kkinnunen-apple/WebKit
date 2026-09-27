@@ -60,7 +60,7 @@ if (!m_renderCommandEncoder || !m_parentEncoder->isValid() || !protect(m_parentE
 if (id<MTLRenderPipelineState> pso = makePso) \
     [commandEncoder setRenderPipelineState:pso]; \
 else { \
-    protect(device)->loseTheDevice(WGPUDeviceLostReason_Undefined); \
+    protect(device)->loseTheDevice(WebGPU::DeviceLostReason::Unknown); \
     return __VA_ARGS__; \
 }
 
@@ -165,10 +165,10 @@ RenderPassEncoder::RenderPassEncoder(id<MTLRenderCommandEncoder> renderCommandEn
         if (!textureToClear)
             continue;
         TextureAndClearColor *textureWithClearColor = [[TextureAndClearColor alloc] initWithTexture:textureToClear];
-        if (attachment.storeOp != WGPUStoreOp_Discard) {
+        if (attachment.storeOp != WebGPU::StoreOp::Discard) {
             auto& c = attachment.clearValue;
             textureWithClearColor.clearColor = MTLClearColorMake(c.r, c.g, c.b, c.a);
-        } else if (attachment.loadOp == WGPULoadOp_Load) {
+        } else if (attachment.loadOp == WebGPU::LoadOp::Load) {
             textureWithClearColor.clearColor = MTLClearColorMake(0, 0, 0, 0);
             [m_attachmentsToClear setObject:textureWithClearColor forKey:@(i)];
         }
@@ -187,16 +187,16 @@ RenderPassEncoder::RenderPassEncoder(id<MTLRenderCommandEncoder> renderCommandEn
             m_rasterSampleCount = textureView.sampleCount();
         }
 
-        m_depthClearValue = attachment->depthStoreOp == WGPUStoreOp_Discard ? 0 : quantizedDepthValue(attachment->depthClearValue, textureView.format());
+        m_depthClearValue = attachment->depthStoreOp == WebGPU::StoreOp::Discard ? 0 : quantizedDepthValue(attachment->depthClearValue, textureView.format());
         if (!Device::isStencilOnlyFormat(depthTexture.pixelFormat)) {
-            m_clearDepthAttachment = depthTexture && attachment->depthStoreOp == WGPUStoreOp_Discard && attachment->depthLoadOp == WGPULoadOp_Load;
+            m_clearDepthAttachment = depthTexture && attachment->depthStoreOp == WebGPU::StoreOp::Discard && attachment->depthLoadOp == WebGPU::LoadOp::Load;
             m_depthStencilAttachmentToClear = depthTexture;
             addResourceToActiveResources(textureView, attachment->depthReadOnly ? BindGroupEntryUsage::AttachmentRead : BindGroupEntryUsage::Attachment, WebGPU::TextureAspect::DepthOnly);
         }
 
-        m_stencilClearValue = attachment->stencilStoreOp == WGPUStoreOp_Discard ? 0 : attachment->stencilClearValue;
+        m_stencilClearValue = attachment->stencilStoreOp == WebGPU::StoreOp::Discard ? 0 : attachment->stencilClearValue;
         if (Texture::stencilOnlyAspectMetalFormat(textureView.format())) {
-            m_clearStencilAttachment = depthTexture && attachment->stencilStoreOp == WGPUStoreOp_Discard && attachment->stencilLoadOp == WGPULoadOp_Load;
+            m_clearStencilAttachment = depthTexture && attachment->stencilStoreOp == WebGPU::StoreOp::Discard && attachment->stencilLoadOp == WebGPU::LoadOp::Load;
             m_depthStencilAttachmentToClear = depthTexture;
             addResourceToActiveResources(textureView, attachment->stencilReadOnly ? BindGroupEntryUsage::AttachmentRead : BindGroupEntryUsage::Attachment, WebGPU::TextureAspect::StencilOnly);
         }
@@ -707,7 +707,7 @@ void RenderPassEncoder::draw(uint32_t vertexCount, uint32_t instanceCount, uint3
 
     auto checkedVertexCount = checkedProduct<uint32_t>(vertexCount, instanceCount);
     if (checkedVertexCount.hasOverflowed() || checkedVertexCount.value() > m_device->maxVerticesPerDrawCall()) {
-        protect(m_device)->loseTheDevice(WGPUDeviceLostReason_Undefined);
+        protect(m_device)->loseTheDevice(WebGPU::DeviceLostReason::Unknown);
         return;
     }
 
@@ -890,7 +890,7 @@ void RenderPassEncoder::trackIndirectDeviceLostCheck(id<MTLBuffer> scratch, uint
                     auto* contents = static_cast<uint8_t*>(buffer.contents) + entry.offset;
                     auto& args = *static_cast<WebKitMTLDrawPrimitivesIndirectArguments*>(static_cast<void*>(contents));
                     if (args.lostOrOOBRead) {
-                        protectedDevice->loseTheDevice(WGPUDeviceLostReason_Undefined);
+                        protectedDevice->loseTheDevice(WebGPU::DeviceLostReason::Unknown);
                         break;
                     }
                 }
@@ -1120,7 +1120,7 @@ void RenderPassEncoder::drawIndexed(uint32_t indexCount, uint32_t instanceCount,
     // error the page can catch, and must not be escalated to losing the device.
     auto checkedVertexCount = checkedProduct<uint32_t>(indexCount, instanceCount);
     if (checkedVertexCount.hasOverflowed() || checkedVertexCount.value() > m_device->maxVerticesPerDrawCall()) {
-        protect(m_device)->loseTheDevice(WGPUDeviceLostReason_Undefined);
+        protect(m_device)->loseTheDevice(WebGPU::DeviceLostReason::Unknown);
         return;
     }
 

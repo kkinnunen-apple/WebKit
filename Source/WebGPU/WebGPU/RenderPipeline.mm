@@ -1727,7 +1727,7 @@ void Device::createRenderPipeline(const WebGPU::RenderPipelineDescriptor& descri
 
     MTLDepthClipMode mtlDepthClipMode = MTLDepthClipModeClip;
     if (descriptor.primitive.unclippedDepth) {
-        if (!hasFeature(WGPUFeatureName_DepthClipControl))
+        if (!hasFeature(WebGPU::FeatureName::DepthClipControl))
             return callback(returnInvalidRenderPipeline(*this, isAsync, "unclippedDepth used without enabling depth-clip-control feature"_s));
 
         mtlDepthClipMode = MTLDepthClipModeClamp;
@@ -1749,7 +1749,7 @@ void Device::createRenderPipeline(const WebGPU::RenderPipelineDescriptor& descri
     auto mtlCullMode = cullMode(descriptor.primitive.cullMode);
 
     if (m_pipelineId == Device::maxPipelines) {
-        loseTheDevice(WGPUDeviceLostReason_Undefined);
+        loseTheDevice(WebGPU::DeviceLostReason::Unknown);
         return callback(returnInvalidRenderPipeline(*this, isAsync, @"too many render pipelines"));
     }
 

@@ -935,7 +935,7 @@ extension WebGPU.Metal.CommandEncoder {
             if !CxxBridging.isValidToUseWithQuerySetCommandEncoder(occlusionQuery, self) {
                 return "occlusion query does not match the device"
             }
-            if occlusionQuery.type() != WGPUQueryType_Occlusion {
+            if Optional(fromCxx: occlusionQuery.type()) != WebGPU.QueryType.Occlusion {
                 return "occlusion query type is not occlusion"
             }
         }
@@ -952,12 +952,12 @@ extension WebGPU.Metal.CommandEncoder {
     }
 
     private func errorValidatingTimestampWrites(timestampWrites: WebGPU.PassTimestampWrites) -> String? {
-        if !m_device.ptr().hasFeature(WGPUFeatureName_TimestampQuery) {
+        if !m_device.ptr().hasFeature(WebGPU.FeatureName.TimestampQuery) {
             return "device does not have timestamp query feature"
         }
 
         let querySet = WebGPU.Metal.metal(timestampWrites.querySet)
-        if querySet.type() != WGPUQueryType_Timestamp {
+        if Optional(fromCxx: querySet.type()) != WebGPU.QueryType.Timestamp {
             return "query type is not timestamp but \(querySet.type())"
         }
 
@@ -987,34 +987,30 @@ extension WebGPU.Metal.CommandEncoder {
         return nil
     }
 
-    private func loadAction(loadOp: WGPULoadOp, readOnly: Bool = false) -> MTLLoadAction {
-        switch loadOp {
-        case WGPULoadOp_Load:
-            return .load
-        case WGPULoadOp_Clear:
-            return .clear
-        case WGPULoadOp_Undefined:
+    private func loadAction(loadOp: WebGPU.LoadOp?, readOnly: Bool = false) -> MTLLoadAction {
+        guard let loadOp else {
             return readOnly ? .load : .dontCare
-        case WGPULoadOp_Force32:
-            assertionFailure()
-            return .dontCare
+        }
+        switch loadOp {
+        case WebGPU.LoadOp.Load:
+            return .load
+        case WebGPU.LoadOp.Clear:
+            return .clear
         default:
             assertionFailure()
             return .dontCare
         }
     }
 
-    private func storeAction(storeOp: WGPUStoreOp, hasResolveTarget: Bool = false) -> MTLStoreAction {
+    private func storeAction(storeOp: WebGPU.StoreOp?, hasResolveTarget: Bool = false) -> MTLStoreAction {
+        guard let storeOp else {
+            return hasResolveTarget ? .multisampleResolve : .dontCare
+        }
         switch storeOp {
-        case WGPUStoreOp_Store:
+        case WebGPU.StoreOp.Store:
             return hasResolveTarget ? .storeAndMultisampleResolve : .store
-        case WGPUStoreOp_Discard:
+        case WebGPU.StoreOp.Discard:
             return hasResolveTarget ? .multisampleResolve : .dontCare
-        case WGPUStoreOp_Undefined:
-            return hasResolveTarget ? .multisampleResolve : .dontCare
-        case WGPUStoreOp_Force32:
-            assertionFailure()
-            return .dontCare
         default:
             assertionFailure()
             return .dontCare
@@ -1328,16 +1324,16 @@ extension WebGPU.Metal.CommandEncoder {
                     .quantizedDepthValue(Double(attachment.depthClearValue), textureView.format())
                     .clamped(to: 0...1)
 
-                mtlAttachment.clearDepth = attachment.depthLoadOp == WGPULoadOp_Clear ? clearDepth : 1.0
+                mtlAttachment.clearDepth = Optional(fromCxx: attachment.depthLoadOp) == WebGPU.LoadOp.Clear ? clearDepth : 1.0
                 mtlAttachment.texture = metalDepthStencilTexture
                 mtlAttachment.level = 0
-                mtlAttachment.loadAction = loadAction(loadOp: attachment.depthLoadOp, readOnly: attachment.depthReadOnly)
-                mtlAttachment.storeAction = storeAction(storeOp: attachment.depthStoreOp)
+                mtlAttachment.loadAction = loadAction(loadOp: Optional(fromCxx: attachment.depthLoadOp), readOnly: attachment.depthReadOnly)
+                mtlAttachment.storeAction = storeAction(storeOp: Optional(fromCxx: attachment.depthStoreOp))
 
                 if mtlDescriptor.rasterizationRateMap != nil && metalDepthStencilTexture?.sampleCount ?? 1 > 1 {
                     if let depthTexture = m_device.ptr().getXRViewSubImageDepthTexture() {
                         mtlAttachment.resolveTexture = depthTexture
-                        mtlAttachment.storeAction = storeAction(storeOp: attachment.depthStoreOp, hasResolveTarget: true)
+                        mtlAttachment.storeAction = storeAction(storeOp: Optional(fromCxx: attachment.depthStoreOp), hasResolveTarget: true)
                         mtlAttachment.resolveSlice = Int(compositorTextureSlice)
                     }
                 }
@@ -1350,15 +1346,15 @@ extension WebGPU.Metal.CommandEncoder {
 
             if !isDestroyed {
                 if hasDepthComponent && !depthReadOnly {
-                    if attachment.depthLoadOp == WGPULoadOp_Undefined || attachment.depthStoreOp == WGPUStoreOp_Undefined {
+                    if Optional(fromCxx: attachment.depthLoadOp) == nil || Optional(fromCxx: attachment.depthStoreOp) == nil {
                         return WebGPU.Metal.RenderPassEncoder.createInvalid(self, m_device.ptr(), "depth load and store op were not specified")
                     }
-                } else if attachment.depthLoadOp != WGPULoadOp_Undefined || attachment.depthStoreOp != WGPUStoreOp_Undefined {
+                } else if Optional(fromCxx: attachment.depthLoadOp) != nil || Optional(fromCxx: attachment.depthStoreOp) != nil {
                     return WebGPU.Metal.RenderPassEncoder.createInvalid(self, m_device.ptr(), "depth load and store op were specified")
                 }
             }
 
-            if attachment.depthLoadOp == WGPULoadOp_Clear && (attachment.depthClearValue < 0 || attachment.depthClearValue > 1) {
+            if Optional(fromCxx: attachment.depthLoadOp) == WebGPU.LoadOp.Clear && (attachment.depthClearValue < 0 || attachment.depthClearValue > 1) {
                 return WebGPU.Metal.RenderPassEncoder.createInvalid(self, m_device.ptr(), "depth clear value is invalid")
             }
 
@@ -1392,15 +1388,15 @@ extension WebGPU.Metal.CommandEncoder {
                 mtlAttachment.texture = textureView.texture()
             }
             mtlAttachment.clearStencil = attachment.stencilClearValue
-            mtlAttachment.loadAction = loadAction(loadOp: attachment.stencilLoadOp, readOnly: attachment.stencilReadOnly)
-            mtlAttachment.storeAction = storeAction(storeOp: attachment.stencilStoreOp)
+            mtlAttachment.loadAction = loadAction(loadOp: Optional(fromCxx: attachment.stencilLoadOp), readOnly: attachment.stencilReadOnly)
+            mtlAttachment.storeAction = storeAction(storeOp: Optional(fromCxx: attachment.stencilStoreOp))
             let isDestroyed = textureView.isDestroyed()
             if !isDestroyed {
                 if hasStencilComponent && !stencilReadOnly {
-                    if attachment.stencilLoadOp == WGPULoadOp_Undefined || attachment.stencilStoreOp == WGPUStoreOp_Undefined {
+                    if Optional(fromCxx: attachment.stencilLoadOp) == nil || Optional(fromCxx: attachment.stencilStoreOp) == nil {
                         return WebGPU.Metal.RenderPassEncoder.createInvalid(self, m_device.ptr(), "stencil load and store op were not specified")
                     }
-                } else if attachment.stencilLoadOp != WGPULoadOp_Undefined || attachment.stencilStoreOp != WGPUStoreOp_Undefined {
+                } else if Optional(fromCxx: attachment.stencilLoadOp) != nil || Optional(fromCxx: attachment.stencilStoreOp) != nil {
                     return WebGPU.Metal.RenderPassEncoder.createInvalid(self, m_device.ptr(), "stencil load and store op were specified")
                 }
             }
@@ -1425,7 +1421,7 @@ extension WebGPU.Metal.CommandEncoder {
         var visibilityResultBuffer: (any MTLBuffer)? = nil
         if let occlusionQuery = WebGPU.Metal.metalOrNull(descriptor.occlusionQuerySet) {
             occlusionQuery.setCommandEncoder(self)
-            if occlusionQuery.type() != WGPUQueryType_Occlusion {
+            if Optional(fromCxx: occlusionQuery.type()) != WebGPU.QueryType.Occlusion {
                 return WebGPU.Metal.RenderPassEncoder.createInvalid(
                     self,
                     m_device.ptr(),
@@ -2244,7 +2240,7 @@ extension WebGPU.Metal.CommandEncoder {
             return
         }
 
-        if querySet.type() == WGPUQueryType_Occlusion {
+        if Optional(fromCxx: querySet.type()) == WebGPU.QueryType.Occlusion {
             guard let blitCommandEncoder = ensureBlitCommandEncoder() else {
                 return
             }
@@ -2264,7 +2260,7 @@ extension WebGPU.Metal.CommandEncoder {
             )
         }
 
-        if querySet.type() == WGPUQueryType_Timestamp {
+        if Optional(fromCxx: querySet.type()) == WebGPU.QueryType.Timestamp {
             // FIXME: https://bugs.webkit.org/show_bug.cgi?id=283385 - https://bugs.webkit.org/show_bug.cgi?id=283088 should be reverted when the blocking issue is resolved
             finalizeBlitCommandEncoder()
             let workaround = m_device.ptr().resolveTimestampsSharedEvent()

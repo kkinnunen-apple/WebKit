@@ -73,33 +73,27 @@ void CommandEncoder::generateInvalidEncoderStateError()
     GENERATE_INVALID_ENCODER_STATE_ERROR();
 }
 
-static MTLLoadAction NODELETE loadAction(WGPULoadOp loadOp, bool readOnly = false)
+static MTLLoadAction NODELETE loadAction(std::optional<WebGPU::LoadOp> loadOp, bool readOnly = false)
 {
-    switch (loadOp) {
-    case WGPULoadOp_Load:
-        return MTLLoadActionLoad;
-    case WGPULoadOp_Clear:
-        return MTLLoadActionClear;
-    case WGPULoadOp_Undefined:
+    if (!loadOp)
         return readOnly ? MTLLoadActionLoad : MTLLoadActionDontCare;
-    case WGPULoadOp_Force32:
-        ASSERT_NOT_REACHED();
-        return MTLLoadActionDontCare;
+    switch (*loadOp) {
+    case WebGPU::LoadOp::Load:
+        return MTLLoadActionLoad;
+    case WebGPU::LoadOp::Clear:
+        return MTLLoadActionClear;
     }
 }
 
-static MTLStoreAction NODELETE storeAction(WGPUStoreOp storeOp, bool hasResolveTarget = false)
+static MTLStoreAction NODELETE storeAction(std::optional<WebGPU::StoreOp> storeOp, bool hasResolveTarget = false)
 {
-    switch (storeOp) {
-    case WGPUStoreOp_Store:
+    if (!storeOp)
+        return hasResolveTarget ? MTLStoreActionMultisampleResolve : MTLStoreActionDontCare;
+    switch (*storeOp) {
+    case WebGPU::StoreOp::Store:
         return hasResolveTarget ? MTLStoreActionStoreAndMultisampleResolve : MTLStoreActionStore;
-    case WGPUStoreOp_Discard:
+    case WebGPU::StoreOp::Discard:
         return hasResolveTarget ? MTLStoreActionMultisampleResolve : MTLStoreActionDontCare;
-    case WGPUStoreOp_Undefined:
-        return hasResolveTarget ? MTLStoreActionMultisampleResolve : MTLStoreActionDontCare;
-    case WGPUStoreOp_Force32:
-        ASSERT_NOT_REACHED();
-        return MTLStoreActionDontCare;
     }
 }
 
@@ -234,13 +228,13 @@ static NSUInteger NODELETE timestampWriteIndex(std::optional<uint32_t> writeInde
 static NSString* errorValidatingTimestampWrites(const auto& timestampWrites, const CommandEncoder& commandEncoder)
 {
     if (timestampWrites) {
-        if (!protect(commandEncoder.device())->hasFeature(WGPUFeatureName_TimestampQuery))
+        if (!protect(commandEncoder.device())->hasFeature(WebGPU::FeatureName::TimestampQuery))
             return @"device does not have timestamp query feature";
 
         const auto& timestampWrite = *timestampWrites;
         Ref querySet = metal(timestampWrite.querySet);
-        if (querySet->type() != WGPUQueryType_Timestamp)
-            return [NSString stringWithFormat:@"query type is not timestamp but %d", querySet->type()];
+        if (querySet->type() != WebGPU::QueryType::Timestamp)
+            return [NSString stringWithFormat:@"query type is not timestamp but %s", querySet->type() ? "occlusion" : "invalid"];
 
         if (!isValidToUseWith(querySet, commandEncoder))
             return @"device mismatch";
@@ -384,7 +378,7 @@ NSString* CommandEncoder::errorValidatingRenderPassDescriptor(const WebGPU::Rend
         Ref occlusionQuery = metal(*apiOcclusionQuery);
         if (!isValidToUseWith(occlusionQuery, *this))
             return @"occlusion query does not match the device";
-        if (occlusionQuery->type() != WGPUQueryType_Occlusion)
+        if (occlusionQuery->type() != WebGPU::QueryType::Occlusion)
             return @"occlusion query type is not occlusion";
     }
 
@@ -766,7 +760,7 @@ RefPtr<WebGPU::RenderPassEncoder> CommandEncoder::beginRenderPass(const WebGPU::
         if (hasDepthComponent) {
             const auto& mtlAttachment = mtlDescriptor.depthAttachment;
             auto clearDepth = std::clamp(RenderPassEncoder::quantizedDepthValue(attachment->depthClearValue, textureView.format()), 0., 1.);
-            mtlAttachment.clearDepth = attachment->depthLoadOp == WGPULoadOp_Clear ? clearDepth : 1.0;
+            mtlAttachment.clearDepth = attachment->depthLoadOp == WebGPU::LoadOp::Clear ? clearDepth : 1.0;
             mtlAttachment.texture = metalDepthStencilTexture;
             mtlAttachment.level = 0;
             mtlAttachment.loadAction = loadAction(attachment->depthLoadOp, attachment->depthReadOnly);
@@ -790,13 +784,13 @@ RefPtr<WebGPU::RenderPassEncoder> CommandEncoder::beginRenderPass(const WebGPU::
 
         if (!isDestroyed) {
             if (hasDepthComponent && !depthReadOnly) {
-                if (attachment->depthLoadOp == WGPULoadOp_Undefined || attachment->depthStoreOp == WGPUStoreOp_Undefined)
+                if (!attachment->depthLoadOp || !attachment->depthStoreOp)
                     return RenderPassEncoder::createInvalid(*this, m_device, @"depth load and store op were not specified");
-            } else if (attachment->depthLoadOp != WGPULoadOp_Undefined || attachment->depthStoreOp != WGPUStoreOp_Undefined)
+            } else if (attachment->depthLoadOp || attachment->depthStoreOp)
                 return RenderPassEncoder::createInvalid(*this, m_device, @"depth load and store op were specified");
         }
 
-        if (attachment->depthLoadOp == WGPULoadOp_Clear && (attachment->depthClearValue < 0 || attachment->depthClearValue > 1))
+        if (attachment->depthLoadOp == WebGPU::LoadOp::Clear && (attachment->depthClearValue < 0 || attachment->depthClearValue > 1))
             return RenderPassEncoder::createInvalid(*this, m_device, @"depth clear value is invalid");
 
         if (zeroColorTargets) {
@@ -822,9 +816,9 @@ RefPtr<WebGPU::RenderPassEncoder> CommandEncoder::beginRenderPass(const WebGPU::
         bool isDestroyed = textureView.isDestroyed();
         if (!isDestroyed) {
             if (hasStencilComponent && !stencilReadOnly) {
-                if (attachment->stencilLoadOp == WGPULoadOp_Undefined || attachment->stencilStoreOp == WGPUStoreOp_Undefined)
+                if (!attachment->stencilLoadOp || !attachment->stencilStoreOp)
                     return RenderPassEncoder::createInvalid(*this, m_device, @"stencil load and store op were not specified");
-            } else if (attachment->stencilLoadOp != WGPULoadOp_Undefined || attachment->stencilStoreOp != WGPUStoreOp_Undefined)
+            } else if (attachment->stencilLoadOp || attachment->stencilStoreOp)
                 return RenderPassEncoder::createInvalid(*this, m_device, @"stencil load and store op were specified");
         }
 
@@ -844,7 +838,7 @@ RefPtr<WebGPU::RenderPassEncoder> CommandEncoder::beginRenderPass(const WebGPU::
     if (auto& apiOcclusionQuery = descriptor.occlusionQuerySet) {
         Ref occlusionQuery = metal(*apiOcclusionQuery);
         occlusionQuery->setCommandEncoder(*this);
-        if (occlusionQuery->type() != WGPUQueryType_Occlusion)
+        if (occlusionQuery->type() != WebGPU::QueryType::Occlusion)
             return RenderPassEncoder::createInvalid(*this, m_device, @"querySet for occlusion query was not of type occlusion");
         mtlDescriptor.visibilityResultBuffer = occlusionQuery->visibilityBuffer();
         visibilityResultBuffer = mtlDescriptor.visibilityResultBuffer;
@@ -2325,13 +2319,16 @@ void CommandEncoder::resolveQuerySet(const QuerySet& querySet, uint32_t firstQue
     if (querySet.isDestroyed() || destination.isDestroyed() || !queryCount)
         return;
 
-    switch (querySet.type()) {
-    case WGPUQueryType_Occlusion: {
+    auto type = querySet.type();
+    if (!type)
+        return;
+    switch (*type) {
+    case WebGPU::QueryType::Occlusion: {
         ensureBlitCommandEncoder();
         [m_blitCommandEncoder copyFromBuffer:querySet.visibilityBuffer() sourceOffset:sizeof(uint64_t) * firstQuery toBuffer:destination.buffer() destinationOffset:destinationOffset size:sizeof(uint64_t) * queryCount];
         break;
     }
-    case WGPUQueryType_Timestamp: {
+    case WebGPU::QueryType::Timestamp: {
         // FIXME: https://bugs.webkit.org/show_bug.cgi?id=283385 - https://bugs.webkit.org/show_bug.cgi?id=283088 should be reverted when the blocking issue is resolved
         finalizeBlitCommandEncoder();
         id<MTLSharedEvent> workaround = m_device->resolveTimestampsSharedEvent();
@@ -2356,10 +2353,10 @@ void CommandEncoder::writeTimestamp(QuerySet& querySet, uint32_t queryIndex)
         return;
     }
 
-    if (!protect(m_device)->hasFeature(WGPUFeatureName_TimestampQuery))
+    if (!protect(m_device)->hasFeature(WebGPU::FeatureName::TimestampQuery))
         return;
 
-    if (querySet.type() != WGPUQueryType_Timestamp || queryIndex >= querySet.count() || !isValidToUseWith(querySet, *this)) {
+    if (querySet.type() != WebGPU::QueryType::Timestamp || queryIndex >= querySet.count() || !isValidToUseWith(querySet, *this)) {
         makeInvalid(@"GPUCommandEncoder.writeTimestamp validation failed");
         return;
     }

@@ -57,7 +57,7 @@ class TextureView;
 // names, so both importExternalTexture() and copyExternalImageToTexture() have to convert them.
 // Row-major and applied to linear-light values; std::nullopt when the frame's primaries already are
 // the destination's, which has to stay a no-op rather than a transfer function round trip.
-std::optional<std::array<float, 9>> primariesConversionMatrixForPixelBuffer(CVPixelBufferRef, WGPUColorSpace destination);
+std::optional<std::array<float, 9>> primariesConversionMatrixForPixelBuffer(CVPixelBufferRef, WebGPU::PredefinedColorSpace destination);
 
 // https://gpuweb.github.io/gpuweb/#gpuqueue
 // A device owns its default queue, not the other way around.

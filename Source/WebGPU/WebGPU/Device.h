@@ -142,7 +142,7 @@ public:
     Ref<WebGPU::Queue> queue() final;
     Queue& getQueueReference() const { return m_defaultQueue; }
     Ref<Queue> getQueue() const { return m_defaultQueue; }
-    bool hasFeature(WGPUFeatureName) const;
+    bool hasFeature(WebGPU::FeatureName) const;
     void popErrorScope(CompletionHandler<void(bool, std::optional<WebGPU::Error>&&)>&&) final;
     void pushErrorScope(WebGPU::ErrorFilter) final;
     void resolveDeviceLostPromise(CompletionHandler<void(WebGPU::DeviceLostReason, String&&)>&&) final;
@@ -216,7 +216,7 @@ public:
         setOwnerWithIdentity(buffer);
         return buffer;
     }
-    void loseTheDevice(WGPUDeviceLostReason);
+    void loseTheDevice(WebGPU::DeviceLostReason);
     int NODELETE bufferIndexForICBContainer() const;
     void setOwnerWithIdentity(id<MTLResource>) const;
     struct ExternalTextureData {
@@ -234,7 +234,7 @@ public:
     // premultiply what the sampler filtered. copyExternalImageToTexture() carries the frame's color
     // through unchanged instead, and asks for the planes as they arrived.
     enum class PremultiplyAlpha : bool { No, Yes };
-    ExternalTextureData createExternalTextureFromPixelBuffer(CVPixelBufferRef, WGPUColorSpace, PremultiplyAlpha) const;
+    ExternalTextureData createExternalTextureFromPixelBuffer(CVPixelBufferRef, WebGPU::PredefinedColorSpace, PremultiplyAlpha) const;
     id<MTLTexture> _Nullable premultipliedAlphaTexture(id<MTLTexture>, MTLPixelFormat, std::optional<MTLTextureSwizzleChannels> sourceSwizzle) const;
     id<MTLComputePipelineState> _Nullable premultiplyAlphaPipeline() const;
     RefPtr<XRSubImage> getXRViewSubImage(XRProjectionLayer&);
@@ -289,8 +289,10 @@ private:
     Device(Adapter&);
 
     struct ErrorScope;
-    ErrorScope* NODELETE currentErrorScope(WGPUErrorFilter);
-    std::optional<WGPUErrorType> NODELETE validatePopErrorScope() const;
+    ErrorScope* NODELETE currentErrorScope(WebGPU::ErrorFilter);
+    // Whether popping succeeds without a scope to pop: true for a lost device, false for an empty
+    // stack. std::nullopt when there is a scope to pop.
+    std::optional<bool> NODELETE validatePopErrorScope() const;
 
     bool NODELETE validateRenderPipeline(const WebGPU::RenderPipelineDescriptor&);
 
@@ -314,7 +316,7 @@ private:
 
     struct ErrorScope {
         std::optional<WebGPU::Error> error;
-        const WGPUErrorFilter filter;
+        const WebGPU::ErrorFilter filter;
     };
     id<MTLDevice> _Nullable m_device { nil };
     const Ref<Queue> m_defaultQueue;

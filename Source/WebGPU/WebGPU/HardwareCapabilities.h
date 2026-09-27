@@ -37,7 +37,7 @@ namespace WebGPU::Metal {
 
 struct HardwareCapabilities {
     Limits limits { };
-    Vector<WGPUFeatureName> features;
+    Vector<WebGPU::FeatureName> features;
 
     struct BaseCapabilities {
         MTLArgumentBuffersTier argumentBuffersTier { MTLArgumentBuffersTier1 };
@@ -54,7 +54,7 @@ std::optional<HardwareCapabilities> hardwareCapabilities(id<MTLDevice>);
 bool NODELETE isValid(const Limits&);
 Limits NODELETE defaultLimits();
 bool NODELETE anyLimitIsBetterThan(const Limits& target, const Limits& reference);
-bool includesUnsupportedFeatures(const Vector<WGPUFeatureName>& target, const Vector<WGPUFeatureName>& reference);
+bool includesUnsupportedFeatures(const Vector<WebGPU::FeatureName>& target, const Vector<WebGPU::FeatureName>& reference);
 bool isShaderValidationEnabled(id<MTLDevice>);
 bool NODELETE isWebGPUSwiftEnabled();
 
