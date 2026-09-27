@@ -24,7 +24,7 @@
  */
 
 #import "config.h"
-#import <WebGPU/WebGPUCppBridge.h>
+#import "WebGPUCppBridge.h"
 
 #import "APIConversions.h"
 

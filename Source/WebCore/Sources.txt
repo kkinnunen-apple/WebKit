@@ -110,8 +110,8 @@ Modules/WebGPU/GPUVertexState.cpp
 Modules/WebGPU/Implementation/WebGPUCompositorIntegrationImpl.cpp
 Modules/WebGPU/Implementation/WebGPUCreateImpl.cpp
 Modules/WebGPU/Implementation/WebGPUImpl.cpp
-Modules/WebGPU/InternalAPI/WebGPUXRLayerBacking.cpp
 Modules/WebGPU/WGSLLanguageFeatures.cpp
+Modules/WebGPU/WebGPUXRLayerBacking.cpp
 Modules/airplay/WebKitPlaybackTargetAvailabilityEvent.cpp
 Modules/applicationmanifest/ApplicationManifestParser.cpp
 Modules/async-clipboard/Clipboard.cpp

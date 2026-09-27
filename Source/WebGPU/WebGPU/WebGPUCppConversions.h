@@ -27,7 +27,7 @@
 
 #import <WebGPU/WebGPU.h>
 #import <WebGPU/WebGPUCpp.h>
-#import <WebGPU/WebGPUCppBridge.h>
+#import "WebGPUCppBridge.h"
 #import <WebGPU/WebGPUExt.h>
 #import <optional>
 #import <type_traits>

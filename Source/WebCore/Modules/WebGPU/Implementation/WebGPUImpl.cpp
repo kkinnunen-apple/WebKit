@@ -40,8 +40,6 @@
 #include <WebCore/IntSize.h>
 #include <WebCore/NativeImage.h>
 #include <WebCore/WebGPUCppAPI.h>
-#include <WebGPU/WebGPUCppBridge.h>
-#include <WebGPU/WebGPUExt.h>
 #include <wtf/BlockPtr.h>
 #include <wtf/TZoneMallocInlines.h>
 

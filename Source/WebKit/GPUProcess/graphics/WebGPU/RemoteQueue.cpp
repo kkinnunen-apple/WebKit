@@ -46,29 +46,18 @@
 #include <WebCore/VideoFrame.h>
 #endif
 
-#if HAVE(WEBGPU_IMPLEMENTATION)
-#include <WebGPU/WebGPU.h>
-#include <WebGPU/WebGPUExt.h>
-#endif
-
 namespace WebKit {
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(RemoteQueue);
 
-// For transfers at or above WGPU_LARGE_BUFFER_SIZE the backend uses newBufferWithBytesNoCopy and aliases `data`'s mapping; keep it alive until the GPU has consumed the bytes. Smaller transfers are copied into a Metal buffer synchronously, so `data` can be released as soon as we return.
+// Transfers of at least WebGPU::largeBufferSize bytes may alias `data`'s mapping; keep it alive until the GPU has consumed the bytes. Smaller transfers are copied, so `data` can be released as soon as we return.
 static void keepAliveUntilSubmittedWorkDone(::WebGPU::Queue& backing, RefPtr<WebCore::SharedMemory>&& data)
 {
-#if HAVE(WEBGPU_IMPLEMENTATION)
-    if (!data || data->size() < WGPU_LARGE_BUFFER_SIZE)
+    if (!data || data->size() < ::WebGPU::largeBufferSize)
         return;
     backing.onSubmittedWorkDone([data = WTF::move(data)]() mutable {
         data = nullptr;
     });
-#else
-    // Only the Metal backend aliases the caller's storage, and it is the only WebGPU implementation.
-    UNUSED_PARAM(backing);
-    UNUSED_PARAM(data);
-#endif
 }
 
 RemoteQueue::RemoteQueue([[maybe_unused]] GPUConnectionToWebProcess& gpuConnectionToWebProcess, ::WebGPU::Queue& queue, WebGPU::ObjectHeap& objectHeap, Ref<IPC::StreamServerConnection>&& streamConnection, RemoteGPU& gpu, WebGPUIdentifier identifier)

@@ -144,44 +144,43 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     Modules/WebGPU/GPUVertexFormat.h
     Modules/WebGPU/GPUVertexState.h
     Modules/WebGPU/GPUVertexStepMode.h
+    Modules/WebGPU/WebGPU.h
+    Modules/WebGPU/WebGPUCanvasConfiguration.h
+    Modules/WebGPU/WebGPUColorTargetState.h
+    Modules/WebGPU/WebGPUCompositorIntegration.h
+    Modules/WebGPU/WebGPUComputePipelineDescriptor.h
+    Modules/WebGPU/WebGPUCppAPI.h
+    Modules/WebGPU/WebGPUDepthStencilState.h
+    Modules/WebGPU/WebGPUDevice.h
+    Modules/WebGPU/WebGPUDeviceDescriptor.h
+    Modules/WebGPU/WebGPUDeviceLostInfo.h
+    Modules/WebGPU/WebGPUError.h
+    Modules/WebGPU/WebGPUExternalTextureDescriptor.h
+    Modules/WebGPU/WebGPUFragmentState.h
+    Modules/WebGPU/WebGPUImageCopyExternalImage.h
+    Modules/WebGPU/WebGPUImageCopyTextureTagged.h
+    Modules/WebGPU/WebGPUInternalError.h
+    Modules/WebGPU/WebGPUObjectDescriptorBase.h
+    Modules/WebGPU/WebGPUOutOfMemoryError.h
+    Modules/WebGPU/WebGPUPipelineDescriptorBase.h
+    Modules/WebGPU/WebGPUPredefinedColorSpace.h
+    Modules/WebGPU/WebGPUPresentationContextDescriptor.h
+    Modules/WebGPU/WebGPUProgrammableStage.h
+    Modules/WebGPU/WebGPURenderBundleEncoderDescriptor.h
+    Modules/WebGPU/WebGPURenderPassLayout.h
+    Modules/WebGPU/WebGPURenderPipelineDescriptor.h
+    Modules/WebGPU/WebGPUShaderModuleCompilationHint.h
+    Modules/WebGPU/WebGPUShaderModuleDescriptor.h
+    Modules/WebGPU/WebGPUSupportedFeatures.h
+    Modules/WebGPU/WebGPUSupportedLimits.h
+    Modules/WebGPU/WebGPUValidationError.h
+    Modules/WebGPU/WebGPUVertexBufferLayout.h
+    Modules/WebGPU/WebGPUVertexState.h
+    Modules/WebGPU/WebGPUXRLayerBacking.h
 
     Modules/WebGPU/Implementation/WebGPUCompositorIntegrationImpl.h
     Modules/WebGPU/Implementation/WebGPUCreateImpl.h
     Modules/WebGPU/Implementation/WebGPUImpl.h
-
-    Modules/WebGPU/InternalAPI/WebGPU.h
-    Modules/WebGPU/InternalAPI/WebGPUCanvasConfiguration.h
-    Modules/WebGPU/InternalAPI/WebGPUColorTargetState.h
-    Modules/WebGPU/InternalAPI/WebGPUCompositorIntegration.h
-    Modules/WebGPU/InternalAPI/WebGPUComputePipelineDescriptor.h
-    Modules/WebGPU/InternalAPI/WebGPUCppAPI.h
-    Modules/WebGPU/InternalAPI/WebGPUDepthStencilState.h
-    Modules/WebGPU/InternalAPI/WebGPUDevice.h
-    Modules/WebGPU/InternalAPI/WebGPUDeviceDescriptor.h
-    Modules/WebGPU/InternalAPI/WebGPUDeviceLostInfo.h
-    Modules/WebGPU/InternalAPI/WebGPUError.h
-    Modules/WebGPU/InternalAPI/WebGPUExternalTextureDescriptor.h
-    Modules/WebGPU/InternalAPI/WebGPUFragmentState.h
-    Modules/WebGPU/InternalAPI/WebGPUImageCopyExternalImage.h
-    Modules/WebGPU/InternalAPI/WebGPUImageCopyTextureTagged.h
-    Modules/WebGPU/InternalAPI/WebGPUInternalError.h
-    Modules/WebGPU/InternalAPI/WebGPUObjectDescriptorBase.h
-    Modules/WebGPU/InternalAPI/WebGPUOutOfMemoryError.h
-    Modules/WebGPU/InternalAPI/WebGPUPipelineDescriptorBase.h
-    Modules/WebGPU/InternalAPI/WebGPUPredefinedColorSpace.h
-    Modules/WebGPU/InternalAPI/WebGPUPresentationContextDescriptor.h
-    Modules/WebGPU/InternalAPI/WebGPUProgrammableStage.h
-    Modules/WebGPU/InternalAPI/WebGPURenderBundleEncoderDescriptor.h
-    Modules/WebGPU/InternalAPI/WebGPURenderPassLayout.h
-    Modules/WebGPU/InternalAPI/WebGPURenderPipelineDescriptor.h
-    Modules/WebGPU/InternalAPI/WebGPUShaderModuleCompilationHint.h
-    Modules/WebGPU/InternalAPI/WebGPUShaderModuleDescriptor.h
-    Modules/WebGPU/InternalAPI/WebGPUSupportedFeatures.h
-    Modules/WebGPU/InternalAPI/WebGPUSupportedLimits.h
-    Modules/WebGPU/InternalAPI/WebGPUValidationError.h
-    Modules/WebGPU/InternalAPI/WebGPUVertexBufferLayout.h
-    Modules/WebGPU/InternalAPI/WebGPUVertexState.h
-    Modules/WebGPU/InternalAPI/WebGPUXRLayerBacking.h
 
     Modules/airplay/PlaybackTargetClientContextIdentifier.h
     Modules/airplay/WebMediaSessionManager.h
