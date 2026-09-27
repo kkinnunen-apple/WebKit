@@ -75,7 +75,8 @@ public:
 
     ~Queue();
 
-    void onSubmittedWorkDone(CompletionHandler<void(WGPUQueueWorkDoneStatus)>&& callback);
+    // The callback is called with false when the device is lost.
+    void onSubmittedWorkDone(CompletionHandler<void(bool)>&& callback);
     void submit(Vector<Ref<WebGPU::Metal::CommandBuffer>>&& commands);
     void writeBuffer(Buffer&, uint64_t bufferOffset, std::span<uint8_t> data);
     void writeBuffer(id<MTLBuffer>, uint64_t bufferOffset, std::span<uint8_t> data) HAS_SWIFTCXX_THUNK;
@@ -159,7 +160,7 @@ private:
     uint64_t m_scheduledCommandBufferCount { 0 };
     using OnSubmittedWorkScheduledCallbacks = Vector<WTF::Function<void()>>;
     HashMap<uint64_t, OnSubmittedWorkScheduledCallbacks, DefaultHash<uint64_t>, WTF::UnsignedWithZeroKeyHashTraits<uint64_t>> m_onSubmittedWorkScheduledCallbacks;
-    using OnSubmittedWorkDoneCallbacks = Vector<WTF::Function<void(WGPUQueueWorkDoneStatus)>>;
+    using OnSubmittedWorkDoneCallbacks = Vector<WTF::Function<void(bool)>>;
     HashMap<uint64_t, OnSubmittedWorkDoneCallbacks, DefaultHash<uint64_t>, WTF::UnsignedWithZeroKeyHashTraits<uint64_t>> m_onSubmittedWorkDoneCallbacks;
     NSMutableDictionary<NSNumber*, NSMutableSet<id<MTLCounterSampleBuffer>>*> * _Nullable m_retainedCounterSampleBuffers;
     NSMutableOrderedSet<id<MTLCommandBuffer>> * _Nullable m_createdNotCommittedBuffers { nil };

@@ -98,7 +98,7 @@ public:
     struct ExternalTextureBindingLayout { };
     struct Entry {
         uint32_t binding;
-        WGPUShaderStage visibility;
+        OptionSet<WebGPU::ShaderStage> visibility;
         using BindingLayout = Variant<BufferBindingLayout, SamplerBindingLayout, TextureBindingLayout, StorageTextureBindingLayout, ExternalTextureBindingLayout>;
         BindingLayout bindingLayout;
         ArgumentBufferIndices argumentBufferIndices;
@@ -201,8 +201,8 @@ private:
 // array lengths of runtime-sized buffers, with the binding type BufferBindingType::ArrayLength.
 struct ResolvedBindGroupLayoutEntry {
     uint32_t binding { 0 };
-    std::array<uint32_t, WGPUShaderStage_Compute / 2 + 1> metalBinding { };
-    WGPUShaderStage visibility { WGPUShaderStage_None };
+    std::array<uint32_t, static_cast<size_t>(ShaderStage::Compute) + 1> metalBinding { };
+    OptionSet<WebGPU::ShaderStage> visibility;
     BindGroupLayout::Entry::BindingLayout bindingLayout;
 };
 

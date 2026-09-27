@@ -277,7 +277,7 @@ void Queue::makeInvalid()
     }
     for (auto& [_, callbackVector] : m_onSubmittedWorkDoneCallbacks) {
         for (auto& callback : callbackVector)
-            callback(WGPUQueueWorkDoneStatus_DeviceLost);
+            callback(false);
     }
 
     m_onSubmittedWorkScheduledCallbacks.clear();
@@ -290,12 +290,12 @@ void Queue::makeInvalid()
     m_openCommandEncoders = nil;
 }
 
-void Queue::onSubmittedWorkDone(CompletionHandler<void(WGPUQueueWorkDoneStatus)>&& callback)
+void Queue::onSubmittedWorkDone(CompletionHandler<void(bool)>&& callback)
 {
     // https://gpuweb.github.io/gpuweb/#dom-gpuqueue-onsubmittedworkdone
     auto devicePtr = m_device.get();
     if (!devicePtr || !devicePtr->isValid() || devicePtr->isLost()) {
-        callback(WGPUQueueWorkDoneStatus_DeviceLost);
+        callback(false);
         return;
     }
 
@@ -305,7 +305,7 @@ void Queue::onSubmittedWorkDone(CompletionHandler<void(WGPUQueueWorkDoneStatus)>
 
     if (isIdle()) {
         scheduleWork([callback = WTF::move(callback)]() mutable {
-            callback(WGPUQueueWorkDoneStatus_Success);
+            callback(true);
         });
         return;
     }
@@ -437,7 +437,7 @@ void Queue::commitMTLCommandBuffer(id<MTLCommandBuffer> commandBuffer)
         protectedThis->scheduleWork([loseTheDevice, protectedThis = protectedThis.copyRef()]() {
             ++(protectedThis->m_completedCommandBufferCount);
             for (auto& callback : protectedThis->m_onSubmittedWorkDoneCallbacks.take(protectedThis->m_completedCommandBufferCount))
-                callback(WGPUQueueWorkDoneStatus_Success);
+                callback(true);
             if (loseTheDevice) {
                 auto device = protectedThis->m_device.get();
                 if (device)
@@ -2103,7 +2103,7 @@ void Queue::submit(Vector<Ref<WebGPU::CommandBuffer>>&& commands)
 
 void Queue::onSubmittedWorkDone(CompletionHandler<void()>&& callback)
 {
-    onSubmittedWorkDone(CompletionHandler<void(WGPUQueueWorkDoneStatus)> { [callback = WTF::move(callback)](WGPUQueueWorkDoneStatus) mutable {
+    onSubmittedWorkDone(CompletionHandler<void(bool)> { [callback = WTF::move(callback)](bool) mutable {
         callback();
     } });
 }
@@ -2181,15 +2181,15 @@ void wgpuQueueRelease(WGPUQueue queue)
 
 void wgpuQueueOnSubmittedWorkDone(WGPUQueue queue, WGPUQueueWorkDoneCallback callback, void* userdata)
 {
-    protect(WebGPU::Metal::fromAPI(queue))->onSubmittedWorkDone(CompletionHandler<void(WGPUQueueWorkDoneStatus)> { [callback, userdata](WGPUQueueWorkDoneStatus status) {
-        callback(status, userdata);
+    protect(WebGPU::Metal::fromAPI(queue))->onSubmittedWorkDone(CompletionHandler<void(bool)> { [callback, userdata](bool success) {
+        callback(success ? WGPUQueueWorkDoneStatus_Success : WGPUQueueWorkDoneStatus_DeviceLost, userdata);
     } });
 }
 
 void wgpuQueueOnSubmittedWorkDoneWithBlock(WGPUQueue queue, WGPUQueueWorkDoneBlockCallback callback)
 {
-    protect(WebGPU::Metal::fromAPI(queue))->onSubmittedWorkDone(CompletionHandler<void(WGPUQueueWorkDoneStatus)> { [callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPUQueueWorkDoneStatus status) {
-        callback(status);
+    protect(WebGPU::Metal::fromAPI(queue))->onSubmittedWorkDone(CompletionHandler<void(bool)> { [callback = WebGPU::Metal::fromAPI(WTF::move(callback))](bool success) {
+        callback(success ? WGPUQueueWorkDoneStatus_Success : WGPUQueueWorkDoneStatus_DeviceLost);
     } });
 }
 

@@ -94,17 +94,17 @@ static MTLBlendFactor NODELETE blendFactor(WebGPU::BlendFactor factor)
     }
 }
 
-static MTLColorWriteMask NODELETE colorWriteMask(WGPUColorWriteMask mask)
+static MTLColorWriteMask NODELETE colorWriteMask(OptionSet<WebGPU::ColorWrite> mask)
 {
     MTLColorWriteMask mtlMask = MTLColorWriteMaskNone;
 
-    if (mask & WGPUColorWriteMask_Red)
+    if (mask.contains(WebGPU::ColorWrite::Red))
         mtlMask |= MTLColorWriteMaskRed;
-    if (mask & WGPUColorWriteMask_Green)
+    if (mask.contains(WebGPU::ColorWrite::Green))
         mtlMask |= MTLColorWriteMaskGreen;
-    if (mask & WGPUColorWriteMask_Blue)
+    if (mask.contains(WebGPU::ColorWrite::Blue))
         mtlMask |= MTLColorWriteMaskBlue;
-    if (mask & WGPUColorWriteMask_Alpha)
+    if (mask.contains(WebGPU::ColorWrite::Alpha))
         mtlMask |= MTLColorWriteMaskAlpha;
 
     return mtlMask;
@@ -728,15 +728,15 @@ static WebGPU::SamplerBindingType NODELETE convertSamplerBindingType(WGSL::Sampl
     }
 }
 
-static WGPUShaderStage NODELETE convertVisibility(const OptionSet<WGSL::ShaderStage>& visibility)
+static OptionSet<WebGPU::ShaderStage> NODELETE convertVisibility(const OptionSet<WGSL::ShaderStage>& visibility)
 {
-    WGPUShaderStage flags = 0;
+    OptionSet<WebGPU::ShaderStage> flags;
     if (visibility & WGSL::ShaderStage::Vertex)
-        flags |= WGPUShaderStage_Vertex;
+        flags |= WebGPU::ShaderStage::Vertex;
     if (visibility & WGSL::ShaderStage::Fragment)
-        flags |= WGPUShaderStage_Fragment;
+        flags |= WebGPU::ShaderStage::Fragment;
     if (visibility & WGSL::ShaderStage::Compute)
-        flags |= WGPUShaderStage_Compute;
+        flags |= WebGPU::ShaderStage::Compute;
 
     return flags;
 }
@@ -934,7 +934,8 @@ NSString* Device::addPipelineLayouts(Vector<Vector<ResolvedBindGroupLayoutEntry>
         };
         for (auto& entry : bindGroupLayout.entries) {
             auto visibility = convertVisibility(entry.visibility);
-            auto stage = visibility / 2;
+            // The entries of a shader have the visibility of its stage.
+            auto stage = static_cast<size_t>(shaderStage(visibility));
             ResolvedBindGroupLayoutEntry newEntry;
             // FIXME: https://bugs.webkit.org/show_bug.cgi?id=265204 - use a set instead
             bool isArrayLength = false;
@@ -1594,7 +1595,7 @@ void Device::createRenderPipeline(const WebGPU::RenderPipelineDescriptor& descri
                 return callback(returnInvalidRenderPipeline(*this, isAsync, "writeMask is invalid"_s));
             if (fragmentFunctionReturnType == MTLDataTypeNone && !targetDescriptor.writeMask.isEmpty())
                 return callback(returnInvalidRenderPipeline(*this, isAsync, "writeMask is invalid"_s));
-            mtlColorAttachment.writeMask = colorWriteMask(toAPI(targetDescriptor.writeMask));
+            mtlColorAttachment.writeMask = colorWriteMask(targetDescriptor.writeMask);
 
             bool readsAlpha = false;
             if (targetDescriptor.blend) {
