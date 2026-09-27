@@ -26,7 +26,6 @@
 #include "ExportMacros.h"
 
 #include "WebGPU.h"
-#include "WebGPUExt.h"
 
 #include <Metal/Metal.h>
 
