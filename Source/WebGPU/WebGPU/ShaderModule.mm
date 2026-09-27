@@ -275,58 +275,58 @@ static MTLDataType NODELETE metalDataTypeFromPrimitive(const WGSL::Types::Primit
     }
 }
 
-static WGPUVertexFormat NODELETE vertexFormatTypeFromPrimitive(const WGSL::Types::Primitive *primitiveType, int vectorSize)
+static WebGPU::VertexFormat NODELETE vertexFormatTypeFromPrimitive(const WGSL::Types::Primitive *primitiveType, int vectorSize)
 {
     switch (vectorSize) {
     case 1:
         switch (primitiveType->kind) {
         case WGSL::Types::Primitive::I32:
-            return WGPUVertexFormat_Sint32;
+            return WebGPU::VertexFormat::Sint32;
         case WGSL::Types::Primitive::U32:
-            return WGPUVertexFormat_Uint32;
+            return WebGPU::VertexFormat::Uint32;
         case WGSL::Types::Primitive::F16:
-            return WGPUVertexFormat_Float32;
+            return WebGPU::VertexFormat::Float32;
         case WGSL::Types::Primitive::F32:
-            return WGPUVertexFormat_Float32;
+            return WebGPU::VertexFormat::Float32;
         default:
             RELEASE_ASSERT_NOT_REACHED();
         }
     case 2:
         switch (primitiveType->kind) {
         case WGSL::Types::Primitive::I32:
-            return WGPUVertexFormat_Sint32x2;
+            return WebGPU::VertexFormat::Sint32x2;
         case WGSL::Types::Primitive::U32:
-            return WGPUVertexFormat_Uint32x2;
+            return WebGPU::VertexFormat::Uint32x2;
         case WGSL::Types::Primitive::F16:
-            return WGPUVertexFormat_Float16x2;
+            return WebGPU::VertexFormat::Float16x2;
         case WGSL::Types::Primitive::F32:
-            return WGPUVertexFormat_Float32x2;
+            return WebGPU::VertexFormat::Float32x2;
         default:
             RELEASE_ASSERT_NOT_REACHED();
         }
     case 3:
         switch (primitiveType->kind) {
         case WGSL::Types::Primitive::I32:
-            return WGPUVertexFormat_Sint32x3;
+            return WebGPU::VertexFormat::Sint32x3;
         case WGSL::Types::Primitive::U32:
-            return WGPUVertexFormat_Uint32x3;
+            return WebGPU::VertexFormat::Uint32x3;
         case WGSL::Types::Primitive::F16:
-            return WGPUVertexFormat_Float16x4;
+            return WebGPU::VertexFormat::Float16x4;
         case WGSL::Types::Primitive::F32:
-            return WGPUVertexFormat_Float32x3;
+            return WebGPU::VertexFormat::Float32x3;
         default:
             RELEASE_ASSERT_NOT_REACHED();
         }
     case 4:
         switch (primitiveType->kind) {
         case WGSL::Types::Primitive::I32:
-            return WGPUVertexFormat_Sint32x4;
+            return WebGPU::VertexFormat::Sint32x4;
         case WGSL::Types::Primitive::U32:
-            return WGPUVertexFormat_Uint32x4;
+            return WebGPU::VertexFormat::Uint32x4;
         case WGSL::Types::Primitive::F16:
-            return WGPUVertexFormat_Float16x4;
+            return WebGPU::VertexFormat::Float16x4;
         case WGSL::Types::Primitive::F32:
-            return WGPUVertexFormat_Float32x4;
+            return WebGPU::VertexFormat::Float32x4;
         default:
             RELEASE_ASSERT_NOT_REACHED();
         }
@@ -349,19 +349,15 @@ static MTLDataType metalDataTypeForStructMember(const WGSL::Type* type)
     return metalDataTypeFromPrimitive(primitiveType, vectorSize);
 }
 
-static WGPUVertexFormat vertexFormatTypeForStructMember(const WGSL::Type* type)
+static WebGPU::VertexFormat vertexFormatTypeForStructMember(const WGSL::Type* type)
 {
-    if (!type) {
+    if (!type)
         RELEASE_ASSERT_NOT_REACHED();
-        return WGPUVertexFormat_Undefined;
-    }
 
     auto* vectorType = std::get_if<WGSL::Types::Vector>(type);
     auto* primitiveType = std::get_if<WGSL::Types::Primitive>(vectorType ? vectorType->element : type);
-    if (!primitiveType) {
+    if (!primitiveType)
         RELEASE_ASSERT_NOT_REACHED();
-        return WGPUVertexFormat_Undefined;
-    }
 
     auto vectorSize = vectorType ? vectorType->size : 1;
     return vertexFormatTypeFromPrimitive(primitiveType, vectorSize);
@@ -807,39 +803,31 @@ static auto NODELETE wgslBindingType(WGPUBufferBindingType bindingType)
     }
 }
 
-static auto NODELETE wgslSamplerType(WGPUSamplerBindingType bindingType)
+static auto NODELETE wgslSamplerType(WebGPU::SamplerBindingType bindingType)
 {
     switch (bindingType) {
-    case WGPUSamplerBindingType_Filtering:
+    case WebGPU::SamplerBindingType::Filtering:
         return WGSL::SamplerBindingType::Filtering;
-    case WGPUSamplerBindingType_Comparison:
+    case WebGPU::SamplerBindingType::Comparison:
         return WGSL::SamplerBindingType::Comparison;
-    case WGPUSamplerBindingType_NonFiltering:
+    case WebGPU::SamplerBindingType::NonFiltering:
         return WGSL::SamplerBindingType::NonFiltering;
-    case WGPUSamplerBindingType_Force32:
-    case WGPUSamplerBindingType_Undefined:
-        ASSERT_NOT_REACHED("Unexpected sampler bindingType");
-        return WGSL::SamplerBindingType::Filtering;
     }
 }
 
-static auto NODELETE wgslSampleType(WGPUTextureSampleType sampleType)
+static auto NODELETE wgslSampleType(WebGPU::TextureSampleType sampleType)
 {
     switch (sampleType) {
-    case WGPUTextureSampleType_Sint:
+    case WebGPU::TextureSampleType::Sint:
         return WGSL::TextureSampleType::SignedInt;
-    case WGPUTextureSampleType_Uint:
+    case WebGPU::TextureSampleType::Uint:
         return WGSL::TextureSampleType::UnsignedInt;
-    case WGPUTextureSampleType_Depth:
+    case WebGPU::TextureSampleType::Depth:
         return WGSL::TextureSampleType::Depth;
-    case WGPUTextureSampleType_Float:
+    case WebGPU::TextureSampleType::Float:
         return WGSL::TextureSampleType::Float;
-    case WGPUTextureSampleType_UnfilterableFloat:
+    case WebGPU::TextureSampleType::UnfilterableFloat:
         return WGSL::TextureSampleType::UnfilterableFloat;
-    case WGPUTextureSampleType_Force32:
-    case WGPUTextureSampleType_Undefined:
-        ASSERT_NOT_REACHED("Unexpected sampleType");
-        return WGSL::TextureSampleType::Float;
     }
 }
 
@@ -861,18 +849,15 @@ static auto NODELETE wgslViewDimension(WebGPU::TextureViewDimension viewDimensio
     }
 }
 
-static WGSL::StorageTextureAccess NODELETE wgslAccess(WGPUStorageTextureAccess access)
+static WGSL::StorageTextureAccess NODELETE wgslAccess(WebGPU::StorageTextureAccess access)
 {
     switch (access) {
-    case WGPUStorageTextureAccess_WriteOnly:
+    case WebGPU::StorageTextureAccess::WriteOnly:
         return WGSL::StorageTextureAccess::WriteOnly;
-    case WGPUStorageTextureAccess_ReadOnly:
+    case WebGPU::StorageTextureAccess::ReadOnly:
         return WGSL::StorageTextureAccess::ReadOnly;
-    case WGPUStorageTextureAccess_ReadWrite:
+    case WebGPU::StorageTextureAccess::ReadWrite:
         return WGSL::StorageTextureAccess::ReadWrite;
-    case WGPUStorageTextureAccess_Undefined:
-    case WGPUStorageTextureAccess_Force32:
-        RELEASE_ASSERT_NOT_REACHED();
     }
 }
 

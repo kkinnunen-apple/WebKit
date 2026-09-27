@@ -60,15 +60,15 @@ public:
         uint64_t bufferSizeForBinding { 0 };
     };
     struct SamplerBindingLayout {
-        WGPUSamplerBindingType type { WGPUSamplerBindingType_Undefined };
+        WebGPU::SamplerBindingType type { WebGPU::SamplerBindingType::Filtering };
     };
     struct TextureBindingLayout {
-        WGPUTextureSampleType sampleType { WGPUTextureSampleType_Undefined };
+        WebGPU::TextureSampleType sampleType { WebGPU::TextureSampleType::Float };
         WebGPU::TextureViewDimension viewDimension { WebGPU::TextureViewDimension::_2d };
         bool multisampled { false };
     };
     struct StorageTextureBindingLayout {
-        WGPUStorageTextureAccess access { WGPUStorageTextureAccess_Undefined };
+        WebGPU::StorageTextureAccess access { WebGPU::StorageTextureAccess::WriteOnly };
         WebGPU::TextureFormat format;
         WebGPU::TextureViewDimension viewDimension { WebGPU::TextureViewDimension::_2d };
     };

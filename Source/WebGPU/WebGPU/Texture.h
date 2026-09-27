@@ -135,7 +135,7 @@ public:
     void setPreviouslyCleared(uint32_t mipLevel, uint32_t slice, bool = true);
     bool isDestroyed() const { return m_destroyed; }
 
-    static bool hasStorageBindingCapability(WebGPU::TextureFormat, const Device&, std::optional<WGPUStorageTextureAccess> = std::nullopt);
+    static bool hasStorageBindingCapability(WebGPU::TextureFormat, const Device&, std::optional<WebGPU::StorageTextureAccess> = std::nullopt);
     static bool supportsMultisampling(WebGPU::TextureFormat, const Device&);
     static bool supportsResolve(WebGPU::TextureFormat, const Device&);
     static bool supportsBlending(WebGPU::TextureFormat, const Device&);

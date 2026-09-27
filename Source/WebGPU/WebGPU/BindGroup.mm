@@ -757,9 +757,9 @@ static bool is32bppFloatFormat(id<MTLTexture> t)
     return t.pixelFormat == MTLPixelFormatR32Float || t.pixelFormat == MTLPixelFormatRG32Float || t.pixelFormat == MTLPixelFormatRGBA32Float;
 }
 
-static bool NODELETE valid32bppFloatSampleType(WGPUTextureSampleType sampleType)
+static bool NODELETE valid32bppFloatSampleType(WebGPU::TextureSampleType sampleType)
 {
-    return sampleType == WGPUTextureSampleType_Float || sampleType == WGPUTextureSampleType_UnfilterableFloat;
+    return sampleType == WebGPU::TextureSampleType::Float || sampleType == WebGPU::TextureSampleType::UnfilterableFloat;
 }
 
 enum FormatType {
@@ -949,38 +949,32 @@ static bool validateTextureSampleType(const BindGroupLayout::TextureBindingLayou
     auto format = apiTextureView->format();
     auto aspect = apiTextureView->aspect();
     switch (textureEntry->sampleType) {
-    case WGPUTextureSampleType_Float:
+    case WebGPU::TextureSampleType::Float:
         return formatIsFloat(format, aspect, device);
-    case WGPUTextureSampleType_UnfilterableFloat:
+    case WebGPU::TextureSampleType::UnfilterableFloat:
         return formatIsUnfilterableFloat(format, aspect, device);
-    case WGPUTextureSampleType_Depth:
+    case WebGPU::TextureSampleType::Depth:
         return formatIsDepth(format, aspect, device);
-    case WGPUTextureSampleType_Sint:
+    case WebGPU::TextureSampleType::Sint:
         return formatIsSignedInt(format, aspect, device);
-    case WGPUTextureSampleType_Uint:
+    case WebGPU::TextureSampleType::Uint:
         return formatIsUnsignedInt(format, aspect, device);
-    case WGPUTextureSampleType_Force32:
-    case WGPUTextureSampleType_Undefined:
-        return false;
     }
 }
 
 static const NSString* sampleType(const BindGroupLayout::TextureBindingLayout* textureEntry)
 {
     switch (textureEntry->sampleType) {
-    case WGPUTextureSampleType_Float:
+    case WebGPU::TextureSampleType::Float:
         return @"float";
-    case WGPUTextureSampleType_UnfilterableFloat:
+    case WebGPU::TextureSampleType::UnfilterableFloat:
         return @"unfilterable-float";
-    case WGPUTextureSampleType_Depth:
+    case WebGPU::TextureSampleType::Depth:
         return @"depth";
-    case WGPUTextureSampleType_Sint:
+    case WebGPU::TextureSampleType::Sint:
         return @"sint";
-    case WGPUTextureSampleType_Uint:
+    case WebGPU::TextureSampleType::Uint:
         return @"uint";
-    case WGPUTextureSampleType_Force32:
-    case WGPUTextureSampleType_Undefined:
-        return @"unknown";
     }
 }
 
@@ -1035,19 +1029,15 @@ static bool NODELETE validateStorageTextureViewFormat(const BindGroupLayout::Sto
     return !storageTexture || storageTexture->format == apiTextureView->format();
 }
 
-static bool NODELETE validateSamplerType(WGPUSamplerBindingType type, const Sampler& sampler)
+static bool NODELETE validateSamplerType(WebGPU::SamplerBindingType type, const Sampler& sampler)
 {
     switch (type) {
-    case WGPUSamplerBindingType_Filtering:
+    case WebGPU::SamplerBindingType::Filtering:
         return !sampler.isComparison();
-    case WGPUSamplerBindingType_NonFiltering:
+    case WebGPU::SamplerBindingType::NonFiltering:
         return !sampler.isComparison() && !sampler.isFiltering();
-    case WGPUSamplerBindingType_Comparison:
+    case WebGPU::SamplerBindingType::Comparison:
         return sampler.isComparison();
-    case WGPUSamplerBindingType_Undefined:
-    case WGPUSamplerBindingType_Force32:
-        ASSERT_NOT_REACHED();
-        return false;
     }
 }
 
@@ -1059,16 +1049,12 @@ static BindGroupEntryUsage NODELETE usageForTexture(const BindGroupLayout::Textu
 static BindGroupEntryUsage NODELETE usageForStorageTexture(const BindGroupLayout::StorageTextureBindingLayout& textureLayout)
 {
     switch (textureLayout.access) {
-    case WGPUStorageTextureAccess_Undefined:
-        return BindGroupEntryUsage::Undefined;
-    case WGPUStorageTextureAccess_ReadOnly:
+    case WebGPU::StorageTextureAccess::ReadOnly:
         return BindGroupEntryUsage::StorageTextureRead;
-    case WGPUStorageTextureAccess_ReadWrite:
+    case WebGPU::StorageTextureAccess::ReadWrite:
         return BindGroupEntryUsage::StorageTextureReadWrite;
-    case WGPUStorageTextureAccess_WriteOnly:
+    case WebGPU::StorageTextureAccess::WriteOnly:
         return BindGroupEntryUsage::StorageTextureWriteOnly;
-    case WGPUStorageTextureAccess_Force32:
-        RELEASE_ASSERT_NOT_REACHED();
     }
 
     RELEASE_ASSERT_NOT_REACHED();
@@ -1155,7 +1141,7 @@ static std::optional<Ref<BindGroup>> validateTextureOrBindGroup(WebGPU::Metal::D
             return BindGroup::createInvalid(object);
         }
 
-        if (textureEntry && is32bppFloatFormat(texture) && (!valid32bppFloatSampleType(textureEntry->sampleType) || (textureEntry->sampleType == WGPUTextureSampleType_Float && !object.hasFeature(WGPUFeatureName_Float32Filterable)))) {
+        if (textureEntry && is32bppFloatFormat(texture) && (!valid32bppFloatSampleType(textureEntry->sampleType) || (textureEntry->sampleType == WebGPU::TextureSampleType::Float && !object.hasFeature(WGPUFeatureName_Float32Filterable)))) {
             VALIDATION_ERROR(@"Can not create bind group with filterable 32bpp floating point texture as float32-filterable feature is not enabled");
             return BindGroup::createInvalid(object);
         }

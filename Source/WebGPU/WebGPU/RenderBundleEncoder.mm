@@ -553,7 +553,7 @@ NSString* RenderBundleEncoder::errorValidatingDrawIndexed() const
         return @"Index buffer is not set";
 
     auto topology = pipeline->primitiveTopology();
-    if (topology == WGPUPrimitiveTopology_LineStrip || topology == WGPUPrimitiveTopology_TriangleStrip) {
+    if (topology == WebGPU::PrimitiveTopology::LineStrip || topology == WebGPU::PrimitiveTopology::TriangleStrip) {
         if (m_indexType != pipeline->stripIndexFormat())
             return @"Primitive topology mismiatch with render pipeline";
     }
@@ -602,7 +602,7 @@ bool RenderBundleEncoder::runIndexBufferValidation(uint32_t firstInstance, uint3
         auto bufferSize = vertexBuffer.size;
         auto stride = bufferData.stride;
         auto lastStride = bufferData.lastStride;
-        if (bufferData.stepMode == WGPUVertexStepMode_Instance) {
+        if (bufferData.stepMode == WebGPU::VertexStepMode::Instance) {
             auto product = checkedProduct<NSUInteger>(strideCount - 1, stride);
             if (product.hasOverflowed())
                 return false;
@@ -637,14 +637,14 @@ bool RenderBundleEncoder::runVertexBufferValidation(uint32_t vertexCount, uint32
     for (auto& [bufferIndex, bufferData] : requiredBufferIndices) {
         Checked<uint64_t, WTF::RecordOverflow> strideCount = 0;
         switch (bufferData.stepMode) {
-        case WGPUVertexStepMode_Vertex:
+        case WebGPU::VertexStepMode::Vertex:
             strideCount = checkedSum<uint32_t>(firstVertex, vertexCount);
             if (strideCount.hasOverflowed()) {
                 makeInvalid(@"StrideCount invalid");
                 return false;
             }
             break;
-        case WGPUVertexStepMode_Instance:
+        case WebGPU::VertexStepMode::Instance:
             strideCount = checkedSum<uint32_t>(firstInstance, instanceCount);
             if (strideCount.hasOverflowed()) {
                 makeInvalid(@"StrideCount invalid");
@@ -1285,12 +1285,11 @@ void RenderBundleEncoder::setBindGroupWithOwnedDynamicOffsets(uint32_t groupInde
 void RenderBundleEncoder::setIndexBuffer(Buffer& buffer, WebGPU::IndexFormat apiFormat, uint64_t offset, std::optional<uint64_t> optionalSize)
 {
     RETURN_IF_FINISHED();
-    // The validation computes with the C API values.
-    auto format = toAPI(apiFormat);
+    auto format = apiFormat;
     auto size = optionalSize.value_or(WGPU_WHOLE_SIZE);
     m_indexBuffer = buffer;
     RELEASE_ASSERT(m_indexBuffer);
-    m_indexType = format == WGPUIndexFormat_Uint32 ? MTLIndexTypeUInt32 : MTLIndexTypeUInt16;
+    m_indexType = format == WebGPU::IndexFormat::Uint32 ? MTLIndexTypeUInt32 : MTLIndexTypeUInt16;
     m_indexBufferOffset = offset;
     m_indexBufferSize = size == WGPU_WHOLE_SIZE ? buffer.initialSize() : size;
     if (RefPtr renderPassEncoder = m_renderPassEncoder.get(); renderPassEncoder && !setCommandEncoder(buffer, renderPassEncoder))
@@ -1309,7 +1308,7 @@ void RenderBundleEncoder::setIndexBuffer(Buffer& buffer, WebGPU::IndexFormat api
             return;
         }
 
-        auto indexSizeInBytes = (format == WGPUIndexFormat_Uint16 ? sizeof(uint16_t) : sizeof(uint32_t));
+        auto indexSizeInBytes = (format == WebGPU::IndexFormat::Uint16 ? sizeof(uint16_t) : sizeof(uint32_t));
         if (!buffer.usage().contains(WebGPU::BufferUsage::Index) || (offset % indexSizeInBytes)) {
             makeInvalid(@"setIndexBuffer: validation failed");
             return;
