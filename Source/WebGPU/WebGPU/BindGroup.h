@@ -25,6 +25,7 @@
 
 #pragma once
 
+#import "BindGroupLayout.h"
 #import "BindableResource.h"
 #import "ShaderStage.h"
 #import <WebGPU/WebGPUCpp.h>
@@ -60,7 +61,7 @@ public:
     using ShaderStageArray = EnumeratedArray<ShaderStage, T, ShaderStage::Compute>;
     using SamplersContainer = HashMap<Ref<Sampler>, ShaderStageArray<std::optional<uint32_t>>>;
     struct BufferAndType {
-        WGPUBufferBindingType type;
+        BindGroupLayout::BufferBindingType type;
         uint64_t bindingSize;
         uint64_t bufferSize;
         uint32_t bindingIndex;

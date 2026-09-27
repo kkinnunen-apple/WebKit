@@ -787,17 +787,20 @@ void ShaderModule::setLabel(String&& label)
         m_library.label = label.createNSString().get();
 }
 
-static auto NODELETE wgslBindingType(WGPUBufferBindingType bindingType)
+static auto NODELETE wgslBindingType(BindGroupLayout::BufferBindingType bindingType)
 {
     switch (bindingType) {
-    case WGPUBufferBindingType_Uniform:
+    case BindGroupLayout::BufferBindingType::Uniform:
         return WGSL::BufferBindingType::Uniform;
-    case WGPUBufferBindingType_Storage:
+    case BindGroupLayout::BufferBindingType::Storage:
         return WGSL::BufferBindingType::Storage;
-    case WGPUBufferBindingType_ReadOnlyStorage:
+    case BindGroupLayout::BufferBindingType::ReadOnlyStorage:
         return WGSL::BufferBindingType::ReadOnlyStorage;
-    case WGPUBufferBindingType_Undefined:
-    case WGPUBufferBindingType_Force32:
+    case BindGroupLayout::BufferBindingType::Float3x2:
+    case BindGroupLayout::BufferBindingType::Float4x3:
+    case BindGroupLayout::BufferBindingType::Float3x3:
+    case BindGroupLayout::BufferBindingType::UInt2:
+    case BindGroupLayout::BufferBindingType::ArrayLength:
         ASSERT_NOT_REACHED("Unexpected buffer bindingType");
         return WGSL::BufferBindingType::Uniform;
     }
