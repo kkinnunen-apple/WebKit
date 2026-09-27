@@ -33,7 +33,6 @@
 #include <WebCore/IOSurface.h>
 #include <WebCore/NativeImage.h>
 #include <WebCore/WebGPUCppAPI.h>
-#include <WebGPU/WebGPUExt.h>
 #include <pal/spi/cg/CoreGraphicsSPI.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/spi/cocoa/IOSurfaceSPI.h>

@@ -32,7 +32,6 @@
 
 #include <WebCore/IOSurface.h>
 #include <WebCore/WebGPUCppAPI.h>
-#include <WebGPU/WebGPU.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Function.h>
 #include <wtf/TZoneMalloc.h>

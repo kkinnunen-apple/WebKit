@@ -1507,14 +1507,18 @@ protected:
     QuerySet() = default;
 } SWIFT_SHARED_REFERENCE(refWebGPUQuerySet, derefWebGPUQuerySet) SWIFT_RETURNED_AS_UNRETAINED_BY_DEFAULT;
 
+// Queue::writeBuffer() and Queue::writeTexture() may alias rather than copy data of at least this size.
+constexpr uint64_t largeBufferSize = 32 * 1024 * 1024;
+
 class Queue : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<Queue> {
 public:
     virtual ~Queue() = default;
 
     virtual void submit(Vector<Ref<CommandBuffer>>&&) = 0;
     virtual void onSubmittedWorkDone(CompletionHandler<void()>&&) = 0;
-    // A large write may alias `data` rather than copy it, until the work submitted after it has
-    // completed. The caller keeps it alive until then, for example with onSubmittedWorkDone().
+    // A write of at least largeBufferSize bytes may alias `data` rather than copy it, until the work
+    // submitted after it has completed. The caller keeps it alive until then, for example with
+    // onSubmittedWorkDone().
     virtual void writeBuffer(const Buffer&, uint64_t bufferOffset, std::span<const uint8_t> data) = 0;
     virtual void writeTexture(const TexelCopyTextureInfo& destination, std::span<const uint8_t> data, const TexelCopyBufferLayout&, const Extent3D& writeSize) = 0;
 #if PLATFORM(COCOA)

@@ -30,8 +30,6 @@
 #include "WebGPU.h"
 #include "WebGPUDevice.h"
 #include <WebCore/WebGPUCppAPI.h>
-#include <WebGPU/WebGPU.h>
-#include <WebGPU/WebGPUExt.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Deque.h>
 #include <wtf/Function.h>
