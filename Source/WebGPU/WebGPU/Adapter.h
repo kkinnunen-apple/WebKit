@@ -66,12 +66,12 @@ public:
     const WebGPU::Limits& limits() const LIFETIME_BOUND final { return m_capabilities.limits; }
     WebGPU::AdapterInfo info() final;
     // The C API adapter info, which has members that WebGPU::AdapterInfo does not have.
-    void getInfo(WGPUAdapterInfo&);
     bool hasFeature(WebGPU::FeatureName);
     void requestDevice(const WebGPU::DeviceDescriptor&, CompletionHandler<void(RefPtr<WebGPU::Device>&&)>&&) final;
 
     void setLabel(String&&) final { }
     bool isValid() const final { return m_device; }
+    id<MTLDevice> device() const { return m_device; }
     void makeInvalid() { m_device = nil; }
     bool NODELETE isXRCompatible() const final;
 
