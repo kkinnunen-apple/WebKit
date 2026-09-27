@@ -1606,11 +1606,6 @@ void NODELETE wgpuRenderBundleEncoderSetBindGroup(WGPURenderBundleEncoder, uint3
 {
 }
 
-void wgpuRenderBundleEncoderSetBindGroupWithDynamicOffsets(WGPURenderBundleEncoder renderBundleEncoder, uint32_t groupIndex, WGPUBindGroup group, std::optional<Vector<uint32_t>>&& dynamicOffsets)
-{
-    protect(WebGPU::Metal::fromAPI(renderBundleEncoder))->setBindGroup(groupIndex, group ? protect(WebGPU::Metal::fromAPI(group)).ptr() : nullptr, dynamicOffsets ? std::optional { dynamicOffsets->span() } : std::nullopt);
-}
-
 void wgpuRenderBundleEncoderSetIndexBuffer(WGPURenderBundleEncoder renderBundleEncoder, WGPUBuffer buffer, WGPUIndexFormat format, uint64_t offset, uint64_t size)
 {
     Ref protectedRenderBundleEncoder = WebGPU::Metal::fromAPI(renderBundleEncoder);
