@@ -29,7 +29,6 @@
 #include <WebGPU/WebGPU.h>
 #include "WebGPUCppConversions.h"
 #include <WebGPU/WebGPUCpp.h>
-#include <WebGPU/WebGPUExt.h>
 #include <optional>
 #include <wtf/Vector.h>
 
