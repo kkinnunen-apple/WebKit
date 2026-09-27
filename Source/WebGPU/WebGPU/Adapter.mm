@@ -163,6 +163,12 @@ bool Adapter::isXRCompatible() const
 
 #pragma mark WGPU Stubs
 
+// The caller owns the reference to the instance. Null when the instance is gone.
+WGPUInstance wgpuAdapterGetInstance(WGPUAdapter adapter)
+{
+    return WebGPU::Metal::releaseToAPI(WebGPU::Metal::fromAPI(adapter).instance());
+}
+
 void NODELETE wgpuAdapterAddRef(WGPUAdapter adapter)
 {
     WebGPU::Metal::fromAPI(adapter).ref();

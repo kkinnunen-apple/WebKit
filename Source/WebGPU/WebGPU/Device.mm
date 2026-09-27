@@ -1434,6 +1434,12 @@ WGPUStatus wgpuDeviceGetLimits(WGPUDevice device, WGPULimits* limits)
     return WGPUStatus_Success;
 }
 
+// The caller owns the reference to the adapter, as for every object the C API returns.
+WGPUAdapter wgpuDeviceGetAdapter(WGPUDevice device)
+{
+    return WebGPU::Metal::releaseToAPI(Ref { WebGPU::Metal::fromAPI(device).adapter() });
+}
+
 // The caller owns the reference to the queue, as for every object the C API returns.
 WGPUQueue wgpuDeviceGetQueue(WGPUDevice device)
 {
