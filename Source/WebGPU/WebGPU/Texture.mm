@@ -687,9 +687,9 @@ bool Texture::isColorRenderableFormat(WebGPU::TextureFormat format, const Device
     case WebGPU::TextureFormat::Rg16snorm:
     case WebGPU::TextureFormat::Rgba16unorm:
     case WebGPU::TextureFormat::Rgba16snorm:
-        return device.hasFeature(WGPUFeatureName_TextureFormatsTier1);
+        return device.hasFeature(WebGPU::FeatureName::TextureFormatsTier1);
     case WebGPU::TextureFormat::Rg11b10ufloat:
-        return device.hasFeature(WGPUFeatureName_TextureFormatsTier1) || device.hasFeature(WGPUFeatureName_RG11B10UfloatRenderable);
+        return device.hasFeature(WebGPU::FeatureName::TextureFormatsTier1) || device.hasFeature(WebGPU::FeatureName::Rg11b10ufloatRenderable);
     case WebGPU::TextureFormat::Stencil8:
     case WebGPU::TextureFormat::Depth16unorm:
     case WebGPU::TextureFormat::Depth24plus:
@@ -700,7 +700,7 @@ bool Texture::isColorRenderableFormat(WebGPU::TextureFormat format, const Device
     case WebGPU::TextureFormat::R8snorm:
     case WebGPU::TextureFormat::Rg8snorm:
     case WebGPU::TextureFormat::Rgba8snorm:
-        return device.hasFeature(WGPUFeatureName_TextureFormatsTier1);
+        return device.hasFeature(WebGPU::FeatureName::TextureFormatsTier1);
     case WebGPU::TextureFormat::Rgb9e5ufloat:
     case WebGPU::TextureFormat::Bc1RgbaUnorm:
     case WebGPU::TextureFormat::Bc1RgbaUnormSRGB:
@@ -921,9 +921,9 @@ bool Texture::isRenderableFormat(WebGPU::TextureFormat format, const Device& dev
     case WebGPU::TextureFormat::R8snorm:
     case WebGPU::TextureFormat::Rg8snorm:
     case WebGPU::TextureFormat::Rgba8snorm:
-        return device.hasFeature(WGPUFeatureName_TextureFormatsTier1);
+        return device.hasFeature(WebGPU::FeatureName::TextureFormatsTier1);
     case WebGPU::TextureFormat::Rg11b10ufloat:
-        return device.hasFeature(WGPUFeatureName_TextureFormatsTier1) || device.hasFeature(WGPUFeatureName_RG11B10UfloatRenderable);
+        return device.hasFeature(WebGPU::FeatureName::TextureFormatsTier1) || device.hasFeature(WebGPU::FeatureName::Rg11b10ufloatRenderable);
     case WebGPU::TextureFormat::Rgb9e5ufloat:
     case WebGPU::TextureFormat::Bc1RgbaUnorm:
     case WebGPU::TextureFormat::Bc1RgbaUnormSRGB:
@@ -1249,16 +1249,16 @@ bool Texture::supportsMultisampling(WebGPU::TextureFormat format, const Device& 
     case WebGPU::TextureFormat::R8snorm:
     case WebGPU::TextureFormat::Rg8snorm:
     case WebGPU::TextureFormat::Rgba8snorm:
-        return device.hasFeature(WGPUFeatureName_TextureFormatsTier1);
+        return device.hasFeature(WebGPU::FeatureName::TextureFormatsTier1);
     case WebGPU::TextureFormat::R16unorm:
     case WebGPU::TextureFormat::R16snorm:
     case WebGPU::TextureFormat::Rg16unorm:
     case WebGPU::TextureFormat::Rg16snorm:
     case WebGPU::TextureFormat::Rgba16unorm:
     case WebGPU::TextureFormat::Rgba16snorm:
-        return device.hasFeature(WGPUFeatureName_TextureFormatsTier1);
+        return device.hasFeature(WebGPU::FeatureName::TextureFormatsTier1);
     case WebGPU::TextureFormat::Rg11b10ufloat:
-        return device.hasFeature(WGPUFeatureName_TextureFormatsTier1) || device.hasFeature(WGPUFeatureName_RG11B10UfloatRenderable);
+        return device.hasFeature(WebGPU::FeatureName::TextureFormatsTier1) || device.hasFeature(WebGPU::FeatureName::Rg11b10ufloatRenderable);
     case WebGPU::TextureFormat::R32uint:
     case WebGPU::TextureFormat::R32sint:
     case WebGPU::TextureFormat::Rg32float:
@@ -1348,9 +1348,9 @@ bool Texture::supportsResolve(WebGPU::TextureFormat format, const Device& device
     case WebGPU::TextureFormat::R8snorm:
     case WebGPU::TextureFormat::Rg8snorm:
     case WebGPU::TextureFormat::Rgba8snorm:
-        return device.hasFeature(WGPUFeatureName_TextureFormatsTier1);
+        return device.hasFeature(WebGPU::FeatureName::TextureFormatsTier1);
     case WebGPU::TextureFormat::Rg11b10ufloat:
-        return device.hasFeature(WGPUFeatureName_TextureFormatsTier1) || device.hasFeature(WGPUFeatureName_RG11B10UfloatRenderable);
+        return device.hasFeature(WebGPU::FeatureName::TextureFormatsTier1) || device.hasFeature(WebGPU::FeatureName::Rg11b10ufloatRenderable);
     case WebGPU::TextureFormat::R32float:
     case WebGPU::TextureFormat::Stencil8:
     case WebGPU::TextureFormat::Depth16unorm:
@@ -1457,17 +1457,17 @@ bool Texture::supportsBlending(WebGPU::TextureFormat format, const Device& devic
     case WebGPU::TextureFormat::Rg16snorm:
     case WebGPU::TextureFormat::Rgba16unorm:
     case WebGPU::TextureFormat::Rgba16snorm:
-        return device.hasFeature(WGPUFeatureName_TextureFormatsTier1);
+        return device.hasFeature(WebGPU::FeatureName::TextureFormatsTier1);
     case WebGPU::TextureFormat::Rg11b10ufloat:
-        return device.hasFeature(WGPUFeatureName_TextureFormatsTier1) || device.hasFeature(WGPUFeatureName_RG11B10UfloatRenderable);
+        return device.hasFeature(WebGPU::FeatureName::TextureFormatsTier1) || device.hasFeature(WebGPU::FeatureName::Rg11b10ufloatRenderable);
     case WebGPU::TextureFormat::R32float:
     case WebGPU::TextureFormat::Rg32float:
     case WebGPU::TextureFormat::Rgba32float:
-        return device.hasFeature(WGPUFeatureName_Float32Blendable);
+        return device.hasFeature(WebGPU::FeatureName::Float32Blendable);
     case WebGPU::TextureFormat::R8snorm:
     case WebGPU::TextureFormat::Rg8snorm:
     case WebGPU::TextureFormat::Rgba8snorm:
-        return device.hasFeature(WGPUFeatureName_TextureFormatsTier1);
+        return device.hasFeature(WebGPU::FeatureName::TextureFormatsTier1);
     case WebGPU::TextureFormat::R8uint:
     case WebGPU::TextureFormat::R8sint:
     case WebGPU::TextureFormat::R16uint:
@@ -1587,14 +1587,14 @@ bool Texture::hasStorageBindingCapability(WebGPU::TextureFormat format, const De
     case WebGPU::TextureFormat::Rgba32float:
     case WebGPU::TextureFormat::Rgba32uint:
     case WebGPU::TextureFormat::Rgba32sint:
-        return (!access || *access != WebGPU::StorageTextureAccess::ReadWrite) || device.hasFeature(WGPUFeatureName_TextureFormatsTier2);
+        return (!access || *access != WebGPU::StorageTextureAccess::ReadWrite) || device.hasFeature(WebGPU::FeatureName::TextureFormatsTier2);
     case WebGPU::TextureFormat::Rgba8snorm:
     case WebGPU::TextureFormat::Rg32float:
     case WebGPU::TextureFormat::Rg32uint:
     case WebGPU::TextureFormat::Rg32sint:
         return !access || *access != WebGPU::StorageTextureAccess::ReadWrite;
     case WebGPU::TextureFormat::Bgra8unorm:
-        return (!access || *access == WebGPU::StorageTextureAccess::WriteOnly) && device.hasFeature(WGPUFeatureName_BGRA8UnormStorage);
+        return (!access || *access == WebGPU::StorageTextureAccess::WriteOnly) && device.hasFeature(WebGPU::FeatureName::Bgra8unormStorage);
     case WebGPU::TextureFormat::R32float:
     case WebGPU::TextureFormat::R32uint:
     case WebGPU::TextureFormat::R32sint:
@@ -1607,7 +1607,7 @@ bool Texture::hasStorageBindingCapability(WebGPU::TextureFormat format, const De
     case WebGPU::TextureFormat::R16float:
     case WebGPU::TextureFormat::R16uint:
     case WebGPU::TextureFormat::R16sint:
-        return ((!access || *access != WebGPU::StorageTextureAccess::ReadWrite) || device.hasFeature(WGPUFeatureName_TextureFormatsTier2)) && device.hasFeature(WGPUFeatureName_TextureFormatsTier1);
+        return ((!access || *access != WebGPU::StorageTextureAccess::ReadWrite) || device.hasFeature(WebGPU::FeatureName::TextureFormatsTier2)) && device.hasFeature(WebGPU::FeatureName::TextureFormatsTier1);
     case WebGPU::TextureFormat::R8snorm:
     case WebGPU::TextureFormat::Rg8unorm:
     case WebGPU::TextureFormat::Rg8snorm:
@@ -1625,7 +1625,7 @@ bool Texture::hasStorageBindingCapability(WebGPU::TextureFormat format, const De
     case WebGPU::TextureFormat::Rgb10a2unorm:
     case WebGPU::TextureFormat::Rg11b10ufloat:
     case WebGPU::TextureFormat::Rg16float:
-        return (!access || *access != WebGPU::StorageTextureAccess::ReadWrite) && device.hasFeature(WGPUFeatureName_TextureFormatsTier1);
+        return (!access || *access != WebGPU::StorageTextureAccess::ReadWrite) && device.hasFeature(WebGPU::FeatureName::TextureFormatsTier1);
     case WebGPU::TextureFormat::Rgba8unormSRGB:
     case WebGPU::TextureFormat::Bgra8unormSRGB:
     case WebGPU::TextureFormat::Rgb9e5ufloat:
@@ -1901,11 +1901,11 @@ NSString *Device::errorValidatingTextureCreation(const WebGPU::TextureDescriptor
         if (auto compressedFormatType = Texture::compressedFormatType(format)) {
             switch (*compressedFormatType) {
             case Texture::CompressFormat::BC:
-                if (!hasFeature(WGPUFeatureName_TextureCompressionBCSliced3D))
+                if (!hasFeature(WebGPU::FeatureName::TextureCompressionBcSliced3d))
                     return @"createTexture: descriptor.format is a compressed format but BC sliced 3D extension is not enabled";
                 break;
             case Texture::CompressFormat::ASTC:
-                if (!hasFeature(WGPUFeatureName_TextureCompressionASTCSliced3D))
+                if (!hasFeature(WebGPU::FeatureName::TextureCompressionAstcSliced3d))
                     return @"createTexture: descriptor.format is a compressed format but ASTC sliced 3D extension is not enabled";
                 break;
             case Texture::CompressFormat::ETC:

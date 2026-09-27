@@ -132,16 +132,16 @@ RetainPtr<CGImageRef> PresentationContextIOSurface::getTextureAsNativeImage(uint
     bool fp16 = mtlTexture.pixelFormat == MTLPixelFormatRGBA16Float;
     CFStringRef colorSpaceName = kCGColorSpaceSRGB;
     switch (m_colorSpace) {
-    case WGPUColorSpace::SRGB:
+    case WebGPU::PredefinedColorSpace::SRGB:
         colorSpaceName = kCGColorSpaceSRGB;
         break;
-    case WGPUColorSpace::SRGBLinear:
+    case WebGPU::PredefinedColorSpace::SRGBLinear:
         colorSpaceName = kCGColorSpaceLinearSRGB;
         break;
-    case WGPUColorSpace::DisplayP3:
+    case WebGPU::PredefinedColorSpace::DisplayP3:
         colorSpaceName = kCGColorSpaceDisplayP3;
         break;
-    case WGPUColorSpace::DisplayP3Linear:
+    case WebGPU::PredefinedColorSpace::DisplayP3Linear:
         colorSpaceName = kCGColorSpaceLinearDisplayP3;
         break;
     }
@@ -153,7 +153,7 @@ RetainPtr<CGImageRef> PresentationContextIOSurface::getTextureAsNativeImage(uint
     auto bytesPerRow = bytesPerPixel * width;
     auto bitsPerComponent = bytesPerPixel * 2;
     auto bitsPerPixel = bitsPerComponent * 4;
-    bool isOpaque = m_alphaMode == WGPUCompositeAlphaMode_Opaque;
+    bool isOpaque = m_alphaMode == WebGPU::CanvasAlphaMode::Opaque;
     CGBitmapInfo bitmapInfo = static_cast<CGBitmapInfo>(isOpaque ? kCGImageAlphaNoneSkipLast : kCGImageAlphaPremultipliedLast) | static_cast<CGBitmapInfo>(kCGImageByteOrder32Big);
     if (fp16)
         bitmapInfo = static_cast<CGBitmapInfo>(isOpaque ? kCGImageAlphaNoneSkipLast : kCGImageAlphaPremultipliedLast) | static_cast<CGBitmapInfo>(kCGBitmapByteOrder16Host) | static_cast<CGBitmapInfo>(kCGBitmapFloatComponents);
@@ -286,9 +286,9 @@ void PresentationContextIOSurface::configure(const WebGPU::CanvasConfiguration& 
         .sampleCount = 1,
         .viewFormats = configuration.viewFormats.empty() ? std::span<const WebGPU::TextureFormat> { effectiveViewFormats } : configuration.viewFormats,
     };
-    m_colorSpace = toAPI(configuration.colorSpace);
-    m_toneMappingMode = toAPI(configuration.toneMappingMode);
-    m_alphaMode = toAPI(configuration.compositingAlphaMode);
+    m_colorSpace = configuration.colorSpace;
+    m_toneMappingMode = configuration.toneMappingMode;
+    m_alphaMode = configuration.compositingAlphaMode;
 
     MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:Texture::pixelFormat(effectiveFormat) width:width height:height mipmapped:NO];
     textureDescriptor.usage = Texture::usage(apiTextureDescriptor.usage, effectiveFormat);
@@ -338,13 +338,13 @@ void PresentationContextIOSurface::configure(const WebGPU::CanvasConfiguration& 
     // The textures allow views only in the formats that the configuration lists.
     Vector<WebGPU::TextureFormat> textureViewFormats { configuration.viewFormats };
 
-    if (format == WebGPU::TextureFormat::Bgra8unorm && configuration.usage.contains(WebGPU::TextureUsage::StorageBinding) && !device.hasFeature(WGPUFeatureName_BGRA8UnormStorage)) {
+    if (format == WebGPU::TextureFormat::Bgra8unorm && configuration.usage.contains(WebGPU::TextureUsage::StorageBinding) && !device.hasFeature(WebGPU::FeatureName::Bgra8unormStorage)) {
         generateAValidationError(device, @"Requested storage format but BGRA8UnormStorage is not enabled", reportValidationErrors);
         return;
     }
 
     textureDescriptor.usage |= (MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead);
-    bool needsLuminanceClampFunction = textureDescriptor.pixelFormat == MTLPixelFormatRGBA16Float && m_toneMappingMode == WGPUToneMappingMode_Standard;
+    bool needsLuminanceClampFunction = textureDescriptor.pixelFormat == MTLPixelFormatRGBA16Float && m_toneMappingMode == WebGPU::CanvasToneMappingMode::Standard;
     auto existingUsage = textureDescriptor.usage;
     Ref deviceQueue = device.getQueue();
     id<MTLCommandBuffer> resizeCommandBuffer = nil;

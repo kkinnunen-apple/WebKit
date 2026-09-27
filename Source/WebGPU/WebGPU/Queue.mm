@@ -253,7 +253,7 @@ id<MTLCommandBuffer> Queue::commandBufferWithDescriptor(MTLCommandBufferDescript
     auto devicePtr = m_device.get();
     if (m_createdNotCommittedBuffers.count >= maxCommandBufferCount) {
         if (devicePtr)
-            devicePtr->loseTheDevice(WGPUDeviceLostReason_Destroyed);
+            devicePtr->loseTheDevice(WebGPU::DeviceLostReason::Destroyed);
         return nil;
     }
 
@@ -441,7 +441,7 @@ void Queue::commitMTLCommandBuffer(id<MTLCommandBuffer> commandBuffer)
             if (loseTheDevice) {
                 auto device = protectedThis->m_device.get();
                 if (device)
-                    device->loseTheDevice(WGPUDeviceLostReason_Undefined);
+                    device->loseTheDevice(WebGPU::DeviceLostReason::Unknown);
             }
         });
     }];
@@ -1511,19 +1511,19 @@ static constexpr std::array<float, 6> identityUVRemapMatrix { 1, 0, 0, 1, 0, 0 }
 // the crop matrix is: a coordinate in the presented image maps back to the frame pixel which holds
 // it. The forward transform mirrors x, when the frame is mirrored, and then rotates clockwise, so the
 // inverse un-rotates and then un-mirrors.
-static std::array<float, 6> inverseDisplayTransformMatrix(WGPUVideoFrameRotation rotation, bool isMirrored)
+static std::array<float, 6> inverseDisplayTransformMatrix(WebGPU::VideoFrameRotation rotation, bool isMirrored)
 {
     std::array<float, 6> matrix = identityUVRemapMatrix;
     switch (rotation) {
-    case WGPUVideoFrameRotation_None:
+    case WebGPU::VideoFrameRotation::None:
         break;
-    case WGPUVideoFrameRotation_Right:
+    case WebGPU::VideoFrameRotation::Right:
         matrix = { 0, -1, 1, 0, 0, 1 };
         break;
-    case WGPUVideoFrameRotation_UpsideDown:
+    case WebGPU::VideoFrameRotation::UpsideDown:
         matrix = { -1, 0, 0, -1, 1, 1 };
         break;
-    case WGPUVideoFrameRotation_Left:
+    case WebGPU::VideoFrameRotation::Left:
         matrix = { 0, 1, -1, 0, 1, 0 };
         break;
     }
@@ -1599,9 +1599,9 @@ static std::array<float, 9> colorMatrixBetweenPrimaries(CopyExternalImageSourceP
     return identityColorMatrix;
 }
 
-std::optional<std::array<float, 9>> primariesConversionMatrixForPixelBuffer(CVPixelBufferRef pixelBuffer, WGPUColorSpace destination)
+std::optional<std::array<float, 9>> primariesConversionMatrixForPixelBuffer(CVPixelBufferRef pixelBuffer, WebGPU::PredefinedColorSpace destination)
 {
-    bool destinationIsDisplayP3 = destination == DisplayP3 || destination == DisplayP3Linear;
+    bool destinationIsDisplayP3 = destination == WebGPU::PredefinedColorSpace::DisplayP3 || destination == WebGPU::PredefinedColorSpace::DisplayP3Linear;
     auto matrix = colorMatrixBetweenPrimaries(sourcePrimariesForPixelBuffer(pixelBuffer), destinationIsDisplayP3);
     if (matrix == identityColorMatrix)
         return std::nullopt;
@@ -1916,7 +1916,7 @@ void Queue::copyExternalImageToTexture(const WebGPU::ImageCopyExternalImage& sou
     if (RetainPtr pixelBuffer = source.pixelBuffer) {
         // The frame's planes are wrapped in MTLTextures exactly the way importExternalTexture() wraps
         // them, so a video reaches the destination without its pixels ever leaving the GPU.
-        auto frame = device->createExternalTextureFromPixelBuffer(pixelBuffer.get(), toAPI(source.colorSpace), Device::PremultiplyAlpha::No);
+        auto frame = device->createExternalTextureFromPixelBuffer(pixelBuffer.get(), source.colorSpace, Device::PremultiplyAlpha::No);
         sourceTexture = frame.texture0;
         sourceSecondPlaneTexture = frame.texture1;
         if (!sourceTexture || !sourceSecondPlaneTexture)
@@ -1937,7 +1937,7 @@ void Queue::copyExternalImageToTexture(const WebGPU::ImageCopyExternalImage& sou
         // Sampling happens in the presented image's coordinates, so undo the display transform before
         // the frame's own crop, which is expressed in its stored coordinates. Both are affine, so
         // composing them here costs the shader nothing.
-        uvRemapMatrix = concatenatedAffineTransforms(flattenedColumns(frame.uvRemappingMatrix), inverseDisplayTransformMatrix(toAPI(source.pixelBufferRotation), source.pixelBufferIsMirrored));
+        uvRemapMatrix = concatenatedAffineTransforms(flattenedColumns(frame.uvRemappingMatrix), inverseDisplayTransformMatrix(source.pixelBufferRotation, source.pixelBufferIsMirrored));
         ycbcrMatrix = flattenedColumns(frame.colorSpaceConversionMatrix);
         // A frame's primaries are its own, and are usually neither of the two the caller can name.
         sourcePrimaries = sourcePrimariesForPixelBuffer(pixelBuffer.get());

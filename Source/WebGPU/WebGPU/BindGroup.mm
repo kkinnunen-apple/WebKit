@@ -557,7 +557,7 @@ static id<MTLTexture> gbTextureFromRGB(id<MTLTexture> texture, bool alphaFirst, 
     return [texture newTextureViewWithPixelFormat:texture.pixelFormat textureType:texture.textureType levels:NSMakeRange(0, texture.mipmapLevelCount) slices:NSMakeRange(0, texture.arrayLength) swizzle:swizzle];
 }
 
-Device::ExternalTextureData Device::createExternalTextureFromPixelBuffer(CVPixelBufferRef pixelBuffer, WGPUColorSpace colorSpace, PremultiplyAlpha premultiplyAlpha) const
+Device::ExternalTextureData Device::createExternalTextureFromPixelBuffer(CVPixelBufferRef pixelBuffer, WebGPU::PredefinedColorSpace colorSpace, PremultiplyAlpha premultiplyAlpha) const
 {
 #if HAVE(COREVIDEO_METAL_SUPPORT)
     // colorMatrixBetweenPrimaries() is row-major, and Metal indexes a float3x3 by column.
@@ -804,7 +804,7 @@ static std::underlying_type<FormatType>::type formatType(WebGPU::TextureFormat f
     case WebGPU::TextureFormat::Rg8sint:
         return FormatType_SignedInt;
     case WebGPU::TextureFormat::R32float:
-        return FormatType_UnfilterableFloat | (device.hasFeature(WGPUFeatureName_Float32Filterable) ? FormatType_Float : 0);
+        return FormatType_UnfilterableFloat | (device.hasFeature(WebGPU::FeatureName::Float32Filterable) ? FormatType_Float : 0);
     case WebGPU::TextureFormat::R32uint:
         return FormatType_UnsignedInt;
     case WebGPU::TextureFormat::R32sint:
@@ -832,7 +832,7 @@ static std::underlying_type<FormatType>::type formatType(WebGPU::TextureFormat f
     case WebGPU::TextureFormat::Rgb9e5ufloat:
         return FormatType_Float | FormatType_UnfilterableFloat;
     case WebGPU::TextureFormat::Rg32float:
-        return FormatType_UnfilterableFloat | (device.hasFeature(WGPUFeatureName_Float32Filterable) ? FormatType_Float : 0);
+        return FormatType_UnfilterableFloat | (device.hasFeature(WebGPU::FeatureName::Float32Filterable) ? FormatType_Float : 0);
     case WebGPU::TextureFormat::Rg32uint:
         return FormatType_UnsignedInt;
     case WebGPU::TextureFormat::Rg32sint:
@@ -844,7 +844,7 @@ static std::underlying_type<FormatType>::type formatType(WebGPU::TextureFormat f
     case WebGPU::TextureFormat::Rgba16float:
         return FormatType_Float | FormatType_UnfilterableFloat;
     case WebGPU::TextureFormat::Rgba32float:
-        return FormatType_UnfilterableFloat | (device.hasFeature(WGPUFeatureName_Float32Filterable) ? FormatType_Float : 0);
+        return FormatType_UnfilterableFloat | (device.hasFeature(WebGPU::FeatureName::Float32Filterable) ? FormatType_Float : 0);
     case WebGPU::TextureFormat::Rgba32uint:
         return FormatType_UnsignedInt;
     case WebGPU::TextureFormat::Rgba32sint:
@@ -1144,7 +1144,7 @@ static std::optional<Ref<BindGroup>> validateTextureOrBindGroup(WebGPU::Metal::D
             return BindGroup::createInvalid(object);
         }
 
-        if (textureEntry && is32bppFloatFormat(texture) && (!valid32bppFloatSampleType(textureEntry->sampleType) || (textureEntry->sampleType == WebGPU::TextureSampleType::Float && !object.hasFeature(WGPUFeatureName_Float32Filterable)))) {
+        if (textureEntry && is32bppFloatFormat(texture) && (!valid32bppFloatSampleType(textureEntry->sampleType) || (textureEntry->sampleType == WebGPU::TextureSampleType::Float && !object.hasFeature(WebGPU::FeatureName::Float32Filterable)))) {
             VALIDATION_ERROR(@"Can not create bind group with filterable 32bpp floating point texture as float32-filterable feature is not enabled");
             return BindGroup::createInvalid(object);
         }
@@ -1501,7 +1501,7 @@ RefPtr<WebGPU::BindGroup> Device::createBindGroup(const WebGPU::BindGroupDescrip
     std::ranges::sort(dynamicBuffers, { }, &BindGroup::BufferAndType::bindingIndex);
 
     if (m_bindGroupId == std::numeric_limits<decltype(m_bindGroupId)>::max()) {
-        loseTheDevice(WGPUDeviceLostReason_Undefined);
+        loseTheDevice(WebGPU::DeviceLostReason::Unknown);
         return BindGroup::createInvalid(*this);
     }
 

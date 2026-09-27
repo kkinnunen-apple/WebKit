@@ -150,11 +150,63 @@ static RefPtr<ShaderModule> earlyCompileShaderModule(Device& device, Variant<WGS
     return ShaderModule::create(WTF::move(checkResult), WTF::move(hints), WTF::move(result.entryPoints), library, device);
 }
 
-static const HashSet<String> buildFeatureSet(const Vector<WGPUFeatureName>& features)
+static String featureName(WebGPU::FeatureName feature)
+{
+    switch (feature) {
+    case WebGPU::FeatureName::DepthClipControl:
+        return "depth-clip-control"_s;
+    case WebGPU::FeatureName::Depth32floatStencil8:
+        return "depth32float-stencil8"_s;
+    case WebGPU::FeatureName::TimestampQuery:
+        return "timestamp-query"_s;
+    case WebGPU::FeatureName::TextureCompressionBc:
+        return "texture-compression-bc"_s;
+    case WebGPU::FeatureName::TextureCompressionBcSliced3d:
+        return "texture-compression-bc-sliced-3d"_s;
+    case WebGPU::FeatureName::TextureCompressionEtc2:
+        return "texture-compression-etc2"_s;
+    case WebGPU::FeatureName::TextureCompressionAstc:
+        return "texture-compression-astc"_s;
+    case WebGPU::FeatureName::TextureCompressionAstcSliced3d:
+        return "texture-compression-astc-sliced-3d"_s;
+    case WebGPU::FeatureName::IndirectFirstInstance:
+        return "indirect-first-instance"_s;
+    case WebGPU::FeatureName::ShaderF16:
+        return "shader-f16"_s;
+    case WebGPU::FeatureName::Rg11b10ufloatRenderable:
+        return "rg11b10ufloat-renderable"_s;
+    case WebGPU::FeatureName::Bgra8unormStorage:
+        return "bgra8unorm-storage"_s;
+    case WebGPU::FeatureName::Float32Filterable:
+        return "float32-filterable"_s;
+    case WebGPU::FeatureName::Float32Blendable:
+        return "float32-blendable"_s;
+    case WebGPU::FeatureName::ClipDistances:
+        return "clip-distances"_s;
+    case WebGPU::FeatureName::PrimitiveIndex:
+        return "primitive-index"_s;
+    case WebGPU::FeatureName::DualSourceBlending:
+        return "dual-source-blending"_s;
+    case WebGPU::FeatureName::Float16Renderable:
+        return "float16-renderable"_s;
+    case WebGPU::FeatureName::Float32Renderable:
+        return "float32-renderable"_s;
+    case WebGPU::FeatureName::CoreFeaturesAndLimits:
+        return "core-features-and-limits"_s;
+    case WebGPU::FeatureName::TextureFormatsTier1:
+        return "texture-formats-tier1"_s;
+    case WebGPU::FeatureName::TextureFormatsTier2:
+        return "texture-formats-tier2"_s;
+    case WebGPU::FeatureName::Subgroups:
+        return "subgroups"_s;
+    }
+}
+
+static const HashSet<String> buildFeatureSet(const Vector<WebGPU::FeatureName>& features)
 {
     HashSet<String> result;
     for (auto feature : features)
-        result.add(wgpuAdapterFeatureName(feature));
+        result.add(featureName(feature));
 
     return result;
 }
@@ -1120,56 +1172,6 @@ void wgpuShaderModuleSetLabel(WGPUShaderModule shaderModule, WGPUStringView labe
 
 String wgpuAdapterFeatureName(WGPUFeatureName feature)
 {
-    switch (feature) {
-    case WGPUFeatureName_Undefined:
-        return emptyString();
-    case WGPUFeatureName_DepthClipControl:
-        return "depth-clip-control"_s;
-    case WGPUFeatureName_Depth32FloatStencil8:
-        return "depth32float-stencil8"_s;
-    case WGPUFeatureName_TimestampQuery:
-        return "timestamp-query"_s;
-    case WGPUFeatureName_TextureCompressionBC:
-        return "texture-compression-bc"_s;
-    case WGPUFeatureName_TextureCompressionBCSliced3D:
-        return "texture-compression-bc-sliced-3d"_s;
-    case WGPUFeatureName_TextureCompressionETC2:
-        return "texture-compression-etc2"_s;
-    case WGPUFeatureName_TextureCompressionASTC:
-        return "texture-compression-astc"_s;
-    case WGPUFeatureName_TextureCompressionASTCSliced3D:
-        return "texture-compression-astc-sliced-3d"_s;
-    case WGPUFeatureName_IndirectFirstInstance:
-        return "indirect-first-instance"_s;
-    case WGPUFeatureName_ShaderF16:
-        return "shader-f16"_s;
-    case WGPUFeatureName_RG11B10UfloatRenderable:
-        return "rg11b10ufloat-renderable"_s;
-    case WGPUFeatureName_BGRA8UnormStorage:
-        return "bgra8unorm-storage"_s;
-    case WGPUFeatureName_Float32Filterable:
-        return "float32-filterable"_s;
-    case WGPUFeatureName_Float32Blendable:
-        return "float32-blendable"_s;
-    case WGPUFeatureName_ClipDistances:
-        return "clip-distances"_s;
-    case WGPUFeatureName_PrimitiveIndex:
-        return "primitive-index"_s;
-    case WGPUFeatureName_DualSourceBlending:
-        return "dual-source-blending"_s;
-    case WGPUFeatureName_Float16Renderable:
-        return "float16-renderable"_s;
-    case WGPUFeatureName_Float32Renderable:
-        return "float32-renderable"_s;
-    case WGPUFeatureName_CoreFeaturesAndLimits:
-        return "core-features-and-limits"_s;
-    case WGPUFeatureName_TextureFormatsTier1:
-        return "texture-formats-tier1"_s;
-    case WGPUFeatureName_TextureFormatsTier2:
-        return "texture-formats-tier2"_s;
-    case WGPUFeatureName_Subgroups:
-        return "subgroups"_s;
-    case WGPUFeatureName_Force32:
-        return emptyString();
-    }
+    auto apiFeature = WebGPU::Metal::fromAPI(feature);
+    return apiFeature ? WebGPU::Metal::featureName(*apiFeature) : emptyString();
 }
