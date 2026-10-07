@@ -155,17 +155,16 @@ WTF_MAKE_TZONE_ALLOCATED_IMPL(RenderLayerBacking);
 
 using namespace HTMLNames;
 
-CanvasCompositingStrategy canvasCompositingStrategy(const RenderObject& renderer)
+CanvasCompositingStrategy canvasCompositingStrategy(const RenderHTMLCanvas& renderer)
 {
-    ASSERT(renderer.isRenderHTMLCanvas());
-    CheckedRef canvasRenderer = downcast<RenderHTMLCanvas>(renderer);
+    CheckedRef canvasRenderer = renderer;
     RefPtr context = canvasRenderer->canvasElement().renderingContext();
-    if (canvasRenderer->hasDrawableContent() && !(context && context->delegatesDisplay()))
+    if (context && context->delegatesDisplay())
+        return CanvasAsLayerContents;
+    if (canvasRenderer->hasDrawableContent())
         return CanvasPaintedToLayer;
     if (!context)
         return CanvasPaintedToEnclosingLayer;
-    if (context->delegatesDisplay())
-        return CanvasAsLayerContents;
     if (RefPtr context2D = dynamicDowncast<CanvasRenderingContext2DBase>(context)) {
         // If the canvas is accelerated but drawing is not, ensure we get a
         // standalone layer for the canvas. RenderLayerBacking::createPrimaryGraphicsLayer()
@@ -711,10 +710,8 @@ void RenderLayerBacking::createPrimaryGraphicsLayer()
 
 bool RenderLayerBacking::shouldSetContentsDisplayDelegate() const
 {
-    if (!renderer().isRenderHTMLCanvas())
-        return false;
-
-    return canvasCompositingStrategy(renderer()) == CanvasAsLayerContents;
+    CheckedPtr canvasRenderer = dynamicDowncast<RenderHTMLCanvas>(renderer());
+    return canvasRenderer && canvasCompositingStrategy(*canvasRenderer) == CanvasAsLayerContents;
 }
 
 #if PLATFORM(IOS_FAMILY)
@@ -1022,7 +1019,8 @@ void RenderLayerBacking::updateVideoGravity(const Style::ComputedStyle& style)
 
 void RenderLayerBacking::updateContentsScalingFilters(const Style::ComputedStyle& style)
 {
-    if (!renderer().isRenderHTMLCanvas() || canvasCompositingStrategy(renderer()) != CanvasAsLayerContents)
+    CheckedPtr canvasRenderer = dynamicDowncast<RenderHTMLCanvas>(renderer());
+    if (!canvasRenderer || canvasCompositingStrategy(*canvasRenderer) != CanvasAsLayerContents)
         return;
     auto minificationFilter = GraphicsLayer::ScalingFilter::Linear;
     auto magnificationFilter = GraphicsLayer::ScalingFilter::Linear;
@@ -3898,8 +3896,11 @@ bool RenderLayerBacking::containsPaintedContent(PaintedContentsInfo& contentsInf
 #endif
 
 #if ENABLE(WEBGL) || ENABLE(OFFSCREEN_CANVAS)
-    if (is<RenderHTMLCanvas>(renderer()) && canvasCompositingStrategy(renderer()) == CanvasAsLayerContents)
+    if (CheckedPtr canvasRenderer = dynamicDowncast<RenderHTMLCanvas>(renderer()); canvasRenderer && canvasCompositingStrategy(*canvasRenderer) == CanvasAsLayerContents) {
+        if (canvasRenderer->hasDrawableContent())
+            return true;
         return m_owningLayer.hasVisibleBoxDecorationsOrBackground();
+    }
 #endif
 
     return true;
@@ -4058,7 +4059,8 @@ void RenderLayerBacking::contentChanged(ContentChangeType changeType, const std:
         m_owningLayer.setNeedsCompositingConfigurationUpdate();
 
 #if ENABLE(WEBGL) || ENABLE(OFFSCREEN_CANVAS)
-    if ((changeType == ContentChangeType::Canvas || changeType == ContentChangeType::CanvasPixels) && renderer().isRenderHTMLCanvas() && canvasCompositingStrategy(renderer()) == CanvasAsLayerContents) {
+    CheckedPtr canvasRenderer = dynamicDowncast<RenderHTMLCanvas>(renderer());
+    if ((changeType == ContentChangeType::Canvas || changeType == ContentChangeType::CanvasPixels) && canvasRenderer && canvasCompositingStrategy(*canvasRenderer) == CanvasAsLayerContents) {
         if (changeType == ContentChangeType::Canvas)
             compositor().scheduleCompositingLayerUpdate();
 

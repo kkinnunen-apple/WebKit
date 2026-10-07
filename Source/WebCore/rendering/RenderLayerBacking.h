@@ -45,6 +45,7 @@ class GraphicsLayer;
 class GraphicsLayerAnimation;
 class PaintedContentsInfo;
 class RegionContext;
+class RenderHTMLCanvas;
 class RenderLayerCompositor;
 class TiledBacking;
 class TransformationMatrix;
@@ -577,7 +578,7 @@ enum CanvasCompositingStrategy {
     CanvasPaintedToLayer,
     CanvasAsLayerContents
 };
-CanvasCompositingStrategy canvasCompositingStrategy(const RenderObject&);
+CanvasCompositingStrategy canvasCompositingStrategy(const RenderHTMLCanvas&);
 
 WTF::TextStream& operator<<(WTF::TextStream&, const RenderLayerBacking&);
 

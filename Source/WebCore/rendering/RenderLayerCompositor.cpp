@@ -4019,7 +4019,7 @@ bool RenderLayerCompositor::requiresCompositingForCanvas(RenderLayerModelObject&
     }
 #endif
 
-    CanvasCompositingStrategy compositingStrategy = canvasCompositingStrategy(renderer);
+    CanvasCompositingStrategy compositingStrategy = canvasCompositingStrategy(*canvasRenderer);
     if (compositingStrategy == CanvasAsLayerContents)
         return true;
 

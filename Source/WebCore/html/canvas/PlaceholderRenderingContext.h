@@ -103,6 +103,7 @@ public:
     RefPtr<NativeImage> surfaceBufferToNativeImage(SurfaceBuffer) final;
     bool isSurfaceBufferTransparentBlack(SurfaceBuffer) const final;
     void didUpdateCanvasSizeProperties(bool) final;
+    bool delegatesDisplay() const final { return true; }
 
 private:
     PlaceholderRenderingContext(HTMLCanvasElement&);

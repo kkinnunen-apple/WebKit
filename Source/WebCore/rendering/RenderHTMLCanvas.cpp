@@ -88,7 +88,7 @@ bool RenderHTMLCanvas::canHaveChildren() const
 
 bool RenderHTMLCanvas::hasDrawableContent() const
 {
-    return settings().htmlInCanvasEnabled() && protect(canvasElement())->canvasContent() == CanvasContent::Drawable;
+    return protect(canvasElement())->hasDrawableContent();
 }
 
 void RenderHTMLCanvas::layout()

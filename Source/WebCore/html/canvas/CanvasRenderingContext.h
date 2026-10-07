@@ -85,6 +85,7 @@ public:
     // Called when the canvas size properties are assigned.
     // The canvas will already have the new size.
     virtual void didUpdateCanvasSizeProperties(bool sizeChanged) = 0;
+    virtual void didUpdateCanvasContent() { }
 
     // Canvas 2DContext drawing buffer is the same as display buffer.
     // WebGL, WebGPU draws to drawing buffer. The draw buffer is then swapped to
@@ -104,7 +105,7 @@ public:
     // for example because the canvas has no contents or an allocation failed.
     virtual RefPtr<NativeImage> surfaceBufferToNativeImage(SurfaceBuffer) = 0;
     virtual bool isSurfaceBufferTransparentBlack(SurfaceBuffer) const = 0;
-    bool NODELETE delegatesDisplay() const;
+    virtual bool delegatesDisplay() const { return false; }
     virtual RefPtr<GraphicsLayerContentsDisplayDelegate> layerContentsDisplayDelegate();
     virtual void setContentsToLayer(GraphicsLayer&);
 

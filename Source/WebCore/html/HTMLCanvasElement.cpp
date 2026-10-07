@@ -174,8 +174,11 @@ void HTMLCanvasElement::attributeChanged(const QualifiedName& name, const AtomSt
             didUpdateSizeProperties();
     }
 
-    if (name == contentAttr)
+    if (name == contentAttr) {
         invalidateStyleAndRenderersForSubtree();
+        if (m_context)
+            protect(m_context.get())->didUpdateCanvasContent();
+    }
 
     HTMLElement::attributeChanged(name, oldValue, newValue, attributeModificationReason);
 }
@@ -230,6 +233,11 @@ const AtomString& HTMLCanvasElement::canvasContentForBindings() const
 CanvasContent HTMLCanvasElement::canvasContent() const
 {
     return toValidCanvasContent(canvasContentForBindings());
+}
+
+bool HTMLCanvasElement::hasDrawableContent() const
+{
+    return document().settings().htmlInCanvasEnabled() && canvasContent() == CanvasContent::Drawable;
 }
 
 void HTMLCanvasElement::requestPaint()
@@ -683,7 +691,7 @@ bool HTMLCanvasElement::usesContentsAsLayerContents() const
         return false;
     if (!m_context)
         return false;
-    return renderBox->hasAcceleratedCompositing() && m_context->delegatesDisplay();
+    return renderBox->hasAcceleratedCompositing() && protect(m_context.get())->delegatesDisplay();
 }
 
 void HTMLCanvasElement::paint(GraphicsContext& context, const LayoutRect& r)
@@ -811,7 +819,7 @@ ExceptionOr<Ref<OffscreenCanvas>> HTMLCanvasElement::transferControlToOffscreen(
     std::unique_ptr placeholderContext = PlaceholderRenderingContext::create(*this);
     Ref offscreen = OffscreenCanvas::create(protect(document()).get(), *placeholderContext);
     m_context = WTF::move(placeholderContext);
-    if (m_context->delegatesDisplay())
+    if (protect(m_context.get())->delegatesDisplay())
         invalidateStyleAndLayerComposition();
     return offscreen;
 }

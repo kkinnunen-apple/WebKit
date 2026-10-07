@@ -82,6 +82,7 @@ public:
 
     const AtomString& canvasContentForBindings() const;
     CanvasContent canvasContent() const;
+    bool hasDrawableContent() const;
 
     void requestPaint();
     void dispatchPaintEvent();
