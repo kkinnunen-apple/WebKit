@@ -46,6 +46,7 @@
 #include <WebCore/MediaPlayer.h>
 #include <WebCore/NotImplemented.h>
 #include <WebCore/SVGFilterRenderer.h>
+#include <WebCore/VideoFrame.h>
 #include <wtf/MathExtras.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/URL.h>
@@ -243,9 +244,15 @@ void RemoteGraphicsContextProxy::clipToImageBuffer(ImageBuffer& imageBuffer, con
 {
     sendPendingDrawsIfNecessary();
     updateStateForClipToImageBuffer(destinationRect);
-    if (!recordResourceUse(imageBuffer))
+    if (recordResourceUse(imageBuffer)) {
+        send(Messages::RemoteGraphicsContext::ClipToImageBuffer(imageBuffer.renderingResourceIdentifier(), destinationRect));
         return;
-    send(Messages::RemoteGraphicsContext::ClipToImageBuffer(imageBuffer.renderingResourceIdentifier(), destinationRect));
+    }
+    // An image buffer of another backend, so clip to a copy of its pixels.
+    RefPtr image = copyNativeImageOfImageBufferFromOtherBackend(imageBuffer);
+    if (!image)
+        return;
+    send(Messages::RemoteGraphicsContext::ClipToNativeImage(image->renderingResourceIdentifier(), destinationRect));
 }
 
 void RemoteGraphicsContextProxy::clipOut(const Path& path)
@@ -589,15 +596,33 @@ void RemoteGraphicsContextProxy::drawVideoFrame(const VideoFrame& frame, const F
     sendPendingDrawsIfNecessary();
     appendStateChangeItemIfNecessary();
 #if PLATFORM(COCOA)
+    // A backend outside the GPU process can't read the frames that the GPU process shares, nor
+    // IOSurfaces, so it is sent the pixels through shared memory. For a frame of the GPU process, they
+    // are read back from there.
+    RefPtr drawingBackend = m_drawingBackend.get();
+    RetainPtr<CVPixelBufferRef> pixelBuffer;
+    bool canUseGPUProcessResources = !drawingBackend || drawingBackend->canUseGPUProcessResources();
+    if (!canUseGPUProcessResources) {
+        pixelBuffer = frame.pixelBuffer();
+        if (!pixelBuffer)
+            return;
+    }
+
     Locker locker { m_sharedVideoFrameWriterLock };
     if (!m_sharedVideoFrameWriter)
         m_sharedVideoFrameWriter = makeUnique<SharedVideoFrameWriter>();
 
-    auto sharedVideoFrame = m_sharedVideoFrameWriter->write(frame, [&](auto& semaphore) {
+    auto newSemaphoreCallback = [&](auto& semaphore) {
         send(Messages::RemoteGraphicsContext::SetSharedVideoFrameSemaphore { semaphore });
-    }, [&](SharedMemory::Handle&& handle) {
+    };
+    auto newMemoryCallback = [&](SharedMemory::Handle&& handle) {
         send(Messages::RemoteGraphicsContext::SetSharedVideoFrameMemory { WTF::move(handle) });
-    });
+    };
+    std::optional<SharedVideoFrame> sharedVideoFrame;
+    if (canUseGPUProcessResources)
+        sharedVideoFrame = m_sharedVideoFrameWriter->write(frame, newSemaphoreCallback, newMemoryCallback);
+    else if (auto buffer = m_sharedVideoFrameWriter->writeBuffer(pixelBuffer.get(), newSemaphoreCallback, newMemoryCallback, false))
+        sharedVideoFrame = SharedVideoFrame { frame.presentationTime(), frame.isMirrored(), frame.rotation(), frame.colorSpace(), frame.shouldIgnoreAlpha(), WTF::move(*buffer) };
     if (!sharedVideoFrame)
         return;
     send(Messages::RemoteGraphicsContext::DrawVideoFrame(WTF::move(*sharedVideoFrame), destination, shouldDiscardAlpha, options));
@@ -790,6 +815,16 @@ bool RemoteGraphicsContextProxy::recordResourceUse(ImageBuffer& imageBuffer)
     return true;
 }
 
+// For an image buffer of another backend, which this backend can't draw: a copy of its pixels that
+// this backend has. The pattern or clip that uses it keeps it alive in the backend.
+RefPtr<NativeImage> RemoteGraphicsContextProxy::copyNativeImageOfImageBufferFromOtherBackend(ImageBuffer& imageBuffer)
+{
+    RefPtr image = imageBuffer.copyNativeImage();
+    if (!image || !recordResourceUse(*image))
+        return nullptr;
+    return image;
+}
+
 bool RemoteGraphicsContextProxy::recordResourceUse(const SourceImage& image)
 {
     if (RefPtr imageBuffer = image.imageBufferIfExists())
@@ -905,6 +940,8 @@ void RemoteGraphicsContextProxy::appendStateChangeItemIfNecessary()
             } else if (RefPtr buffer = pattern->tileImageBuffer()) {
                 if (recordResourceUse(*buffer))
                     send(Messages::RemoteGraphicsContext::SetFillPatternImageBuffer(buffer->renderingResourceIdentifier(), pattern->parameters()));
+                else if (RefPtr tileImage = copyNativeImageOfImageBufferFromOtherBackend(*buffer))
+                    send(Messages::RemoteGraphicsContext::SetFillPatternNativeImage(tileImage->renderingResourceIdentifier(), pattern->parameters()));
             }
         } else if (RefPtr gradient = fillBrush.gradient()) {
             if (auto identifier = recordResourceUse(*gradient))
@@ -929,6 +966,8 @@ void RemoteGraphicsContextProxy::appendStateChangeItemIfNecessary()
             } else if (RefPtr buffer = pattern->tileImageBuffer()) {
                 if (recordResourceUse(*buffer))
                     send(Messages::RemoteGraphicsContext::SetStrokePatternImageBuffer(buffer->renderingResourceIdentifier(), pattern->parameters()));
+                else if (RefPtr tileImage = copyNativeImageOfImageBufferFromOtherBackend(*buffer))
+                    send(Messages::RemoteGraphicsContext::SetStrokePatternNativeImage(tileImage->renderingResourceIdentifier(), pattern->parameters()));
             }
         } else if (RefPtr gradient = strokeBrush.gradient()) {
             if (auto identifier = recordResourceUse(*gradient))
