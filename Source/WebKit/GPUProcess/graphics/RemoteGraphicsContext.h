@@ -36,9 +36,15 @@
 #include "StreamMessageReceiver.h"
 #include "StreamServerConnection.h"
 #include <WebCore/ControlFactory.h>
+#include <WebCore/GlyphBufferMembers.h>
+#include <WebCore/GraphicsStyle.h>
 #include <WebCore/ProcessIdentifier.h>
 #include <WebCore/RenderingResourceIdentifier.h>
 #include <wtf/WeakPtr.h>
+
+namespace WebCore {
+class FilterResults;
+}
 
 namespace WebKit {
 

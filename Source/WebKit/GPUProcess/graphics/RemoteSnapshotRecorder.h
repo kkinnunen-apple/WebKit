@@ -31,6 +31,7 @@
 #include "RemoteGraphicsContext.h"
 #include "RemoteSnapshotRecorderIdentifier.h"
 #include <WebCore/DisplayListRecorderImpl.h>
+#include <WebCore/FrameIdentifier.h>
 
 namespace WebKit {
 class RemoteSnapshot;
