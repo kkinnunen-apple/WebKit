@@ -792,6 +792,9 @@ private:
     void gpuProcessConnectionDidBecomeUnresponsive(GPUProcessConnectionIdentifier);
     void drawFrameToSnapshot(WebCore::FrameIdentifier, const WebCore::IntRect&, RemoteSnapshotIdentifier, WebCore::RenderingMode);
 #endif
+#if ENABLE(GPU_PROCESS) && PLATFORM(COCOA)
+    void terminatePrintProcessClient(WebCore::ProcessIdentifier, IPC::MessageName invalidMessageName);
+#endif
 
 #if HAVE(IOSURFACE)
     // Handled here rather than by the page, so that they are answered even once it is gone.

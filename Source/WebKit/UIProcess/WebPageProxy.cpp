@@ -15521,6 +15521,7 @@ static bool LEGACY_NODELETE shouldReloadAfterProcessTermination(ProcessTerminati
     case ProcessTerminationReason::RequestedByNetworkProcess:
     case ProcessTerminationReason::RequestedByGPUProcess:
     case ProcessTerminationReason::RequestedByModelProcess:
+    case ProcessTerminationReason::RequestedByPrintProcess:
     case ProcessTerminationReason::Crash:
     case ProcessTerminationReason::Unresponsive:
         return true;
