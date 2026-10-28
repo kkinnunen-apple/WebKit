@@ -1586,7 +1586,7 @@ std::optional<IPC::Connection::AsyncReplyID> WebProcessPool::ensurePrintProcessC
 
     // The print process creates the pair, since only the client end of one can be sent to another
     // process. The web process is sent the client end once the print process has the server end.
-    auto replyID = printProcess->sendWithAsyncReply(Messages::WebProcess::CreatePrintConnectionToWebProcess(clientIdentifier, frameProcess.processIdentity(), frameProcess.sharedPreferencesForWebProcessValue(), lockdownMode == WebProcessProxy::LockdownMode::Enabled), [weakThis = WeakPtr { *this }, weakPrintProcess = WeakPtr { printProcess.get() }, clientIdentifier, useToken = WTF::move(useToken)](std::optional<IPC::Connection::Handle>&& connectionHandle) mutable {
+    auto replyID = printProcess->sendWithAsyncReply(Messages::WebProcess::CreatePrintConnectionToWebProcess(clientIdentifier, WebCore::ProcessIdentity { frameProcess.processIdentity() }, frameProcess.sharedPreferencesForWebProcessValue(), lockdownMode == WebProcessProxy::LockdownMode::Enabled), [weakThis = WeakPtr { *this }, weakPrintProcess = WeakPtr { printProcess.get() }, clientIdentifier, useToken = WTF::move(useToken)](std::optional<IPC::Connection::Handle>&& connectionHandle) mutable {
         RefPtr protectedThis = weakThis.get();
         RefPtr printProcess = weakPrintProcess.get();
         if (protectedThis && printProcess)
