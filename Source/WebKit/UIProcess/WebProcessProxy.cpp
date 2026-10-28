@@ -3847,12 +3847,10 @@ TextStream& operator<<(TextStream& ts, const WebProcessProxy& process)
     return ts;
 }
 
-#if ENABLE(WEBXR)
 const WebCore::ProcessIdentity& WebProcessProxy::processIdentity()
 {
     return m_processIdentity;
 }
-#endif
 
 #if ENABLE(CONTENT_EXTENSIONS)
 void WebProcessProxy::requestResourceMonitorRuleLists(bool forTesting)

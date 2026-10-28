@@ -648,9 +648,7 @@ public:
     Seconds totalBackgroundTime() const;
     Seconds totalSuspendedTime() const;
 
-#if ENABLE(WEBXR)
     const WebCore::ProcessIdentity& processIdentity() LIFETIME_BOUND;
-#endif
 
     bool isAlwaysOnLoggingAllowed() const;
 
