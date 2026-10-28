@@ -612,10 +612,10 @@ void RemoteGraphicsContextProxy::drawVideoFrame(const VideoFrame& frame, const F
     if (!m_sharedVideoFrameWriter)
         m_sharedVideoFrameWriter = makeUnique<SharedVideoFrameWriter>();
 
-    auto newSemaphoreCallback = [&](auto& semaphore) {
+    Function<void(IPC::Semaphore&)> newSemaphoreCallback = [&](IPC::Semaphore& semaphore) {
         send(Messages::RemoteGraphicsContext::SetSharedVideoFrameSemaphore { semaphore });
     };
-    auto newMemoryCallback = [&](SharedMemory::Handle&& handle) {
+    Function<void(SharedMemory::Handle&&)> newMemoryCallback = [&](SharedMemory::Handle&& handle) {
         send(Messages::RemoteGraphicsContext::SetSharedVideoFrameMemory { WTF::move(handle) });
     };
     std::optional<SharedVideoFrame> sharedVideoFrame;
